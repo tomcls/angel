@@ -1,4 +1,5 @@
 import React from "react" ;
+import {Link} from "react-router-dom"
 
 import XButton from "../components/Button";
 import Input from "../components/Input";
@@ -302,9 +303,11 @@ Fr
             
               
               <FormControlLabel control={<Checkbox defaultChecked />} style={{fontSize:"12px"}} label="I agree to the My Nursing angel Terms & conditions" />
+              <Link to="/thank">
 
               <XButton text=" Register" />
-            
+              </Link>
+              <Link to="/">
               <Typography
                 variant="h6"
                 style={{
@@ -317,6 +320,7 @@ Fr
                 Yoy have an account?{" "}
                 <span style={{ fontWeight: "bold" }}>Login</span>{" "}
               </Typography>
+              </Link>
             </div>
           </Grid>
         </Grid>

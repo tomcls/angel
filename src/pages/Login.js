@@ -1,5 +1,5 @@
 import React from "react" ;
-
+import {Link} from "react-router-dom"
 import XButton from "../components/Button";
 import Input from "../components/Input";
 import PersonIcon from '@mui/icons-material/Person';
@@ -201,12 +201,17 @@ Fr
             <Input icon={<PersonIcon sx={{ color: 'action.active', mr: 1, my: 0.5 }} />} text=" Email" />
         <Input icon={<LockIcon sx={{ color: 'action.active', mr: 1, my: 0.5 }} />} text=" Password" />
             </div> 
-        
-           <Typography style={{    display: "flex",
+        <Link to="/reset-password">
+        <Typography style={{    display: "flex",
     flexDirection: "column",
     justifyContent: "flex-start",
     alignItems: "flex-end",  color:"#5b5a5a"}}>Forgot Password?</Typography>
-           <XButton text="Sign in"/>
+        </Link>
+        
+    <Link to="/thank">
+    <XButton text="Sign in"/>
+
+    </Link>
            <div style={{    display: "flex",
     justifyContent: "center",
     alignItems: "center"}}>
@@ -219,7 +224,8 @@ Fr
           margin: "auto",
           marginBottom: "40px",
           color:"#5b5a5a"
-      }} component="h5">Not on mynursing angel yet ? <span style={{fontWeight:"bold"}}>Register</span>  </Typography>
+      }} component="h5">Not on mynursing angel yet ?         <Link to="/register">
+      <span style={{fontWeight:"bold"}}>Register</span> </Link> </Typography>
             </div>
        
         </Grid>

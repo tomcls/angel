@@ -20,6 +20,8 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import TextField from '@mui/material/TextField';
 import TextareaAutosize from '@mui/material/TextareaAutosize';
 
+
+
 const itemData = [
   {
     img: box,
@@ -59,14 +61,14 @@ Still got some questions left with no answer ? Don’t hesitate to reach us thro
 </Typography>
 
     </Grid>
-        <Grid item xs={12}  sm={6} style={{    height: "100%",
+        <Grid item xs={12}  sm={6} style={{    
     borderRadius: "20px",
     margin: "20px 0px",display: "flex",
     justifyContent: "center",
     alignItems: "center"}}>
    
         <Grid  xs={12} >
-        <ImageList sx={{ width:matches? "60%":500, height:matches?"auto": "auto" }} style={{margin:"auto",marginBottom:"20px",overflow:"hidden"}} cols={1} >
+        <ImageList sx={{ width:matches? "100%":500, height:matches?"auto": "auto" }} style={{margin:"auto",marginBottom:"20px",overflow:"hidden"}} cols={1} >
       {itemData.map((item) => (
         <ImageListItem key={item.img} style={{width:matches?"100%":"350px",margin: 'auto',}}>
           <img
@@ -100,7 +102,7 @@ Still got some questions left with no answer ? Don’t hesitate to reach us thro
       <Box
       component="form"
       sx={{
-        '& .MuiTextField-root': { m: 1, width: '25ch' },
+        '& .MuiTextField-root': { m: 1, width:matches?"90%":"25ch" },
       }}
       noValidate
       autoComplete="off"
@@ -112,11 +114,23 @@ Still got some questions left with no answer ? Don’t hesitate to reach us thro
           label="First Name"
           type="text"
           autoComplete="current-password"
+          style={{border:"1px solid #0C7DDF",borderRadius:"8px"}}
+          InputLabelProps={{
+            style: {
+              
+              color: '#0C7DDF'
+            } }} 
         />
       <TextField
           id="outlined-password-input"
           label="Last Name"
           type="text"
+          style={{border:"1px solid #0C7DDF",borderRadius:"8px"}}
+          InputLabelProps={{
+            style: {
+              
+              color: '#0C7DDF'
+            } }} 
           autoComplete="current-password"
         />
       
@@ -128,12 +142,24 @@ Still got some questions left with no answer ? Don’t hesitate to reach us thro
          label="Phone Number"
          type="text"
          autoComplete="current-password"
+         style={{border:"1px solid #0C7DDF",borderRadius:"8px"}}
+          InputLabelProps={{
+            style: {
+              
+              color: '#0C7DDF'
+            } }} 
        />
      <TextField
          id="outlined-password-input"
          label="Email Address"
          type="text"
          autoComplete="current-password"
+         style={{border:"1px solid #0C7DDF",borderRadius:"8px"}}
+          InputLabelProps={{
+            style: {
+              
+              color: '#0C7DDF'
+            } }} 
        />
      
      </div>
@@ -143,7 +169,13 @@ Still got some questions left with no answer ? Don’t hesitate to reach us thro
       aria-label="minimum height"
       minRows={6}
       placeholder="Write your message here...      "
-      style={{ width: "420px" }}
+      style={{border:"1px solid #0C7DDF",borderRadius:"8px",width:matches?"90%":"420px"}}
+          InputLabelProps={{
+            style: {
+              
+              color: '#0C7DDF'
+            } }} 
+            color="primary"
     />
      
      </div>

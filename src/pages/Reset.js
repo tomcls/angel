@@ -1,4 +1,5 @@
 import React ,{useState}from "react" ;
+import {Link} from "react-router-dom"
 
 import Button from "../components/Button";
 import Input from "../components/Input";
@@ -103,11 +104,14 @@ const [callsuccess, setcallsuccess] = useState(false)
            <Divider  style={{width:"30%",borderColor:"black"}}/>
 
            </div>
+           <Link to="/">
+
            <Typography variant="h6"  style={{   
           margin: "auto",
           marginBottom: "40px",
           color:"#5b5a5a"
       }} component="h5">Go back to<span style={{fontWeight:"bold"}}>Login</span>  </Typography>
+      </Link>
             </div>
        
         </Grid>
