@@ -13,7 +13,7 @@ fi
 env=$1
 serviceName=angel
 APP_ROOT=~/www/${serviceName}
-portOut=3010
+portOut=3011
 portIn=80
 if [ "${env}" == "production" ]
 	then
