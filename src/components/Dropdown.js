@@ -8,13 +8,6 @@ import Fade from '@mui/material/Fade';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { Typography } from '@mui/material';
 
-
-
-
-
-
-
-
 export default function Dropdown({arrofsub ,text,icon}) {
   const [checked, setChecked] = React.useState(false);
 
@@ -22,18 +15,14 @@ export default function Dropdown({arrofsub ,text,icon}) {
     setChecked((prev) => !prev);
   };
 
-  
   const sub = (
       <div>
           {arrofsub?.map((item)=>{
               return       <Typography style={{marginBlock:"8px"}}>{item}</Typography>
 
           })}
-
       </div>
-
   );
-
   return (
     <Box sx={{ height: checked && arrofsub?"auto":30 }} style={{ marginBlock:"18px",   justifyContent: "unset",flexDirection:"column",alignItems:"center",
     display: "flex",
