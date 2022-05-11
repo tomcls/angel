@@ -28,6 +28,7 @@ if [ "${env}" == "production" ]
         echo ".............................Build done, execute cmd docker run ${serviceName}"
         docker run  --name ${serviceName}  \
         -p ${portOut}:${portIn} \
+        -v /data/www/${serviceName}/.env.prod:/usr/share/nginx/html/.env
         -it -d --restart always alpine/nginx
     else
         cd $APP_ROOT || exit
