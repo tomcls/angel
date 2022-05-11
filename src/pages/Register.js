@@ -1,21 +1,12 @@
 import React, { useState } from "react";
 import { Link } from 'react-router-dom'
-
 import XButton from '../components/Button';
-import Input from '../components/Input';
 import PersonIcon from '@mui/icons-material/Person';
-import LockIcon from '@mui/icons-material/Lock';
 import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
 import CardMedia from '@mui/material/CardMedia';
-import ImageList from '@mui/material/ImageList';
-import ImageListItem from '@mui/material/ImageListItem';
 import logo from '../Assets/img/logo.png';
-import firstImage from '../Assets/img/firstImage.png';
-import third from '../Assets/img/third.png';
-import second from '../Assets/img/second.png';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -24,37 +15,14 @@ import Select from '@mui/material/Select';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import ShieldIcon from '@mui/icons-material/Shield';
-import MailOutlineIcon from '@mui/icons-material/MailOutline';
-import SettingsIcon from '@mui/icons-material/Settings';
-import ClickAwayListener from '@mui/material/ClickAwayListener';
-import Grow from '@mui/material/Grow';
-import Popper from '@mui/material/Popper';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import flag from '../Assets/img/flag.png'
-import MenuList from '@mui/material/MenuList';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import LogoutIcon from '@mui/icons-material/Logout';
 import TextField from '@mui/material/TextField';
 import AngelUser from "../api/angel/user";
 import {useNavigate} from 'react-router-dom';
 import TeaserComponent from "../templates/Teaser";
 import Header from "../templates/Header";
-const itemData = [
-  {
-    img: firstImage,
-    title: 'Breakfast',
-  },
-  {
-    img: second,
-    title: 'Burger',
-  },
-  {
-    img: third,
-    title: 'Camera',
-  },
-];
-function Register() {
+
+export default function Register() {
+  const navigate = useNavigate();
   const matches = useMediaQuery('(max-width:970px)');
   const [lastname, setLastname] = useState('');
   const [firstname, setFirstname] = useState('');
@@ -74,16 +42,14 @@ function Register() {
   }, [openProfile]);
 
   const handleChange = (event) => {
-    console.log("event",event.target.value)
     setProfile(event.target.value);
   };
   const onInputChange = setter => e => {
     setter(e.target.value);
   };
-  const navigate = useNavigate();
+
   const onSubmit = e => {
     e.preventDefault();
-    console.log({firstname: firstname, lastname: lastname, type: profile, email: email, password: password});
     AngelUser().register({firstname: firstname, lastname: lastname, type: profile, email: email, password: password, role:'V'}).then(function (result) {
       if ( result && result.saved) {
         navigate('/thank', {replace: true});return;
@@ -192,7 +158,7 @@ function Register() {
                   }}
                   component='h5'
                 >
-                  Yoy have an account?{' '}
+                  Do you have an account?{' '}
                   <span style={{ fontWeight: 'bold' }}>Login</span>{' '}
                 </Typography>
               </Link>
@@ -203,5 +169,3 @@ function Register() {
     </div>
   );
 }
-
-export default Register;

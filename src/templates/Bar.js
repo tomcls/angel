@@ -1,5 +1,6 @@
 import React from "react";
 import { styled, useTheme } from '@mui/material/styles';
+import {useNavigate} from 'react-router-dom';
 import Drawer from '@mui/material/Drawer';
 import CssBaseline from '@mui/material/CssBaseline';
 import MuiAppBar from '@mui/material/AppBar';
@@ -29,24 +30,6 @@ import MenuList from '@mui/material/MenuList';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import LogoutIcon from '@mui/icons-material/Logout';
 const drawerWidth = 240;
-const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
-  ({ theme, open }) => ({
-    flexGrow: 1,
-    padding: theme.spacing(3),
-    transition: theme.transitions.create('margin', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    marginLeft: `-${drawerWidth}px`,
-    ...(open && {
-      transition: theme.transitions.create('margin', {
-        easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
-      marginLeft: 0,
-    }),
-  }),
-);
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
@@ -77,9 +60,11 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 export default function Bar(props) {
   const theme = useTheme();
+  const navigate = useNavigate();
   const [open, setOpen] = React.useState(true);
   const [openProfile, setopenProfile] = React.useState(false);
   const anchorRef = React.useRef(null);
+  const [user, setUser] = React.useState(null);
 
   const handleToggle = () => {
     setopenProfile((prevOpen) => !prevOpen);
@@ -90,6 +75,11 @@ export default function Bar(props) {
       return;
     }
     setopenProfile(false);
+  };
+  const logout = (event) => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    navigate('/login', {replace: true});return;
   };
   function handleListKeyDown(event) {
     if (event.key === 'Tab') {
@@ -102,6 +92,10 @@ export default function Bar(props) {
   const prevOpen = React.useRef(openProfile);
   React.useEffect(() => {
     console.log('useEffect')
+    const u = validateCredentials();
+    if(u) {
+      setUser(u);
+    }
     if (prevOpen.current === true && openProfile === false) {
       anchorRef.current.focus();
     }
@@ -117,6 +111,16 @@ export default function Bar(props) {
     setOpen(false);
     props.open(false)
   };
+
+  const validateCredentials = () => {
+    console.log(localStorage.getItem('user'),localStorage.getItem('token'))
+    const u = JSON.parse(localStorage.getItem('user'));
+    const t = JSON.parse(localStorage.getItem('token'));
+    if( u && u.id && t) {
+      return u;
+    }
+    navigate('/login', {replace: true});return;
+  }
 
   return (<>
         <CssBaseline />
@@ -177,7 +181,7 @@ export default function Bar(props) {
                           aria-labelledby="composition-button"
                           onKeyDown={handleListKeyDown}>
                           <MenuItem onClick={handleClose}> <SettingsIcon style={{ marginInline: "10px" }} /> Settings</MenuItem>
-                          <MenuItem onClick={handleClose}> <LogoutIcon style={{ marginInline: "10px" }} /> Log out</MenuItem>
+                          <MenuItem onClick={logout}> <LogoutIcon style={{ marginInline: "10px" }} /> Log out</MenuItem>
                         </MenuList>
                       </ClickAwayListener>
                     </Paper>

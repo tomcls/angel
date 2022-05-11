@@ -11,14 +11,20 @@ import Login from "../pages/Login";
 import Bar from "../templates/Bar";
 const drawerWidth = 240;
 
-const USER_STATE = {
+/*const USER_STATE = {
   user: null,
   hasLoginError: false
 };
-const validateCredentials = (user) => {
-  return user ? true : false;
-}
-const reducer = (state, action) => {
+const validateCredentials = () => {
+  console.log(localStorage.getItem('user'),localStorage.getItem('token'))
+  const u = JSON.parse(localStorage.getItem('user'));
+  const t = JSON.parse(localStorage.getItem('token'));
+  if( u && u.id && t) {
+    return u;
+  }
+  return false;
+}*/
+/*const reducer = (state, action) => {
   switch (action.type) {
     case "login": {
       const user = action.payload;
@@ -43,7 +49,7 @@ const reducer = (state, action) => {
     default:
       throw new Error(`Invalid action type: ${action.type}`);
   }
-};
+};*/
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
     flexGrow: 1,
@@ -63,22 +69,27 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
   }),
 );
 export default function Dashboard() {
-  const [state, dispatch] = useReducer(reducer, USER_STATE);
+  //const [state, dispatch] = useReducer(reducer, USER_STATE);
   const [open, setOpen] = React.useState(true);
-
+  /*const [user, setUser] = React.useState(null);
   const currentValue = {
     user: state.user,
     hasLoginError: state.hasLoginError,
-    login: (user) => dispatch({ type: "login", payload: user }),
+    login: (user) => {
+      console.log('dispatch')
+      dispatch({ type: "login", payload: user })
+    },
     logout: () => dispatch({ type: "logout" })
-  };
+  };*/
   React.useEffect(() => {
     console.log('useEffect')
+    /*const u = validateCredentials();
+    if(u) {
+      setUser(u);
+    }*/
   }, []);
 
   return (
-    <UserContext.Provider value={currentValue}>
-      {state.user && 
       <Box sx={{ display: 'flex' }}>
         <Bar open={setOpen} />
         <Main open={open} style={{ background: "rgb(229 229 229 / 41%)", marginBlock: "64px" }}>
@@ -92,8 +103,5 @@ export default function Dashboard() {
           <Table />
         </Main>
       </Box>
-      }
-      {!state.user && <Login />}
-    </UserContext.Provider>
   );
 }
