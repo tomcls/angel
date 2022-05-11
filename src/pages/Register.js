@@ -130,7 +130,7 @@ export default function Register() {
                 </Box>
                 <Box sx={{ '& > :not(style)': { mt: 1 } }} style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}>
                   <Box sx={{ display: 'flex', alignItems: 'flex-end', width: '100%', borderRadius: '10px' }}>
-                    <TextField onChange={onInputChange(setEmail)} InputProps={{ disableUnderline: true }} borderRadius={25} id={'outlined-basic'} style={{ width: '100%', backgroundColor: 'transparent', }} label={<div style={{ display: 'flex', borderRadius: '10px', justifyContent: 'center', alignItems: 'center', border: 'unset' }}>
+                    <TextField onChange={onInputChange(setEmail)} InputProps={{ disableUnderline: true }} borderRadius={25} id={'outlined-basic'} type="email" style={{ width: '100%', backgroundColor: 'transparent', }} label={<div style={{ display: 'flex', borderRadius: '10px', justifyContent: 'center', alignItems: 'center', border: 'unset' }}>
                       <PersonIcon sx={{ color: 'action.active', mr: 1, my: 0.5 }} /> Email</div>} variant={'filled'} />
                   </Box>
                 </Box>

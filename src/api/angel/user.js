@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-export default  function AngelUser() {
+export default  function AngelUser(config) {
+    const accessToken = config && config.accessToken? config.accessToken: null;
     let apiKey = process.env.REACT_APP_API_KEY;
     return {
         find: async (params) => {
@@ -43,6 +44,16 @@ export default  function AngelUser() {
             console.log('resetPwd',params);
             try {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/users/reset-password', params, {headers: {'apiKey':apiKey}});
+                return res.data;
+            } catch (error) {
+                return {error:error};
+            }
+        },
+        checkAuth: async (hash) => {
+            console.log('checkAuth',hash);
+            try {
+                const res = await axios.get(process.env.REACT_APP_API_URL+'/users/check-auth', { headers: { 'Authorization': hash }});
+                console.log(res)
                 return res.data;
             } catch (error) {
                 return {error:error};

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -29,14 +29,16 @@ export default function Login() {
     e.preventDefault();
     AngelUser().login({ email: username, password: password }).then(function (result) {
       if (result && result.user) {
-        localStorage.setItem('user', JSON.stringify(result.user));
-        localStorage.setItem('token', JSON.stringify(result.accessToken));
+        window.appStorage.setItem('user', JSON.stringify(result.user), 1200000);
+        window.appStorage.setItem('token', JSON.stringify(result.accessToken), 1200000);
         navigate('/dashboard', {replace: true});return;
       } else {
         setHasLoginError(true);
       }
     });
   };
+
+
   return (
     <div className='App'>
       <Box sx={{ flexGrow: 1 }}>
@@ -44,7 +46,7 @@ export default function Login() {
           <Header />
           <TeaserComponent />
           <Grid item xs={12} sm={6}>
-            <LoginComponent onSubmit={onSubmit} setUsername={setUsername} setPassword={setPassword} hasLoginError={hasLoginError} />
+            <LoginComponent onSubmit={onSubmit} setUsername={setUsername} setPassword={setPassword} hasLoginError={hasLoginError} onFocus={setHasLoginError} />
           </Grid>
         </Grid>
       </Box>

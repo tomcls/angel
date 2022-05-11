@@ -113,9 +113,9 @@ export default function Bar(props) {
   };
 
   const validateCredentials = () => {
-    console.log(localStorage.getItem('user'),localStorage.getItem('token'))
-    const u = JSON.parse(localStorage.getItem('user'));
-    const t = JSON.parse(localStorage.getItem('token'));
+    console.log(window.appStorage.getItem('user'),localStorage.getItem('token'))
+    const u = JSON.parse(window.appStorage.getItem('user'));
+    const t = JSON.parse(window.appStorage.getItem('token'));
     if( u && u.id && t) {
       return u;
     }
