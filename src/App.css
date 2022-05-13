@@ -1,16 +1,34 @@
+*{
+  font-family: 'Roboto', sans-serif;
+}
 a{
     text-decoration: unset;
 color: rgba(0, 0, 0, 0.808);
 }
 ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
-    color: #0C7DDF;
+    color:  #001BBA;
     opacity: 1; /* Firefox */
   }
   
   :-ms-input-placeholder { /* Internet Explorer 10-11 */
-    color: #0C7DDF;
+    color:  #001BBA;
   }
   
   ::-ms-input-placeholder { /* Microsoft Edge */
-    color: #0C7DDF;
+    color:  #001BBA;
   }
+
+  h4{
+    font-weight: 900 !important;
+  }
+  h6{
+    font-weight: 600 !important;
+    color: #7B7B7B !important   ;
+
+  }
+  .colorBlack{
+    color: #313131 !important    ;
+  }
+  textarea::placeholder {
+	  color: #001BBA; /*hexcode to change color of placeholder */
+} 

@@ -104,7 +104,7 @@ export default function RequestPassword() {
                 </Typography></Typography> : <Box sx={{ '& > :not(style)': { mt: 1 } }} style={{ display: "flex", justifyContent: "center", width: "100%", borderRadius: "10px" }}>
                 <Box sx={{ display: 'flex', alignItems: 'flex-end', width: "100%", borderRadius: "10px" }}>
                   <TextField onFocus={() => setHasLoginError(false)} onChange={onInputChange(setEmail)} InputProps={{ disableUnderline: true }} borderRadius={25} id={"outlined-basic"} type="email" style={{ width: "100%", backgroundColor: "transparent", }} label={<div style={{ display: "flex", borderRadius: "10px", justifyContent: "center", alignItems: "center", border: "unset" }}>
-                    <PersonIcon sx={{ color: 'action.active', mr: 1, my: 0.5 }} /> Email</div>} variant={"filled"} />
+                    <PersonIcon sx={{ color: 'action.active', mr: 1,  }} /> Email</div>} variant={"filled"} />
                 </Box>
               </Box>}
               <Button text={callsuccess ? "Email sent !" : "Request a new password "} onClick={requestPassword} />
@@ -128,7 +128,7 @@ export default function RequestPassword() {
                   margin: "auto",
                   marginBottom: "40px",
                   color: "#5b5a5a"
-                }} component="h5">Go back to <span style={{ fontWeight: "bold" }}>Login</span>  </Typography>
+                }} component="h5">Go back to <span style={{ fontWeight: "bold",marginInline:"8px" }}>Login</span>  </Typography>
               </Link>
             </div>
           </Grid>

@@ -86,9 +86,10 @@ function Thank() {
       <Typography variant="h6"  style={{   
           margin: "auto",
           marginBottom: "20px",
-          color:"#5b5a5a",
-          fontSize:"14px"
-      }} component="h6">
+          
+          color:"#313131",
+          fontSize:"16px"
+      }} component="h6" className="colorBlack">
       The team is currently reviewing your profile <br/> You will be notified by email when it’s done. <br/> Not fast enough for you ? Contact us.
 
       </Typography>
