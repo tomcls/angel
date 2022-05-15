@@ -91,7 +91,7 @@ export default function Bar(props) {
   }
   const prevOpen = React.useRef(openProfile);
   React.useEffect(() => {
-    console.log('useEffect')
+    console.log('useEffect Bar')
     const u = validateCredentials();
     if(u) {
       setUser(u);
@@ -113,7 +113,6 @@ export default function Bar(props) {
   };
 
   const validateCredentials = () => {
-    console.log(window.appStorage.getItem('user'),localStorage.getItem('token'))
     const u = JSON.parse(window.appStorage.getItem('user'));
     const t = JSON.parse(window.appStorage.getItem('token'));
     if( u && u.id && t) {

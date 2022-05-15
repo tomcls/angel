@@ -47,14 +47,12 @@ export default function Dashboard() {
   }, []);
 
   const handleChangePage = async (event,newPage) => {
-    console.log('page',newPage)
     const r = await AngelUser().list({ type: 'patient', limit: limit, page: newPage });
       setPatients(r.users);
       setTotal(r.total);
       setPage(newPage);
   };
   const handleChangeLimit = async (event) => {
-    console.log('handleChangeLimit',event.target.value)
     setLimit(event.target.value)
     setPage(0);
     const r = await AngelUser().list({ type: 'patient', limit: limit, page: 0 });

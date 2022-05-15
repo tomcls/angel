@@ -18,8 +18,7 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
-//import { visuallyHidden } from '@mui/utils';
-//  createData('Cupcake', 305, 3.7, 67, 4.3, <BeachAccessIcon color='primary' style={{ marginInline: '10px' }} />,
+
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -221,11 +220,9 @@ export default function Patients(props) {
         u.push(createData(users[i].id, users[i].firstname, users[i].lastname, users[i].email, users[i].phone, users[i].lang, users[i].role, users[i].active));
       }
       setRows(u);
-      console.log(u);
     }
   }, [props.users]);
   const handleRequestSort = (event, property) => {
-    console.log('handleRequestSort',property)
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
@@ -300,7 +297,6 @@ export default function Patients(props) {
                 .map((row, index) => {
                   const isItemSelected = isSelected(row.name);
                   const labelId = `enhanced-table-checkbox-${index}`;
-                  console.log(labelId)
                   return (
                     <TableRow
                       hover

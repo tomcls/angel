@@ -7,8 +7,6 @@ export default function InputWithIcon({text,icon,type,onChange}) {
   const [field, setField] = useState("");
 
   function onFieldChange(e) {
-    console.log('field change')
-    //setField(e.target.value)
     onChange(e.target.value)
   }
   const CustomTextField = withStyles({ 
