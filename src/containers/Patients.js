@@ -13,57 +13,13 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
+import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
-import BeachAccessIcon from '@mui/icons-material/BeachAccess';
-import GridViewIcon from '@mui/icons-material/GridView';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-
-
-function createData(name, calories, fat, carbs, protein,icon1,icon2,icon3,Doctor) {
-  return {
-    name,
-    calories,
-    fat,
-    carbs,
-    protein,
-    icon1,
-    icon2,
-    icon3,
-    Doctor
-
-  };
-}
-
-const rows = [
-  createData('Cupcake', 305, 3.7, 67, 4.3,<BeachAccessIcon color="primary" style={{marginInline:"10px"}}/>,
-  <GridViewIcon color="primary" style={{marginInline:"10px"}}/>,<TrendingUpIcon color="primary" style={{marginInline:"10px"}}/>,"ahmed"),
-  createData('Cupcake', 305, 3.7, 67, 4.3,<BeachAccessIcon color="primary" style={{marginInline:"10px"}}/>,
-  <GridViewIcon color="primary" style={{marginInline:"10px"}}/>,<TrendingUpIcon color="primary" style={{marginInline:"10px"}}/>,"ahmed"),
-  createData('Cupcake', 305, 3.7, 67, 4.3,<BeachAccessIcon color="primary" style={{marginInline:"10px"}}/>,
-  <GridViewIcon color="primary" style={{marginInline:"10px"}}/>,<TrendingUpIcon color="primary" style={{marginInline:"10px"}}/>,"ahmed"),
-  createData('Cupcake', 305, 3.7, 67, 4.3,<BeachAccessIcon color="primary" style={{marginInline:"10px"}}/>,
-  <GridViewIcon color="primary" style={{marginInline:"10px"}}/>,<TrendingUpIcon color="primary" style={{marginInline:"10px"}}/>,"ahmed"),
-  createData('Cupcake', 305, 3.7, 67, 4.3,<BeachAccessIcon color="primary" style={{marginInline:"10px"}}/>,
-  <GridViewIcon color="primary" style={{marginInline:"10px"}}/>,<TrendingUpIcon color="primary" style={{marginInline:"10px"}}/>,"ahmed"),
-  createData('Cupcake', 305, 3.7, 67, 4.3,<BeachAccessIcon color="primary" style={{marginInline:"10px"}}/>,
-  <GridViewIcon color="primary" style={{marginInline:"10px"}}/>,<TrendingUpIcon color="primary" style={{marginInline:"10px"}}/>,"ahmed"),
-  createData('Cupcake', 305, 3.7, 67, 4.3,<BeachAccessIcon color="primary" style={{marginInline:"10px"}}/>,
-  <GridViewIcon color="primary" style={{marginInline:"10px"}}/>,<TrendingUpIcon color="primary" style={{marginInline:"10px"}}/>,"ahmed"),
-  createData('Cupcake', 305, 3.7, 67, 4.3,<BeachAccessIcon color="primary" style={{marginInline:"10px"}}/>,
-  <GridViewIcon color="primary" style={{marginInline:"10px"}}/>,<TrendingUpIcon color="primary" style={{marginInline:"10px"}}/>,"ahmed"),
-  createData('Cupcake', 305, 3.7, 67, 4.3,<BeachAccessIcon color="primary" style={{marginInline:"10px"}}/>,
-  <GridViewIcon color="primary" style={{marginInline:"10px"}}/>,<TrendingUpIcon color="primary" style={{marginInline:"10px"}}/>,"ahmed"),
-  createData('Cupcake', 305, 3.7, 67, 4.3,<BeachAccessIcon color="primary" style={{marginInline:"10px"}}/>,
-  <GridViewIcon color="primary" style={{marginInline:"10px"}}/>,<TrendingUpIcon color="primary" style={{marginInline:"10px"}}/>,"ahmed"),
-  createData('Cupcake', 305, 3.7, 67, 4.3,<BeachAccessIcon color="primary" style={{marginInline:"10px"}}/>,
-  <GridViewIcon color="primary" style={{marginInline:"10px"}}/>,<TrendingUpIcon color="primary" style={{marginInline:"10px"}}/>,"ahmed"),
-
- 
-];
-
+//import { visuallyHidden } from '@mui/utils';
+//  createData('Cupcake', 305, 3.7, 67, 4.3, <BeachAccessIcon color='primary' style={{ marginInline: '10px' }} />,
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -73,13 +29,11 @@ function descendingComparator(a, b, orderBy) {
   }
   return 0;
 }
-
 function getComparator(order, orderBy) {
   return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
-
 // This method is created for cross-browser compatibility, if you don't
 // need to support IE11, you can use Array.prototype.sort() directly
 function stableSort(array, comparator) {
@@ -96,63 +50,54 @@ function stableSort(array, comparator) {
 
 const headCells = [
   {
-    id: 'Nom',
+    id: 'id',
     numeric: true,
-    disablePadding: false,
-    label: 'Nom',
+    disablePadding: true,
+    label: 'Id',
   },
   {
-    id: 'Prénom',
-    numeric: true,
+    id: 'firstname',
+    numeric: false,
     disablePadding: false,
     label: 'Prénom',
   },
   {
-    id: 'Téléphone',
-    numeric: true,
+    id: 'lastname',
+    numeric: false,
     disablePadding: false,
-    label: 'Téléphone',
+    label: 'Nom',
   },
   {
-    id: 'Email',
-    numeric: true,
+    id: 'email',
+    numeric: false,
     disablePadding: false,
     label: 'Email',
   },
   {
-    id: 'Doctor',
-    numeric: true,
+    id: 'phone',
+    numeric: false,
     disablePadding: false,
-    label: 'Doctor',
-  },
-  {
-    id: 'Coordinator',
-    numeric: true,
-    disablePadding: false,
-    label: 'Coordinator',
+    label: 'Téléphone',
   }, {
-    id: 'Treatment',
-    numeric: true,
+    id: 'lang',
+    numeric: false,
     disablePadding: false,
-    label: 'Treatment',
+    label: 'Langue',
   }, {
-    id: 'Survey',
-    numeric: true,
+    id: 'role',
+    numeric: false,
     disablePadding: false,
-    label: 'Survey',
-  },
-  {
-    id: 'Data',
-    numeric: true,
+    label: 'Role',
+  }, {
+    id: 'active',
+    numeric: false,
     disablePadding: false,
-    label: 'Data',
+    label: 'Actif',
   },
-  
 ];
 
 function EnhancedTableHead(props) {
-  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
-    props;
+  const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -160,26 +105,31 @@ function EnhancedTableHead(props) {
   return (
     <TableHead>
       <TableRow>
-     
+        <TableCell padding="checkbox">
+          <Checkbox
+            indeterminate={numSelected > 0 && numSelected < rowCount}
+            checked={rowCount > 0 && numSelected === rowCount}
+            onChange={onSelectAllClick}
+            inputProps={{ 'aria-label': 'select all Patients' }}
+          /> 
+        </TableCell>
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? 'right' : 'left'}
+            align={headCell.numeric ? 'left' : 'center'}
             padding={headCell.disablePadding ? 'none' : 'normal'}
             sortDirection={orderBy === headCell.id ? order : false}
-            style={{textAlign:"center"}}
           >
             <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : 'asc'}
               onClick={createSortHandler(headCell.id)}
-              style={{color:"black"}}
             >
               {headCell.label}
               {orderBy === headCell.id ? (
-                <Box component="span"  >
+                <span  style={{border: 0, clip: 'rect(0 0 0 0)', height: '1px', margin: -1, overflow: 'hidden',padding: 0,whiteSpace: "nowrap",width: "1px",position: "absolute"}}>
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                </Box>
+                </span>
               ) : null}
             </TableSortLabel>
           </TableCell>
@@ -215,31 +165,31 @@ const EnhancedTableToolbar = (props) => {
       {numSelected > 0 ? (
         <Typography
           sx={{ flex: '1 1 100%' }}
-          color="inherit"
-          variant="subtitle1"
-          component="div"
+          color='inherit'
+          variant='subtitle1'
+          component='div'
         >
           {numSelected} selected
         </Typography>
       ) : (
         <Typography
           sx={{ flex: '1 1 100%' }}
-          variant="h6"
-          id="tableTitle"
-          component="div"
+          variant='h6'
+          id='tableTitle'
+          component='div'
         >
-          
+
         </Typography>
       )}
 
       {numSelected > 0 ? (
-        <Tooltip title="Delete">
+        <Tooltip title='Delete'>
           <IconButton>
             <DeleteIcon />
           </IconButton>
         </Tooltip>
       ) : (
-        <Tooltip title="Filter list">
+        <Tooltip title='Filter list'>
           <IconButton>
             <FilterListIcon />
           </IconButton>
@@ -253,20 +203,45 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-export default function EnhancedTable() {
-  const [order, setOrder] = React.useState('asc');
+export default function Patients(props) {
+  const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('calories');
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(15);
-
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rows, setRows] = React.useState([]);
+  React.useEffect(() => {
+    console.log('useEffect Patients list', props.users)
+    const users = props.users;
+    const u = [];
+    if (users && users.length) {
+      for (let i = 0; i < users.length; i++) {
+        //createData('Cupcake', 305, 3.7, 67, 4.3, <BeachAccessIcon color='primary' style={{ marginInline: '10px' }} />, <GridViewIcon color='primary' style={{ marginInline: '10px' }} />, <TrendingUpIcon color='primary' style={{ marginInline: '10px' }} />, 'ahmed')
+        u.push(createData(users[i].id, users[i].firstname, users[i].lastname, users[i].email, users[i].phone, users[i].lang, users[i].role, users[i].active));
+      }
+      setRows(u);
+      console.log(u);
+    }
+  }, [props.users]);
   const handleRequestSort = (event, property) => {
+    console.log('handleRequestSort',property)
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
-
+  const createData = (id, firstname, lastname, email, phone, lang, role, active) => {
+    return {
+      id,
+      firstname,
+      lastname,
+      email,
+      phone,
+      lang,
+      role,
+      active
+    }
+  }
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
       const newSelecteds = rows.map((n) => n.name);
@@ -295,20 +270,6 @@ export default function EnhancedTable() {
 
     setSelected(newSelected);
   };
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const handleChangeDense = (event) => {
-    setDense(event.target.checked);
-  };
-
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
   // Avoid a layout jump when reaching the last page with empty rows.
@@ -322,7 +283,7 @@ export default function EnhancedTable() {
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
-            aria-labelledby="tableTitle"
+            aria-labelledby='tableTitle'
             size={dense ? 'small' : 'medium'}
           >
             <EnhancedTableHead
@@ -334,72 +295,90 @@ export default function EnhancedTable() {
               rowCount={rows.length}
             />
             <TableBody>
-              {/* if you don't need to support IE11, you can replace the `stableSort` call with:
-                 rows.slice().sort(getComparator(order, orderBy)) */}
               {stableSort(rows, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   const isItemSelected = isSelected(row.name);
                   const labelId = `enhanced-table-checkbox-${index}`;
-
+                  console.log(labelId)
                   return (
                     <TableRow
                       hover
+                      onClick={(event) => handleClick(event, row.name)}
                       role="checkbox"
+                      aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={row.name}
-                     
+                      key={row.id}
                       selected={isItemSelected}
                     >
-                        <TableCell
-                        component="th"
-                        id={labelId}
-                        scope="row"
-                        style={{textAlign:"center"}}
-                        padding="none"
-                      >
-                        {row.name}
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          checked={isItemSelected}
+                          inputProps={{ 'aria-labelledby': labelId }}
+                        />
+                      </TableCell>
+                      <TableCell component="th" id={labelId} scope="row" padding="none" align='left'>
+                        {row.id}
                       </TableCell>
                       <TableCell
-                        component="th"
+                        component='th'
                         id={labelId}
-                        scope="row"
-                        style={{textAlign:"center"}}
-                        padding="none"
+                        scope='row'
+                        style={{ textAlign: 'center' }}
+                        padding='none'
                       >
-                        {row.fat}
-                      </TableCell>   <TableCell
-                        component="th"
+                        {row.firstname}
+                      </TableCell>
+                      <TableCell
+                        component='th'
                         id={labelId}
-                        style={{textAlign:"center"}}
-                        scope="row"
-                        padding="none"
+                        scope='row'
+                        style={{ textAlign: 'center' }}
+                        padding='none'
                       >
-                        {row.carbs}
-                      </TableCell>   <TableCell
-                        component="th"
+                        {row.lastname}
+                      </TableCell>
+                      <TableCell
+                        component='th'
                         id={labelId}
-                        style={{textAlign:"center"}}
-                        scope="row"
-                        padding="none"
-                      >
-                        {row.protein}
+                        style={{ textAlign: 'center' }}
+                        scope='row'
+                        padding='none'>
+                        {row.email}
+                      </TableCell>
+                      <TableCell
+                        component='th'
+                        id={labelId}
+                        style={{ textAlign: 'center' }}
+                        scope='row'
+                        padding='none'>
+                        {row.phone}
                       </TableCell>
 
                       <TableCell
-                        component="th"
+                        component='th'
                         id={labelId}
-                        scope="row"
-                        style={{textAlign:"center"}}
-
-                        padding="none"
-                      >
-                        {row.Doctor}
+                        scope='row'
+                        style={{ textAlign: 'center' }}
+                        padding='none' >
+                        {row.lang}
                       </TableCell>
-                      <TableCell  style={{textAlign:"center"}} align="right">{row.calories}</TableCell>
-                      <TableCell style={{textAlign:"center"}} align="right">{row.icon1}</TableCell>
-                      <TableCell style={{textAlign:"center"}} align="right">{row.icon2}</TableCell>
-                      <TableCell style={{textAlign:"center"}} align="right">{row.icon3}</TableCell>
+                      <TableCell
+                        component='th'
+                        id={labelId}
+                        scope='row'
+                        style={{ textAlign: 'center' }}
+                        padding='none' >
+                        {row.role}
+                      </TableCell>
+                      <TableCell
+                        component='th'
+                        id={labelId}
+                        scope='row'
+                        style={{ textAlign: 'center' }}
+                        padding='none' >
+                        {row.active}
+                      </TableCell>
                     </TableRow>
                   );
                 })}
@@ -417,15 +396,14 @@ export default function EnhancedTable() {
         </TableContainer>
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={rows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
+          component='div'
+          count={props.total?props.total:0}
+          rowsPerPage={props.limit}
+          page={props.page}
+          onPageChange={props.setPage}
+          onRowsPerPageChange={props.setLimit}
         />
       </Paper>
-    
     </Box>
   );
 }

@@ -77,8 +77,8 @@ export default function Bar(props) {
     setopenProfile(false);
   };
   const logout = (event) => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
+    window.appStorage.removeItem("user");
+    window.appStorage.removeItem("token");
     navigate('/login', {replace: true});return;
   };
   function handleListKeyDown(event) {
@@ -147,14 +147,14 @@ export default function Bar(props) {
                 onClick={handleToggle}
                 style={{ marginInline: "15px" }}>
                 <Avatar sx={{ width: 40, height: 40 }}
-                  alt="Remy Sharp" src="https://mui.com/static/images/avatar/1.jpg" />
+                  alt="Remy Sharp" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp0LF2WgeDkn_sQ1VuMnlnVGjkDvCN4jo2nLMt3b84ry328rg46eohB_JT3WTqOGJovY&usqp=CAU" />
                 <Typography style={{ fontSize: "16px", color: "black", marginInline: "15px" }}>
 
-                  Zilfi Balci
+                {user && user.id ?user.firstname:''} {user && user.id ?user.lastname:''}
 
                   <br />
                   <Typography style={{ fontSize: "12px", color: "gray" }}>
-                    Coordinator
+                  {user && user.id ?user.type:''}
                   </Typography>
                 </Typography>
                 <ArrowDropDownIcon style={{ color: "black", }} />
@@ -210,19 +210,18 @@ export default function Bar(props) {
             <IconButton onClick={handleDrawerClose}>
               <Typography variant="h5" noWrap color="primary" component="div">
                 My Nursing Angel
-
               </Typography>
               {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
             </IconButton>
           </DrawerHeader>
           <List>
-            <Dropdown text="Dashboard" icon={<GridViewIcon color="primary" style={{ marginInline: "15px" }} />} />
-            <Dropdown text="Sruvey" arrofsub={["Patients", "Care giver"]} icon={<GridViewIcon color="primary" style={{ marginInline: "15px" }} />} />
-            <Dropdown text="Patient" icon={<PersonIcon color="primary" style={{ marginInline: "10px" }} />} />
-            <Dropdown text="Medication" icon={<BeachAccessIcon color="primary" style={{ marginInline: "10px" }} />} />
-            <Dropdown text="Coordinators" icon={<DeviceThermostatIcon color="primary" style={{ marginInline: "10px" }} />} />
-            <Dropdown text="Datas" arrofsub={["Patient", "moods", "side effects"]} icon={<TrendingUpIcon color="primary" style={{ marginInline: "10px" }} />} />
-            <Dropdown text="Settings" icon={<SettingsIcon color="primary" style={{ marginInline: "10px" }} />} />
+            <Dropdown key="Dashboard" text="Dashboard" icon={<GridViewIcon color="primary" style={{ marginInline: "15px" }} />} />
+            <Dropdown key="Survey" text="Survey" arrofsub={["Patients", "Care giver"]} icon={<GridViewIcon color="primary" style={{ marginInline: "15px" }} />} />
+            <Dropdown key="Patient" text="Patient" icon={<PersonIcon color="primary" style={{ marginInline: "10px" }} />} />
+            <Dropdown key="Medication" text="Medication" icon={<BeachAccessIcon color="primary" style={{ marginInline: "10px" }} />} />
+            <Dropdown key="Coordinators" text="Coordinators" icon={<DeviceThermostatIcon color="primary" style={{ marginInline: "10px" }} />} />
+            <Dropdown key="Datas" text="Datas" arrofsub={["Patient", "moods", "side effects"]} icon={<TrendingUpIcon color="primary" style={{ marginInline: "10px" }} />} />
+            <Dropdown key="Settings" text="Settings" icon={<SettingsIcon color="primary" style={{ marginInline: "10px" }} />} />
           </List>
         </Drawer>
         </>

@@ -1,9 +1,19 @@
 import axios from 'axios';
 
 export default  function AngelUser(config) {
-    const accessToken = config && config.accessToken? config.accessToken: null;
+    const accessToken =  window.appStorage.getItem('token')?JSON.parse(window.appStorage.getItem('token')):null;
+    console.log(accessToken)
     let apiKey = process.env.REACT_APP_API_KEY;
     return {
+        list: async (params) => {
+            console.log('get users',params);
+            try {
+                const res = await axios.post(process.env.REACT_APP_API_URL+'/users/list', params, {headers: {'Authorization':accessToken}});
+                return res.data;
+            } catch (error) {
+                return {error:error};
+            }
+        },
         find: async (params) => {
             console.log('get user',params);
             try {

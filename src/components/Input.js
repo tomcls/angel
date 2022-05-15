@@ -12,19 +12,19 @@ export default function InputWithIcon({text,icon,type,onChange}) {
     onChange(e.target.value)
   }
   const CustomTextField = withStyles({ 
-    root: {
+    /*root: {
       '& .MuiOutlinedInput-root': {
         '& fieldset': {
           borderRadius: type?"25px":"10px"
           
         },
       },
-    },
+    },*/
   })(TextField);
   return (
-    <Box sx={{ '& > :not(style)': { mt: 1 } }} style={{display: "flex", justifyContent: "center", width:"100%", borderRadius:type?"25px":"10px"}}>
-      <Box sx={{ display: 'flex', alignItems: 'flex-end' ,width:"100%",borderRadius:type?"25px":"10px",}}>
-        <TextField onChange={onFieldChange} InputProps={{disableUnderline: true}} borderRadius={25} id={type ?"outlined-basic":"filled-basic"} style={{width:"100%",backgroundColor:type?"white":"transparent",}} label={<div style={{display: "flex",borderRadius:type?"25px":"10px",justifyContent: "center",alignItems: "center",border:"unset"}}>{icon} {text}</div>} variant={type ?"outlined":"filled"} />
+    <Box sx={{ '& > :not(style)': { mt: 1 } }} style={{display: "flex", justifyContent: "center", width:"100%", borderradius:type?"25px":"10px"}}>
+      <Box sx={{ display: 'flex', alignItems: 'flex-end' ,width:"100%",borderradius:type?"25px":"10px",}}>
+        <TextField onChange={onFieldChange} InputProps={{disableunderline: 'true'}} borderradius={25} id={type ?"outlined-basic":"filled-basic"} style={{width:"100%",backgroundColor:type?"white":"transparent",}} label={<div style={{display: "flex",borderradius:type?"25px":"10px",justifyContent: "center",alignItems: "center",border:"unset"}}>{icon} {text}</div>} variant={type ?"outlined":"filled"} />
       </Box>
     </Box>
   );

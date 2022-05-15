@@ -3,10 +3,11 @@ import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Input from "../components/Input";
 import SearchIcon from '@mui/icons-material/Search';
-import Table from "../components/Table"
 import Button from '@mui/material/Button';
 import PeopleIcon from '@mui/icons-material/People';
 import Bar from "../templates/Bar";
+import Patients from "../containers/Patients";
+import AngelUser from '../api/angel/user';
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -29,9 +30,37 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
 );
 export default function Dashboard() {
   const [open, setOpen] = React.useState(true);
-  React.useEffect(() => {
-    console.log('useEffect')
+  const [patients, setPatients] = React.useState(null);
+  const [total, setTotal] = React.useState(null);
+  const [page, setPage] = React.useState(0);
+  const [limit, setLimit] = React.useState(5);
+  React.useEffect( () => {
+    console.log('useEffect dashboard');
+    async function fetchData() {
+      // You can await here
+      const r = await AngelUser().list({ type: 'patient', limit: limit, page: page });
+      setPatients(r.users);
+      setTotal(r.total);
+      // ...
+    }
+    fetchData();
   }, []);
+
+  const handleChangePage = async (event,newPage) => {
+    console.log('page',newPage)
+    const r = await AngelUser().list({ type: 'patient', limit: limit, page: newPage });
+      setPatients(r.users);
+      setTotal(r.total);
+      setPage(newPage);
+  };
+  const handleChangeLimit = async (event) => {
+    console.log('handleChangeLimit',event.target.value)
+    setLimit(event.target.value)
+    setPage(0);
+    const r = await AngelUser().list({ type: 'patient', limit: limit, page: 0 });
+      setPatients(r.users);
+      setTotal(r.total);
+  };
 
   return (
       <Box sx={{ display: 'flex' }}>
@@ -44,7 +73,7 @@ export default function Dashboard() {
             <Button variant="outlined" style={{ color: "black" }}>
               <PeopleIcon style={{ marginInline: "3px" }} /> Add patient</Button>
           </div>
-          <Table />
+          <Patients users={patients} total={total} page={page} limit={limit} setPage={handleChangePage} setLimit={handleChangeLimit} />
         </Main>
       </Box>
   );
