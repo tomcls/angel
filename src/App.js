@@ -12,6 +12,8 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import Privacy from './pages/Privacy';
 import RequestPassword from './pages/RequestPwd';
 import ResetPassword from './pages/ResetPwd';
+import Patient from './pages/Patient';
+import Patients from './pages/Patients';
 
 function App() {
   const matches = useMediaQuery('(max-width:970px)');
@@ -28,6 +30,8 @@ function App() {
       <Route path="/contact" element={<ContactUs />} />
       <Route path="/privacy" element={<Privacy />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/patient" element={<Patient />} />
+      <Route path="/patients" element={<Patients />} />
     </Routes>
     </div>
   );

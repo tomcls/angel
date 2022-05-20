@@ -203,13 +203,15 @@ EnhancedTableToolbar.propTypes = {
 };
 
 export default function Patients(props) {
+
   const [order, setOrder] = React.useState('desc');
-  const [orderBy, setOrderBy] = React.useState('calories');
+  const [orderBy, setOrderBy] = React.useState('id');
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [rows, setRows] = React.useState([]);
+
   React.useEffect(() => {
     console.log('useEffect Patients list', props.users)
     const users = props.users;
@@ -249,7 +251,7 @@ export default function Patients(props) {
   };
 
   const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
+  /*  const selectedIndex = selected.indexOf(name);
     let newSelected = [];
 
     if (selectedIndex === -1) {
@@ -265,7 +267,7 @@ export default function Patients(props) {
       );
     }
 
-    setSelected(newSelected);
+    setSelected(newSelected);*/
   };
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
@@ -275,7 +277,7 @@ export default function Patients(props) {
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Paper sx={{ width: '100%', mb: 2 }}>
+      <Paper sx={{ width: '100%', mb: 0 }}>
         <EnhancedTableToolbar numSelected={selected.length} />
         <TableContainer>
           <Table
@@ -301,6 +303,7 @@ export default function Patients(props) {
                     <TableRow
                       hover
                       onClick={(event) => handleClick(event, row.name)}
+                      onDoubleClick={() => props.openUser(row.id,row.firstname + ' '+ row.lastname)}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}

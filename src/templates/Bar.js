@@ -28,7 +28,10 @@ import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
 import MenuList from '@mui/material/MenuList';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
 import LogoutIcon from '@mui/icons-material/Logout';
+import { ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
+import DashboardIcon from '@mui/icons-material/Dashboard';
 const drawerWidth = 240;
 
 const AppBar = styled(MuiAppBar, {
@@ -119,6 +122,9 @@ export default function Bar(props) {
       return u;
     }
     navigate('/login', {replace: true});return;
+  }
+  const goTo = (v) => {
+    navigate('/'+v, {replace: true});return;
   }
 
   return (<>
@@ -214,13 +220,22 @@ export default function Bar(props) {
             </IconButton>
           </DrawerHeader>
           <List>
-            <Dropdown key="Dashboard" text="Dashboard" icon={<GridViewIcon color="primary" style={{ marginInline: "15px" }} />} />
-            <Dropdown key="Survey" text="Survey" arrofsub={["Patients", "Care giver"]} icon={<GridViewIcon color="primary" style={{ marginInline: "15px" }} />} />
-            <Dropdown key="Patient" text="Patient" icon={<PersonIcon color="primary" style={{ marginInline: "10px" }} />} />
-            <Dropdown key="Medication" text="Medication" icon={<BeachAccessIcon color="primary" style={{ marginInline: "10px" }} />} />
-            <Dropdown key="Coordinators" text="Coordinators" icon={<DeviceThermostatIcon color="primary" style={{ marginInline: "10px" }} />} />
-            <Dropdown key="Datas" text="Datas" arrofsub={["Patient", "moods", "side effects"]} icon={<TrendingUpIcon color="primary" style={{ marginInline: "10px" }} />} />
-            <Dropdown key="Settings" text="Settings" icon={<SettingsIcon color="primary" style={{ marginInline: "10px" }} />} />
+            <ListItem key={'dashboard'} onClick={() => {goTo("dashboard")}} >
+              <ListItemButton>
+                <ListItemIcon>
+                    <DashboardIcon />
+                </ListItemIcon>
+                <ListItemText primary={"Dashboard"} />
+              </ListItemButton>
+            </ListItem>
+            <ListItem key={'patients'} onClick={() => {goTo("patients")}} >
+              <ListItemButton>
+                <ListItemIcon>
+                    <EmojiPeopleIcon />
+                </ListItemIcon>
+                <ListItemText primary={"Patients"} />
+              </ListItemButton>
+            </ListItem>
           </List>
         </Drawer>
         </>

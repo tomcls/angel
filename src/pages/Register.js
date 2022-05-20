@@ -50,7 +50,7 @@ export default function Register() {
 
   const onSubmit = e => {
     e.preventDefault();
-    AngelUser().register({firstname: firstname, lastname: lastname, type: profile, email: email, password: password, role:'V'}).then(function (result) {
+    AngelUser().register({firstname: firstname, lastname: lastname, type: profile, email: email, password: password, role:'V', active: 'N', lang:'en'}).then(function (result) {
       if ( result && result.saved) {
         navigate('/thank', {replace: true});return;
       } else {

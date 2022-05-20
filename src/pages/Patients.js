@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from 'prop-types';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Input from "../components/Input";
@@ -12,10 +13,8 @@ import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import {  Cancel } from "@mui/icons-material";
-import RefreshIcon from '@mui/icons-material/Refresh';
-import { SnackbarProvider, useSnackbar } from 'notistack';
-import Patient from "../containers/Patient";
+import {  AddCircleOutline, AdminPanelSettings, Cancel } from "@mui/icons-material";
+import { tab } from "@testing-library/user-event/dist/tab";
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -37,8 +36,9 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
   }),
 );
 
-export default function Dashboard(props) {
+export default function PatientsPage(props) {
 
+  const [value, setValue] = React.useState(0);
   const [open, setOpen] = React.useState(true);
   const [patients, setPatients] = React.useState(null);
   const [total, setTotal] = React.useState(null);
@@ -51,16 +51,17 @@ export default function Dashboard(props) {
   const [tabIndex, setTabIndex] = React.useState(2);
 
   React.useEffect(() => {
+    console.log('useEffect dashboard');
     async function fetchData() {
-      await getPatients();
+      // You can await here
+      const r = await AngelUser().list({ type: 'patient', limit: limit, page: page });
+      setPatients(r.users);
+      setTotal(r.total);
+      // ...
     }
     fetchData();
   }, [limit, page]);
-  const getPatients = async () => {
-    const r = await AngelUser().list({ type: 'patient', limit: limit, page: page });
-    setPatients(r.users);
-    setTotal(r.total);
-  }
+
   const handleChangePage = async (event, newPage) => {
     const r = await AngelUser().list({ type: 'patient', limit: limit, page: newPage });
     setPatients(r.users);
@@ -75,44 +76,35 @@ export default function Dashboard(props) {
     setTotal(r.total);
   };
   const handleChange = (event, newValue) => {
+    console.log("handleChange", newValue);
     setSelectedTab(newValue);
   };
-  const createNewTab = (userId, text) => {
-    let v = 1;
-    if(tabs.length){
-      v = Math.max(...tabs.map(o =>parseInt(o.value,10)));
-    }
-    const newTabIndex= v +1;
-    const label = text?text:'New user';
+  const createNewTab = () => {
     const newTab = {
-      value: `${newTabIndex}`,
-      label: label
+      value: `${tabIndex}`,
+      label: `Dynamic Tab ${tabIndex}`
     }
     setTabs([...tabs, newTab]);
     setPanels([
       ...panels,
       {
-        value: `${newTabIndex}`,
+        value: `${tabIndex}`,
         child: () => {
-          return <Patient userId={userId} />
+          return <div> Hello {tabIndex}</div>
         }
       }
     ]);
-    setSelectedTab(`${newTabIndex}`);
-    setTabIndex(newTabIndex);
+    console.log('setSelectedTab',tabIndex)
+    setSelectedTab(`${tabIndex}`);
+    setTabIndex(tabIndex + 1);
   }
-
-  const handleTabClose = (event,value) => {
-    event.stopPropagation();
+  const handleTabClose = (value) => {
     const tabArr = tabs.filter(t => t.value !== value);
     setTabs(tabArr);
     const panelArr = panels.filter(p => p.value !== value);
     setPanels(panelArr);
-    setSelectedTab('1');
-    setTabIndex(1);
   }
   return (
-    <SnackbarProvider maxSnack={3}>
     <Box sx={{ display: 'flex' }}>
       <Bar open={setOpen} />
       <Main open={open} style={{ background: "rgb(229 229 229 / 41%)", marginBlock: "64px" }}>
@@ -120,21 +112,21 @@ export default function Dashboard(props) {
           <div style={{ marginBlock: "20px", width: "70%" }}>
             <Input icon={<SearchIcon sx={{ color: "action.active", mr: 1, my: 0.5 }} />} type="Outlined" text=" Search" />
           </div>
-          <Button variant="outlined" style={{ color: "black" }} onClick={createNewTab}>
+          <Button variant="outlined" style={{ color: "black" }}>
             <PeopleIcon style={{ marginInline: "3px" }} /> Add patient</Button>
         </div>
         <Box sx={{ width: '100%' }}>
-          <TabContext value={selectedTab?selectedTab:'1'}>
+          <TabContext value={selectedTab}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
               <TabList onChange={handleChange} aria-label="lab API tabs example" variant="scrollable" scrollButtons="auto" >
-                <Tab label="Patients" value="1" icon={<RefreshIcon onClick={getPatients}/>} iconPosition="end" />
+                <Tab label="Patients" value="1" icon={<AddCircleOutline onClick={createNewTab}/>} iconPosition="end" />
                 {tabs.map(tab => (
-                  <Tab key={tab.value} label={tab.label} value={tab.value} icon={<Cancel onClick={ (event) => handleTabClose(event,tab.value)} />} iconPosition="end" />
+                  <Tab key={tab.value} label={tab.label} value={tab.value} icon={<Cancel onClick={ () => handleTabClose(tab.value)} />} iconPosition="end" />
                 ))}
               </TabList>
             </Box>
-            <TabPanel value="1" style={{ padding: "1px" }}>
-              <Patients users={patients} total={total} page={page} limit={limit} setPage={handleChangePage} setLimit={handleChangeLimit} openUser={createNewTab} />
+            <TabPanel value="1">
+              <Patients users={patients} total={total} page={page} limit={limit} setPage={handleChangePage} setLimit={handleChangeLimit} />
             </TabPanel>
             {panels.map(panel => (
               <TabPanel key={panel.value} label={panel.label} value={panel.value} >
@@ -145,6 +137,5 @@ export default function Dashboard(props) {
         </Box>
       </Main>
     </Box>
-    </SnackbarProvider>
   );
 }
