@@ -236,6 +236,22 @@ export default function Bar(props) {
                 <ListItemText primary={"Patients"} />
               </ListItemButton>
             </ListItem>
+            <ListItem key={'doctors'} onClick={() => {goTo("doctors")}} >
+              <ListItemButton>
+                <ListItemIcon>
+                    <EmojiPeopleIcon />
+                </ListItemIcon>
+                <ListItemText primary={"Doctors"} />
+              </ListItemButton>
+            </ListItem>
+            <ListItem key={'nurses'} onClick={() => {goTo("nurses")}} >
+              <ListItemButton>
+                <ListItemIcon>
+                    <EmojiPeopleIcon />
+                </ListItemIcon>
+                <ListItemText primary={"Nurses"} />
+              </ListItemButton>
+            </ListItem>
           </List>
         </Drawer>
         </>

@@ -14,6 +14,8 @@ import RequestPassword from './pages/RequestPwd';
 import ResetPassword from './pages/ResetPwd';
 import Patient from './pages/Patient';
 import Patients from './pages/Patients';
+import DoctorsPage from './pages/Doctors';
+import NursesPage from './pages/Nurses';
 
 function App() {
   const matches = useMediaQuery('(max-width:970px)');
@@ -32,6 +34,8 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/patient" element={<Patient />} />
       <Route path="/patients" element={<Patients />} />
+      <Route path="/doctors" element={<DoctorsPage />} />
+      <Route path="/nurses" element={<NursesPage />} />
     </Routes>
     </div>
   );

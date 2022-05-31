@@ -35,6 +35,14 @@ export default  function AngelPatient(config) {
             } catch (error) {
                 throw {error:error};
             }
+        },
+        search: async (params) => {
+            try {
+                const res = await axios.post(process.env.REACT_APP_API_URL+'/patients/search', params, {headers: {'Authorization':accessToken}});
+                return res.data;
+            } catch (error) {
+                throw {error:error};
+            }
         }
     }
 }

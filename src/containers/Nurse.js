@@ -19,26 +19,28 @@ import { Button } from '@mui/material';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import IconButton from '@mui/material/IconButton';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { useSnackbar } from 'notistack';
-import AngelPatient from '../api/angel/patient';
+import Modal from '@mui/material/Modal';
 
-export default function PatientContainer(props) {
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+
+import { useSnackbar } from 'notistack';
+import AngelNurse from '../api/angel/nurse';
+import ComboUsers from '../components/ComboUsers';
+
+export default function NurseContainer(props) {
 
     const { enqueueSnackbar } = useSnackbar();
 
     const [id, setId] = React.useState(null);
-    const [patientId, setPatientId] = React.useState(null);
+    const [nurseId, setNurseId] = React.useState(null);
     const [firstname, setFirstname] = React.useState('');
     const [lastname, setLastname] = React.useState('');
     const [email, setEmail] = React.useState('');
     const [sex, setSex] = React.useState('');
     const [lang, setLang] = React.useState('');
-    const [closeMonitoring, setCloseMonitoring] = React.useState('');
     const [dateOfBirth, setDateOfBirth] = React.useState('');
-    const [emergencyContactName, setEmergencyContactName] = React.useState('');
-    const [emergencyContactRelationship, setEmergencyContactRelationship] = React.useState('');
     const [phone, setPhone] = React.useState('');
-    const [emergencyContactPhone, setEmergencyContactPhone] = React.useState('');
     const [avatar, setAvatar] = React.useState('');
 
     const [address, setAddress] = React.useState('');
@@ -47,15 +49,24 @@ export default function PatientContainer(props) {
     const [zip, setZip] = React.useState('');
     const [country, setCountry] = React.useState('');
 
-    const [ setPassword] = React.useState('');
+    const [setPassword] = React.useState('');
     const [showPassword, setShowPassword] = React.useState(false);
 
+    const [week, setWeek] = React.useState(() => []);
+    const [hospitalId, setHospitalId] = React.useState(() => '');
+
+    const [openAssignPatientModal, setOpenAssignModal] = React.useState(false);
+
+    const [assignPatientId, setAssignPatientId] = React.useState(null);
+
+
     React.useEffect(() => {
+        console.log("Nusrse container effect")
         if (props.userId) {
             async function fetchData() {
-                const user = await AngelPatient().find({ user_id: props.userId });
+                const user = await AngelNurse().find({ user_id: props.userId });
                 setId(user.user_id);
-                setPatientId(user.patient_id);
+                setNurseId(user.nurse_id);
                 setFirstname(user.firstname);
                 setLastname(user.lastname);
                 setLang(user.lang);
@@ -68,11 +79,11 @@ export default function PatientContainer(props) {
                 setCity(user.city);
                 setCountry(user.country);
                 setDateOfBirth(user.birthday);
-                setCloseMonitoring(user.close_monitoring);
-                setEmergencyContactName(user.emergency_contact_name);
-                setEmergencyContactPhone(user.emergency_contact_phone);
-                setEmergencyContactRelationship(user.emergency_contact_relationship);
                 setAvatar(user.avatar);
+                setHospitalId(user.hospital_id);
+                if (user.daysin) {
+                    setWeek(JSON.parse(user.daysin));
+                }
             }
             fetchData();
         }
@@ -103,28 +114,24 @@ export default function PatientContainer(props) {
                 city: city,
                 country: country,
                 birthday: formatDate(dateOfBirth),
-                close_monitoring: closeMonitoring,
-                emergency_contact_name: emergencyContactName,
-                emergency_contact_phone: emergencyContactPhone,
-                emergency_contact_relationship: emergencyContactRelationship,
                 avatar: avatar
             };
             if (id) {
                 u.id = id;
                 try {
                     const user = await AngelUser().update(u);
-                    await setPatient();
+                    await setNurse();
                     handleClickVariant('success', 'User well updated');
                 } catch (e) {
                     handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
                 }
             } else {
-                u.type = 'patient';
+                u.type = 'nurse';
                 u.role = 'V';
                 try {
                     const user = await AngelUser().add(u);
                     setId(user.inserted_id)
-                    await setPatient(user.inserted_id);
+                    await setNurse(user.inserted_id);
                     handleClickVariant('success', 'User well added');
                 } catch (e) {
                     handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
@@ -132,26 +139,24 @@ export default function PatientContainer(props) {
             }
         }
     };
-    const setPatient = async (userId) => {
+    const setNurse = async (userId) => {
 
         const u = {
             user_id: userId ? userId : id,
-            close_monitoring: closeMonitoring,
-            emergency_contact_name: emergencyContactName,
-            emergency_contact_phone: emergencyContactPhone,
-            emergency_contact_relationship: emergencyContactRelationship
+            hospital_id: hospitalId ? hospitalId : null,
+            daysin: week && week.length ? JSON.stringify(week) : null,
         };
-        if (patientId) {
-            u.id = patientId;
+        if (nurseId) {
+            u.id = nurseId;
             try {
-                await AngelPatient().update(u);
+                await AngelNurse().update(u);
             } catch (e) {
                 handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
             }
         } else {
             try {
-                const p = await AngelPatient().add(u);
-                setPatientId(p.inserted_id);
+                const p = await AngelNurse().add(u);
+                setNurseId(p.inserted_id);
             } catch (e) {
                 handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
             }
@@ -176,9 +181,127 @@ export default function PatientContainer(props) {
     const changePassword = () => {
 
     }
+    const onWeekDayClick = (event, newFormats) => {
+        setWeek(newFormats);
+    }
+
+    const handleAssignPatientModal = () => setOpenAssignModal(true);
+    const handleCloseAssignPatientModal = () => setOpenAssignModal(false);
+
+    const onAssign = async e => {
+        console.log(e);
+        const u = {
+            patient_id: assignPatientId,
+            nurse_id: nurseId,
+        };
+        if (assignPatientId && nurseId) {
+            try {
+                await AngelNurse().addPatient(u);
+                handleClickVariant('success', 'Patient well assigned');
+            } catch (e) {
+                handleClickVariant('error', JSON.stringify(e));
+            }
+        } else {
+            handleClickVariant('error', JSON.stringify(e));
+        }
+    }
+    const onPatientSelect = (patientId) => {
+        setAssignPatientId(patientId);
+    }
+    const styleModal = {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 400,
+        bgcolor: 'background.paper',
+        border: '2px solid #000',
+        boxShadow: 24,
+        p: 4,
+    };
+
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-
+            <div>
+                <Modal
+                    open={openAssignPatientModal}
+                    onClose={handleCloseAssignPatientModal}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description">
+                    <Box sx={styleModal}>
+                        <Typography id="modal-modal-title" variant="h6" component="h2">
+                            Assign a patient
+                        </Typography>
+                        <ComboUsers type="patient" onSelect={onPatientSelect} />
+                        <Button
+                            style={{ borderRadius: '10px', marginTop: '20px' }}
+                            variant="outlined" startIcon={<Save />}
+                            onClick={onAssign}>
+                            Assign
+                        </Button>
+                    </Box>
+                </Modal>
+            </div>
+            <Button onClick={handleAssignPatientModal}>Assign patient</Button>
+            <Button  onClick={() => props.showNursePatients(nurseId)}>List of patients</Button>
+            <Grid container spacing={2}>
+                <Grid item xs={6} style={{ paddingTop: '40px' }}>
+                    <Typography variant="h6" gutterBottom component="div">
+                        Days in.
+                    </Typography>
+                    <ToggleButtonGroup
+                        value={week}
+                        onChange={onWeekDayClick}
+                        aria-label="Days in"
+                        size="small"
+                        color="info"
+                    >
+                        <ToggleButton value="mon" aria-label="mon" color="info">
+                            Monday
+                        </ToggleButton>
+                        <ToggleButton value="tue" aria-label="tue">
+                            Tuesday
+                        </ToggleButton>
+                        <ToggleButton value="wed" aria-label="wed">
+                            Wednesday
+                        </ToggleButton>
+                        <ToggleButton value="thu" aria-label="thu" >
+                            Thursday
+                        </ToggleButton>
+                        <ToggleButton value="fri" aria-label="fri" >
+                            Friday
+                        </ToggleButton>
+                        <ToggleButton value="sat" aria-label="sat" >
+                            Saterday
+                        </ToggleButton>
+                        <ToggleButton value="sun" aria-label="sun" >
+                            Sunday
+                        </ToggleButton>
+                    </ToggleButtonGroup>
+                </Grid>
+                <Grid item xs={2} style={{ paddingTop: '25px' }}>
+                    <Typography variant="h6" gutterBottom component="div">
+                        &nbsp;
+                    </Typography>
+                    <FormControl fullWidth
+                        style={{ display: 'flex', width: '100%', marginTop: '16px' }}
+                    >
+                        <InputLabel id="hospitalIdLabel">Hospital</InputLabel>
+                        <Select
+                            style={{ display: 'flex', width: '100%' }}
+                            labelId="hospitalIdLabel"
+                            id="hospitalId"
+                            value={hospitalId ? hospitalId : ''}
+                            onChange={onInputChange(setHospitalId)}
+                            label="Hospital"
+                        >
+                            <MenuItem value={3}>Hospital A</MenuItem>
+                            <MenuItem value={2}>Hospital B</MenuItem>
+                            <MenuItem value={1}>Hospital C</MenuItem>
+                        </Select>
+                    </FormControl>
+                </Grid>
+            </Grid>
             <Box sx={{ width: '100%' }}>
                 <Grid container spacing={2}>
                     <Grid item xs={4}>
@@ -428,66 +551,7 @@ export default function PatientContainer(props) {
                         </Grid>
                     </Grid>
                     <Grid item xs={4}>
-                        <Typography variant="h6" gutterBottom component="div">
-                            Emergency info
-                        </Typography>
 
-                        <TextField
-                            style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
-                            label="Emergency contact phone number"
-                            id="emergencyPhone"
-                            sx={{ '& > :not(style)': { mt: 1 } }}
-                            value={emergencyContactPhone ? emergencyContactPhone : ''}
-                            onChange={onInputChange(setEmergencyContactPhone)}
-                            InputProps={{
-                                startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
-                            }}
-                        />
-                        <TextField
-                            style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
-                            label="Emergency contact name"
-                            id="emergencyName"
-                            sx={{ '& > :not(style)': { mt: 1 } }}
-                            value={emergencyContactName ? emergencyContactName : ''}
-                            onChange={onInputChange(setEmergencyContactName)}
-                            InputProps={{
-                                startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
-                            }}
-                        />
-                        <TextField
-                            style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
-                            label="Emergency contact relationship"
-                            id="emergencyRelationship"
-                            sx={{ '& > :not(style)': { mt: 1 } }}
-                            value={emergencyContactRelationship ? emergencyContactRelationship : ''}
-                            onChange={onInputChange(setEmergencyContactRelationship)}
-                            InputProps={{
-                                startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
-                            }}
-                        />
-                    </Grid>
-                    <Grid item xs={4}>
-
-                        <Typography variant="h6" gutterBottom component="div">
-                            &nbsp;
-                        </Typography>
-                        <FormControl fullWidth
-                            style={{ display: 'flex', width: '100%', marginTop: '16px' }}
-                        >
-                            <InputLabel id="moniLabel">Close monitoring?</InputLabel>
-                            <Select
-                                style={{ display: 'flex', width: '100%' }}
-                                labelId="moniLabel"
-                                id="closeMonitoring"
-                                value={closeMonitoring ? closeMonitoring : ''}
-                                onChange={onInputChange(setCloseMonitoring)}
-                                label="Close monitoring?"
-                            >
-                                <MenuItem value={''}>Not set</MenuItem>
-                                <MenuItem value={'Y'}>Yes</MenuItem>
-                                <MenuItem value={'N'}>No</MenuItem>
-                            </Select>
-                        </FormControl>
                         <Button
                             style={{ borderRadius: '10px', marginTop: '20px' }}
                             variant="outlined" startIcon={<Save />}

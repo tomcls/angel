@@ -14,7 +14,7 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import {  Cancel } from "@mui/icons-material";
 import RefreshIcon from '@mui/icons-material/Refresh';
-import { SnackbarProvider, useSnackbar } from 'notistack';
+import { SnackbarProvider } from 'notistack';
 import Patient from "../containers/Patient";
 const drawerWidth = 240;
 

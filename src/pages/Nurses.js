@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Input from "../components/Input";
@@ -6,8 +6,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import Button from '@mui/material/Button';
 import PeopleIcon from '@mui/icons-material/People';
 import Bar from "../templates/Bar";
-import Patients from "../containers/Patients";
-import Patient from "../containers/Patient";
+import Nurses from "../containers/Nurses";
+import Nurse from "../containers/Nurse";
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
@@ -15,7 +15,7 @@ import TabPanel from '@mui/lab/TabPanel';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { Cancel } from "@mui/icons-material";
 import { SnackbarProvider } from 'notistack';
-
+import Patients from "../containers/Patients";
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -37,54 +37,69 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
   }),
 );
 
-export default function PatientsPage() {
+export default function NursesPage() {
 
   const [open, setOpen] = React.useState(true);
-  const [selectedTab, setSelectedTab] = React.useState('1');
+  const [selectedTab, setSelectedTab] = React.useState("Main");
   const [tabs, setTabs] = React.useState([]);
   const [panels, setPanels] = React.useState([]);
   const [tabIndex, setTabIndex] = React.useState(2);
+  const newNurseBtn = useRef(null);
+
   React.useEffect(() => {
-    console.log('useEffect patients page');
-  });
+    console.log('useEffect Nurses page tabs length=', tabs.length, 'tabIndex', tabIndex);
+  }, []);
+
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
-  const createNewTab = (event,userId, text) => {
-    console.log('aaaaaaaa',userId, text)
-    let v = 1;
-    if (tabs.length) {
-      v = Math.max(...tabs.map(o => parseInt(o.value, 10)));
+  const handleTabOptions = (value) => {
+    setSelectedTab(value)
+    setTabIndex(tabIndex + 1)
+  }
+  const createTab = () => {
+    if (window.angel && window.angel.nurseId) {
+      createTabPatients( window.angel.nurseId, 'list of patients');
+      window.angel.nurseId = null;
+    } else {
+      createTabNurse();
     }
-    const newTabIndex = v + 1;
-    const label = text ? text : 'New user';
+  }
+  const createTabNurse = ( userId, text) => {
+    const value = text;
     const newTab = {
-      value: `${newTabIndex}`,
-      label: label
+      label: text,
+      value: value,
+      idx: tabIndex,
+      child: () => <Nurse userId={userId}  showNursePatients={openNursePatientTab} />
     }
-    setTabs([...tabs, newTab]);
-    setPanels([
-      ...panels,
-      {
-        value: `${newTabIndex}`,
-        child: () => {
-          return <Patient userId={userId} />
-        }
-      }
-    ]);
-    setSelectedTab(`${newTabIndex}`);
-    setTabIndex(newTabIndex);
+    setTabs([...tabs, newTab])
+    handleTabOptions(value);
   }
-  const handleTabClose = (event, value) => {
+  const createTabPatients = ( userId, text) => {
+    const value = `Blue Box ${tabIndex}`
+    const newTab = {
+      label: text,
+      value: value,
+      idx: tabIndex,
+      child: () => <Patients openUser={createTabNurse} nurseId={userId} />
+    }
+    setTabs([...tabs, newTab])
+    handleTabOptions(value);
+  }
+  const handleCloseTab = (event, idx) => {
     event.stopPropagation();
-    const tabArr = tabs.filter(t => t.value !== value);
-    setTabs(tabArr);
-    const panelArr = panels.filter(p => p.value !== value);
-    setPanels(panelArr);
-    setSelectedTab('1');
-    setTabIndex(1);
+    const tabArr = tabs.filter(x => x.idx !== idx)
+    setTabs(tabArr)
+    setSelectedTab('Main');
+}
+  const openNursePatientTab = (nurseId) => {
+    if (!window.angel) {
+      window.angel = {};
+    }
+    window.angel.nurseId = nurseId;
+    newNurseBtn.current.click();
   }
-
   return (
     <SnackbarProvider maxSnack={3}>
       <Box sx={{ display: 'flex' }}>
@@ -94,24 +109,24 @@ export default function PatientsPage() {
             <div style={{ marginBlock: "20px", width: "70%" }}>
               <Input icon={<SearchIcon sx={{ color: "action.active", mr: 1, my: 0.5 }} />} type="Outlined" text=" Search" />
             </div>
-            <Button variant="outlined" style={{ color: "black" }} onClick={createNewTab}>
-              <PeopleIcon style={{ marginInline: "3px" }} /> Add patient</Button>
+            <Button variant="outlined" style={{ color: "black" }} onClick={createTab} ref={newNurseBtn} >
+              <PeopleIcon style={{ marginInline: "3px" }} /> Add nurse</Button>
           </div>
           <Box sx={{ width: '100%' }}>
             <TabContext value={selectedTab ? selectedTab : '1'}>
               <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <TabList onChange={handleChange} aria-label="" variant="scrollable" scrollButtons="auto" >
-                  <Tab label="Patients" value="1" icon={<RefreshIcon />} iconPosition="end" />
+                  <Tab label="Nurses" value="Main" icon={<RefreshIcon />} iconPosition="end" />
                   {tabs.map(tab => (
-                    <Tab key={tab.value} label={tab.label} value={tab.value} icon={<Cancel onClick={(event) => handleTabClose(event, tab.value)} />} iconPosition="end" />
+                    <Tab key={tab.idx} label={tab.label} value={tab.value} icon={<Cancel onClick={(e) => handleCloseTab(e, tab.idx)} />} iconPosition="end" />
                   ))}
                 </TabList>
               </Box>
-              <TabPanel value="1" style={{ padding: "1px" }}>
-                <Patients openUser={createNewTab} />
+              <TabPanel value="Main" style={{ padding: "1px" }}>
+                <Nurses openUser={createTabNurse} />
               </TabPanel>
-              {panels.map(panel => (
-                <TabPanel key={panel.value} label={panel.label} value={panel.value} >
+              {tabs.map(panel => (
+                <TabPanel key={panel.idx} label={panel.label} value={panel.value} >
                   {panel.child()}
                 </TabPanel>
               ))}

@@ -18,10 +18,8 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
-
 import AngelUser from '../api/angel/user';
-import AngelPatient from '../api/angel/patient';
-import AngelNurse from '../api/angel/nurse';
+import AngelNurse from "../api/angel/nurse";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -113,7 +111,7 @@ function EnhancedTableHead(props) {
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
-            inputProps={{ 'aria-label': 'select all Patients' }}
+            inputProps={{ 'aria-label': 'select all Nurses' }}
           /> 
         </TableCell>
         {headCells.map((headCell) => (
@@ -121,11 +119,13 @@ function EnhancedTableHead(props) {
             key={headCell.id}
             align={headCell.numeric ? 'left' : 'center'}
             padding={headCell.disablePadding ? 'none' : 'normal'}
-            sortDirection={orderBy === headCell.id ? order : false}>
+            sortDirection={orderBy === headCell.id ? order : false}
+          >
             <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : 'asc'}
-              onClick={createSortHandler(headCell.id)}>
+              onClick={createSortHandler(headCell.id)}
+            >
               {headCell.label}
               {orderBy === headCell.id ? (
                 <span  style={{border: 0, clip: 'rect(0 0 0 0)', height: '1px', margin: -1, overflow: 'hidden',padding: 0,whiteSpace: "nowrap",width: "1px",position: "absolute"}}>
@@ -168,7 +168,8 @@ const EnhancedTableToolbar = (props) => {
           sx={{ flex: '1 1 100%' }}
           color='inherit'
           variant='subtitle1'
-          component='div' >
+          component='div'
+        >
           {numSelected} selected
         </Typography>
       ) : (
@@ -176,9 +177,12 @@ const EnhancedTableToolbar = (props) => {
           sx={{ flex: '1 1 100%' }}
           variant='h6'
           id='tableTitle'
-          component='div'>
+          component='div'
+        >
+
         </Typography>
       )}
+
       {numSelected > 0 ? (
         <Tooltip title='Delete'>
           <IconButton>
@@ -199,14 +203,14 @@ const EnhancedTableToolbar = (props) => {
 EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
+export default function Nurses(props) {
 
-export default function Patients(props) {
+  const [nurses, setNurses] = React.useState(null);
 
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
   const [limit, setLimit] = React.useState(5);
-  const [patients, setPatients] = React.useState([]);
-
+  
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('id');
   const [selected, setSelected] = React.useState([]);
@@ -215,32 +219,33 @@ export default function Patients(props) {
   const [rows, setRows] = React.useState([]);
 
   React.useEffect(() => {
-    console.log('useEffect Patients list', props.users)
-    const users = props.users;
+    console.log('useEffect Nurses list container')
     const u = [];
     async function fetchData() {
-      let r = null;
-      if(props.nurseId) {
-        r = await AngelNurse().patients({ nurse_id: props.nurseId,  limit: limit, page: page });
-      } else {
-        r = await AngelPatient().list({  limit: limit, page: page });
-      }
+      const r = await AngelNurse().list({  limit: limit, page: page });
       if (r.users && r.users.length) {
         for (let i = 0; i < r.users.length; i++) {
+          //createData('Cupcake', 305, 3.7, 67, 4.3, <BeachAccessIcon color='primary' style={{ marginInline: '10px' }} />, <GridViewIcon color='primary' style={{ marginInline: '10px' }} />, <TrendingUpIcon color='primary' style={{ marginInline: '10px' }} />, 'ahmed')
           u.push(createData(r.users[i].user_id,r.users[i].id, r.users[i].firstname, r.users[i].lastname, r.users[i].email, r.users[i].phone, r.users[i].lang, r.users[i].role, r.users[i].active));
         }
         setRows(u);
-        setPatients(r.users);
+        setNurses(r.users);
         setTotal(r.total);
       }
     }
     fetchData();
-  }, [props.users]);
+  }, []);
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
+
+  const getNurses = async () => {
+    const r = await AngelNurse().list({  limit: limit, page: page });
+    setNurses(r.users);
+    setTotal(r.total);
+  }
   const createData = (user_id, id, firstname, lastname, email, phone, lang, role, active) => {
     return {
       user_id,
@@ -263,19 +268,6 @@ export default function Patients(props) {
     setSelected([]);
   };
 
-  const handleChangePage = async (event, newPage) => {
-    const r = await AngelUser().list({ type: 'nurse', limit: limit, page: newPage });
-    setPatients(r.users);
-    setTotal(r.total);
-    setPage(newPage);
-  };
-  const handleChangeLimit = async (event) => {
-    setLimit(event.target.value)
-    setPage(0);
-    const r = await AngelUser().list({ type: 'nurse', limit: limit, page: 0 });
-    setPatients(r.users);
-    setTotal(r.total);
-  };
   const handleClick = (event, name) => {
   /*  const selectedIndex = selected.indexOf(name);
     let newSelected = [];
