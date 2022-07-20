@@ -21,6 +21,15 @@ export default  function AngelUser(config) {
                 throw {error:error};
             }
         },
+        delete: async (params) => {
+            try {
+                const res = await axios.post(process.env.REACT_APP_API_URL+'/users/delete', params, {headers: {'Authorization':accessToken}});
+                return res.data;
+            } catch (error) {
+                console.log(error)
+                throw {error:error};
+            }
+        },
         find: async (params) => {
             try {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/users/get', params, {headers: {'Authorization':accessToken}});
@@ -72,6 +81,18 @@ export default  function AngelUser(config) {
         checkAuth: async (hash) => {
             try {
                 const res = await axios.get(process.env.REACT_APP_API_URL+'/users/check-auth', { headers: { 'Authorization': hash }});
+                return res.data;
+            } catch (error) {
+                throw {error:error};
+            }
+        },
+        upload: async (file,name,userId) => {
+            try {
+                const formData = new FormData();
+                formData.append(name,file);
+                formData.append('userId',userId);
+                
+                const res = await axios.post(process.env.REACT_APP_API_URL+'/users/upload',formData, {headers: {'Authorization':accessToken,'content-type': 'multipart/form-data'}});
                 return res.data;
             } catch (error) {
                 throw {error:error};

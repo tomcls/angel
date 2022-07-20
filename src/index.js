@@ -6,22 +6,30 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from "react-router-dom";
 import './utils/localStorage';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { frFR } from '@mui/material/locale';
+import { frFR, enUS, nlNL } from '@mui/material/locale';
+import AppStyle from "./templates/style";
 const theme = createTheme(
   {
-    palette: {
-      primary: { main: '#1976d2' },
-    },
+    components: {
+      MuiSvgIcon: {
+        styleOverrides: {
+          root: ({ theme }) => ({ // using with theme
+            color: theme.palette.drawerIcon.main,
+          }),
+        },
+      },
+    }
   },
-  frFR,
+  enUS,
 );
+const mainTheme = createTheme(AppStyle().main());
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <BrowserRouter>
-      <ThemeProvider theme={theme}>
+  <BrowserRouter>
+    <ThemeProvider theme={mainTheme}>
       <App />
-      </ThemeProvider>
-    </BrowserRouter>
+    </ThemeProvider>
+  </BrowserRouter>
 );
 
 // If you want to start measuring performance in your app, pass a function

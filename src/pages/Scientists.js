@@ -4,8 +4,8 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import PeopleIcon from '@mui/icons-material/People';
 import Bar from "../templates/Bar";
-import Nurses from "../containers/Nurses";
-import Nurse from "../containers/Nurse";
+import Scientists from "../containers/Scientists";
+import Scientist from "../containers/Scientist";
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
@@ -37,16 +37,16 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
   }),
 );
 
-export default function NursesPage() {
+export default function ScientistsPage() {
 
   const [open, setOpen] = React.useState(true);
   const [selectedTab, setSelectedTab] = React.useState("Main");
   const [tabs, setTabs] = React.useState([]);
   const [tabIndex, setTabIndex] = React.useState(2);
-  const newNurseBtn = useRef(null);
+  const newScientistBtn = useRef(null);
 
   React.useEffect(() => {
-    console.log('useEffect Nurses page tabs length=', tabs.length, 'tabIndex', tabIndex);
+    console.log('useEffect Scientists page tabs length=', tabs.length, 'tabIndex', tabIndex);
   }, []);
 
   const handleChange = (event, newValue) => {
@@ -57,24 +57,24 @@ export default function NursesPage() {
     setTabIndex(tabIndex + 1)
   }
   const createTab = () => {
-    if (window.angel && window.angel.nurseId) {
-      createTabPatients(window.angel.nurseId, 'list of patients');
-      window.angel.nurseId = null;
+    if (window.angel && window.angel.scientistId) {
+      createTabPatients(window.angel.scientistId, 'list of patients');
+      window.angel.scientistId = null;
     } else if (window.angel && window.angel.userId ) {
       console.log("zzzzzzz",window.angel.userId, window.angel.tabName)
       createTabPatient( window.angel.userId, window.angel.tabName);
       window.angel.treatmentId = null;
     } else {
-      createTabNurse();
+      createTabScientist();
     }
   }
-  const createTabNurse = (userId, text) => {
+  const createTabScientist = (userId, text) => {
     const value = text;
     const newTab = {
-      label: text ? text : 'New Nurse',
+      label: text ? text : 'New Scientist',
       value: value ? value : tabIndex,
       idx: tabIndex,
-      child: () => <Nurse userId={userId} showNursePatients={openNursePatientTab} />
+      child: () => <Scientist userId={userId} showScientistPatients={openScientistPatientTab} />
     }
     setTabs([...tabs, newTab])
     handleTabOptions(value ? value : tabIndex);
@@ -85,7 +85,7 @@ export default function NursesPage() {
       label: text,
       value: value,
       idx: tabIndex,
-      child: () => <Patients openUser={openPatientTab} nurseId={userId} />
+      child: () => <Patients openUser={openPatientTab} scientistId={userId} />
     }
     setTabs([...tabs, newTab])
     handleTabOptions(value ? value : tabIndex);
@@ -107,12 +107,12 @@ export default function NursesPage() {
     setTabs(tabArr)
     setSelectedTab('Main');
   }
-  const openNursePatientTab = (nurseId) => {
+  const openScientistPatientTab = (scientistId) => {
     if (!window.angel) {
       window.angel = {};
     }
-    window.angel.nurseId = nurseId;
-    newNurseBtn.current.click();
+    window.angel.scientistId = scientistId;
+    newScientistBtn.current.click();
   }
   const openPatientTab = (userId, text) => {
     console.log('openPatientTab',userId,text)
@@ -121,7 +121,7 @@ export default function NursesPage() {
     }
     window.angel.userId = userId;
     window.angel.tabName = text;
-    newNurseBtn.current.click();
+    newScientistBtn.current.click();
   }
   return (
     <SnackbarProvider maxSnack={3}>
@@ -131,12 +131,12 @@ export default function NursesPage() {
           <Grid container spacing={2} mb={'0px'} >
             <Grid item xs={12} md={6} xl={6} >
               <Typography variant="h6"  component="div" >
-                Nurses
+                Scientists
               </Typography>
             </Grid>
             <Grid item xs={12} md={6} xl={6} textAlign={'end'}  >
-              <Button variant="outlined"  onClick={createTab} ref={newNurseBtn} justifyContent="flex-end">
-                <PeopleIcon /> Add nurse</Button>
+              <Button variant="outlined"  onClick={createTab} ref={newScientistBtn} justifyContent="flex-end">
+                <PeopleIcon /> Add scientist</Button>
             </Grid>
           </Grid>
           <Box sx={{ width: '100%' }}>
@@ -150,7 +150,7 @@ export default function NursesPage() {
                 </TabList>
               </Box>
               <TabPanel value="Main" style={{ padding: "1px" }}>
-                <Nurses openUser={createTabNurse} />
+                <Scientists openUser={createTabScientist} />
               </TabPanel>
               {tabs.map(panel => (
                 <TabPanel key={panel.idx} label={panel.label} value={panel.value} >

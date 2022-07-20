@@ -18,9 +18,7 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
-import AngelUser from '../api/angel/user';
-import AngelDoctor from "../api/angel/doctor";
-import { Avatar, Grid } from '@mui/material';
+import AngelSideEffect from "../api/angel/sideEffect";
 import { useSnackbar } from 'notistack';
 
 function descendingComparator(a, b, orderBy) {
@@ -50,7 +48,6 @@ function stableSort(array, comparator) {
   });
   return stabilizedThis.map((el) => el[0]);
 }
-const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp0LF2WgeDkn_sQ1VuMnlnVGjkDvCN4jo2nLMt3b84ry328rg46eohB_JT3WTqOGJovY&usqp=CAU';//process.env.SENDGRID_APIKEY
 
 const headCells = [
   {
@@ -60,44 +57,23 @@ const headCells = [
     label: 'Id',
   },
   {
-    id: 'firstname',
+    id: 'name',
     numeric: false,
     disablePadding: false,
-    label: 'Prénom',
+    label: 'Name',
   },
   {
-    id: 'lastname',
-    numeric: false,
-    disablePadding: false,
-    label: 'Nom',
-  },
-  {
-    id: 'email',
-    numeric: false,
-    disablePadding: false,
-    label: 'Email',
-  },
-  {
-    id: 'phone',
-    numeric: false,
-    disablePadding: false,
-    label: 'Téléphone',
-  }, {
     id: 'lang',
     numeric: false,
     disablePadding: false,
-    label: 'Langue',
-  }, {
-    id: 'role',
-    numeric: false,
-    disablePadding: false,
-    label: 'Role',
-  }, {
-    id: 'active',
-    numeric: false,
-    disablePadding: false,
-    label: 'Actif',
+    label: 'Lang',
   },
+  {
+    id: 'created',
+    numeric: false,
+    disablePadding: false,
+    label: 'Created',
+  }
 ];
 
 function EnhancedTableHead(props) {
@@ -114,8 +90,8 @@ function EnhancedTableHead(props) {
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
-            inputProps={{ 'aria-label': 'select all Doctors' }}
-          /> 
+            inputProps={{ 'aria-label': 'select all SideEffects' }}
+          />
         </TableCell>
         {headCells.map((headCell) => (
           <TableCell
@@ -131,7 +107,7 @@ function EnhancedTableHead(props) {
             >
               {headCell.label}
               {orderBy === headCell.id ? (
-                <span  style={{border: 0, clip: 'rect(0 0 0 0)', height: '1px', margin: -1, overflow: 'hidden',padding: 0,whiteSpace: "nowrap",width: "1px",position: "absolute"}}>
+                <span style={{ border: 0, clip: 'rect(0 0 0 0)', height: '1px', margin: -1, overflow: 'hidden', padding: 0, whiteSpace: "nowrap", width: "1px", position: "absolute" }}>
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                 </span>
               ) : null}
@@ -207,15 +183,15 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
   onDeleteItems: PropTypes.func,
 };
-export default function Doctors(props) {
+export default function SideEffects(props) {
 
   const { enqueueSnackbar } = useSnackbar();
-  const [doctors, setDoctors] = React.useState(null);
+  const [sideEffects, setSideEffects] = React.useState(null);
 
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
   const [limit, setLimit] = React.useState(5);
-  
+
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('id');
   const [selected, setSelected] = React.useState([]);
@@ -224,45 +200,41 @@ export default function Doctors(props) {
   const [rows, setRows] = React.useState([]);
 
   React.useEffect(() => {
-    console.log('useEffect Doctors list container')
+    console.log('useEffect SideEffects list container')
     
     fetchData();
   }, []);
+  const fetchData = async () => {
+    const u = [];
+    const f = { limit: limit, page: page, lang_id: 'en' };
+    let r = await AngelSideEffect().list(f);
+
+    if (r.sideEffects && r.sideEffects.length) {
+      for (let i = 0; i < r.sideEffects.length; i++) {
+        //createData('Cupcake', 305, 3.7, 67, 4.3, <BeachAccessIcon color='primary' style={{ marginInline: '10px' }} />, <GridViewIcon color='primary' style={{ marginInline: '10px' }} />, <TrendingUpIcon color='primary' style={{ marginInline: '10px' }} />, 'ahmed')
+        u.push(createData(r.sideEffects[i].side_effect_id, r.sideEffects[i].name, r.sideEffects[i].lang_id, r.sideEffects[i].date_created));
+      }
+      setRows(u);
+      setSideEffects(r.sideEffects);
+      setTotal(r.total);
+    }
+  }
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
-  const fetchData = async () => {
-    const u = [];
-    const r = await AngelDoctor().list({  limit: limit, page: page });
-    if (r.users && r.users.length) {
-      for (let i = 0; i < r.users.length; i++) {
-        //createData('Cupcake', 305, 3.7, 67, 4.3, <BeachAccessIcon color='primary' style={{ marginInline: '10px' }} />, <GridViewIcon color='primary' style={{ marginInline: '10px' }} />, <TrendingUpIcon color='primary' style={{ marginInline: '10px' }} />, 'ahmed')
-        u.push(createData(r.users[i].user_id,r.users[i].id, r.users[i].firstname, r.users[i].lastname, r.users[i].email, r.users[i].phone, r.users[i].lang, r.users[i].role, r.users[i].active,r.users[i].avatar?process.env.REACT_APP_API_URL+'/public/uploads/'+r.users[i].avatar:defaultAvatar));
-      }
-      setRows(u);
-      setDoctors(r.users);
-      setTotal(r.total);
-    }
-  }
-  const createData = (user_id, id, firstname, lastname, email, phone, lang, role, active, avatar) => {
+  const createData = (id, name, lang_id, created) => {
     return {
-      user_id,
       id,
-      firstname,
-      lastname,
-      email,
-      phone,
-      lang,
-      role,
-      active,
-      avatar
+      name,
+      lang_id,
+      created
     }
   }
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = rows.map((n) => n.user_id);
+      const newSelecteds = rows.map((n) => n.id);
       setSelected(newSelecteds);
       return;
     }
@@ -292,8 +264,8 @@ export default function Doctors(props) {
 
   const onDeleteItems = async () => {
     if(selected.length) {
-      await AngelUser().delete({ids:selected.join(',')});
-      handleClickVariant('success', 'Doctor(s) well deleted');
+      await AngelSideEffect().delete({ids:selected.join(',')});
+      handleClickVariant('success', 'side effect(s) well deleted');
       fetchData();
     }
   }
@@ -302,12 +274,14 @@ export default function Doctors(props) {
     // variant could be success, error, warning, info, or default
     enqueueSnackbar(text, { variant });
   };
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+  // Avoid a layout jump when reaching the last page with empty rows.
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 0 }}>
-        <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} />
+        <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems}/>
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
@@ -325,14 +299,14 @@ export default function Doctors(props) {
             <TableBody>
               {stableSort(rows, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row) => {
-                  const isItemSelected = isSelected(row.user_id);
-                  const labelId = `enhanced-table-checkbox-${row.user_id}`;
+                .map((row, index) => {
+                  const isItemSelected = isSelected(row.id);
+                  const labelId = `enhanced-table-checkbox-${index}`;
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleClick(event, row.user_id)}
-                      onDoubleClick={() => props.openUser(row.user_id,row.firstname + ' '+ row.lastname)}
+                      onClick={(event) => handleClick(event, row.id)}
+                      onDoubleClick={() => props.openSideEffect(row.id, row.name)}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
@@ -346,14 +320,7 @@ export default function Doctors(props) {
                         />
                       </TableCell>
                       <TableCell component="th" id={labelId} scope="row" padding="none" align='left'>
-                        <Grid container spacing={2}>
-                          <Grid item xs={1} textAlign={'start'} style={{marginTop:'10px', fontWeight: 'bold'}}>
-                             {row.id}
-                          </Grid>
-                          <Grid item xs={1} style={{cursor: 'pointer'}}>
-                            <Avatar src={row.avatar}  textAlign={'start'} onClick={() => props.openUser(row.user_id,row.firstname + ' '+ row.lastname)} />
-                          </Grid>
-                        </Grid>
+                        {row.id}
                       </TableCell>
                       <TableCell
                         component='th'
@@ -362,7 +329,7 @@ export default function Doctors(props) {
                         style={{ textAlign: 'center' }}
                         padding='none'
                       >
-                        {row.firstname}
+                        {row.name}
                       </TableCell>
                       <TableCell
                         component='th'
@@ -371,7 +338,7 @@ export default function Doctors(props) {
                         style={{ textAlign: 'center' }}
                         padding='none'
                       >
-                        {row.lastname}
+                        {row.lang_id}
                       </TableCell>
                       <TableCell
                         component='th'
@@ -379,40 +346,7 @@ export default function Doctors(props) {
                         style={{ textAlign: 'center' }}
                         scope='row'
                         padding='none'>
-                        {row.email}
-                      </TableCell>
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        style={{ textAlign: 'center' }}
-                        scope='row'
-                        padding='none'>
-                        {row.phone}
-                      </TableCell>
-
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        scope='row'
-                        style={{ textAlign: 'center' }}
-                        padding='none' >
-                        {row.lang}
-                      </TableCell>
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        scope='row'
-                        style={{ textAlign: 'center' }}
-                        padding='none' >
-                        {row.role}
-                      </TableCell>
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        scope='row'
-                        style={{ textAlign: 'center' }}
-                        padding='none' >
-                        {row.active}
+                        {row.created}
                       </TableCell>
                     </TableRow>
                   );
@@ -432,11 +366,11 @@ export default function Doctors(props) {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component='div'
-          count={total?total:0}
+          count={total ? total : 0}
           rowsPerPage={limit}
           page={page}
           onPageChange={setPage}
-          onRowsPerPageChange={ (e) => {setLimit(e.target.value)}}
+          onRowsPerPageChange={(e) => { setLimit(e.target.value) }}
         />
       </Paper>
     </Box>

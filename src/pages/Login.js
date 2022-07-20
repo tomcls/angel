@@ -29,6 +29,7 @@ export default function Login() {
     e.preventDefault();
     AngelUser().login({ email: username, password: password , active: 'Y'}).then(function (result) {
       if (result && result.user) {
+        console.log(result.user)
         window.appStorage.setItem('user', JSON.stringify(result.user), 1200000);
         window.appStorage.setItem('token', JSON.stringify(result.accessToken), 1200000);
         navigate('/dashboard', {replace: true});return;

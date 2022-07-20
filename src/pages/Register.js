@@ -17,7 +17,7 @@ import Checkbox from '@mui/material/Checkbox';
 import ShieldIcon from '@mui/icons-material/Shield';
 import TextField from '@mui/material/TextField';
 import AngelUser from "../api/angel/user";
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import TeaserComponent from "../templates/Teaser";
 import Header from "../templates/Header";
 
@@ -32,7 +32,7 @@ export default function Register() {
   const [hasRegisterError, setRegisterError] = useState(null);
   const [openProfile, setopenProfile] = React.useState(false);
   const anchorRef = React.useRef(null);
-  
+
   const prevOpen = React.useRef(openProfile);
   React.useEffect(() => {
     if (prevOpen.current === true && openProfile === false) {
@@ -50,13 +50,30 @@ export default function Register() {
 
   const onSubmit = e => {
     e.preventDefault();
-    AngelUser().register({firstname: firstname, lastname: lastname, type: profile, email: email, password: password, role:'V', active: 'N', lang:'en'}).then(function (result) {
-      if ( result && result.saved) {
-        navigate('/thank', {replace: true});return;
-      } else {
-       setRegisterError("Une erreur s'est produite");
-      }
-    });
+    if(!firstname || !lastname || !email || !profile || !password ) {
+      setRegisterError("Please fill in all the fields");
+    } else if (validateEmail(email)) {
+      AngelUser().register({ firstname: firstname, lastname: lastname, type: profile, email: email, password: password, role: 'V', active: 'N', lang: 'en' }).then(function (result) {
+        if (result && result.saved) {
+          navigate('/thank', { replace: true }); return;
+        } else {
+          if(result && result.error && result.error === 'user_exists'){
+            setRegisterError("The user already exists");
+          } else {
+            setRegisterError("Une erreur s'est produite");
+          }
+        }
+      });
+    } else {
+      setRegisterError("The email is invalid");
+    }
+  };
+  const validateEmail = (email) => {
+    return String(email)
+      .toLowerCase()
+      .match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      );
   };
   return (
     <div className='App'>
@@ -72,8 +89,8 @@ export default function Register() {
             textAlign: 'center',
           }}
         >
-          <Header/>
-          <TeaserComponent/>
+          <Header />
+          <TeaserComponent />
           <Grid item xs={12} sm={6}>
             <div style={{ width: matches ? '90%' : '50%', margin: 'auto' }}>
               <CardMedia
@@ -100,10 +117,10 @@ export default function Register() {
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                  }} id='demo-simple-select-filled-label'><ShieldIcon style={{ marginRight: '5px', color: 'gray' }} /> <Typography style={{ fontSize: '14px' }}>Register as a doctor, nurse, pharmacy...</Typography> </InputLabel>
+                  }} id='profileLabel'><ShieldIcon style={{ marginRight: '5px', color: 'gray' }} /> <Typography style={{ fontSize: '14px' }}>Register as a doctor, nurse, pharmacy...</Typography> </InputLabel>
                   <Select
-                    labelId='demo-simple-select-filled-label'
-                    id='demo-simple-select-filled'
+                    labelId='profileLabel'
+                    id='profile'
                     value={profile}
                     label='Profile'
                     disableUnderline
@@ -147,7 +164,7 @@ export default function Register() {
                   {hasRegisterError}
                 </div>
               )}
-              <XButton text="Register" onClick={(onSubmit)}/>
+              <XButton text="Register" onClick={(onSubmit)} />
               <Link to='/'>
                 <Typography
                   variant='h6'

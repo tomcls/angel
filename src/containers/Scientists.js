@@ -19,7 +19,7 @@ import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import AngelUser from '../api/angel/user';
-import AngelDoctor from "../api/angel/doctor";
+import AngelScientist from "../api/angel/scientist";
 import { Avatar, Grid } from '@mui/material';
 import { useSnackbar } from 'notistack';
 
@@ -99,7 +99,6 @@ const headCells = [
     label: 'Actif',
   },
 ];
-
 function EnhancedTableHead(props) {
   const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
@@ -114,8 +113,8 @@ function EnhancedTableHead(props) {
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
-            inputProps={{ 'aria-label': 'select all Doctors' }}
-          /> 
+            inputProps={{ 'aria-label': 'select all Scientists' }}
+          />
         </TableCell>
         {headCells.map((headCell) => (
           <TableCell
@@ -131,7 +130,7 @@ function EnhancedTableHead(props) {
             >
               {headCell.label}
               {orderBy === headCell.id ? (
-                <span  style={{border: 0, clip: 'rect(0 0 0 0)', height: '1px', margin: -1, overflow: 'hidden',padding: 0,whiteSpace: "nowrap",width: "1px",position: "absolute"}}>
+                <span style={{ border: 0, clip: 'rect(0 0 0 0)', height: '1px', margin: -1, overflow: 'hidden', padding: 0, whiteSpace: "nowrap", width: "1px", position: "absolute" }}>
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                 </span>
               ) : null}
@@ -207,15 +206,15 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
   onDeleteItems: PropTypes.func,
 };
-export default function Doctors(props) {
+export default function Scientists(props) {
 
   const { enqueueSnackbar } = useSnackbar();
-  const [doctors, setDoctors] = React.useState(null);
+  const [scientists, setScientists] = React.useState(null);
 
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
   const [limit, setLimit] = React.useState(5);
-  
+
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('id');
   const [selected, setSelected] = React.useState([]);
@@ -224,7 +223,7 @@ export default function Doctors(props) {
   const [rows, setRows] = React.useState([]);
 
   React.useEffect(() => {
-    console.log('useEffect Doctors list container')
+    console.log('useEffect Scientists list container')
     
     fetchData();
   }, []);
@@ -235,14 +234,14 @@ export default function Doctors(props) {
   };
   const fetchData = async () => {
     const u = [];
-    const r = await AngelDoctor().list({  limit: limit, page: page });
+    const r = await AngelScientist().list({ limit: limit, page: page });
     if (r.users && r.users.length) {
       for (let i = 0; i < r.users.length; i++) {
         //createData('Cupcake', 305, 3.7, 67, 4.3, <BeachAccessIcon color='primary' style={{ marginInline: '10px' }} />, <GridViewIcon color='primary' style={{ marginInline: '10px' }} />, <TrendingUpIcon color='primary' style={{ marginInline: '10px' }} />, 'ahmed')
-        u.push(createData(r.users[i].user_id,r.users[i].id, r.users[i].firstname, r.users[i].lastname, r.users[i].email, r.users[i].phone, r.users[i].lang, r.users[i].role, r.users[i].active,r.users[i].avatar?process.env.REACT_APP_API_URL+'/public/uploads/'+r.users[i].avatar:defaultAvatar));
+        u.push(createData(r.users[i].user_id, r.users[i].id, r.users[i].firstname, r.users[i].lastname, r.users[i].email, r.users[i].phone, r.users[i].lang, r.users[i].role, r.users[i].active, r.users[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.users[i].avatar : defaultAvatar));
       }
       setRows(u);
-      setDoctors(r.users);
+      setScientists(r.users);
       setTotal(r.total);
     }
   }
@@ -270,11 +269,11 @@ export default function Doctors(props) {
   };
 
   const handleClick = (event, id) => {
-    const selectedIndex = selected.indexOf(id);
+    const selectedIndex = selected.indexOf(parseInt(id,10));
     let newSelected = [];
 
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, id);
+      newSelected = newSelected.concat(selected, parseInt(id,10));
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
     } else if (selectedIndex === selected.length - 1) {
@@ -288,12 +287,11 @@ export default function Doctors(props) {
 
     setSelected(newSelected);
   };
-  const isSelected = (id) => selected.indexOf(id) !== -1;
 
   const onDeleteItems = async () => {
-    if(selected.length) {
-      await AngelUser().delete({ids:selected.join(',')});
-      handleClickVariant('success', 'Doctor(s) well deleted');
+    if (selected.length) {
+      await AngelUser().delete({ ids:selected.join(',') });
+      handleClickVariant('success', 'Scientist(s) well deleted');
       fetchData();
     }
   }
@@ -302,6 +300,8 @@ export default function Doctors(props) {
     // variant could be success, error, warning, info, or default
     enqueueSnackbar(text, { variant });
   };
+  const isSelected = (id) => selected.indexOf(id) !== -1;
+
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
   return (
@@ -325,20 +325,19 @@ export default function Doctors(props) {
             <TableBody>
               {stableSort(rows, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row) => {
+                .map((row, index) => {
                   const isItemSelected = isSelected(row.user_id);
-                  const labelId = `enhanced-table-checkbox-${row.user_id}`;
+                  const labelId = `enhanced-table-checkbox-${index}`;
                   return (
                     <TableRow
                       hover
                       onClick={(event) => handleClick(event, row.user_id)}
-                      onDoubleClick={() => props.openUser(row.user_id,row.firstname + ' '+ row.lastname)}
+                      onDoubleClick={() => props.openUser(row.user_id, row.firstname + ' ' + row.lastname)}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
                       key={row.id}
-                      selected={isItemSelected}
-                    >
+                      selected={isItemSelected}>
                       <TableCell padding="checkbox">
                         <Checkbox
                           checked={isItemSelected}
@@ -347,11 +346,11 @@ export default function Doctors(props) {
                       </TableCell>
                       <TableCell component="th" id={labelId} scope="row" padding="none" align='left'>
                         <Grid container spacing={2}>
-                          <Grid item xs={1} textAlign={'start'} style={{marginTop:'10px', fontWeight: 'bold'}}>
-                             {row.id}
+                          <Grid item xs={1} textAlign={'start'} style={{ marginTop: '10px', fontWeight: 'bold' }}>
+                            {row.id}
                           </Grid>
-                          <Grid item xs={1} style={{cursor: 'pointer'}}>
-                            <Avatar src={row.avatar}  textAlign={'start'} onClick={() => props.openUser(row.user_id,row.firstname + ' '+ row.lastname)} />
+                          <Grid item xs={1} style={{ cursor: 'pointer' }}>
+                            <Avatar src={row.avatar} textAlign={'start'} onClick={() => props.openUser(row.user_id, row.firstname + ' ' + row.lastname)} />
                           </Grid>
                         </Grid>
                       </TableCell>
@@ -432,11 +431,11 @@ export default function Doctors(props) {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component='div'
-          count={total?total:0}
+          count={total ? total : 0}
           rowsPerPage={limit}
           page={page}
           onPageChange={setPage}
-          onRowsPerPageChange={ (e) => {setLimit(e.target.value)}}
+          onRowsPerPageChange={(e) => { setLimit(e.target.value) }}
         />
       </Paper>
     </Box>

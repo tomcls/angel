@@ -1,4 +1,4 @@
-import * as React from 'react';
+import  React, { useRef } from 'react';
 import AngelUser from '../api/angel/user';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -20,6 +20,8 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import IconButton from '@mui/material/IconButton';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Modal from '@mui/material/Modal';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
@@ -27,7 +29,11 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { useSnackbar } from 'notistack';
 import AngelNurse from '../api/angel/nurse';
 import ComboUsers from '../components/ComboUsers';
-
+import ComboHospitals from '../components/ComboHospitals';
+import PlaceIcon from '@mui/icons-material/Place';
+import EmailIcon from '@mui/icons-material/Email';
+import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
+import FaceIcon from '@mui/icons-material/Face';
 export default function NurseContainer(props) {
 
     const { enqueueSnackbar } = useSnackbar();
@@ -41,7 +47,8 @@ export default function NurseContainer(props) {
     const [lang, setLang] = React.useState('');
     const [dateOfBirth, setDateOfBirth] = React.useState('');
     const [phone, setPhone] = React.useState('');
-    const [avatar, setAvatar] = React.useState('');
+    const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp0LF2WgeDkn_sQ1VuMnlnVGjkDvCN4jo2nLMt3b84ry328rg46eohB_JT3WTqOGJovY&usqp=CAU';//process.env.SENDGRID_APIKEY
+    const [avatar, setAvatar] = React.useState(defaultAvatar);
 
     const [address, setAddress] = React.useState('');
     const [streetNumber, setStreetNumber] = React.useState('');
@@ -49,19 +56,26 @@ export default function NurseContainer(props) {
     const [zip, setZip] = React.useState('');
     const [country, setCountry] = React.useState('');
 
-    const [setPassword] = React.useState('');
+    const [password, setPassword] = React.useState('');
     const [showPassword, setShowPassword] = React.useState(false);
 
     const [week, setWeek] = React.useState(() => []);
     const [hospitalId, setHospitalId] = React.useState(() => '');
+    const [hospitalName, setHospitalName] = React.useState(() => '');
 
     const [openAssignPatientModal, setOpenAssignModal] = React.useState(false);
 
     const [assignPatientId, setAssignPatientId] = React.useState(null);
 
+    const [active, setActive] = React.useState('N');
+    const [switchState, setSwitchState] = React.useState(false);
+    
+    const [file, setFile] = React.useState(null);
+    const uploadFileButton = useRef(null);
+
 
     React.useEffect(() => {
-        console.log("Nusrse container effect")
+        console.log("Nurse container effect")
         if (props.userId) {
             async function fetchData() {
                 const user = await AngelNurse().find({ user_id: props.userId });
@@ -81,8 +95,16 @@ export default function NurseContainer(props) {
                 setDateOfBirth(user.birthday);
                 setAvatar(user.avatar);
                 setHospitalId(user.hospital_id);
+                setHospitalName(user.name);
+                setAvatar(user.avatar?process.env.REACT_APP_API_URL+'/public/uploads/'+user.avatar:defaultAvatar);
                 if (user.daysin) {
                     setWeek(JSON.parse(user.daysin));
+                }
+                setActive(user.active);
+                if (user.active === 'N') {
+                    setSwitchState(false);
+                } else {
+                    setSwitchState(true);
                 }
             }
             fetchData();
@@ -114,7 +136,7 @@ export default function NurseContainer(props) {
                 city: city,
                 country: country,
                 birthday: formatDate(dateOfBirth),
-                avatar: avatar
+                active: active
             };
             if (id) {
                 u.id = id;
@@ -126,8 +148,6 @@ export default function NurseContainer(props) {
                     handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
                 }
             } else {
-                u.type = 'nurse';
-                u.role = 'V';
                 try {
                     const user = await AngelUser().add(u);
                     setId(user.inserted_id)
@@ -208,6 +228,9 @@ export default function NurseContainer(props) {
     const onPatientSelect = (patientId) => {
         setAssignPatientId(patientId);
     }
+    const onHospitalSelect = (hospitalId) => {
+        setHospitalId(hospitalId);
+    }
     const styleModal = {
         position: 'absolute',
         top: '50%',
@@ -219,7 +242,27 @@ export default function NurseContainer(props) {
         boxShadow: 24,
         p: 4,
     };
+    const savePassword = async () => {
+        if (password !== null) {
+            const r = await AngelUser().resetPwd({ password: password, email: email });
+            handleClickVariant('success', 'Password well updated!');
+        }
+    }
+    const setActif = (e) => {
+        setSwitchState(e.target.checked);
+        if (e.target.checked) {
+            setActive('Y');
+        } else {
+            setActive('N');
+        }
+    };
 
+    const onFileChange = async (e) => {
+        setFile({file:e.target.files[0]});
+        const u = await AngelUser().upload(e.target.files[0], 'avatar',id);
+        console.log(setAvatar(process.env.REACT_APP_API_URL+'/public/uploads/'+u.filename));
+        handleClickVariant('success', 'Image well uploaded');
+    };
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <div>
@@ -242,97 +285,43 @@ export default function NurseContainer(props) {
                     </Box>
                 </Modal>
             </div>
-            <Button onClick={handleAssignPatientModal}>Assign patient</Button>
-            <Button  onClick={() => props.showNursePatients(nurseId)}>List of patients</Button>
-            <Grid container spacing={2}>
-                <Grid item xs={6} style={{ paddingTop: '40px' }}>
-                    <Typography variant="h6" gutterBottom component="div">
-                        Days in.
-                    </Typography>
-                    <ToggleButtonGroup
-                        value={week}
-                        onChange={onWeekDayClick}
-                        aria-label="Days in"
-                        size="small"
-                        color="info"
-                    >
-                        <ToggleButton value="mon" aria-label="mon" color="info">
-                            Monday
-                        </ToggleButton>
-                        <ToggleButton value="tue" aria-label="tue">
-                            Tuesday
-                        </ToggleButton>
-                        <ToggleButton value="wed" aria-label="wed">
-                            Wednesday
-                        </ToggleButton>
-                        <ToggleButton value="thu" aria-label="thu" >
-                            Thursday
-                        </ToggleButton>
-                        <ToggleButton value="fri" aria-label="fri" >
-                            Friday
-                        </ToggleButton>
-                        <ToggleButton value="sat" aria-label="sat" >
-                            Saterday
-                        </ToggleButton>
-                        <ToggleButton value="sun" aria-label="sun" >
-                            Sunday
-                        </ToggleButton>
-                    </ToggleButtonGroup>
-                </Grid>
-                <Grid item xs={2} style={{ paddingTop: '25px' }}>
-                    <Typography variant="h6" gutterBottom component="div">
-                        &nbsp;
-                    </Typography>
-                    <FormControl fullWidth
-                        style={{ display: 'flex', width: '100%', marginTop: '16px' }}
-                    >
-                        <InputLabel id="hospitalIdLabel">Hospital</InputLabel>
-                        <Select
-                            style={{ display: 'flex', width: '100%' }}
-                            labelId="hospitalIdLabel"
-                            id="hospitalId"
-                            value={hospitalId ? hospitalId : ''}
-                            onChange={onInputChange(setHospitalId)}
-                            label="Hospital"
-                        >
-                            <MenuItem value={3}>Hospital A</MenuItem>
-                            <MenuItem value={2}>Hospital B</MenuItem>
-                            <MenuItem value={1}>Hospital C</MenuItem>
-                        </Select>
-                    </FormControl>
-                </Grid>
-            </Grid>
+            <Button onClick={handleAssignPatientModal} variant="outlined" style={{ marginRight: '5px' }}>Assign patient</Button>
+            <Button onClick={() => props.showNursePatients(nurseId)} variant="outlined" >List of patients</Button>
             <Box sx={{ width: '100%' }}>
                 <Grid container spacing={2}>
-                    <Grid item xs={4}>
-                        <Typography variant="h6" gutterBottom component="div">
-                            Personal informations
-                        </Typography>
+                    <Grid item xs={12} sm={6} md={4} xl={2} style={{ paddingTop: '40px' }}>
+                       <Grid item xs={12} style={{  width: '205px', height: '205px', textAlign: "center", border: '3px solid #ddd', borderRadius: '5px', margin: 'auto' }} >
+
+                            <Avatar variant="rounded"
+                                src={avatar}
+                                style={{ width: '200px', height: '200px', textAlign: "center", borderColor: 'gray', margin: 'auto' }}
+                            />
+                            <Grid item xs={12} style={{ width: '100%', textAlign: "center" }}>
+                                <Button id="avatarLabel" onClick={() => uploadFileButton.current.click()}>Upload photo</Button>
+                                <input type="file" name="avatar" onChange={onFileChange} ref={uploadFileButton} style={{display: 'none'}}/>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4} xl={4} >
                         <TextField
-                            style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
                             label="Firstname"
                             id="firstname"
-                            sx={{ '& > :not(style)': { mt: 1 } }}
                             value={firstname ? firstname : ''}
                             onChange={onInputChange(setFirstname)}
                             InputProps={{
-                                startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                                startAdornment: <FaceIcon position="start"><Visibility /></FaceIcon>,
                             }}
                         />
                         <TextField
-                            style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
-                            label="Phone number"
-                            id="phone"
-                            sx={{ '& > :not(style)': { mt: 1 } }}
-                            value={phone ? phone : ''}
-                            onChange={onInputChange(setPhone)}
+                            label="Lastname"
+                            id="lastname"
+                            value={lastname ? lastname : ''}
+                            onChange={onInputChange(setLastname)}
                             InputProps={{
-                                startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                                startAdornment: <FaceIcon position="start"><Visibility /></FaceIcon>,
                             }}
                         />
-                        <Box
-                            style={{ display: 'flex', width: '100%', paddingTop: '8px' }}
-                        >
+                        <Box>
                             <DateTimePicker
                                 style={{ display: 'flex', width: '100%', minWidth: '100%' }}
                                 id="birthday"
@@ -343,186 +332,151 @@ export default function NurseContainer(props) {
                             />
                         </Box>
                     </Grid>
-                    <Grid item xs={4}>
-                        <Typography variant="h6" gutterBottom component="div">
-                            &nbsp;
-                        </Typography>
+                    <Grid item xs={12} sm={6} md={4} xl={4}>
                         <TextField
-                            style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
-                            label="Lastname"
-                            id="lastname"
-                            sx={{ '& > :not(style)': { mt: 1 } }}
-                            value={lastname ? lastname : ''}
-                            onChange={onInputChange(setLastname)}
+                            label="Phone number"
+                            id="phone"
+                            value={phone ? phone : ''}
+                            onChange={onInputChange(setPhone)}
                             InputProps={{
-                                startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                                startAdornment: <LocalPhoneIcon position="start"><Visibility /></LocalPhoneIcon>,
                             }}
                         />
                         <TextField
-                            style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
                             label="Email"
                             id="outlined-start-adornment"
-                            sx={{ '& > :not(style)': { mt: 1 } }}
+
                             value={email ? email : ''}
                             onChange={onInputChange(setEmail)}
                             InputProps={{
-                                startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                                startAdornment: <EmailIcon position="start"><Visibility /></EmailIcon>,
                             }}
                         />
-
-                        <FormControl fullWidth
-                            style={{ display: 'flex', width: '100%', marginTop: '16px' }}
-                        >
-                            <InputLabel id="sexLabel">Sex</InputLabel>
-                            <Select
-                                style={{ display: 'flex', width: '100%' }}
-                                labelId="sexLabel"
-                                id="sex"
-                                value={sex ? sex : ''}
-                                onChange={onInputChange(setSex)}
-                                label="Sex"
-                            >
-                                <MenuItem value={'M'}>Male</MenuItem>
-                                <MenuItem value={'F'}>Femal</MenuItem>
-                                <MenuItem value={'B'}>Both</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={2} style={{ paddingTop: '40px' }}>
-                        <Grid item xs={12} style={{ width: '100%', textAlign: "left", marginBottom: '10px' }}>
-                            <InputLabel id="avatarLabel">Profile Photos</InputLabel>
-                        </Grid>
-                        <Grid item xs={12} style={{ width: '100%', textAlign: "center", border: '3px solid #ddd', borderRadius: '15px', margin: 'auto' }} >
-
-                            <Avatar
-                                alt="Remy Sharp"
-                                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp0LF2WgeDkn_sQ1VuMnlnVGjkDvCN4jo2nLMt3b84ry328rg46eohB_JT3WTqOGJovY&usqp=CAU"
-                                style={{ width: '150px', height: '150px', textAlign: "center", borderColor: 'gray', margin: 'auto' }}
-                            />
-                            <Grid item xs={12} style={{ width: '100%', textAlign: "center" }}>
-                                <InputLabel id="avatarLabel">Upload photo</InputLabel>
+                        <Grid container spacing={1}>
+                            <Grid item xs={8}>
+                                <FormControl >
+                                    <InputLabel id="langLabel">Mother tong</InputLabel>
+                                    <Select
+                                        style={{ display: 'flex', width: '100%' }}
+                                        labelId="langLabel"
+                                        id="lang"
+                                        value={lang ? lang : ''}
+                                        onChange={onInputChange(setLang)}
+                                        label="Close monitoring?">
+                                        <MenuItem value={'fr'}>Francais</MenuItem>
+                                        <MenuItem value={'en'}>English</MenuItem>
+                                        <MenuItem value={'de'}>Dutch</MenuItem>
+                                        <MenuItem value={'ar'}>Arabic</MenuItem>
+                                        <MenuItem value={'nl'}>Nederlands</MenuItem>
+                                        <MenuItem value={'es'}>Spanish</MenuItem>
+                                        <MenuItem value={'pl'}>Polsky</MenuItem>
+                                        <MenuItem value={'it'}>Italian</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={4}>
+                                <FormControl fullWidth>
+                                    <InputLabel id="sexLabel">Sex</InputLabel>
+                                    <Select
+                                        style={{ display: 'flex', width: '100%' }}
+                                        labelId="sexLabel"
+                                        id="sex"
+                                        value={sex ? sex : ''}
+                                        onChange={onInputChange(setSex)}
+                                        label="Sex" >
+                                        <MenuItem value={'M'}>Male</MenuItem>
+                                        <MenuItem value={'F'}>Femal</MenuItem>
+                                        <MenuItem value={'B'}>Both</MenuItem>
+                                    </Select>
+                                </FormControl>
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={12} sm={6} md={4} xl={4}  >
                         <Typography variant="h6" gutterBottom component="div">
                             Address
                         </Typography>
 
                         <Grid container spacing={1}>
-
                             <Grid item xs={8}>
                                 <TextField
-                                    style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
                                     label=" Address"
                                     id="address"
-                                    sx={{ '& > :not(style)': { mt: 1 } }}
+
                                     value={address ? address : ''}
                                     onChange={onInputChange(setAddress)}
                                     InputProps={{
-                                        startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                                        startAdornment: <PlaceIcon position="start"><Visibility /></PlaceIcon>,
                                     }}
                                 />
                             </Grid>
                             <Grid item xs={4}>
                                 <TextField
-                                    style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
                                     label="Number"
                                     id="number"
-                                    sx={{ '& > :not(style)': { mt: 1 } }}
+
                                     value={streetNumber ? streetNumber : ''}
                                     onChange={onInputChange(setStreetNumber)}
-                                    InputProps={{
-                                        startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
-                                    }}
+                                   
                                 />
                             </Grid>
                         </Grid>
                         <Grid container spacing={1}>
                             <Grid item xs={7}>
                                 <TextField
-                                    style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
                                     label="City"
                                     id="city"
-                                    sx={{ '& > :not(style)': { mt: 1 } }}
+
                                     value={city ? city : ''}
                                     onChange={onInputChange(setCity)}
                                     InputProps={{
-                                        startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
-                                    }}
-                                />
+                                        startAdornment: <PlaceIcon position="start"><Visibility /></PlaceIcon>,
+                                    }} />
                             </Grid>
                             <Grid item xs={5}>
                                 <TextField
-                                    style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
                                     label="Code postal"
                                     id="zip"
-                                    sx={{ '& > :not(style)': { mt: 1 } }}
+
                                     value={zip ? zip : ''}
                                     onChange={onInputChange(setZip)}
-                                    InputProps={{
-                                        startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
-                                    }}
                                 />
                             </Grid>
-                            <FormControl fullWidth style={{ display: 'flex', width: '100%', marginTop: '16px', marginLeft: '7px' }} >
-                                <InputLabel id="langLabel">Pays</InputLabel>
-                                <Select
-                                    style={{ display: 'flex', width: '100%' }}
-                                    labelId="countryLabel"
-                                    id="country"
-                                    value={country ? country : ''}
-                                    onChange={onInputChange(setCountry)}
-                                    label="Country"
-                                >
-                                    <MenuItem value={'belgium'}>Belgium</MenuItem>
-                                    <MenuItem value={'luxembourg'}>Luxembourg</MenuItem>
-                                    <MenuItem value={'espagne'}>Espagne</MenuItem>
-                                    <MenuItem value={'hollande'}>Hollande</MenuItem>
-                                    <MenuItem value={'italie'}>Italie</MenuItem>
-                                </Select>
-                            </FormControl>
                         </Grid>
-                    </Grid>
-                    <Grid item xs={6}>
-                        <Typography variant="h6" gutterBottom component="div">
-                            Language
-                        </Typography>
-
-                        <FormControl fullWidth
-                            style={{ display: 'flex', width: '100%', marginTop: '16px' }}
-                        >
-                            <InputLabel id="langLabel">Mother tong</InputLabel>
+                        <FormControl fullWidth >
+                            <InputLabel id="langLabel">Pays</InputLabel>
                             <Select
                                 style={{ display: 'flex', width: '100%' }}
-                                labelId="langLabel"
-                                id="lang"
-                                value={lang ? lang : ''}
-                                onChange={onInputChange(setLang)}
-                                label="Close monitoring?"
-                            >
-                                <MenuItem value={'fr'}>Francais</MenuItem>
-                                <MenuItem value={'en'}>English</MenuItem>
-                                <MenuItem value={'de'}>Dutch</MenuItem>
-                                <MenuItem value={'ar'}>Arabic</MenuItem>
-                                <MenuItem value={'nl'}>Nederlands</MenuItem>
-                                <MenuItem value={'es'}>Spanish</MenuItem>
-                                <MenuItem value={'pl'}>Polsky</MenuItem>
-                                <MenuItem value={'it'}>Italian</MenuItem>
+                                labelId="countryLabel"
+                                id="country"
+                                value={country ? country : ''}
+                                onChange={onInputChange(setCountry)}
+                                label="Country">
+                                <MenuItem value={'belgium'}>Belgium</MenuItem>
+                                <MenuItem value={'luxembourg'}>Luxembourg</MenuItem>
+                                <MenuItem value={'espagne'}>Espagne</MenuItem>
+                                <MenuItem value={'hollande'}>Hollande</MenuItem>
+                                <MenuItem value={'italie'}>Italie</MenuItem>
+                                <MenuItem value={'france'}>France</MenuItem>
                             </Select>
                         </FormControl>
-                        <Typography variant="h6" gutterBottom component="div" style={{ paddingTop: '40px' }}>
-                            Password
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4} xl={4}>
+                        <Typography variant="h6" gutterBottom component="div">
+                            Hospital
                         </Typography>
-
-                        <Grid container  >
-                            <Grid item xs={8} >
-                                <FormControl fullWidth variant="outlined">
+                        <ComboHospitals onSelect={onHospitalSelect} hospital={{ id: hospitalId, name: hospitalName }} />
+                        <Typography variant="h6" mt={'20px'}>
+                            Password and activation
+                        </Typography>
+                        <FormControlLabel control={<Switch checked={switchState} onChange={setActif} value={active} />} label="Actif" size="large" />
+                        <Grid container spacing={1}>
+                            <Grid item xs={8}>
+                                <FormControl fullWidth variant="outlined" style={{ marginTop: '18px' }}>
                                     <InputLabel htmlFor="outlined-adornment-password">Change password</InputLabel>
                                     <OutlinedInput
                                         id="outlined-adornment-password"
                                         type={showPassword ? 'text' : 'password'}
-
                                         onChange={onInputChange(setPassword)}
                                         endAdornment={
                                             <InputAdornment position="end">
@@ -540,26 +494,66 @@ export default function NurseContainer(props) {
                                     />
                                 </FormControl>
                             </Grid>
-                            <Grid item xs={4}>
+                            <Grid item xs={4} mt={'25px'}>
                                 <Button
-                                    style={{ borderRadius: '10px', marginTop: '10px', marginLeft: '10px' }}
+
+                                    style={{ borderRadius: '10px', marginLeft: '10px' }}
                                     variant="outlined" startIcon={<Save />}
-                                    onClick={changePassword}>
+                                    onClick={savePassword}>
                                     Save
                                 </Button>
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Grid item xs={4}>
-
-                        <Button
-                            style={{ borderRadius: '10px', marginTop: '20px' }}
-                            variant="outlined" startIcon={<Save />}
-                            onClick={onSubmit}>
-                            Save
-                        </Button>
-                    </Grid>
                 </Grid>
+
+            <Grid container spacing={2}>
+                <Grid item xs={12} style={{ paddingTop: '40px' }}>
+                    <Typography variant="h6" gutterBottom component="div">
+                        Days in.
+                    </Typography>
+                    <ToggleButtonGroup
+                        value={week}
+                        onChange={onWeekDayClick}
+                        aria-label="Days in"
+                        size="small"
+                        color="info"
+                    >
+                        <ToggleButton value="mon" aria-label="mon" color="info">
+                            Mon
+                        </ToggleButton>
+                        <ToggleButton value="tue" aria-label="tue">
+                            Tue
+                        </ToggleButton>
+                        <ToggleButton value="wed" aria-label="wed">
+                            Wed
+                        </ToggleButton>
+                        <ToggleButton value="thu" aria-label="thu" >
+                            Thu
+                        </ToggleButton>
+                        <ToggleButton value="fri" aria-label="fri" >
+                            Fri
+                        </ToggleButton>
+                        <ToggleButton value="sat" aria-label="sat" >
+                            Sat
+                        </ToggleButton>
+                        <ToggleButton value="sun" aria-label="sun" >
+                            Sun
+                        </ToggleButton>
+                    </ToggleButtonGroup>
+                </Grid>
+                <Grid container>
+                    <Typography variant="h6" gutterBottom component="div">
+                        &nbsp;
+                    </Typography>
+                    <Button
+                        style={{ borderRadius: '10px', marginTop: '10px' }}
+                        variant="outlined" startIcon={<Save />}
+                        onClick={onSubmit}>
+                        Save
+                    </Button>
+                </Grid>
+            </Grid>
             </Box>
         </LocalizationProvider>
     );

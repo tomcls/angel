@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Input from "../components/Input";
@@ -8,7 +8,6 @@ import PeopleIcon from '@mui/icons-material/People';
 import Bar from "../templates/Bar";
 import Doctors from "../containers/Doctors";
 import Doctor from "../containers/Doctor";
-import AngelUser from '../api/angel/user';
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
@@ -16,6 +15,10 @@ import TabPanel from '@mui/lab/TabPanel';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { Cancel } from "@mui/icons-material";
 import { SnackbarProvider } from 'notistack';
+import Patients from "../containers/Patients";
+import { Grid, Typography } from "@mui/material";
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import PatientContainer from "../containers/Patient";
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -37,114 +40,124 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
   }),
 );
 
-export default function DoctorsPage(props) {
+export default function DoctorsPage() {
 
-  const [value, setValue] = React.useState(0);
   const [open, setOpen] = React.useState(true);
-  const [doctors, setDoctors] = React.useState(null);
-  const [total, setTotal] = React.useState(null);
-  const [page, setPage] = React.useState(0);
-  const [limit, setLimit] = React.useState(5);
-
-  const [selectedTab, setSelectedTab] = React.useState('1');
+  const [selectedTab, setSelectedTab] = React.useState("Main");
   const [tabs, setTabs] = React.useState([]);
   const [panels, setPanels] = React.useState([]);
   const [tabIndex, setTabIndex] = React.useState(2);
+  const newDoctorBtn = useRef(null);
 
   React.useEffect(() => {
-    console.log('useEffect dashboard');
-    async function fetchData() {
-      // You can await here
-      const r = await AngelUser().list({ type: 'doctor', limit: limit, page: page });
-      setDoctors(r.users);
-      setTotal(r.total);
-      // ...
-    }
-    fetchData();
-  }, [limit, page]);
+    console.log('useEffect Doctors page tabs length=', tabs.length, 'tabIndex', tabIndex);
+  }, []);
 
-  const handleChangePage = async (event, newPage) => {
-    const r = await AngelUser().list({ type: 'doctor', limit: limit, page: newPage });
-    setDoctors(r.users);
-    setTotal(r.total);
-    setPage(newPage);
-  };
-  const handleChangeLimit = async (event) => {
-    setLimit(event.target.value)
-    setPage(0);
-    const r = await AngelUser().list({ type: 'doctor', limit: limit, page: 0 });
-    setDoctors(r.users);
-    setTotal(r.total);
-  };
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
-  const createNewTab = (userId, text) => {
-    let v = 1;
-    if (tabs.length) {
-      v = Math.max(...tabs.map(o => parseInt(o.value, 10)));
+  const handleTabOptions = (value) => {
+    setSelectedTab(value)
+    setTabIndex(tabIndex + 1)
+  }
+  const createTab = () => {
+    if (window.angel && window.angel.doctorId) {
+      createTabPatients( window.angel.doctorId, 'list of patients');
+      window.angel.doctorId = null;
+    } else if (window.angel && window.angel.userId ) {
+      console.log("zzzzzzz",window.angel.userId, window.angel.tabName)
+      createTabPatient( window.angel.userId, window.angel.tabName);
+      window.angel.treatmentId = null;
+    } else {
+      createTabDoctor();
     }
-    const newTabIndex = v + 1;
-    const label = text ? text : 'New user';
+  }
+  const createTabDoctor = ( userId, text) => {
+    const value = text;
     const newTab = {
-      value: `${newTabIndex}`,
-      label: label
+      label: text ? text : 'New doctor',
+      value: value ? value : tabIndex,
+      idx: tabIndex,
+      child: () => <Doctor userId={userId}  showDoctorPatients={openDoctorPatientTab} />
     }
-    setTabs([...tabs, newTab]);
-    setPanels([
-      ...panels,
-      {
-        value: `${newTabIndex}`,
-        child: () => {
-          return <Doctor userId={userId} />
-        }
-      }
-    ]);
-    setSelectedTab(`${newTabIndex}`);
-    setTabIndex(newTabIndex);
+    setTabs([...tabs, newTab])
+    handleTabOptions(value ? value : tabIndex);
   }
-  const handleTabClose = (event, value) => {
+  const createTabPatients = ( userId, text) => {
+    const value = `Blue Box ${tabIndex}`
+    const newTab = {
+      label: text,
+      value: value,
+      idx: tabIndex,
+      child: () => <Patients openUser={openPatientTab} doctorId={userId} />
+    }
+    setTabs([...tabs, newTab])
+    handleTabOptions(value ? value : tabIndex);
+  }
+  const createTabPatient = ( userId, text) => {
+    const value = text;
+    const newTab = {
+      label: text ? text : 'New patient',
+      value: value ? value : tabIndex,
+      idx: tabIndex,
+      child: () => <PatientContainer userId={userId} />
+    }
+    setTabs([...tabs, newTab])
+    handleTabOptions(value ? value : tabIndex);
+  }
+  const handleCloseTab = (event, idx) => {
     event.stopPropagation();
-    const tabArr = tabs.filter(t => t.value !== value);
-    setTabs(tabArr);
-    const panelArr = panels.filter(p => p.value !== value);
-    setPanels(panelArr);
-    setSelectedTab('1');
-    setTabIndex(1);
+    const tabArr = tabs.filter(x => x.idx !== idx)
+    setTabs(tabArr)
+    setSelectedTab('Main');
+}
+  const openDoctorPatientTab = (doctorId) => {
+    if (!window.angel) {
+      window.angel = {};
+    }
+    window.angel.doctorId = doctorId;
+    newDoctorBtn.current.click();
   }
-
-  const getDoctors = async () => {
-    const r = await AngelUser().list({ type: 'doctor', limit: limit, page: page });
-    setDoctors(r.users);
-    setTotal(r.total);
+  const openPatientTab = (userId, text) => {
+    console.log('openPatientTab',userId,text)
+    if (!window.angel) {
+      window.angel = {};
+    }
+    window.angel.userId = userId;
+    window.angel.tabName = text;
+    newDoctorBtn.current.click();
   }
   return (
     <SnackbarProvider maxSnack={3}>
       <Box sx={{ display: 'flex' }}>
         <Bar open={setOpen} />
         <Main open={open} style={{ background: "rgb(229 229 229 / 41%)", marginBlock: "64px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <div style={{ marginBlock: "20px", width: "70%" }}>
-              <Input icon={<SearchIcon sx={{ color: "action.active", mr: 1, my: 0.5 }} />} type="Outlined" text=" Search" />
-            </div>
-            <Button variant="outlined" style={{ color: "black" }} onClick={createNewTab}>
-              <PeopleIcon style={{ marginInline: "3px" }} /> Add doctor</Button>
-          </div>
+          <Grid container spacing={2} mb={'0px'} >
+            <Grid item xs={6} md={6} xl={6} >
+              <Typography variant="h6"  component="div" >
+                Doctors
+              </Typography>
+            </Grid>
+            <Grid item xs={6} md={6} xl={6} textAlign={'end'}  >
+              <Button variant="outlined"  onClick={createTab} ref={newDoctorBtn} justifyContent="flex-end">
+                <PeopleIcon /> Add doctor</Button>
+            </Grid>
+          </Grid>
           <Box sx={{ width: '100%' }}>
             <TabContext value={selectedTab ? selectedTab : '1'}>
               <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                <TabList onChange={handleChange} aria-label="lab API tabs example" variant="scrollable" scrollButtons="auto" >
-                  <Tab label="Doctors" value="1" icon={<RefreshIcon onClick={getDoctors} />} iconPosition="end" />
+                <TabList onChange={handleChange} aria-label="" variant="scrollable" scrollButtons="auto" >
+                  <Tab label="List" value="Main" icon={<FormatListBulletedIcon />} iconPosition="start" />
                   {tabs.map(tab => (
-                    <Tab key={tab.value} label={tab.label} value={tab.value} icon={<Cancel onClick={(event) => handleTabClose(event, tab.value)} />} iconPosition="end" />
+                    <Tab key={tab.idx} label={tab.label} value={tab.value} icon={<Cancel onClick={(e) => handleCloseTab(e, tab.idx)} />} iconPosition="end" />
                   ))}
                 </TabList>
               </Box>
-              <TabPanel value="1" style={{ padding: "1px" }}>
-                <Doctors users={doctors} total={total} page={page} limit={limit} setPage={handleChangePage} setLimit={handleChangeLimit} openUser={createNewTab} />
+              <TabPanel value="Main" style={{ padding: "1px" }}>
+                <Doctors openUser={createTabDoctor} />
               </TabPanel>
-              {panels.map(panel => (
-                <TabPanel key={panel.value} label={panel.label} value={panel.value} >
+              {tabs.map(panel => (
+                <TabPanel key={panel.idx} label={panel.label} value={panel.value} >
                   {panel.child()}
                 </TabPanel>
               ))}

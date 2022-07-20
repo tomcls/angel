@@ -1,4 +1,4 @@
-import  React , { useRef } from 'react';
+import  React, { useRef } from 'react';
 import AngelUser from '../api/angel/user';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -27,19 +27,19 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 import { useSnackbar } from 'notistack';
-import AngelDoctor from '../api/angel/doctor';
+import AngelScientist from '../api/angel/scientist';
 import ComboUsers from '../components/ComboUsers';
 import ComboHospitals from '../components/ComboHospitals';
 import PlaceIcon from '@mui/icons-material/Place';
 import EmailIcon from '@mui/icons-material/Email';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import FaceIcon from '@mui/icons-material/Face';
-export default function DoctorContainer(props) {
+export default function ScientistContainer(props) {
 
     const { enqueueSnackbar } = useSnackbar();
 
     const [id, setId] = React.useState(null);
-    const [doctorId, setDoctorId] = React.useState(null);
+    const [scientistId, setScientistId] = React.useState(null);
     const [firstname, setFirstname] = React.useState('');
     const [lastname, setLastname] = React.useState('');
     const [email, setEmail] = React.useState('');
@@ -48,7 +48,7 @@ export default function DoctorContainer(props) {
     const [dateOfBirth, setDateOfBirth] = React.useState('');
     const [phone, setPhone] = React.useState('');
     const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp0LF2WgeDkn_sQ1VuMnlnVGjkDvCN4jo2nLMt3b84ry328rg46eohB_JT3WTqOGJovY&usqp=CAU';//process.env.SENDGRID_APIKEY
-    const [avatar, setAvatar] = React.useState('');
+    const [avatar, setAvatar] = React.useState(defaultAvatar);
 
     const [address, setAddress] = React.useState('');
     const [streetNumber, setStreetNumber] = React.useState('');
@@ -69,17 +69,18 @@ export default function DoctorContainer(props) {
 
     const [active, setActive] = React.useState('N');
     const [switchState, setSwitchState] = React.useState(false);
-
+    
     const [file, setFile] = React.useState(null);
     const uploadFileButton = useRef(null);
 
+
     React.useEffect(() => {
-        console.log("Doctor container effect")
+        console.log("Scientist container effect")
         if (props.userId) {
             async function fetchData() {
-                const user = await AngelDoctor().find({ user_id: props.userId });
+                const user = await AngelScientist().find({ user_id: props.userId });
                 setId(user.user_id);
-                setDoctorId(user.doctor_id);
+                setScientistId(user.scientist_id);
                 setFirstname(user.firstname);
                 setLastname(user.lastname);
                 setLang(user.lang);
@@ -92,10 +93,10 @@ export default function DoctorContainer(props) {
                 setCity(user.city);
                 setCountry(user.country);
                 setDateOfBirth(user.birthday);
-                setAvatar(user.avatar?process.env.REACT_APP_API_URL+'/public/uploads/'+user.avatar:defaultAvatar);
-                console.log(user.avatar?process.env.REACT_APP_API_URL+'/public/uploads/'+user.avatar:defaultAvatar)
+                setAvatar(user.avatar);
                 setHospitalId(user.hospital_id);
                 setHospitalName(user.name);
+                setAvatar(user.avatar?process.env.REACT_APP_API_URL+'/public/uploads/'+user.avatar:defaultAvatar);
                 if (user.daysin) {
                     setWeek(JSON.parse(user.daysin));
                 }
@@ -134,14 +135,14 @@ export default function DoctorContainer(props) {
                 zip: zip,
                 city: city,
                 country: country,
-                birthday: dateOfBirth?formatDate(dateOfBirth):null,
+                birthday: formatDate(dateOfBirth),
                 active: active
             };
             if (id) {
                 u.id = id;
                 try {
                     const user = await AngelUser().update(u);
-                    await setDoctor();
+                    await setScientist();
                     handleClickVariant('success', 'User well updated');
                 } catch (e) {
                     handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
@@ -150,7 +151,7 @@ export default function DoctorContainer(props) {
                 try {
                     const user = await AngelUser().add(u);
                     setId(user.inserted_id)
-                    await setDoctor(user.inserted_id);
+                    await setScientist(user.inserted_id);
                     handleClickVariant('success', 'User well added');
                 } catch (e) {
                     handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
@@ -158,24 +159,24 @@ export default function DoctorContainer(props) {
             }
         }
     };
-    const setDoctor = async (userId) => {
+    const setScientist = async (userId) => {
 
         const u = {
             user_id: userId ? userId : id,
             hospital_id: hospitalId ? hospitalId : null,
             daysin: week && week.length ? JSON.stringify(week) : null,
         };
-        if (doctorId) {
-            u.id = doctorId;
+        if (scientistId) {
+            u.id = scientistId;
             try {
-                await AngelDoctor().update(u);
+                await AngelScientist().update(u);
             } catch (e) {
                 handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
             }
         } else {
             try {
-                const p = await AngelDoctor().add(u);
-                setDoctorId(p.inserted_id);
+                const p = await AngelScientist().add(u);
+                setScientistId(p.inserted_id);
             } catch (e) {
                 handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
             }
@@ -211,11 +212,11 @@ export default function DoctorContainer(props) {
         console.log(e);
         const u = {
             patient_id: assignPatientId,
-            doctor_id: doctorId,
+            scientist_id: scientistId,
         };
-        if (assignPatientId && doctorId) {
+        if (assignPatientId && scientistId) {
             try {
-                await AngelDoctor().addPatient(u);
+                await AngelScientist().addPatient(u);
                 handleClickVariant('success', 'Patient well assigned');
             } catch (e) {
                 handleClickVariant('error', JSON.stringify(e));
@@ -255,13 +256,13 @@ export default function DoctorContainer(props) {
             setActive('N');
         }
     };
+
     const onFileChange = async (e) => {
         setFile({file:e.target.files[0]});
         const u = await AngelUser().upload(e.target.files[0], 'avatar',id);
         console.log(setAvatar(process.env.REACT_APP_API_URL+'/public/uploads/'+u.filename));
         handleClickVariant('success', 'Image well uploaded');
     };
-
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <div>
@@ -284,12 +285,13 @@ export default function DoctorContainer(props) {
                     </Box>
                 </Modal>
             </div>
-            <Button onClick={handleAssignPatientModal} variant="outlined"style={{ marginRight: '5px' }}>Assign patient</Button>
-            <Button onClick={() => props.showDoctorPatients(doctorId)} variant="outlined" >List of patients</Button>
+            <Button onClick={handleAssignPatientModal} variant="outlined" style={{ marginRight: '5px' }}>Assign patient</Button>
+            <Button onClick={() => props.showScientistPatients(scientistId)} variant="outlined" >List of patients</Button>
             <Box sx={{ width: '100%' }}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} sm={6} md={4} xl={2} style={{ paddingTop: '40px' }}>
-                        <Grid item xs={12} style={{ width: '205px', height: '205px', textAlign: "center", border: '3px solid #ddd', borderRadius: '5px', margin: 'auto' }} >
+                       <Grid item xs={12} style={{  width: '205px', height: '205px', textAlign: "center", border: '3px solid #ddd', borderRadius: '5px', margin: 'auto' }} >
+
                             <Avatar variant="rounded"
                                 src={avatar}
                                 style={{ width: '200px', height: '200px', textAlign: "center", borderColor: 'gray', margin: 'auto' }}

@@ -1,8 +1,10 @@
 import './App.css';
-import {
-  Routes,
-  Route,
-} from "react-router-dom";
+import {Routes,Route} from "react-router-dom";
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
+
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Thank from './pages/Thank';
@@ -12,10 +14,19 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import Privacy from './pages/Privacy';
 import RequestPassword from './pages/RequestPwd';
 import ResetPassword from './pages/ResetPwd';
-import Patient from './pages/Patient';
 import Patients from './pages/Patients';
 import DoctorsPage from './pages/Doctors';
 import NursesPage from './pages/Nurses';
+import ScientistsPage from './pages/Scientists';
+import DrugsPage from './pages/Drugs';
+import HospitalsPage from './pages/Hospitals';
+import LaboratoriesPage from './pages/Laboratories';
+import TreatmentsPage from './pages/Treatments';
+import SideEffectsPage from './pages/SideEffects';
+import MoodsPage from './pages/Moods';
+import SurveysMoodsPage from './pages/SurveyMoods';
+import Settings from './pages/Settings';
+import { SnackbarProvider } from 'notistack';
 
 function App() {
   const matches = useMediaQuery('(max-width:970px)');
@@ -32,10 +43,18 @@ function App() {
       <Route path="/contact" element={<ContactUs />} />
       <Route path="/privacy" element={<Privacy />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/patient" element={<Patient />} />
       <Route path="/patients" element={<Patients />} />
       <Route path="/doctors" element={<DoctorsPage />} />
       <Route path="/nurses" element={<NursesPage />} />
+      <Route path="/scientists" element={<ScientistsPage />} />
+      <Route path="/drugs" element={<DrugsPage />} />
+      <Route path="/laboratories" element={<LaboratoriesPage />} />
+      <Route path="/hospitals" element={<HospitalsPage />} />
+      <Route path="/treatments" element={<TreatmentsPage />} />
+      <Route path="/side-effects" element={<SideEffectsPage />} />
+      <Route path="/moods" element={<MoodsPage />} />
+      <Route path="/survey-moods" element={<SurveysMoodsPage />} />
+      <Route path="/settings" element={<SnackbarProvider maxSnack={3}><Settings /></SnackbarProvider>} />
     </Routes>
     </div>
   );

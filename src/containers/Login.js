@@ -56,9 +56,9 @@ export default function LoginComponent(props) {
               <Typography style={{marginInline:"10px"}}>or</Typography>
               <Divider  style={{width:"30%",borderColor:"black"}}/>
           </div>
-          <Typography variant="h6"  style={{margin: "auto",marginBottom: "40px", color:"#5b5a5a" }} component="h5">Not on mynursing angel yet ?         
+          <Typography variant="h6"  style={{margin: "auto",marginBottom: "40px", color:"#5b5a5a" }} component="h5">Not yet on Mynursing angel ?          
             <Link to="/register">
-              <span style={{fontWeight:"bold"}}>Register</span> 
+              <span style={{fontWeight:"bold"}}> Register</span> 
             </Link> 
           </Typography>
         </div>
