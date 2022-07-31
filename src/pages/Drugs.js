@@ -1,8 +1,7 @@
 import React, { useRef } from "react";
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import Input from "../components/Input";
-import SearchIcon from '@mui/icons-material/Search';
+import { Grid, Typography } from "@mui/material";
 import Button from '@mui/material/Button';
 import PeopleIcon from '@mui/icons-material/People';
 import Bar from "../templates/Bar";
@@ -12,9 +11,16 @@ import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import RefreshIcon from '@mui/icons-material/Refresh';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import { Cancel } from "@mui/icons-material";
 import { SnackbarProvider } from 'notistack';
+import NurseContainer from "../containers/Nurse";
+import Doctors from "../containers/Doctors";
+import Nurses from "../containers/Nurses";
+import Patients from "../containers/Patients";
+import Patient from "../containers/Patient";
+import Treatments from "../containers/Treatments";
+import Treatment from "../containers/Treatment";
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -47,6 +53,10 @@ export default function DrugsPage() {
 
   React.useEffect(() => {
     console.log('useEffect Drugs page tabs length=', tabs.length, 'tabIndex', tabIndex);
+    let d = document.getElementById('newButton');
+    if (d) {
+      d.clk = function (id, text, type) { openTab(id, text, type); };
+    }
   }, []);
 
   const handleChange = (event, newValue) => {
@@ -56,33 +66,189 @@ export default function DrugsPage() {
     setSelectedTab(value)
     setTabIndex(tabIndex + 1)
   }
-  const createTab = () => {
-    createTabDrug();
-  }
-  const createTabDrug = ( drugId, text) => {
-    console.log(drugId);
-    const value = text;
-    console.log(value,tabIndex)
-    const newTab = {
-      label: text?text:'New Drug',
-      value: value?value:tabIndex,
-      idx: tabIndex,
-      child: () => <Drug drugId={drugId}   />
+
+  const onOpenTabClick = () => {
+    console.log('onOpenTabClick')
+    if (window.angel && window.angel.userId && window.angel.tabType === 'nurses') {
+      createTab('nurses', window.angel.tabName, window.angel.userId);
+      window.angel.userId = null;
+      window.angel.tabType = null;
+      window.angel.tabName = null;
+    } else if (window.angel && window.angel.userId && window.angel.tabType === 'doctors') {
+      createTab('doctors', window.angel.tabName, window.angel.userId);
+      window.angel.userId = null;
+      window.angel.tabType = null;
+      window.angel.tabName = null;
+    } else if (window.angel && window.angel.userId && window.angel.tabType === 'treatments') {
+      createTab('treatments', window.angel.tabName, window.angel.userId);
+      window.angel.userId = null;
+      window.angel.tabType = null;
+      window.angel.tabName = null;
+    } else if (window.angel && window.angel.treatmentId && window.angel.tabType === 'treatment') {
+      createTab('treatment', window.angel.tabName, window.angel.treatmentId);
+      window.angel.treatmentId = null;
+      window.angel.tabType = null;
+      window.angel.tabName = null;
+    } else if (window.angel && window.angel.nurseId) {
+      createTab('nurse_patients', window.angel.tabName, window.angel.nurseId);
+      window.angel.nurseId = null;
+      window.angel.tabType = null;
+      window.angel.tabName = null;
+    } else if (window.angel && window.angel.treatmentId && window.angel.tabType === 'treatments') {
+      createTab('treatment_patients', window.angel.tabName, window.angel.treatmentId);
+      window.angel.treatmentId = null;
+      window.angel.tabType = null;
+      window.angel.tabName = null;
+    } else if (window.angel && window.angel.drugId && window.angel.tabType === 'drug_treatments') {
+      createTab('drug_treatments', window.angel.tabName, window.angel.drugId);
+      window.angel.drugId = null;
+      window.angel.tabType = null;
+      window.angel.tabName = null;
+    } else if (window.angel && window.angel.doctorId) {
+      createTab('doc_patients', window.angel.tabName, window.angel.doctorId);
+      window.angel.doctorId = null;
+      window.angel.tabType = null;
+      window.angel.tabName = null;
+    } else if (window.angel && window.angel.userId && window.angel.tabType === 'doctor') {
+      createTab('doctor', window.angel.tabName, window.angel.userId);
+      window.angel.userId = null;
+      window.angel.tabType = null;
+      window.angel.tabName = null;
+    } else if (window.angel && window.angel.userId && window.angel.tabType === 'patient') {
+      createTab('patient', window.angel.tabName, window.angel.userId);
+      window.angel.userId = null;
+      window.angel.tabType = null;
+      window.angel.tabName = null;
+    } else if (window.angel && window.angel.userId && window.angel.tabType === 'nurse') {
+      createTab('nurse', window.angel.tabName, window.angel.userId);
+      window.angel.userId = null;
+      window.angel.tabType = null;
+      window.angel.tabName = null;
+    } else {
+      createTab('drug', 'New Drug');
     }
-    setTabs([...tabs, newTab])
-    handleTabOptions( value?value:tabIndex);
+  }
+  const getTab = (v) => {
+    for (let i = 0; i < tabs.length; i++) {
+      if (tabs[i].value == v) {
+        return tabs[i];
+      }
+    }
+    return null;
   }
   const handleCloseTab = (event, idx) => {
     event.stopPropagation();
     const tabArr = tabs.filter(x => x.idx !== idx)
     setTabs(tabArr)
     setSelectedTab('Main');
-}
-  const openDrugDrugTab = (drugId) => {
+  }
+
+  const createTab = (type, text, id) => {
+    console.log('createTab', type, text, id)
+    const value = text;
+    let tab = getTab(value);
+    let newTab = null;
+    if (tab) {
+      setSelectedTab(tab.value);
+    } else {
+      newTab = {
+        label: text,
+        value: value ? value : tabIndex,
+        idx: tabIndex,
+        child: () => {
+          switch (type) {
+            case 'nurse':
+              return <NurseContainer userId={id} />
+            case 'patient':
+              return <Patient userId={id} />
+            case 'treatment_patients':
+              return <Patients treatmentId={id} />
+            case 'drug_treatments':
+              return <Treatments drugId={id} />
+            case 'nurse_patients':
+              return <Patients nurseId={id} openNurses={() => setSelectedTab('Main')} openDoctors={() => setSelectedTab('Main')} openTreatments={() => setSelectedTab('Main')} />
+            case 'doc_patients':
+              return <Patients doctorId={id} openDoctors={() => setSelectedTab('Main')} openNurses={() => setSelectedTab('Main')} openTreatments={() => setSelectedTab('Main')} />
+            case 'doctors':
+              return <Doctors patientId={id} openPatients={openTab} />
+            case 'nurses':
+              return <Nurses patientId={id} openPatients={openTab} />
+            case 'treatments':
+              return <Treatments patientId={id} />
+            case 'treatment':
+              return <Treatment treatmentId={id} />
+          }
+        }
+      }
+      setTabs([...tabs, newTab])
+      handleTabOptions(value ? value : tabIndex);
+    }
+  }
+  const openTab = (id, text, type) => {
+    console.log('openTab', type, text, id)
     if (!window.angel) {
       window.angel = {};
     }
-    window.angel.drugId = drugId;
+    switch (type) {
+      case 'doctor':
+        window.angel.userId = id;
+        window.angel.tabType = 'doctor';
+        window.angel.tabName = 'Doc ' + text;
+        break;
+      case 'patient':
+        window.angel.userId = id;
+        window.angel.tabType = 'patient';
+        window.angel.tabName = 'patient ' + text;
+        break;
+      case 'nurse':
+        window.angel.userId = id;
+        window.angel.tabType = 'nurse';
+        window.angel.tabName = 'Nurse ' + text;
+        break;
+      case 'patient_doctors':
+        window.angel.userId = id;
+        window.angel.tabType = 'doctors';
+        window.angel.tabName = 'Doctors of ' + text;
+        break;
+      case 'patient_nurses':
+        window.angel.userId = id;
+        window.angel.tabType = 'nurses';
+        window.angel.tabName = 'Nurses of ' + text;
+        break;
+      case 'nurse_patients':
+        window.angel.nurseId = id;
+        window.angel.tabName = 'Patients of ' + text;
+        break;
+      case 'doc_patients':
+        window.angel.doctorId = id;
+        window.angel.tabName = 'Patients of Doc ' + text;
+        break;
+      case 'drug_treatments':
+        window.angel.tabType = 'drug_treatments';
+        window.angel.drugId = id;
+        window.angel.tabName = 'Treatments assigned to ' + text;
+        break;
+      case 'treatment_patients':
+        window.angel.tabType = 'treatments';
+        window.angel.treatmentId = id;
+        window.angel.tabName = 'Patients of ' + text;
+        break;
+      case 'doctors':
+        window.angel.userId = id;
+        window.angel.tabType = 'doctors';
+        window.angel.tabName = 'Doctors of ' + text;
+        break;
+      case 'treatments':
+        window.angel.userId = id;
+        window.angel.tabType = 'treatments';
+        window.angel.tabName = 'Treatments of ' + text;
+        break;
+      case 'treatment':
+        window.angel.treatmentId = id;
+        window.angel.tabType = 'treatment';
+        window.angel.tabName = 'Treatment ' + text;
+        break;
+    }
     newDrugBtn.current.click();
   }
   return (
@@ -90,25 +256,29 @@ export default function DrugsPage() {
       <Box sx={{ display: 'flex' }}>
         <Bar open={setOpen} />
         <Main open={open} style={{ background: "rgb(229 229 229 / 41%)", marginBlock: "64px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <div style={{ marginBlock: "20px", width: "70%" }}>
-              <Input icon={<SearchIcon sx={{ color: "action.active", mr: 1, my: 0.5 }} />} type="Outlined" text=" Search" />
-            </div>
-            <Button variant="outlined" style={{ color: "black" }} onClick={createTab} ref={newDrugBtn} >
-              <PeopleIcon style={{ marginInline: "3px" }} /> Add drug</Button>
-          </div>
+          <Grid container spacing={2} mb={'0px'} >
+            <Grid item xs={12} md={6} xl={6} >
+              <Typography variant="h6" component="div" >
+                Drugs
+              </Typography>
+            </Grid>
+            <Grid item xs={12} md={6} xl={6} textAlign={'end'}  >
+              <Button variant="outlined" onClick={onOpenTabClick} ref={newDrugBtn} justifyContent="flex-end" id="newButton">
+                <PeopleIcon /> Add Drug</Button>
+            </Grid>
+          </Grid>
           <Box sx={{ width: '100%' }}>
             <TabContext value={selectedTab ? selectedTab : '1'}>
               <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <TabList onChange={handleChange} aria-label="" variant="scrollable" scrollButtons="auto" >
-                  <Tab label="Drugs" value="Main" icon={<RefreshIcon />} iconPosition="end" />
+                  <Tab label="List" value="Main" icon={<FormatListBulletedIcon />} iconPosition="end" />
                   {tabs.map(tab => (
                     <Tab key={tab.idx} label={tab.label} value={tab.value} icon={<Cancel onClick={(e) => handleCloseTab(e, tab.idx)} />} iconPosition="end" />
                   ))}
                 </TabList>
               </Box>
               <TabPanel value="Main" style={{ padding: "1px" }}>
-                <Drugs openDrug={createTabDrug} />
+                <Drugs openDrug={openTab} />
               </TabPanel>
               {tabs.map(panel => (
                 <TabPanel key={panel.idx} label={panel.label} value={panel.value} >

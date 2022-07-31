@@ -51,10 +51,10 @@ export default function PatientsPage() {
 
   React.useEffect(() => {
     console.log('useEffect patients page');
-    let d = document.getElementById('newButton'); 
-     if(d) {
-      d.clk = function(id, text, type) {openTab(id, text, type);}; 
-     } 
+    let d = document.getElementById('newButton');
+    if (d) {
+      d.clk = function (id, text, type) { openTab(id, text, type); };
+    }
   });
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);
@@ -84,12 +84,17 @@ export default function PatientsPage() {
       window.angel.nurseId = null;
       window.angel.tabType = null;
       window.angel.tabName = null;
+    } else if (window.angel && window.angel.treatmentId && window.angel.tabType === 'treatments') {
+      createTab('treatment_patients', window.angel.tabName, window.angel.treatmentId);
+      window.angel.treatmentId = null;
+      window.angel.tabType = null;
+      window.angel.tabName = null;
     } else if (window.angel && window.angel.doctorId) {
       createTab('doc_patients', window.angel.tabName, window.angel.doctorId);
       window.angel.doctorId = null;
       window.angel.tabType = null;
       window.angel.tabName = null;
-    }  else if (window.angel && window.angel.userId && window.angel.tabType === 'doctor') {
+    } else if (window.angel && window.angel.userId && window.angel.tabType === 'doctor') {
       createTab('doctor', window.angel.tabName, window.angel.userId);
       window.angel.userId = null;
       window.angel.tabType = null;
@@ -99,7 +104,7 @@ export default function PatientsPage() {
       window.angel.userId = null;
       window.angel.tabType = null;
       window.angel.tabName = null;
-    }  else if (window.angel && window.angel.userId && window.angel.tabType === 'nurse') {
+    } else if (window.angel && window.angel.userId && window.angel.tabType === 'nurse') {
       createTab('nurse', window.angel.tabName, window.angel.userId);
       window.angel.userId = null;
       window.angel.tabType = null;
@@ -123,7 +128,7 @@ export default function PatientsPage() {
     setSelectedTab('Main');
   }
 
-  const createTab = (type, text, userId) => {
+  const createTab = (type, text, id) => {
     const value = text;
     let tab = getTab(value);
     let newTab = null;
@@ -137,19 +142,21 @@ export default function PatientsPage() {
         child: () => {
           switch (type) {
             case 'nurse':
-              return <NurseContainer userId={userId} />
+              return <NurseContainer userId={id} />
             case 'patient':
-              return <Patient userId={userId} />
+              return <Patient userId={id} />
+            case 'treatment_patients':
+              return <Patients treatmentId={id} />
             case 'nurse_patients':
-              return <Patients openUser={openPatientTab} nurseId={userId} openNurses={() => setSelectedTab('Main')}  openDoctors={() => setSelectedTab('Main')} openTreatments={() => setSelectedTab('Main')}/>
+              return <Patients openUser={openPatientTab} nurseId={id} openNurses={() => setSelectedTab('Main')} openDoctors={() => setSelectedTab('Main')} openTreatments={() => setSelectedTab('Main')} />
             case 'doc_patients':
-              return <Patients openUser={openPatientTab} doctorId={userId} openDoctors={() => setSelectedTab('Main')} openNurses={() => setSelectedTab('Main')} openTreatments={() => setSelectedTab('Main')} />
+              return <Patients openUser={openPatientTab} doctorId={id} openDoctors={() => setSelectedTab('Main')} openNurses={() => setSelectedTab('Main')} openTreatments={() => setSelectedTab('Main')} />
             case 'doctors':
-              return <Doctors patientId={userId} openPatients={openTab} />
+              return <Doctors patientId={id} openPatients={openTab} />
             case 'nurses':
-              return <Nurses patientId={userId} openPatients={openTab} />
+              return <Nurses patientId={id} openPatients={openTab} />
             case 'treatments':
-              return <Treatments patientId={userId} />
+              return <Treatments patientId={id} />
           }
         }
       }
@@ -195,6 +202,11 @@ export default function PatientsPage() {
       case 'doc_patients':
         window.angel.doctorId = id;
         window.angel.tabName = 'Patients of Doc ' + text;
+        break;
+      case 'treatment_patients':
+        window.angel.tabType = 'treatments';
+        window.angel.treatmentId = id;
+        window.angel.tabName = 'Patients of ' + text;
         break;
       case 'doctors':
         window.angel.userId = id;

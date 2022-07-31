@@ -22,6 +22,23 @@ import AngelDrug from "../api/angel/drugs";
 import AngelTreatment from '../api/angel/treatments';
 import { useSnackbar } from 'notistack';
 
+import { Button, Grid } from '@mui/material';
+import InputAdornment from '@mui/material/InputAdornment';
+import TextField from '@mui/material/TextField';
+import SearchIcon from '@mui/icons-material/Search';
+import BiotechIcon from '@mui/icons-material/Biotech';
+
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import Modal from '@mui/material/Modal';
+
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
+import HealingIcon from '@mui/icons-material/Healing';
+import HailIcon from '@mui/icons-material/Hail';
+import AngelNurse from '../api/angel/nurse';
+
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -49,6 +66,17 @@ function stableSort(array, comparator) {
   });
   return stabilizedThis.map((el) => el[0]);
 }
+const styleModal = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
 
 const headCells = [
   {
@@ -74,6 +102,17 @@ const headCells = [
     numeric: false,
     disablePadding: false,
     label: 'Created',
+  }, {
+    id: 'treatments',
+    numeric: false,
+    disablePadding: false,
+    label: 'Treatments',
+  },
+  {
+    id: 'laboratory',
+    numeric: false,
+    disablePadding: false,
+    label: 'Laboratory',
   }
 ];
 
@@ -131,7 +170,6 @@ EnhancedTableHead.propTypes = {
 
 const EnhancedTableToolbar = (props) => {
   const { numSelected } = props;
-
   return (
     <Toolbar
       sx={{
@@ -148,41 +186,47 @@ const EnhancedTableToolbar = (props) => {
           sx={{ flex: '1 1 100%' }}
           color='inherit'
           variant='subtitle1'
-          component='div'
-        >
+          component='div' >
           {numSelected} selected
         </Typography>
-      ) : (
-        <Typography
-          sx={{ flex: '1 1 100%' }}
-          variant='h6'
-          id='tableTitle'
-          component='div'
-        >
-
-        </Typography>
+      ) : (<></>
       )}
-
       {numSelected > 0 ? (
-        <Tooltip title='Delete' >
+        <Tooltip title='Delete'>
           <IconButton onClick={props.onDeleteItems}>
             <DeleteIcon />
           </IconButton>
         </Tooltip>
-      ) : (
-        <Tooltip title='Filter list'>
-          <IconButton>
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
+      ) : (<Grid container >
+        <Grid item md={12}>
+          <TextField
+            id="input-with-icon-textfield"
+            onChange={(e) => props.setSearch(e.target.value)}
+            label="Search"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <Button id="search" onClick={() => props.onSearch()} variant="outlined" style={{ marginBottom: '9px', marginRight: '5px' }}><SearchIcon /></Button>
+                  <Button id="openfilterModal" onClick={() => props.onOpenFilterModal()} variant="outlined" style={{ marginBottom: '9px' }}><FilterListIcon /></Button>
+                </InputAdornment>
+              ),
+            }}
+            variant="standard"
+          />
+        </Grid>
+      </Grid>
       )}
     </Toolbar>
   );
 };
 
-EnhancedTableToolbar.propTypes = {
+EnhancedTableHead.propTypes = {
   numSelected: PropTypes.number.isRequired,
-  onDeleteItems: PropTypes.func,
+  onRequestSort: PropTypes.func.isRequired,
+  onSelectAllClick: PropTypes.func.isRequired,
+  order: PropTypes.oneOf(['asc', 'desc']).isRequired,
+  orderBy: PropTypes.string.isRequired,
+  rowCount: PropTypes.number.isRequired,
 };
 export default function Drugs(props) {
 
@@ -200,31 +244,17 @@ export default function Drugs(props) {
   const [rows, setRows] = React.useState([]);
   const { enqueueSnackbar } = useSnackbar();
 
+  const [openFilterModal, setOpenFilterModal] = React.useState(false);
+
+  const [searchFilter, setSearchFilter] = React.useState('');
+  const [codeFilter, setCodeFilter] = React.useState(true);
+  const [nameFilter, setNameFilter] = React.useState(true);
+
   React.useEffect(() => {
     console.log('useEffect Drugs list container')
     
     fetchData();
   }, []);
-  const fetchData = async () => {
-    const u = [];
-    const f = {  limit: limit, page: page, lang_id: 'en' };
-    let r = null;
-    if(props.treatmentId) {
-      f.treatment_id = props.treatmentId;
-      r = await AngelTreatment().drugs(f);
-    } else {
-      r = await AngelDrug().list(f);
-    }
-   
-    if (r.drugs && r.drugs.length) {
-      for (let i = 0; i < r.drugs.length; i++) {
-        u.push(createData(r.drugs[i].drug_id,r.drugs[i].drug_name, r.drugs[i].drug_code, r.drugs[i].date_created));
-      }
-      setRows(u);
-      setDrugs(r.drugs);
-      setTotal(r.total);
-    }
-  }
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -239,6 +269,44 @@ export default function Drugs(props) {
       created
     }
   }
+  const fetchData = async () => {
+    const u = [];
+    let  r = null ; //
+    let o = { limit: limit, page: page , lang_id: 'en'};
+
+    if (codeFilter) {
+      o.code = searchFilter;
+    } else {
+      o.code = null;
+    }
+    if (nameFilter) {
+      o.name = searchFilter;
+    } else {
+      o.name = null;
+    }
+    if(props.treatmentId) {
+      o.treatment_id = props.treatmentId;
+      r = await AngelTreatment().drugs(o);
+    } else {
+      r = await AngelDrug().list(o);
+    }
+   
+    if (r.drugs && r.drugs.length) {
+      for (let i = 0; i < r.drugs.length; i++) {
+        u.push(createData(r.drugs[i].drug_id,r.drugs[i].drug_name, r.drugs[i].drug_code, r.drugs[i].date_created));
+      }
+      setRows(u);
+      setDrugs(r.drugs);
+      setTotal(r.total);
+    } else {
+      setRows([]);
+      setDrugs([]);
+      setTotal(0);
+    }
+  }
+  const handleFiltersModal = () => setOpenFilterModal(true);
+  const handleCloseFilterModal = () => setOpenFilterModal(false);
+
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
       const newSelecteds = rows.map((n) => n.id);
@@ -277,6 +345,19 @@ export default function Drugs(props) {
     }
   }
 
+  const search = (variant, text) => {
+    // variant could be success, error, warning, info, or default
+    fetchData();
+  };
+  const handleCodeFilter = (event) => {
+    setCodeFilter(event.target.checked);
+  };
+  const handleNameFilter = (event) => {
+    setNameFilter(event.target.checked);
+  };
+  const handleSearchText = (txt) => {
+    setSearchFilter(txt);
+  };
   const handleClickVariant = (variant, text) => {
     // variant could be success, error, warning, info, or default
     enqueueSnackbar(text, { variant });
@@ -286,9 +367,27 @@ export default function Drugs(props) {
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
   return (
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <div>
+        <Modal
+          open={openFilterModal}
+          onClose={handleCloseFilterModal}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description">
+          <Box sx={styleModal}>
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              Filters
+            </Typography>
+            <FormGroup>
+              <FormControlLabel control={<Checkbox checked={codeFilter} onChange={handleCodeFilter} />} label="Code" />
+              <FormControlLabel control={<Checkbox checked={nameFilter} onChange={handleNameFilter} />} label="Name" />
+            </FormGroup>
+          </Box>
+        </Modal>
+      </div>
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 0 }}>
-        <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems}/>
+      <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
@@ -355,6 +454,22 @@ export default function Drugs(props) {
                         padding='none'>
                         {row.created}
                       </TableCell>
+                      <TableCell
+                        component='th'
+                        id={labelId}
+                        style={{ textAlign: 'center' }}
+                        scope='row'
+                        padding='none'>
+                        <HealingIcon  style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.id, row.code + ' ' + row.name,'drug_treatments')} />
+                      </TableCell>
+                      <TableCell
+                        component='th'
+                        id={labelId}
+                        style={{ textAlign: 'center' }}
+                        scope='row'
+                        padding='none'>
+                       <BiotechIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.id, row.code + ' ' + row.name,'laboratories')} />
+                      </TableCell>
                     </TableRow>
                   );
                 })}
@@ -381,5 +496,5 @@ export default function Drugs(props) {
         />
       </Paper>
     </Box>
-  );
+  </LocalizationProvider>);
 }
