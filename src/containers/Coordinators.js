@@ -18,13 +18,8 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
-
 import AngelUser from '../api/angel/user';
-import AngelPatient from '../api/angel/patient';
-import AngelDoctor from '../api/angel/doctor';
-import AngelTreatment from '../api/angel/treatments';
-import { Avatar } from '@mui/material';
-import { Grid } from '@material-ui/core';
+import { Avatar, Grid } from '@mui/material';
 import { useSnackbar } from 'notistack';
 
 import { Button } from '@mui/material';
@@ -37,10 +32,7 @@ import Modal from '@mui/material/Modal';
 
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
-import HealingIcon from '@mui/icons-material/Healing';
-import HailIcon from '@mui/icons-material/Hail';
-import AngelNurse from '../api/angel/nurse';
+
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -69,6 +61,7 @@ function stableSort(array, comparator) {
   });
   return stabilizedThis.map((el) => el[0]);
 }
+const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp0LF2WgeDkn_sQ1VuMnlnVGjkDvCN4jo2nLMt3b84ry328rg46eohB_JT3WTqOGJovY&usqp=CAU';//process.env.SENDGRID_APIKEY
 
 const styleModal = {
   position: 'absolute',
@@ -113,23 +106,22 @@ const headCells = [
     disablePadding: false,
     label: 'Téléphone',
   }, {
-    id: 'nurse',
+    id: 'lang',
     numeric: false,
     disablePadding: false,
-    label: 'Nurses',
+    label: 'Langue',
   }, {
-    id: 'doctor',
+    id: 'role',
     numeric: false,
     disablePadding: false,
-    label: 'Doctors',
+    label: 'Role',
   }, {
-    id: 'treatments',
+    id: 'active',
     numeric: false,
     disablePadding: false,
-    label: 'Treatments',
+    label: 'Actif',
   },
 ];
-
 function EnhancedTableHead(props) {
   const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
@@ -144,7 +136,7 @@ function EnhancedTableHead(props) {
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
-            inputProps={{ 'aria-label': 'select all Patients' }}
+            inputProps={{ 'aria-label': 'select all Coordinators' }}
           />
         </TableCell>
         {headCells.map((headCell) => (
@@ -152,11 +144,13 @@ function EnhancedTableHead(props) {
             key={headCell.id}
             align={headCell.numeric ? 'left' : 'center'}
             padding={headCell.disablePadding ? 'none' : 'normal'}
-            sortDirection={orderBy === headCell.id ? order : false}>
+            sortDirection={orderBy === headCell.id ? order : false}
+          >
             <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : 'asc'}
-              onClick={createSortHandler(headCell.id)}>
+              onClick={createSortHandler(headCell.id)}
+            >
               {headCell.label}
               {orderBy === headCell.id ? (
                 <span style={{ border: 0, clip: 'rect(0 0 0 0)', height: '1px', margin: -1, overflow: 'hidden', padding: 0, whiteSpace: "nowrap", width: "1px", position: "absolute" }}>
@@ -179,7 +173,6 @@ EnhancedTableHead.propTypes = {
   orderBy: PropTypes.string.isRequired,
   rowCount: PropTypes.number.isRequired,
 };
-const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp0LF2WgeDkn_sQ1VuMnlnVGjkDvCN4jo2nLMt3b84ry328rg46eohB_JT3WTqOGJovY&usqp=CAU';//process.env.SENDGRID_APIKEY
 
 const EnhancedTableToolbar = (props) => {
   const { numSelected } = props;
@@ -240,14 +233,14 @@ EnhancedTableToolbar.propTypes = {
   onOpenFilterModal: PropTypes.func,
   setSearch: PropTypes.func,
 };
-
-export default function Patients(props) {
+export default function Coordinators(props) {
 
   const { enqueueSnackbar } = useSnackbar();
+  const [coordinators, setCoordinators] = React.useState(null);
+
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
   const [limit, setLimit] = React.useState(5);
-  const [patients, setPatients] = React.useState([]);
 
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('id');
@@ -265,10 +258,10 @@ export default function Patients(props) {
   const [phoneFilter, setPhoneFilter] = React.useState(false);
 
   React.useEffect(() => {
-    console.log('useEffect Patients list', props.users)
-    const users = props.users;
+    console.log('useEffect Coordinators list container')
+
     fetchData();
-  }, [props.users]);
+  }, []);
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -295,51 +288,41 @@ export default function Patients(props) {
       limit: limit,
       page: page
     };
-    if(firstnameFilter) {
+    if (firstnameFilter) {
       o.firstname = searchFilter;
     } else {
       o.firstname = null;
     }
-    if(lastnameFilter) {
+    if (lastnameFilter) {
       o.lastname = searchFilter;
     } else {
       o.lastname = null;
     }
-    if(emailFilter) {
+    if (emailFilter) {
       o.email = searchFilter;
     } else {
       o.email = null;
     }
-    if(phoneFilter) {
+    if (phoneFilter) {
       o.phone = searchFilter;
     } else {
       o.phone = null;
     }
-    if (props.nurseId) {
-      o.nurse_id = props.nurseId;
-      r = await AngelNurse().patients(o);
-    } else if (props.doctorId) {
-      o.doctorId = props.doctorId;
-      r = await AngelDoctor().patients(o);
-    } else if (props.treatmentId) {
-      o.treatmentId = props.treatmentId;
-      r = await AngelTreatment().patients(o);
-    } else {
-      r = await AngelPatient().list(o);
-    }
+    r = await AngelUser().coordinators(o);
     if (r.users && r.users.length) {
       for (let i = 0; i < r.users.length; i++) {
         u.push(createData(r.users[i].user_id, r.users[i].id, r.users[i].firstname, r.users[i].lastname, r.users[i].email, r.users[i].phone, r.users[i].lang, r.users[i].role, r.users[i].active, r.users[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.users[i].avatar : defaultAvatar));
       }
       setRows(u);
-      setPatients(r.users);
+      setCoordinators(r.users);
       setTotal(r.total);
     } else {
       setRows([]);
-      setPatients([]);
+      setCoordinators([]);
       setTotal(0);
     }
   }
+
   const handleFiltersModal = () => setOpenFilterModal(true);
   const handleCloseFilterModal = () => setOpenFilterModal(false);
 
@@ -374,8 +357,8 @@ export default function Patients(props) {
   const onDeleteItems = async () => {
     if (selected.length) {
       await AngelUser().delete({ ids: selected.join(',') });
-      handleClickVariant('success', 'Doctor(s) well deleted');
-      await fetchData();
+      handleClickVariant('success', 'Coordinator(s) well deleted');
+      fetchData();
     }
   }
   const handleClickVariant = (variant, text) => {
@@ -384,9 +367,7 @@ export default function Patients(props) {
   };
   const isSelected = (id) => selected.indexOf(id) !== -1;
 
-  // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
   const search = (variant, text) => {
     // variant could be success, error, warning, info, or default
@@ -407,6 +388,7 @@ export default function Patients(props) {
   const handleSearchText = (txt) => {
     setSearchFilter(txt);
   };
+
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <div>
@@ -420,17 +402,17 @@ export default function Patients(props) {
               Filters
             </Typography>
             <FormGroup>
-              <FormControlLabel control={<Checkbox checked={firstnameFilter} onChange={handleFirstnameFilter}/>} label="Firstname" />
-              <FormControlLabel control={<Checkbox checked={lastnameFilter} onChange={handleLastnameFilter}/>} label="Lastname" />
-              <FormControlLabel control={<Checkbox checked={emailFilter} onChange={handleEmailFilter}/>} label="Email" />
-              <FormControlLabel control={<Checkbox checked={phoneFilter} onChange={handlePhoneFilter}/>} label="Phone" />
+              <FormControlLabel control={<Checkbox checked={firstnameFilter} onChange={handleFirstnameFilter} />} label="Firstname" />
+              <FormControlLabel control={<Checkbox checked={lastnameFilter} onChange={handleLastnameFilter} />} label="Lastname" />
+              <FormControlLabel control={<Checkbox checked={emailFilter} onChange={handleEmailFilter} />} label="Email" />
+              <FormControlLabel control={<Checkbox checked={phoneFilter} onChange={handlePhoneFilter} />} label="Phone" />
             </FormGroup>
           </Box>
         </Modal>
       </div>
       <Box sx={{ width: '100%' }}>
         <Paper sx={{ width: '100%', mb: 0 }}>
-          <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
+        <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
           <TableContainer>
             <Table
               sx={{ minWidth: 750 }}
@@ -448,33 +430,32 @@ export default function Patients(props) {
               <TableBody>
                 {stableSort(rows, getComparator(order, orderBy))
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => {
+                  .map((row, index) => {
                     const isItemSelected = isSelected(row.user_id);
-                    const labelId = `enhanced-table-checkbox-${row.user_id}`;
+                    const labelId = `enhanced-table-checkbox-${index}`;
                     return (
                       <TableRow
                         hover
-                        onDoubleClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname,'patient')}
+                        onClick={(event) => handleClick(event, row.user_id)}
+                        onDoubleClick={() => props.openUser(row.user_id, row.firstname + ' ' + row.lastname)}
                         role="checkbox"
                         aria-checked={isItemSelected}
                         tabIndex={-1}
                         key={row.id}
-                        selected={isItemSelected}
-                      >
+                        selected={isItemSelected}>
                         <TableCell padding="checkbox">
                           <Checkbox
-                            onClick={(event) => handleClick(event, row.user_id)}
                             checked={isItemSelected}
                             inputProps={{ 'aria-labelledby': labelId }}
                           />
                         </TableCell>
-                        <TableCell component="th" id={labelId} scope="row" padding="none" align='left' >
+                        <TableCell component="th" id={labelId} scope="row" padding="none" align='left'>
                           <Grid container spacing={2}>
                             <Grid item xs={1} textAlign={'start'} style={{ marginTop: '10px', fontWeight: 'bold' }}>
                               {row.id}
                             </Grid>
                             <Grid item xs={1} style={{ cursor: 'pointer' }}>
-                              <Avatar src={row.avatar} textAlign={'start'} onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname,'patient')} />
+                              <Avatar src={row.avatar} textAlign={'start'} onClick={() => props.openUser(row.user_id, row.firstname + ' ' + row.lastname)} />
                             </Grid>
                           </Grid>
                         </TableCell>
@@ -519,7 +500,7 @@ export default function Patients(props) {
                           scope='row'
                           style={{ textAlign: 'center' }}
                           padding='none' >
-                          <EmojiPeopleIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname,'patient_nurses')}  />
+                          {row.lang}
                         </TableCell>
                         <TableCell
                           component='th'
@@ -527,7 +508,7 @@ export default function Patients(props) {
                           scope='row'
                           style={{ textAlign: 'center' }}
                           padding='none' >
-                          <HailIcon  style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname,'patient_doctors')} />
+                          {row.role}
                         </TableCell>
                         <TableCell
                           component='th'
@@ -535,7 +516,7 @@ export default function Patients(props) {
                           scope='row'
                           style={{ textAlign: 'center' }}
                           padding='none' >
-                         <HealingIcon  style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname,'treatments')} />
+                          {row.active}
                         </TableCell>
                       </TableRow>
                     );

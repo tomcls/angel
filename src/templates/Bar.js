@@ -1,6 +1,6 @@
 import React from "react";
-import { styled, useTheme,createTheme, ThemeProvider } from '@mui/material/styles';
-import {  NavLink } from 'react-router-dom';
+import { styled, useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
+import { NavLink } from 'react-router-dom';
 import { frFR, enUS, nlNL } from '@mui/material/locale';
 import { useNavigate } from 'react-router-dom';
 import Drawer from '@mui/material/Drawer';
@@ -34,11 +34,15 @@ import MenuList from '@mui/material/MenuList';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import SickIcon from '@mui/icons-material/Sick';
 import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
-
+import Collapse from '@mui/material/Collapse';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import StarBorder from '@mui/icons-material/StarBorder';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import DashboardIcon from '@mui/icons-material/Dashboard';
 
+import ListSubheader from '@mui/material/ListSubheader';
 import AppStyle from "./style";
 
 const drawerWidth = 240;
@@ -84,13 +88,17 @@ export default function Bar(props) {
   const anchorRef = React.useRef(null);
   const [user, setUser] = React.useState(null);
 
+  const [openUserDown, setOpenUserDown] = React.useState(true);
+  const [openTreatmentDown, setOpenTreatmentDown] = React.useState(true);
+  const [openEffectDown, setOpenEffectDown] = React.useState(true);
+  const [openFactoriesDown, setOpenFactoriesDown] = React.useState(false);
   React.useEffect(() => {
-    
+
     const u = validateCredentials();
     if (u) {
       setUser(u);
     }
-    console.log('useEffect Bar',u)
+    console.log('useEffect Bar', u, props)
     if (prevOpen.current === true && openProfile === false) {
       anchorRef.current.focus();
     }
@@ -138,6 +146,22 @@ export default function Bar(props) {
     }
     navigate('/login', { replace: true }); return;
   }
+  const handleUserClick = () => {
+    console.log(openUserDown)
+    setOpenUserDown(!openUserDown);
+  };
+  const handleTreatmentClick = () => {
+    console.log(openTreatmentDown)
+    setOpenTreatmentDown(!openTreatmentDown);
+  };
+  const handleEffectClick = () => {
+    console.log(openEffectDown)
+    setOpenEffectDown(!openEffectDown);
+  };
+  const handleFactoriesClick = () => {
+    console.log(openFactoriesDown)
+    setOpenFactoriesDown(!openFactoriesDown);
+  };
   return (<ThemeProvider theme={drawerTheme}>
     <CssBaseline />
     <AppBar position="fixed" open={open} style={{ color: "white", backgroundColor: "#24292e", boxShadow: "unset", display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
@@ -163,7 +187,7 @@ export default function Bar(props) {
             onClick={handleToggle}
             style={{ marginInline: "15px" }}>
             <Avatar sx={{ width: 40, height: 40 }}
-             src={user && user.avatar ? process.env.REACT_APP_API_URL+'/public/uploads/'+user.avatar :defaultAvatar} />
+              src={user && user.avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + user.avatar : defaultAvatar} />
             <Typography style={{ fontSize: "16px", color: "white", marginInline: "15px" }} component={'span'}>
 
               {user && user.id ? user.firstname : ''} {user && user.id ? user.lastname : ''}
@@ -196,7 +220,7 @@ export default function Bar(props) {
                       id="composition-menu"
                       aria-labelledby="composition-button"
                       onKeyDown={handleListKeyDown}>
-                      <MenuItem component={NavLink} exact="true" to="/settings"> <SettingsIcon style={{ marginInline: "10px" }}  /> Settings</MenuItem>
+                      <MenuItem component={NavLink} exact="true" to="/settings"> <SettingsIcon style={{ marginInline: "10px" }} /> Settings</MenuItem>
                       <MenuItem onClick={logout}> <LogoutIcon style={{ marginInline: "10px" }} /> Log out</MenuItem>
                     </MenuList>
                   </ClickAwayListener>
@@ -232,119 +256,135 @@ export default function Bar(props) {
           {theme.direction === 'ltr' ? <ChevronLeftIcon color={'drawerIconDark'} /> : <ChevronRightIcon color={'drawerIconDark'} />}
         </IconButton>
       </DrawerHeader>
-      <List>
-        <ListItem  >
-          <ListItemButton component={NavLink} exact="true" to="/dashboard"   >
+      <List sx={{ width: '100%', maxWidth: 360 }}
+        component="nav"
+        aria-labelledby="nested-list-subheader"
+      >
+
+        <ListItemButton component={NavLink} exact="true" to="/dashboard"   >
+          <ListItemIcon>
+            <DashboardIcon />
+          </ListItemIcon>
+          <ListItemText primary={"Dashboard"} />
+        </ListItemButton>
+
+
+        <ListItemButton component={NavLink} exact="true" to="/notifications">
+          <ListItemIcon>
+            <NotificationsNoneIcon />
+          </ListItemIcon>
+          <ListItemText primary={"Notifications"} />
+        </ListItemButton>
+
+
+        <ListItemButton onClick={handleUserClick}>
+          <ListItemText primary={"All users"} />
+          {openUserDown ? <ExpandLess /> : <ExpandMore />}
+        </ListItemButton>
+        <Collapse in={openUserDown} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/coordinators">
+              <ListItemIcon>
+                <FamilyRestroomIcon />
+              </ListItemIcon>
+              <ListItemText primary="Coordinators" />
+            </ListItemButton>
+            <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/patients">
+              <ListItemIcon>
+                <FamilyRestroomIcon />
+              </ListItemIcon>
+              <ListItemText primary="Patients" />
+            </ListItemButton>
+            <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/doctors">
+              <ListItemIcon>
+                <HailIcon />
+              </ListItemIcon>
+              <ListItemText primary={"Doctors"} />
+            </ListItemButton>
+            <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/nurses">
+              <ListItemIcon>
+                <EmojiPeopleIcon />
+              </ListItemIcon>
+              <ListItemText primary={"Nurses"} />
+            </ListItemButton>
+            <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/scientists">
+              <ListItemIcon>
+                <EmojiPeopleIcon />
+              </ListItemIcon>
+              <ListItemText primary={"Scientists"} />
+            </ListItemButton>
+          </List>
+        </Collapse>
+        <ListItemButton onClick={handleTreatmentClick}>
+          <ListItemText primary={"Treatments"} />
+          {openTreatmentDown ? <ExpandLess /> : <ExpandMore />}
+        </ListItemButton>
+        <Collapse in={openTreatmentDown} timeout="auto" unmountOnExit>
+          <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/drugs">
             <ListItemIcon>
-              <DashboardIcon />
-            </ListItemIcon>
-            <ListItemText primary={"Dashboard"}  />
-          </ListItemButton>
-        </ListItem>
-        <ListItem  >
-          <ListItemButton component={NavLink} exact="true" to="/notifications">
-            <ListItemIcon>
-              <NotificationsNoneIcon  />
-            </ListItemIcon>
-            <ListItemText primary={"Notifications"} />
-          </ListItemButton>
-        </ListItem>
-        <ListItem  >
-          <ListItemButton component={NavLink} exact="true" to="/patients">
-            <ListItemIcon>
-              <FamilyRestroomIcon  />
-            </ListItemIcon>
-            <ListItemText primary={"Patients"} />
-          </ListItemButton>
-        </ListItem>
-        <ListItem  >
-          <ListItemButton component={NavLink} exact="true" to="/doctors">
-            <ListItemIcon>
-              <HailIcon  />
-            </ListItemIcon>
-            <ListItemText primary={"Doctors"} />
-          </ListItemButton>
-        </ListItem>
-        <ListItem  >
-          <ListItemButton component={NavLink} exact="true" to="/nurses">
-            <ListItemIcon>
-              <EmojiPeopleIcon  />
-            </ListItemIcon>
-            <ListItemText primary={"Nurses"} />
-          </ListItemButton>
-        </ListItem>
-        <ListItem  >
-          <ListItemButton component={NavLink} exact="true" to="/scientists">
-            <ListItemIcon>
-              <EmojiPeopleIcon  />
-            </ListItemIcon>
-            <ListItemText primary={"Scientists"} />
-          </ListItemButton>
-        </ListItem>
-        <ListItem >
-          <ListItemButton component={NavLink} exact="true" to="/drugs">
-            <ListItemIcon>
-              <VaccinesIcon  />
+              <VaccinesIcon />
             </ListItemIcon>
             <ListItemText primary={"Drugs"} />
           </ListItemButton>
-        </ListItem>
-        <ListItem  >
-          <ListItemButton  component={NavLink} exact="true" to="/hospitals">
+          <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/treatments">
             <ListItemIcon>
-              <LocalHospitalIcon  />
-            </ListItemIcon>
-            <ListItemText primary={"Hospitals"} />
-          </ListItemButton>
-        </ListItem>
-        <ListItem  >
-          <ListItemButton component={NavLink} exact="true" to="/laboratories">
-            <ListItemIcon>
-              <BiotechIcon  />
-            </ListItemIcon>
-            <ListItemText primary={"Laboratories"} />
-          </ListItemButton>
-        </ListItem>
-        <ListItem  >
-          <ListItemButton component={NavLink} exact="true" to="/treatments">
-            <ListItemIcon>
-              <HealingIcon  />
+              <HealingIcon />
             </ListItemIcon>
             <ListItemText primary={"Treatments"} />
           </ListItemButton>
-        </ListItem>
-        <ListItem  >
-          <ListItemButton component={NavLink} exact="true" to="/side-effects">
+        </Collapse>
+
+        <ListItemButton onClick={handleEffectClick}>
+          <ListItemText primary={"Effects and moods"} />
+          {openEffectDown ? <ExpandLess /> : <ExpandMore />}
+        </ListItemButton>
+        <Collapse in={openEffectDown} timeout="auto" unmountOnExit>
+          <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/side-effects">
             <ListItemIcon>
-              <SickIcon  />
+              <SickIcon />
             </ListItemIcon>
             <ListItemText primary={"Side Effects"} />
           </ListItemButton>
-        </ListItem>
-        <ListItem  >
-          <ListItemButton component={NavLink} exact="true" to="/moods">
+          <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/moods">
             <ListItemIcon>
-              <MoodIcon  />
+              <MoodIcon />
             </ListItemIcon>
             <ListItemText primary={"Moods"} />
           </ListItemButton>
-        </ListItem>
-        <ListItem  >
-          <ListItemButton component={NavLink} exact="true" to="/survey-moods">
+          <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/survey-moods">
             <ListItemIcon>
-              <MoodIcon  />
+              <MoodIcon />
             </ListItemIcon>
             <ListItemText primary={"Survey Moods"} />
           </ListItemButton>
-        </ListItem>
-        <ListItem  >
-          <ListItemButton component={NavLink} exact="true" to="/settings">
+        </Collapse>
+
+        <ListItemButton onClick={handleFactoriesClick}>
+          <ListItemText primary={"Factories"} />
+          {openFactoriesDown ? <ExpandLess /> : <ExpandMore />}
+        </ListItemButton>
+        <Collapse in={openFactoriesDown} timeout="auto" unmountOnExit>
+          <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/hospitals">
             <ListItemIcon>
-              <SettingsIcon  />
+              <LocalHospitalIcon />
             </ListItemIcon>
-            <ListItemText primary={"Settings"} />
+            <ListItemText primary={"Hospitals"} />
           </ListItemButton>
-        </ListItem>
+          <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/laboratories">
+            <ListItemIcon>
+              <BiotechIcon />
+            </ListItemIcon>
+            <ListItemText primary={"Laboratories"} />
+          </ListItemButton>
+        </Collapse>
+
+        <ListItemButton component={NavLink} exact="true" to="/settings">
+          <ListItemIcon>
+            <SettingsIcon />
+          </ListItemIcon>
+          <ListItemText primary={"My settings"} />
+        </ListItemButton>
+
       </List>
     </Drawer>
   </ThemeProvider>

@@ -95,7 +95,7 @@ export default function DoctorContainer(props) {
                 setAvatar(user.avatar?process.env.REACT_APP_API_URL+'/public/uploads/'+user.avatar:defaultAvatar);
                 console.log(user.avatar?process.env.REACT_APP_API_URL+'/public/uploads/'+user.avatar:defaultAvatar)
                 setHospitalId(user.hospital_id);
-                setHospitalName(user.name);
+                setHospitalName(user.hospital_name);
                 if (user.daysin) {
                     setWeek(JSON.parse(user.daysin));
                 }
@@ -227,8 +227,9 @@ export default function DoctorContainer(props) {
     const onPatientSelect = (patientId) => {
         setAssignPatientId(patientId);
     }
-    const onHospitalSelect = (hospitalId) => {
-        setHospitalId(hospitalId);
+    const onHospitalSelect = (o) => {
+        setHospitalId(o.id);
+        setHospitalName(o.name);
     }
     const styleModal = {
         position: 'absolute',

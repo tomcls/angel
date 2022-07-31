@@ -2,7 +2,7 @@ import * as React from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import CircularProgress from '@mui/material/CircularProgress';
-import AngelHospital from '../api/angel/hospital';
+import AngelLaboratory from '../api/angel/laboratory';
 
 function sleep(delay = 0) {
   return new Promise((resolve) => {
@@ -10,7 +10,7 @@ function sleep(delay = 0) {
   });
 }
 
-export default function ComboHospitals(props) {
+export default function ComboLaboratories(props) {
   const [open, setOpen] = React.useState(false);
   const [options, setOptions] = React.useState([]);
   const loading = open && options.length === 0;
@@ -19,23 +19,18 @@ export default function ComboHospitals(props) {
   React.useEffect(() => {
       
     let active = true;
-    if(props.hospital) {
-        console.log(props.hospital, active)
-        setValue(props.hospital);
+    if(props.laboratory) {
+        console.log(props.laboratory, active)
+        setValue(props.laboratory);
     }
-        
     if (!loading) {
       return undefined;
     }
-
     (async () => {
-     // await sleep(1e2); 
-
       if (active) {
-       // setOptions([...topFilms]);
-        AngelHospital().list().then((results) => {
+       AngelLaboratory().list().then((results) => {
             console.log(results);
-            setOptions(results.hospitals)
+            setOptions(results.laboratories)
         });
       }
     })();
@@ -43,7 +38,7 @@ export default function ComboHospitals(props) {
     return () => {
       active = false;
     };
-  }, [loading,props.hospital]);
+  }, [loading,props.laboratory]);
 
   React.useEffect(() => {
 
@@ -54,7 +49,7 @@ export default function ComboHospitals(props) {
 
   return (
     <Autocomplete
-      id="hospitals-combo"
+      id="laboratories-combo"
       sx={{ width: 300 }}
       open={open}
       onOpen={() => {
@@ -79,7 +74,7 @@ export default function ComboHospitals(props) {
       renderInput={(params) => (
         <TextField
           {...params}
-          label="Hospitals"
+          label="Laboratories"
           InputProps={{
             ...params.InputProps,
             endAdornment: (

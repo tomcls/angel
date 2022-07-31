@@ -91,6 +91,14 @@ export default  function AngelTreatment(config) {
             } catch (error) {
                 throw {error:error};
             }
+        },
+        getUserTreatments: async (params) => {
+            try {
+                const res = await axios.post(process.env.REACT_APP_API_URL+'/treatments/user-treatments', params, {headers: {'Authorization':accessToken}});
+                return res.data;
+            } catch (error) {
+                throw {error:error};
+            }
         }
     }
 }

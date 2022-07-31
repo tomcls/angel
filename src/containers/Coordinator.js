@@ -1,4 +1,4 @@
-import  React , { useRef } from 'react';
+import  React, { useRef } from 'react';
 import AngelUser from '../api/angel/user';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -19,28 +19,29 @@ import { Button } from '@mui/material';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import IconButton from '@mui/material/IconButton';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { useSnackbar } from 'notistack';
-import AngelPatient from '../api/angel/patient';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 
-export default function PatientContainer(props) {
+
+import { useSnackbar } from 'notistack';
+import ComboLaboratories from '../components/ComboLaboratories';
+import PlaceIcon from '@mui/icons-material/Place';
+import EmailIcon from '@mui/icons-material/Email';
+import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
+import FaceIcon from '@mui/icons-material/Face';
+export default function CoordinatorContainer(props) {
 
     const { enqueueSnackbar } = useSnackbar();
 
     const [id, setId] = React.useState(null);
-    const [patientId, setPatientId] = React.useState(null);
+    const [coordinatorId, setCoordinatorId] = React.useState(null);
     const [firstname, setFirstname] = React.useState('');
     const [lastname, setLastname] = React.useState('');
     const [email, setEmail] = React.useState('');
     const [sex, setSex] = React.useState('');
     const [lang, setLang] = React.useState('');
-    const [closeMonitoring, setCloseMonitoring] = React.useState('');
     const [dateOfBirth, setDateOfBirth] = React.useState('');
-    const [emergencyContactName, setEmergencyContactName] = React.useState('');
-    const [emergencyContactRelationship, setEmergencyContactRelationship] = React.useState('');
     const [phone, setPhone] = React.useState('');
-    const [emergencyContactPhone, setEmergencyContactPhone] = React.useState('');
     const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp0LF2WgeDkn_sQ1VuMnlnVGjkDvCN4jo2nLMt3b84ry328rg46eohB_JT3WTqOGJovY&usqp=CAU';//process.env.SENDGRID_APIKEY
     const [avatar, setAvatar] = React.useState(defaultAvatar);
 
@@ -50,20 +51,29 @@ export default function PatientContainer(props) {
     const [zip, setZip] = React.useState('');
     const [country, setCountry] = React.useState('');
 
-    const [password,setPassword] = React.useState('');
+    const [password, setPassword] = React.useState('');
     const [showPassword, setShowPassword] = React.useState(false);
+
+    const [laboratoryId, setLaboratoryId] = React.useState(() => '');
+    const [laboratoryName, setLaboratoryName] = React.useState(() => '');
+
+
     const [active, setActive] = React.useState('N');
+    const [role, setRole] = React.useState('V');
     const [switchState, setSwitchState] = React.useState(false);
+    const [switchAdmin, setSwitchAdmin] = React.useState(false);
+    
     const [file, setFile] = React.useState(null);
     const uploadFileButton = useRef(null);
 
+
     React.useEffect(() => {
-        console.log('Patient page')
+        console.log("Coordinator container effect")
         if (props.userId) {
             async function fetchData() {
-                const user = await AngelPatient().find({ user_id: props.userId });
-                setId(user.user_id);
-                setPatientId(user.patient_id);
+                const user = await AngelUser().find({ user_id: props.userId });
+                setId(user.id);
+                setCoordinatorId(user.coordinator_id);
                 setFirstname(user.firstname);
                 setLastname(user.lastname);
                 setLang(user.lang);
@@ -76,13 +86,18 @@ export default function PatientContainer(props) {
                 setCity(user.city);
                 setCountry(user.country);
                 setDateOfBirth(user.birthday);
-                setCloseMonitoring(user.close_monitoring);
-                setEmergencyContactName(user.emergency_contact_name);
-                setEmergencyContactPhone(user.emergency_contact_phone);
-                setEmergencyContactRelationship(user.emergency_contact_relationship);
+                setAvatar(user.avatar);
+                setLaboratoryId(user.laboratory_id);
+                setLaboratoryName(user.name);
                 setAvatar(user.avatar?process.env.REACT_APP_API_URL+'/public/uploads/'+user.avatar:defaultAvatar);
                 setActive(user.active);
-                if(user.active === 'N') {
+                setRole(user.role)
+                if (user.role === 'V') {
+                    setSwitchAdmin(false);
+                } else {
+                    setSwitchAdmin(true);
+                }
+                if (user.active === 'N') {
                     setSwitchState(false);
                 } else {
                     setSwitchState(true);
@@ -117,17 +132,14 @@ export default function PatientContainer(props) {
                 city: city,
                 country: country,
                 birthday: dateOfBirth ? formatDate(dateOfBirth): null,
-                close_monitoring: closeMonitoring,
-                emergency_contact_name: emergencyContactName,
-                emergency_contact_phone: emergencyContactPhone,
-                emergency_contact_relationship: emergencyContactRelationship,
-                active: active
+                active: active,
+                role: role
             };
             if (id) {
                 u.id = id;
                 try {
                     const user = await AngelUser().update(u);
-                    await setPatient();
+                    await setCoordinator();
                     handleClickVariant('success', 'User well updated');
                 } catch (e) {
                     handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
@@ -136,7 +148,7 @@ export default function PatientContainer(props) {
                 try {
                     const user = await AngelUser().add(u);
                     setId(user.inserted_id)
-                    await setPatient(user.inserted_id);
+                    await setCoordinator(user.inserted_id);
                     handleClickVariant('success', 'User well added');
                 } catch (e) {
                     handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
@@ -144,26 +156,23 @@ export default function PatientContainer(props) {
             }
         }
     };
-    const setPatient = async (userId) => {
+    const setCoordinator = async (userId) => {
 
         const u = {
             user_id: userId ? userId : id,
-            close_monitoring: closeMonitoring,
-            emergency_contact_name: emergencyContactName,
-            emergency_contact_phone: emergencyContactPhone,
-            emergency_contact_relationship: emergencyContactRelationship
+            laboratory_id: laboratoryId ? laboratoryId : null
         };
-        if (patientId) {
-            u.id = patientId;
+        if (coordinatorId) {
+            u.id = coordinatorId;
             try {
-                await AngelPatient().update(u);
+                await AngelUser().update(u);
             } catch (e) {
                 handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
             }
         } else {
             try {
-                const p = await AngelPatient().add(u);
-                setPatientId(p.inserted_id);
+                const p = await AngelUser().add(u);
+                setCoordinatorId(p.inserted_id);
             } catch (e) {
                 handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
             }
@@ -178,27 +187,36 @@ export default function PatientContainer(props) {
         console.log(newValue)
         setDateOfBirth(newValue);
     };
-
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
     };
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
     };
+
     const savePassword = async () => {
-        if(password !== null) {
-            const r = await AngelUser().resetPwd({password: password, email: email});
+        if (password !== null) {
+            const r = await AngelUser().resetPwd({ password: password, email: email });
             handleClickVariant('success', 'Password well updated!');
         }
     }
-    const setActif = (e) => {
-       setSwitchState(e.target.checked);
-       if(e.target.checked) {
-           setActive('Y');
-       } else {
-            setActive('N');
-       }
+    const setAdministrator = (e) => {
+        setSwitchAdmin(e.target.checked);
+        if (e.target.checked) {
+            setRole('A');
+        } else {
+            setRole('V');
+        }
     };
+    const setActif = (e) => {
+        setSwitchState(e.target.checked);
+        if (e.target.checked) {
+            setActive('Y');
+        } else {
+            setActive('N');
+        }
+    };
+
     const onFileChange = async (e) => {
         setFile({file:e.target.files[0]});
         const u = await AngelUser().upload(e.target.files[0], 'avatar',id);
@@ -207,14 +225,11 @@ export default function PatientContainer(props) {
     };
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-
             <Box sx={{ width: '100%' }}>
-                <Typography variant="h6" gutterBottom component="div">
-                    Personal informations
-                </Typography>
                 <Grid container spacing={2}>
                     <Grid item xs={12} sm={6} md={4} xl={2} style={{ paddingTop: '40px' }}>
-                        <Grid item xs={12} style={{ width: '205px', height: '205px', textAlign: "center", border: '3px solid #ddd', borderRadius: '5px', margin: 'auto' }} >
+                       <Grid item xs={12} style={{  width: '205px', height: '205px', textAlign: "center", border: '3px solid #ddd', borderRadius: '5px', margin: 'auto' }} >
+
                             <Avatar variant="rounded"
                                 src={avatar}
                                 style={{ width: '200px', height: '200px', textAlign: "center", borderColor: 'gray', margin: 'auto' }}
@@ -232,7 +247,7 @@ export default function PatientContainer(props) {
                             value={firstname ? firstname : ''}
                             onChange={onInputChange(setFirstname)}
                             InputProps={{
-                                startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                                startAdornment: <FaceIcon position="start"><Visibility /></FaceIcon>,
                             }}
                         />
                         <TextField
@@ -241,7 +256,7 @@ export default function PatientContainer(props) {
                             value={lastname ? lastname : ''}
                             onChange={onInputChange(setLastname)}
                             InputProps={{
-                                startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                                startAdornment: <FaceIcon position="start"><Visibility /></FaceIcon>,
                             }}
                         />
                         <Box>
@@ -262,7 +277,7 @@ export default function PatientContainer(props) {
                             value={phone ? phone : ''}
                             onChange={onInputChange(setPhone)}
                             InputProps={{
-                                startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                                startAdornment: <LocalPhoneIcon position="start"><Visibility /></LocalPhoneIcon>,
                             }}
                         />
                         <TextField
@@ -272,7 +287,7 @@ export default function PatientContainer(props) {
                             value={email ? email : ''}
                             onChange={onInputChange(setEmail)}
                             InputProps={{
-                                startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                                startAdornment: <EmailIcon position="start"><Visibility /></EmailIcon>,
                             }}
                         />
                         <Grid container spacing={1}>
@@ -329,7 +344,7 @@ export default function PatientContainer(props) {
                                     value={address ? address : ''}
                                     onChange={onInputChange(setAddress)}
                                     InputProps={{
-                                        startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                                        startAdornment: <PlaceIcon position="start"><Visibility /></PlaceIcon>,
                                     }}
                                 />
                             </Grid>
@@ -340,9 +355,7 @@ export default function PatientContainer(props) {
 
                                     value={streetNumber ? streetNumber : ''}
                                     onChange={onInputChange(setStreetNumber)}
-                                    InputProps={{
-                                        startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
-                                    }}
+                                   
                                 />
                             </Grid>
                         </Grid>
@@ -355,7 +368,7 @@ export default function PatientContainer(props) {
                                     value={city ? city : ''}
                                     onChange={onInputChange(setCity)}
                                     InputProps={{
-                                        startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                                        startAdornment: <PlaceIcon position="start"><Visibility /></PlaceIcon>,
                                     }} />
                             </Grid>
                             <Grid item xs={5}>
@@ -365,9 +378,6 @@ export default function PatientContainer(props) {
 
                                     value={zip ? zip : ''}
                                     onChange={onInputChange(setZip)}
-                                    InputProps={{
-                                        startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
-                                    }}
                                 />
                             </Grid>
                         </Grid>
@@ -389,68 +399,18 @@ export default function PatientContainer(props) {
                             </Select>
                         </FormControl>
                     </Grid>
-
                     <Grid item xs={12} sm={6} md={4} xl={4}>
-                        <Typography variant="h6" gutterBottom component="div">
-                            Emergency info
+                        <Typography variant="h6" mt={'20px'}>
+                            Is administrator ?
                         </Typography>
-
-                        <TextField
-                            label="Emergency contact phone number"
-                            id="emergencyPhone"
-
-                            value={emergencyContactPhone ? emergencyContactPhone : ''}
-                            onChange={onInputChange(setEmergencyContactPhone)}
-                            InputProps={{
-                                startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
-                            }}
-                        />
-                        <TextField
-                            label="Emergency contact name"
-                            id="emergencyName"
-
-                            value={emergencyContactName ? emergencyContactName : ''}
-                            onChange={onInputChange(setEmergencyContactName)}
-                            InputProps={{
-                                startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
-                            }}
-                        />
-                        <TextField
-                            label="Emergency contact relationship"
-                            id="emergencyRelationship"
-
-                            value={emergencyContactRelationship ? emergencyContactRelationship : ''}
-                            onChange={onInputChange(setEmergencyContactRelationship)}
-                            InputProps={{
-                                startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
-                            }}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={4} xl={4}>
-                        <Typography variant="h6" gutterBottom component="div">
-                            Close monitoring
-                        </Typography>
-                        <FormControl fullWidth>
-                            <InputLabel id="moniLabel">Close monitoring?</InputLabel>
-                            <Select
-                                style={{ display: 'flex', width: '100%' }}
-                                labelId="moniLabel"
-                                id="closeMonitoring"
-                                value={closeMonitoring ? closeMonitoring : ''}
-                                onChange={onInputChange(setCloseMonitoring)}
-                                label="Close monitoring?">
-                                <MenuItem value={''}>Not set</MenuItem>
-                                <MenuItem value={'Y'}>Yes</MenuItem>
-                                <MenuItem value={'N'}>No</MenuItem>
-                            </Select>
-                        </FormControl>
+                        <FormControlLabel control={<Switch checked={switchAdmin} onChange={setAdministrator} value={active} />} label="Administrator" size="large" />
                         <Typography variant="h6" mt={'20px'}>
                             Password and activation
                         </Typography>
-                        <FormControlLabel control={<Switch checked={switchState} onChange={setActif} value={active}   />} label="Actif" size="large"/>
+                        <FormControlLabel control={<Switch checked={switchState} onChange={setActif} value={active} />} label="Actif" size="large" />
                         <Grid container spacing={1}>
                             <Grid item xs={8}>
-                                <FormControl fullWidth variant="outlined" style={{marginTop: '18px'}}>
+                                <FormControl fullWidth variant="outlined" style={{ marginTop: '18px' }}>
                                     <InputLabel htmlFor="outlined-adornment-password">Change password</InputLabel>
                                     <OutlinedInput
                                         id="outlined-adornment-password"
@@ -472,10 +432,10 @@ export default function PatientContainer(props) {
                                     />
                                 </FormControl>
                             </Grid>
-                            <Grid item xs={4}  mt={'25px'}>
+                            <Grid item xs={4} mt={'25px'}>
                                 <Button
-                               
-                                    style={{ borderRadius: '10px',  marginLeft: '10px' }}
+
+                                    style={{ borderRadius: '10px', marginLeft: '10px' }}
                                     variant="outlined" startIcon={<Save />}
                                     onClick={savePassword}>
                                     Save
@@ -483,18 +443,21 @@ export default function PatientContainer(props) {
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Grid item xs={12}>
-                        <Typography variant="h6" gutterBottom component="div">
-                            &nbsp;
-                        </Typography>
-                        <Button
-                            style={{ borderRadius: '10px', marginTop: '10px' }}
-                            variant="outlined" startIcon={<Save />}
-                            onClick={onSubmit}>
-                            Save
-                        </Button>
-                    </Grid>
                 </Grid>
+
+            <Grid container spacing={2}>
+                <Grid container mt={'25px'}>
+                    <Typography variant="h6" gutterBottom component="div">
+                        &nbsp;
+                    </Typography>
+                    <Button
+                        style={{ borderRadius: '10px', marginTop: '10px' }}
+                        variant="outlined" startIcon={<Save />}
+                        onClick={onSubmit}>
+                        Save
+                    </Button>
+                </Grid>
+            </Grid>
             </Box>
         </LocalizationProvider>
     );

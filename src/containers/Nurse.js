@@ -77,40 +77,40 @@ export default function NurseContainer(props) {
     React.useEffect(() => {
         console.log("Nurse container effect")
         if (props.userId) {
-            async function fetchData() {
-                const user = await AngelNurse().find({ user_id: props.userId });
-                setId(user.user_id);
-                setNurseId(user.nurse_id);
-                setFirstname(user.firstname);
-                setLastname(user.lastname);
-                setLang(user.lang);
-                setEmail(user.email);
-                setPhone(user.phone);
-                setSex(user.sex);
-                setAddress(user.address);
-                setStreetNumber(user.street_number);
-                setZip(user.zip);
-                setCity(user.city);
-                setCountry(user.country);
-                setDateOfBirth(user.birthday);
-                setAvatar(user.avatar);
-                setHospitalId(user.hospital_id);
-                setHospitalName(user.name);
-                setAvatar(user.avatar?process.env.REACT_APP_API_URL+'/public/uploads/'+user.avatar:defaultAvatar);
-                if (user.daysin) {
-                    setWeek(JSON.parse(user.daysin));
-                }
-                setActive(user.active);
-                if (user.active === 'N') {
-                    setSwitchState(false);
-                } else {
-                    setSwitchState(true);
-                }
-            }
+            
             fetchData();
         }
     }, []);
-
+    const fetchData = async () => {
+        const user = await AngelNurse().find({ user_id: props.userId });
+        setId(user.user_id);
+        setNurseId(user.nurse_id);
+        setFirstname(user.firstname);
+        setLastname(user.lastname);
+        setLang(user.lang);
+        setEmail(user.email);
+        setPhone(user.phone);
+        setSex(user.sex);
+        setAddress(user.address);
+        setStreetNumber(user.street_number);
+        setZip(user.zip);
+        setCity(user.city);
+        setCountry(user.country);
+        setDateOfBirth(user.birthday);
+        setAvatar(user.avatar);
+        setHospitalId(user.hospital_id);
+        setHospitalName(user.hospital_name);
+        setAvatar(user.avatar?process.env.REACT_APP_API_URL+'/public/uploads/'+user.avatar:defaultAvatar);
+        if (user.daysin) {
+            setWeek(JSON.parse(user.daysin));
+        }
+        setActive(user.active);
+        if (user.active === 'N') {
+            setSwitchState(false);
+        } else {
+            setSwitchState(true);
+        }
+    }
     const onInputChange = setter => e => {
         setter(e.target.value);
     };
@@ -135,7 +135,7 @@ export default function NurseContainer(props) {
                 zip: zip,
                 city: city,
                 country: country,
-                birthday: formatDate(dateOfBirth),
+                birthday: dateOfBirth ? formatDate(dateOfBirth): null,
                 active: active
             };
             if (id) {
@@ -228,8 +228,9 @@ export default function NurseContainer(props) {
     const onPatientSelect = (patientId) => {
         setAssignPatientId(patientId);
     }
-    const onHospitalSelect = (hospitalId) => {
-        setHospitalId(hospitalId);
+    const onHospitalSelect = (o) => {
+        setHospitalId(o.id);
+        setHospitalName(o.name);
     }
     const styleModal = {
         position: 'absolute',
@@ -260,7 +261,7 @@ export default function NurseContainer(props) {
     const onFileChange = async (e) => {
         setFile({file:e.target.files[0]});
         const u = await AngelUser().upload(e.target.files[0], 'avatar',id);
-        console.log(setAvatar(process.env.REACT_APP_API_URL+'/public/uploads/'+u.filename));
+        setAvatar(process.env.REACT_APP_API_URL+'/public/uploads/'+u.filename);
         handleClickVariant('success', 'Image well uploaded');
     };
     return (
@@ -465,7 +466,7 @@ export default function NurseContainer(props) {
                         <Typography variant="h6" gutterBottom component="div">
                             Hospital
                         </Typography>
-                        <ComboHospitals onSelect={onHospitalSelect} hospital={{ id: hospitalId, name: hospitalName }} />
+                        <ComboHospitals onSelect={onHospitalSelect} hospital={{ id: hospitalId, name: hospitalName }}  />
                         <Typography variant="h6" mt={'20px'}>
                             Password and activation
                         </Typography>

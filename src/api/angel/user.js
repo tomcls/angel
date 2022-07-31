@@ -12,6 +12,14 @@ export default  function AngelUser(config) {
                 throw {error:error};
             }
         },
+        coordinators: async (params) => {
+            try {
+                const res = await axios.post(process.env.REACT_APP_API_URL+'/users/coordinators', params, {headers: {'Authorization':accessToken}});
+                return res.data;
+            } catch (error) {
+                throw {error:error};
+            }
+        },
         update: async (params) => {
             try {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/users/update', params, {headers: {'Authorization':accessToken}});

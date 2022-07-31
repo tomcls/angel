@@ -51,6 +51,14 @@ export default  function AngelDoctor(config) {
             } catch (error) {
                 throw {error:error};
             }
+        },
+        getDoctors: async (params) => {
+            try {
+                const res = await axios.post(process.env.REACT_APP_API_URL+'/doctors/doctors', params, {headers: {'Authorization':accessToken}});
+                return res.data;
+            } catch (error) {
+                throw {error:error};
+            }
         }
     }
 }

@@ -218,7 +218,7 @@ export default function Drugs(props) {
    
     if (r.drugs && r.drugs.length) {
       for (let i = 0; i < r.drugs.length; i++) {
-        u.push(createData(r.drugs[i].drug_id,r.drugs[i].name, r.drugs[i].code, r.drugs[i].date_created));
+        u.push(createData(r.drugs[i].drug_id,r.drugs[i].drug_name, r.drugs[i].drug_code, r.drugs[i].date_created));
       }
       setRows(u);
       setDrugs(r.drugs);

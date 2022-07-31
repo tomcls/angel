@@ -27,6 +27,7 @@ import MoodsPage from './pages/Moods';
 import SurveysMoodsPage from './pages/SurveyMoods';
 import Settings from './pages/Settings';
 import { SnackbarProvider } from 'notistack';
+import CoordinatorsPage from './pages/Coordinators';
 
 function App() {
   const matches = useMediaQuery('(max-width:970px)');
@@ -47,6 +48,7 @@ function App() {
       <Route path="/doctors" element={<DoctorsPage />} />
       <Route path="/nurses" element={<NursesPage />} />
       <Route path="/scientists" element={<ScientistsPage />} />
+      <Route path="/coordinators" element={<CoordinatorsPage />} />
       <Route path="/drugs" element={<DrugsPage />} />
       <Route path="/laboratories" element={<LaboratoriesPage />} />
       <Route path="/hospitals" element={<HospitalsPage />} />

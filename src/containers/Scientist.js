@@ -19,17 +19,13 @@ import { Button } from '@mui/material';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import IconButton from '@mui/material/IconButton';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import Modal from '@mui/material/Modal';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 import { useSnackbar } from 'notistack';
 import AngelScientist from '../api/angel/scientist';
-import ComboUsers from '../components/ComboUsers';
-import ComboHospitals from '../components/ComboHospitals';
+import ComboLaboratories from '../components/ComboLaboratories';
 import PlaceIcon from '@mui/icons-material/Place';
 import EmailIcon from '@mui/icons-material/Email';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
@@ -59,9 +55,8 @@ export default function ScientistContainer(props) {
     const [password, setPassword] = React.useState('');
     const [showPassword, setShowPassword] = React.useState(false);
 
-    const [week, setWeek] = React.useState(() => []);
-    const [hospitalId, setHospitalId] = React.useState(() => '');
-    const [hospitalName, setHospitalName] = React.useState(() => '');
+    const [laboratoryId, setLaboratoryId] = React.useState(() => '');
+    const [laboratoryName, setLaboratoryName] = React.useState(() => '');
 
     const [openAssignPatientModal, setOpenAssignModal] = React.useState(false);
 
@@ -94,12 +89,9 @@ export default function ScientistContainer(props) {
                 setCountry(user.country);
                 setDateOfBirth(user.birthday);
                 setAvatar(user.avatar);
-                setHospitalId(user.hospital_id);
-                setHospitalName(user.name);
+                setLaboratoryId(user.laboratory_id);
+                setLaboratoryName(user.name);
                 setAvatar(user.avatar?process.env.REACT_APP_API_URL+'/public/uploads/'+user.avatar:defaultAvatar);
-                if (user.daysin) {
-                    setWeek(JSON.parse(user.daysin));
-                }
                 setActive(user.active);
                 if (user.active === 'N') {
                     setSwitchState(false);
@@ -135,7 +127,7 @@ export default function ScientistContainer(props) {
                 zip: zip,
                 city: city,
                 country: country,
-                birthday: formatDate(dateOfBirth),
+                birthday: dateOfBirth ? formatDate(dateOfBirth): null,
                 active: active
             };
             if (id) {
@@ -163,8 +155,7 @@ export default function ScientistContainer(props) {
 
         const u = {
             user_id: userId ? userId : id,
-            hospital_id: hospitalId ? hospitalId : null,
-            daysin: week && week.length ? JSON.stringify(week) : null,
+            laboratory_id: laboratoryId ? laboratoryId : null
         };
         if (scientistId) {
             u.id = scientistId;
@@ -188,60 +179,18 @@ export default function ScientistContainer(props) {
         return datestring;
     }
     const handleDateOfBirthChange = (newValue) => {
-        console.log(newValue)
         setDateOfBirth(newValue);
     };
-
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
     };
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
     };
-    const changePassword = () => {
-
+    const onLaboratorySelect = (o) => {
+        setLaboratoryId(o.id);
+        setLaboratoryName(o.name);
     }
-    const onWeekDayClick = (event, newFormats) => {
-        setWeek(newFormats);
-    }
-
-    const handleAssignPatientModal = () => setOpenAssignModal(true);
-    const handleCloseAssignPatientModal = () => setOpenAssignModal(false);
-
-    const onAssign = async e => {
-        console.log(e);
-        const u = {
-            patient_id: assignPatientId,
-            scientist_id: scientistId,
-        };
-        if (assignPatientId && scientistId) {
-            try {
-                await AngelScientist().addPatient(u);
-                handleClickVariant('success', 'Patient well assigned');
-            } catch (e) {
-                handleClickVariant('error', JSON.stringify(e));
-            }
-        } else {
-            handleClickVariant('error', JSON.stringify(e));
-        }
-    }
-    const onPatientSelect = (patientId) => {
-        setAssignPatientId(patientId);
-    }
-    const onHospitalSelect = (hospitalId) => {
-        setHospitalId(hospitalId);
-    }
-    const styleModal = {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 400,
-        bgcolor: 'background.paper',
-        border: '2px solid #000',
-        boxShadow: 24,
-        p: 4,
-    };
     const savePassword = async () => {
         if (password !== null) {
             const r = await AngelUser().resetPwd({ password: password, email: email });
@@ -256,37 +205,13 @@ export default function ScientistContainer(props) {
             setActive('N');
         }
     };
-
     const onFileChange = async (e) => {
         setFile({file:e.target.files[0]});
         const u = await AngelUser().upload(e.target.files[0], 'avatar',id);
-        console.log(setAvatar(process.env.REACT_APP_API_URL+'/public/uploads/'+u.filename));
         handleClickVariant('success', 'Image well uploaded');
     };
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <div>
-                <Modal
-                    open={openAssignPatientModal}
-                    onClose={handleCloseAssignPatientModal}
-                    aria-labelledby="modal-modal-title"
-                    aria-describedby="modal-modal-description">
-                    <Box sx={styleModal}>
-                        <Typography id="modal-modal-title" variant="h6" component="h2">
-                            Assign a patient
-                        </Typography>
-                        <ComboUsers type="patient" onSelect={onPatientSelect} />
-                        <Button
-                            style={{ borderRadius: '10px', marginTop: '20px' }}
-                            variant="outlined" startIcon={<Save />}
-                            onClick={onAssign}>
-                            Assign
-                        </Button>
-                    </Box>
-                </Modal>
-            </div>
-            <Button onClick={handleAssignPatientModal} variant="outlined" style={{ marginRight: '5px' }}>Assign patient</Button>
-            <Button onClick={() => props.showScientistPatients(scientistId)} variant="outlined" >List of patients</Button>
             <Box sx={{ width: '100%' }}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} sm={6} md={4} xl={2} style={{ paddingTop: '40px' }}>
@@ -463,9 +388,9 @@ export default function ScientistContainer(props) {
                     </Grid>
                     <Grid item xs={12} sm={6} md={4} xl={4}>
                         <Typography variant="h6" gutterBottom component="div">
-                            Hospital
+                            laboratory
                         </Typography>
-                        <ComboHospitals onSelect={onHospitalSelect} hospital={{ id: hospitalId, name: hospitalName }} />
+                        <ComboLaboratories onSelect={onLaboratorySelect} laboratory={{ id: laboratoryId, name: laboratoryName }} />
                         <Typography variant="h6" mt={'20px'}>
                             Password and activation
                         </Typography>
@@ -508,41 +433,7 @@ export default function ScientistContainer(props) {
                 </Grid>
 
             <Grid container spacing={2}>
-                <Grid item xs={12} style={{ paddingTop: '40px' }}>
-                    <Typography variant="h6" gutterBottom component="div">
-                        Days in.
-                    </Typography>
-                    <ToggleButtonGroup
-                        value={week}
-                        onChange={onWeekDayClick}
-                        aria-label="Days in"
-                        size="small"
-                        color="info"
-                    >
-                        <ToggleButton value="mon" aria-label="mon" color="info">
-                            Mon
-                        </ToggleButton>
-                        <ToggleButton value="tue" aria-label="tue">
-                            Tue
-                        </ToggleButton>
-                        <ToggleButton value="wed" aria-label="wed">
-                            Wed
-                        </ToggleButton>
-                        <ToggleButton value="thu" aria-label="thu" >
-                            Thu
-                        </ToggleButton>
-                        <ToggleButton value="fri" aria-label="fri" >
-                            Fri
-                        </ToggleButton>
-                        <ToggleButton value="sat" aria-label="sat" >
-                            Sat
-                        </ToggleButton>
-                        <ToggleButton value="sun" aria-label="sun" >
-                            Sun
-                        </ToggleButton>
-                    </ToggleButtonGroup>
-                </Grid>
-                <Grid container>
+                <Grid container mt={'25px'}>
                     <Typography variant="h6" gutterBottom component="div">
                         &nbsp;
                     </Typography>

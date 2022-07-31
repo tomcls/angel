@@ -40,7 +40,6 @@ export default function Header() {
     <FormControl variant="standard"  >
       <div>
         <Button ref={anchorRef} id="composition-button" aria-controls={openProfile ? 'composition-menu' : undefined} aria-expanded={openProfile ? 'true' : undefined} aria-haspopup="true" onClick={handleToggle} style={{marginInline:"15px"}}>
-            <Avatar   sx={{ width: 24, height: 24}} alt="Remy Sharp" src={flag} />
               <Typography style={{fontSize:"12px",color:"black",marginInline:"15px"}}>
                 Fr
               </Typography>
@@ -71,8 +70,8 @@ export default function Header() {
                     aria-labelledby="composition-button"
                     onKeyDown={handleListKeyDown}
                   >
-                    <MenuItem onClick={handleClose}> <SettingsIcon style={{marginInline:"10px"}} /> Fr</MenuItem>
-                    <MenuItem onClick={handleClose}> <LogoutIcon style={{marginInline:"10px"}} />  En</MenuItem>
+                    <MenuItem onClick={handleClose}>Fr</MenuItem>
+                    <MenuItem onClick={handleClose}>En</MenuItem>
                   </MenuList>
                 </ClickAwayListener>
               </Paper>

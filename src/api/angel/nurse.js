@@ -51,6 +51,14 @@ export default  function AngelNurse(config) {
             } catch (error) {
                 throw {error:error};
             }
+        },
+        getNurses: async (params) => {
+            try {
+                const res = await axios.post(process.env.REACT_APP_API_URL+'/nurses/nurses', params, {headers: {'Authorization':accessToken}});
+                return res.data;
+            } catch (error) {
+                throw {error:error};
+            }
         }
     }
 }
