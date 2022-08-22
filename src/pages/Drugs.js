@@ -23,6 +23,7 @@ import Treatments from "../containers/Treatments";
 import Treatment from "../containers/Treatment";
 import Laboratories from "../containers/Laboratories";
 import DrugContainer from "../containers/Drug";
+import Tabs from "../components/Tabs";
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -52,18 +53,20 @@ export default function DrugsPage() {
   const [panels, setPanels] = React.useState([]);
   const [tabIndex, setTabIndex] = React.useState(2);
   const newBtn = useRef(null);
+  const t = new Tabs('drug',tabIndex,tabs,setTabs,setSelectedTab,setTabIndex,newBtn);
 
   React.useEffect(() => {
     console.log('useEffect Drugs page tabs length=', tabs.length, 'tabIndex', tabIndex);
     let d = document.getElementById('newButton');
     if (d) {
-      d.clk = function (id, text, type) { openTab(id, text, type); };
+      d.clk = function (id, text, type) { t.openTab(id, text, type); };
     }
   }, []);
 
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
+  /*
   const handleTabOptions = (value) => {
     setSelectedTab(value)
     setTabIndex(tabIndex + 1)
@@ -276,7 +279,7 @@ export default function DrugsPage() {
         break;
     }
     newBtn.current.click();
-  }
+  }*/
   return (
     <SnackbarProvider maxSnack={3}>
       <Box sx={{ display: 'flex' }}>
@@ -289,7 +292,7 @@ export default function DrugsPage() {
               </Typography>
             </Grid>
             <Grid item xs={12} md={6} xl={6} textAlign={'end'}  >
-              <Button variant="outlined" onClick={onOpenTabClick} ref={newBtn} justifyContent="flex-end" id="newButton">
+              <Button variant="outlined" onClick={t.onOpenTabClick} ref={newBtn} justifyContent="flex-end" id="newButton">
                 <PeopleIcon /> Add Drug</Button>
             </Grid>
           </Grid>
@@ -299,12 +302,12 @@ export default function DrugsPage() {
                 <TabList onChange={handleChange} aria-label="" variant="scrollable" scrollButtons="auto" >
                   <Tab label="List" value="Main" icon={<FormatListBulletedIcon />} iconPosition="end" />
                   {tabs.map(tab => (
-                    <Tab key={tab.idx} label={tab.label} value={tab.value} icon={<Cancel onClick={(e) => handleCloseTab(e, tab.idx)} />} iconPosition="end" />
+                    <Tab key={tab.idx} label={tab.label} value={tab.value} icon={<Cancel onClick={(e) => t.handleCloseTab(e, tab.idx)} />} iconPosition="end" />
                   ))}
                 </TabList>
               </Box>
               <TabPanel value="Main" style={{ padding: "1px" }}>
-                <Drugs openDrug={openTab} />
+                <Drugs openDrug={t.openTab} />
               </TabPanel>
               {tabs.map(panel => (
                 <TabPanel key={panel.idx} label={panel.label} value={panel.value} >

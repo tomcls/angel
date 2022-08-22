@@ -535,7 +535,7 @@ export default function Patients(props) {
                           scope='row'
                           style={{ textAlign: 'center' }}
                           padding='none' >
-                         <HealingIcon  style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname,'treatments')} />
+                         <HealingIcon  style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname,'patient_treatments')} />
                         </TableCell>
                       </TableRow>
                     );

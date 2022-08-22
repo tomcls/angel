@@ -1,8 +1,6 @@
 import React, { useRef } from "react";
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import Input from "../components/Input";
-import SearchIcon from '@mui/icons-material/Search';
 import Button from '@mui/material/Button';
 import PeopleIcon from '@mui/icons-material/People';
 import Bar from "../templates/Bar";
@@ -12,9 +10,10 @@ import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import RefreshIcon from '@mui/icons-material/Refresh';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import { Cancel } from "@mui/icons-material";
 import { SnackbarProvider } from 'notistack';
+import { Grid, Typography } from "@mui/material";
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -43,7 +42,7 @@ export default function SideEffectsPage() {
   const [tabs, setTabs] = React.useState([]);
   const [panels, setPanels] = React.useState([]);
   const [tabIndex, setTabIndex] = React.useState(2);
-  const newSideEffectBtn = useRef(null);
+  const newBtn = useRef(null);
 
   React.useEffect(() => {
     console.log('useEffect SideEffects page tabs length=', tabs.length, 'tabIndex', tabIndex);
@@ -56,52 +55,88 @@ export default function SideEffectsPage() {
     setSelectedTab(value)
     setTabIndex(tabIndex + 1)
   }
-  const createTab = () => {
-    createTabSideEffect();
+  const onOpenTabClick = () => {
+    console.log('onOpenTabClick')
+      createTab('treatment', 'New treatment');
   }
-  const createTabSideEffect = ( sideEffectId, text) => {
-    console.log(sideEffectId);
-    const value = text;
-    console.log(value,tabIndex)
-    const newTab = {
-      label: text?text:'New SideEffect',
-      value: value?value:tabIndex,
-      idx: tabIndex,
-      child: () => <SideEffect sideEffectId={sideEffectId} langId={'en'}  />
+  const getTab = (v) => {
+    for (let i = 0; i < tabs.length; i++) {
+      if (tabs[i].value == v) {
+        return tabs[i];
+      }
     }
-    setTabs([...tabs, newTab])
-    handleTabOptions( value?value:tabIndex);
+    return null;
   }
   const handleCloseTab = (event, idx) => {
     event.stopPropagation();
     const tabArr = tabs.filter(x => x.idx !== idx)
     setTabs(tabArr)
     setSelectedTab('Main');
-}
+  }
+
+  const createTab = (type, text, id) => {
+    console.log('createTab', type, text, id)
+    const value = text;
+    let tab = getTab(value);
+    let newTab = null;
+    if (tab) {
+      setSelectedTab(tab.value);
+    } else {
+      
+      setTabs([...tabs, newTab])
+      handleTabOptions(value ? value : tabIndex);
+    }
+  }
+  const openTab = (id, text, type) => {
+    console.log('openTab', type, text, id)
+    if (!window.angel) {
+      window.angel = {};
+    }
+    
+    newBtn.current.click();
+  }
+  const createTabSideEffect = (sideEffectId, text) => {
+    console.log(sideEffectId);
+    const value = text;
+    console.log(value, tabIndex)
+    const newTab = {
+      label: text ? text : 'New SideEffect',
+      value: value ? value : tabIndex,
+      idx: tabIndex,
+      child: () => <SideEffect sideEffectId={sideEffectId} langId={'en'} />
+    }
+    setTabs([...tabs, newTab])
+    handleTabOptions(value ? value : tabIndex);
+  }
+  
   const openSideEffectSideEffectTab = (sideEffectId) => {
     if (!window.angel) {
       window.angel = {};
     }
     window.angel.sideEffectId = sideEffectId;
-    newSideEffectBtn.current.click();
+    newBtn.current.click();
   }
   return (
     <SnackbarProvider maxSnack={3}>
       <Box sx={{ display: 'flex' }}>
         <Bar open={setOpen} />
         <Main open={open} style={{ background: "rgb(229 229 229 / 41%)", marginBlock: "64px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <div style={{ marginBlock: "20px", width: "70%" }}>
-              <Input icon={<SearchIcon sx={{ color: "action.active", mr: 1, my: 0.5 }} />} type="Outlined" text=" Search" />
-            </div>
-            <Button variant="outlined" style={{ color: "black" }} onClick={createTab} ref={newSideEffectBtn} >
-              <PeopleIcon style={{ marginInline: "3px" }} /> Add sideEffect</Button>
-          </div>
+          <Grid container spacing={2} mb={'0px'} >
+            <Grid item xs={12} md={6} xl={6} >
+              <Typography variant="h6" component="div" >
+                Side effects
+              </Typography>
+            </Grid>
+            <Grid item xs={12} md={6} xl={6} textAlign={'end'}  >
+              <Button variant="outlined" onClick={createTabSideEffect} ref={newBtn} justifyContent="flex-end" id="newButton">
+                <PeopleIcon /> Add side effect</Button>
+            </Grid>
+          </Grid>
           <Box sx={{ width: '100%' }}>
             <TabContext value={selectedTab ? selectedTab : '1'}>
               <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <TabList onChange={handleChange} aria-label="" variant="scrollable" scrollButtons="auto" >
-                  <Tab label="SideEffects" value="Main" icon={<RefreshIcon />} iconPosition="end" />
+                  <Tab label="SideEffects" value="Main" icon={<FormatListBulletedIcon />} iconPosition="start" />
                   {tabs.map(tab => (
                     <Tab key={tab.idx} label={tab.label} value={tab.value} icon={<Cancel onClick={(e) => handleCloseTab(e, tab.idx)} />} iconPosition="end" />
                   ))}

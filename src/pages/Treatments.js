@@ -20,6 +20,7 @@ import { Grid, Typography } from "@mui/material";
 import NurseContainer from "../containers/Nurse";
 import Doctors from "../containers/Doctors";
 import Nurses from "../containers/Nurses";
+import Tabs from "../components/Tabs";
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -49,19 +50,20 @@ export default function TreatmentsPage() {
   const [panels, setPanels] = React.useState([]);
   const [tabIndex, setTabIndex] = React.useState(2);
   const newBtn = useRef(null);
+  const t = new Tabs('treatment',tabIndex,tabs,setTabs,setSelectedTab,setTabIndex,newBtn);
 
   React.useEffect(() => {
     console.log('useEffect Treatments page tabs length=', tabs.length, 'tabIndex', tabIndex);
     let d = document.getElementById('newButton');
     if (d) {
-      d.clk = function (id, text, type) { openTab(id, text, type); };
+      d.clk = function (id, text, type) { t.openTab(id, text, type); };
     }
   }, []);
 
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
-  const handleTabOptions = (value) => {
+ /* const handleTabOptions = (value) => {
     setSelectedTab(value)
     setTabIndex(tabIndex + 1)
   }
@@ -249,7 +251,7 @@ export default function TreatmentsPage() {
     }
     newBtn.current.click();
   }
-
+*/
   const createTabDrugs = (treatmentId, text) => {
     console.log('createTabDrugs', treatmentId)
     const value = `Blue Box ${tabIndex}`
@@ -260,18 +262,9 @@ export default function TreatmentsPage() {
       child: () => <Drugs openDrug={createTabDrugs} treatmentId={treatmentId} />
     }
     setTabs([...tabs, newTab])
-    handleTabOptions(value);
+    t.handleTabOptions(value);
   }
 
-  const openPatientTab = (userId, text) => {
-    console.log('openPatientTab', userId, text)
-    if (!window.angel) {
-      window.angel = {};
-    }
-    window.angel.userId = userId;
-    window.angel.tabName = text;
-    newBtn.current.click();
-  }
   return (
     <SnackbarProvider maxSnack={3}>
       <Box sx={{ display: 'flex' }}>
@@ -284,7 +277,7 @@ export default function TreatmentsPage() {
               </Typography>
             </Grid>
             <Grid item xs={12} md={6} xl={6} textAlign={'end'}  >
-              <Button variant="outlined" onClick={onOpenTabClick} ref={newBtn} justifyContent="flex-end" id="newButton">
+              <Button variant="outlined" onClick={t.onOpenTabClick} ref={newBtn} justifyContent="flex-end" id="newButton">
                 <PeopleIcon /> Add treatment</Button>
             </Grid>
           </Grid>
@@ -294,12 +287,12 @@ export default function TreatmentsPage() {
                 <TabList onChange={handleChange} aria-label="" variant="scrollable" scrollButtons="auto" >
                   <Tab label="List" value="Main" icon={<FormatListBulletedIcon />} iconPosition="start" />
                   {tabs.map(tab => (
-                    <Tab key={tab.idx} label={tab.label} value={tab.value} icon={<Cancel onClick={(e) => handleCloseTab(e, tab.idx)} />} iconPosition="end" />
+                    <Tab key={tab.idx} label={tab.label} value={tab.value} icon={<Cancel onClick={(e) => t.handleCloseTab(e, tab.idx)} />} iconPosition="end" />
                   ))}
                 </TabList>
               </Box>
               <TabPanel value="Main" style={{ padding: "1px" }}>
-                <Treatments openTreatment={openTab} />
+                <Treatments openTreatment={t.openTab} />
               </TabPanel>
               {tabs.map(panel => (
                 <TabPanel key={panel.idx} label={panel.label} value={panel.value} >

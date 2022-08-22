@@ -18,7 +18,7 @@ import { SnackbarProvider } from 'notistack';
 import Patients from "../containers/Patients";
 import { Grid, Typography } from "@mui/material";
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
-import PatientContainer from "../containers/Patient";
+import Tabs from "../components/Tabs";
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -47,20 +47,21 @@ export default function DoctorsPage() {
   const [tabs, setTabs] = React.useState([]);
   const [panels, setPanels] = React.useState([]);
   const [tabIndex, setTabIndex] = React.useState(2);
-  const newDoctorBtn = useRef(null);
+  const newBtn = useRef(null);
+  const t = new Tabs('doctor',tabIndex,tabs,setTabs,setSelectedTab,setTabIndex,newBtn);
 
   React.useEffect(() => {
     console.log('useEffect Doctors page tabs length=', tabs.length, 'tabIndex', tabIndex);
      let d = document.getElementById('newButton'); 
      if(d) {
-      d.clk = function(id, text, type) {openTab(id, text, type);}; 
+      d.clk = function(id, text, type) {t.openTab(id, text, type);}; 
      } 
   }, []);
 
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
-  const handleTabOptions = (value) => {
+  /*const handleTabOptions = (value) => {
     setSelectedTab(value)
     setTabIndex(tabIndex + 1)
   }
@@ -207,11 +208,11 @@ export default function DoctorsPage() {
         window.angel.tabName = 'Treatments of ' + text;
         break;
     }
-    newDoctorBtn.current.click();
+    newBtn.current.click();
   }
-
+*/
   const openDoctorTab = (userId, text) => {
-    createTab('doctor', text, userId)
+    t.createTab('doctor', text, userId)
   }
   
   
@@ -227,7 +228,7 @@ export default function DoctorsPage() {
               </Typography>
             </Grid>
             <Grid item xs={6} md={6} xl={6} textAlign={'end'}  >
-              <Button variant="outlined" onClick={onOpenTabClick} ref={newDoctorBtn} justifyContent="flex-end" id="newButton">
+              <Button variant="outlined" onClick={t.onOpenTabClick} ref={newBtn} justifyContent="flex-end" id="newButton">
                 <PeopleIcon /> Add doctor</Button>
             </Grid>
           </Grid>
@@ -237,12 +238,12 @@ export default function DoctorsPage() {
                 <TabList onChange={handleChange} aria-label="" variant="scrollable" scrollButtons="auto" >
                   <Tab label="List" value="Main" icon={<FormatListBulletedIcon />} iconPosition="start" />
                   {tabs.map(tab => (
-                    <Tab key={tab.idx} label={tab.label} value={tab.value} icon={<Cancel onClick={(e) => handleCloseTab(e, tab.idx)} />} iconPosition="end" />
+                    <Tab key={tab.idx} label={tab.label} value={tab.value} icon={<Cancel onClick={(e) => t.handleCloseTab(e, tab.idx)} />} iconPosition="end" />
                   ))}
                 </TabList>
               </Box>
               <TabPanel value="Main" style={{ padding: "1px" }}>
-                <Doctors openUser={openTab} openPatients={openTab} />
+                <Doctors openUser={t.openTab} openPatients={t.openTab} />
               </TabPanel>
               {tabs.map(panel => (
                 <TabPanel key={panel.idx} label={panel.label} value={panel.value} >

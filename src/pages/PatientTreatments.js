@@ -1,27 +1,25 @@
 import React, { useRef } from "react";
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import Button from '@mui/material/Button';
 import PeopleIcon from '@mui/icons-material/People';
 import Bar from "../templates/Bar";
-import Nurses from "../containers/Nurses";
-import Nurse from "../containers/Nurse";
-import Patient from "../containers/Patient";
-import Doctors from "../containers/Doctors";
-import Doctor from "../containers/Doctor";
 import Treatments from "../containers/Treatments";
+import Treatment from "../containers/Treatment";
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import { Cancel } from "@mui/icons-material";
 import { SnackbarProvider } from 'notistack';
+import Drugs from "../containers/Drugs";
 import Patients from "../containers/Patients";
+import Patient from "../containers/Patient";
 import { Grid, Typography } from "@mui/material";
-import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
-import PatientContainer from "../containers/Patient";
 import NurseContainer from "../containers/Nurse";
-import Tabs from "../components/Tabs";
+import Doctors from "../containers/Doctors";
+import Nurses from "../containers/Nurses";
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -43,39 +41,33 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
   }),
 );
 
-export default function NursesPage() {
+export default function PatientTreatmentsPage() {
 
   const [open, setOpen] = React.useState(true);
   const [selectedTab, setSelectedTab] = React.useState("Main");
   const [tabs, setTabs] = React.useState([]);
+  const [panels, setPanels] = React.useState([]);
   const [tabIndex, setTabIndex] = React.useState(2);
   const newBtn = useRef(null);
-  const t = new Tabs('nurse',tabIndex,tabs,setTabs,setSelectedTab,setTabIndex,newBtn);
 
   React.useEffect(() => {
-    console.log('useEffect Nurses page tabs length=', tabs.length, 'tabIndex', tabIndex);
-    let d = document.getElementById('newButton'); 
-    if(d) {
-     d.clk = function(id, text, type) {t.openTab(id, text, type);}; 
-    } 
+    console.log('useEffect Treatments page tabs length=', tabs.length, 'tabIndex', tabIndex);
+    let d = document.getElementById('newButton');
+    if (d) {
+      d.clk = function (id, text, type) { openTab(id, text, type); };
+    }
   }, []);
 
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
-  /*const handleTabOptions = (value) => {
+  const handleTabOptions = (value) => {
     setSelectedTab(value)
     setTabIndex(tabIndex + 1)
   }
- 
   const onOpenTabClick = () => {
     console.log('onOpenTabClick')
-    if (window.angel && window.angel.userId && window.angel.tabType === 'nurse') {
-      createTab('nurse', window.angel.tabName, window.angel.userId);
-      window.angel.userId = null;
-      window.angel.tabType = null;
-      window.angel.tabName = null;
-    } else if (window.angel && window.angel.userId && window.angel.tabType === 'nurses') {
+    if (window.angel && window.angel.userId && window.angel.tabType === 'nurses') {
       createTab('nurses', window.angel.tabName, window.angel.userId);
       window.angel.userId = null;
       window.angel.tabType = null;
@@ -85,26 +77,53 @@ export default function NursesPage() {
       window.angel.userId = null;
       window.angel.tabType = null;
       window.angel.tabName = null;
-    } else if (window.angel && window.angel.doctorId) {
-      createTab('doc_patients', window.angel.tabName, window.angel.doctorId);
-      window.angel.doctorId = null;
-      window.angel.tabName = null;
-      window.angel.tabType = null;
-    } else if (window.angel && window.angel.nurseId) {
-      createTab('nurse_patients', window.angel.tabName, window.angel.nurseId);
-      window.angel.nurseId = null;
-      window.angel.tabName = null;
-      window.angel.tabType = null;
     } else if (window.angel && window.angel.userId && window.angel.tabType === 'treatments') {
       createTab('treatments', window.angel.tabName, window.angel.userId);
       window.angel.userId = null;
       window.angel.tabType = null;
       window.angel.tabName = null;
-    } else if (window.angel && window.angel.userId) {
+    } else if (window.angel && window.angel.treatmentId && window.angel.tabType === 'treatment') {
+      createTab('treatment', window.angel.tabName, window.angel.treatmentId);
+      window.angel.treatmentId = null;
+      window.angel.tabType = null;
+      window.angel.tabName = null;
+    } else if (window.angel && window.angel.nurseId) {
+      createTab('nurse_patients', window.angel.tabName, window.angel.nurseId);
+      window.angel.nurseId = null;
+      window.angel.tabType = null;
+      window.angel.tabName = null;
+    } else if (window.angel && window.angel.treatmentId && window.angel.tabType === 'treatment_drugs') {
+      createTab('treatment_drugs', window.angel.tabName, window.angel.treatmentId);
+      window.angel.treatmentId = null;
+      window.angel.tabType = null;
+      window.angel.tabName = null;
+    } else if (window.angel && window.angel.treatmentId && window.angel.tabType === 'treatments') {
+      createTab('treatment_patients', window.angel.tabName, window.angel.treatmentId);
+      window.angel.treatmentId = null;
+      window.angel.tabType = null;
+      window.angel.tabName = null;
+    } else if (window.angel && window.angel.doctorId) {
+      createTab('doc_patients', window.angel.tabName, window.angel.doctorId);
+      window.angel.doctorId = null;
+      window.angel.tabType = null;
+      window.angel.tabName = null;
+    } else if (window.angel && window.angel.userId && window.angel.tabType === 'doctor') {
+      createTab('doctor', window.angel.tabName, window.angel.userId);
+      window.angel.userId = null;
+      window.angel.tabType = null;
+      window.angel.tabName = null;
+    } else if (window.angel && window.angel.userId && window.angel.tabType === 'patient') {
       createTab('patient', window.angel.tabName, window.angel.userId);
       window.angel.userId = null;
-    }  else {
-      createTab('nurse', 'New nurse');
+      window.angel.tabType = null;
+      window.angel.tabName = null;
+    } else if (window.angel && window.angel.userId && window.angel.tabType === 'nurse') {
+      createTab('nurse', window.angel.tabName, window.angel.userId);
+      window.angel.userId = null;
+      window.angel.tabType = null;
+      window.angel.tabName = null;
+    } else {
+      createTab('treatment', 'New treatment');
     }
   }
   const getTab = (v) => {
@@ -121,39 +140,41 @@ export default function NursesPage() {
     setTabs(tabArr)
     setSelectedTab('Main');
   }
-  const createTab = (type, text, userId) => {
-    console.log('createTab',type, text, userId)
+
+  const createTab = (type, text, id) => {
+    console.log('createTab', type, text, id)
     const value = text;
-    let newTab = null;
     let tab = getTab(value);
+    let newTab = null;
     if (tab) {
       setSelectedTab(tab.value);
     } else {
-       newTab = {
+      newTab = {
         label: text,
         value: value ? value : tabIndex,
         idx: tabIndex,
-        child: (a) => {
+        child: () => {
           switch (type) {
             case 'nurse':
-              return <NurseContainer userId={userId} />
+              return <NurseContainer userId={id} />
             case 'patient':
-              return <Patient userId={userId} />
-            case 'doctor':
-              return <Doctor userId={userId} showDoctorPatients={openTab} />
+              return <Patient userId={id} />
+            case 'treatment_patients':
+              return <Patients treatmentId={id} />
+            case 'treatment_drugs':
+              return <Drugs treatmentId={id} />
             case 'nurse_patients':
-              console.log('ho')
-              return <Patients openUser={openTab} nurseId={userId} openNurses={() => setSelectedTab('Main')} openDoctors={() => setSelectedTab('Main')} openTreatments={() => setSelectedTab('Main')} />
+              return <Patients openUser={openPatientTab} nurseId={id} openNurses={() => setSelectedTab('Main')} openDoctors={() => setSelectedTab('Main')} openTreatments={() => setSelectedTab('Main')} />
             case 'doc_patients':
-              console.log('ha => doc_patients')
-              return <Patients openUser={openTab} doctorId={userId}  />
+              return <Patients openUser={openPatientTab} doctorId={id} openDoctors={() => setSelectedTab('Main')} openNurses={() => setSelectedTab('Main')} openTreatments={() => setSelectedTab('Main')} />
             case 'doctors':
-              return <Doctors patientId={userId} openPatients={openTab} />
+              return <Doctors patientId={id} openPatients={openTab} />
             case 'nurses':
-              console.log('ha => nurses')
-              return <Nurses patientId={userId} openPatients={openTab} />
+              return <Nurses patientId={id} openPatients={openTab} />
             case 'treatments':
-              return <Treatments patientId={userId} />
+              return <Treatments patientId={id} />
+            case 'treatment':
+              return <Treatment treatmentId={id} />
           }
         }
       }
@@ -162,7 +183,7 @@ export default function NursesPage() {
     }
   }
   const openTab = (id, text, type) => {
-    console.log('openTab',id, text, type)
+    console.log('openTab', type, text, id)
     if (!window.angel) {
       window.angel = {};
     }
@@ -200,6 +221,16 @@ export default function NursesPage() {
         window.angel.doctorId = id;
         window.angel.tabName = 'Patients of Doc ' + text;
         break;
+      case 'treatment_patients':
+        window.angel.tabType = 'treatments';
+        window.angel.treatmentId = id;
+        window.angel.tabName = 'Patients of ' + text;
+        break;
+      case 'treatment_drugs':
+        window.angel.tabType = 'treatment_drugs';
+        window.angel.treatmentId = id;
+        window.angel.tabName = 'Drugs of treatment ' + text;
+        break;
       case 'doctors':
         window.angel.userId = id;
         window.angel.tabType = 'doctors';
@@ -210,9 +241,37 @@ export default function NursesPage() {
         window.angel.tabType = 'treatments';
         window.angel.tabName = 'Treatments of ' + text;
         break;
+      case 'treatment':
+        window.angel.treatmentId = id;
+        window.angel.tabType = 'treatment';
+        window.angel.tabName = 'Treatment ' + text;
+        break;
     }
     newBtn.current.click();
-  }*/
+  }
+
+  const createTabDrugs = (treatmentId, text) => {
+    console.log('createTabDrugs', treatmentId)
+    const value = `Blue Box ${tabIndex}`
+    const newTab = {
+      label: text,
+      value: value,
+      idx: tabIndex,
+      child: () => <Drugs openDrug={createTabDrugs} treatmentId={treatmentId} />
+    }
+    setTabs([...tabs, newTab])
+    handleTabOptions(value);
+  }
+
+  const openPatientTab = (userId, text) => {
+    console.log('openPatientTab', userId, text)
+    if (!window.angel) {
+      window.angel = {};
+    }
+    window.angel.userId = userId;
+    window.angel.tabName = text;
+    newBtn.current.click();
+  }
   return (
     <SnackbarProvider maxSnack={3}>
       <Box sx={{ display: 'flex' }}>
@@ -220,13 +279,13 @@ export default function NursesPage() {
         <Main open={open} style={{ background: "rgb(229 229 229 / 41%)", marginBlock: "64px" }}>
           <Grid container spacing={2} mb={'0px'} >
             <Grid item xs={12} md={6} xl={6} >
-              <Typography variant="h6"  component="div" >
-                Nurses
+              <Typography variant="h6" component="div" >
+                Treatments
               </Typography>
             </Grid>
             <Grid item xs={12} md={6} xl={6} textAlign={'end'}  >
-              <Button id="newButton" variant="outlined"  onClick={t.onOpenTabClick} ref={newBtn} justifyContent="flex-end">
-                <PeopleIcon /> Add nurse</Button>
+              <Button variant="outlined" onClick={onOpenTabClick} ref={newBtn} justifyContent="flex-end" id="newButton">
+                <PeopleIcon /> Add treatment</Button>
             </Grid>
           </Grid>
           <Box sx={{ width: '100%' }}>
@@ -235,12 +294,12 @@ export default function NursesPage() {
                 <TabList onChange={handleChange} aria-label="" variant="scrollable" scrollButtons="auto" >
                   <Tab label="List" value="Main" icon={<FormatListBulletedIcon />} iconPosition="start" />
                   {tabs.map(tab => (
-                    <Tab key={tab.idx} label={tab.label} value={tab.value} icon={<Cancel onClick={(e) => t.handleCloseTab(e, tab.idx)} />} iconPosition="end" />
+                    <Tab key={tab.idx} label={tab.label} value={tab.value} icon={<Cancel onClick={(e) => handleCloseTab(e, tab.idx)} />} iconPosition="end" />
                   ))}
                 </TabList>
               </Box>
               <TabPanel value="Main" style={{ padding: "1px" }}>
-                <Nurses openUser={t.openTab} openPatients={t.openTab} />
+                <Treatments openTreatment={openTab} />
               </TabPanel>
               {tabs.map(panel => (
                 <TabPanel key={panel.idx} label={panel.label} value={panel.value} >

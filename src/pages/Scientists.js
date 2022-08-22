@@ -16,6 +16,7 @@ import Patients from "../containers/Patients";
 import { Grid, Typography } from "@mui/material";
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import PatientContainer from "../containers/Patient";
+import Tabs from "../components/Tabs";
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -43,7 +44,8 @@ export default function ScientistsPage() {
   const [selectedTab, setSelectedTab] = React.useState("Main");
   const [tabs, setTabs] = React.useState([]);
   const [tabIndex, setTabIndex] = React.useState(2);
-  const newScientistBtn = useRef(null);
+  const newBtn = useRef(null);
+  const t = new Tabs('scientist',tabIndex,tabs,setTabs,setSelectedTab,setTabIndex,newBtn);
 
   React.useEffect(() => {
     console.log('useEffect Scientists page tabs length=', tabs.length, 'tabIndex', tabIndex);
@@ -52,7 +54,7 @@ export default function ScientistsPage() {
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
-  const handleTabOptions = (value) => {
+ /* const handleTabOptions = (value) => {
     setSelectedTab(value)
     setTabIndex(tabIndex + 1)
   }
@@ -67,17 +69,6 @@ export default function ScientistsPage() {
     } else {
       createTabScientist();
     }
-  }
-  const createTabScientist = (userId, text) => {
-    const value = text;
-    const newTab = {
-      label: text ? text : 'New Scientist',
-      value: value ? value : tabIndex,
-      idx: tabIndex,
-      child: () => <Scientist userId={userId} showScientistPatients={openScientistPatientTab} />
-    }
-    setTabs([...tabs, newTab])
-    handleTabOptions(value ? value : tabIndex);
   }
   const createTabPatients = (userId, text) => {
     const value = `Blue Box ${tabIndex}`
@@ -106,13 +97,24 @@ export default function ScientistsPage() {
     const tabArr = tabs.filter(x => x.idx !== idx)
     setTabs(tabArr)
     setSelectedTab('Main');
+  }*/
+  const createTabScientist = (userId, text) => {
+    const value = text;
+    const newTab = {
+      label: text ? text : 'New Scientist',
+      value: value ? value : tabIndex,
+      idx: tabIndex,
+      child: () => <Scientist userId={userId} showScientistPatients={openScientistPatientTab} />
+    }
+    setTabs([...tabs, newTab])
+    t.handleTabOptions(value ? value : tabIndex);
   }
   const openScientistPatientTab = (scientistId) => {
     if (!window.angel) {
       window.angel = {};
     }
     window.angel.scientistId = scientistId;
-    newScientistBtn.current.click();
+    newBtn.current.click();
   }
   const openPatientTab = (userId, text) => {
     console.log('openPatientTab',userId,text)
@@ -121,7 +123,7 @@ export default function ScientistsPage() {
     }
     window.angel.userId = userId;
     window.angel.tabName = text;
-    newScientistBtn.current.click();
+    newBtn.current.click();
   }
   return (
     <SnackbarProvider maxSnack={3}>
@@ -135,7 +137,7 @@ export default function ScientistsPage() {
               </Typography>
             </Grid>
             <Grid item xs={12} md={6} xl={6} textAlign={'end'}  >
-              <Button variant="outlined"  onClick={createTab} ref={newScientistBtn} justifyContent="flex-end">
+              <Button variant="outlined"  onClick={t.createTab} ref={newBtn} justifyContent="flex-end">
                 <PeopleIcon /> Add scientist</Button>
             </Grid>
           </Grid>
@@ -145,7 +147,7 @@ export default function ScientistsPage() {
                 <TabList onChange={handleChange} aria-label="" variant="scrollable" scrollButtons="auto" >
                   <Tab label="List" value="Main" icon={<FormatListBulletedIcon />} iconPosition="start" />
                   {tabs.map(tab => (
-                    <Tab key={tab.idx} label={tab.label} value={tab.value} icon={<Cancel onClick={(e) => handleCloseTab(e, tab.idx)} />} iconPosition="end" />
+                    <Tab key={tab.idx} label={tab.label} value={tab.value} icon={<Cancel onClick={(e) => t.handleCloseTab(e, tab.idx)} />} iconPosition="end" />
                   ))}
                 </TabList>
               </Box>

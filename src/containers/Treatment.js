@@ -9,7 +9,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { Save } from '@mui/icons-material';
-import { Button } from '@mui/material';
+import { Button, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import Modal from '@mui/material/Modal';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -29,12 +29,13 @@ export default function TreatmentContainer(props) {
     const [name, setName] = React.useState('');
     const [code, setCode] = React.useState('');
     const [langId, setLangId] = React.useState('en');
+    const [posology, setPosology] = React.useState('');
 
     const [openAssignDrugModal, setOpenAssignDrugModal] = React.useState(false);
     const [assignDrugId, setAssignDrugId] = React.useState(null);
 
     const [openAssignPatientModal, setOpenAssignPatientModal] = React.useState(false);
-    const [assignPatientId, setAssignPatientId] = React.useState(null);
+    const [assignPatientId, setAssignPatientId] = React.useState(null);//posology
 
 
     const [startDate, setStartDate] = React.useState('');
@@ -140,11 +141,12 @@ export default function TreatmentContainer(props) {
         const u = {
             patient_id: assignPatientId,
             treatment_id: treatmentId,
+            posology: posology,
             start_date: formatDate(startDate),
-            end_date: formatDate(endDate),
+            end_date: endDate?formatDate(endDate):null,
         };
-        console.log(assignPatientId , treatmentId , startDate , endDate)
-        if (assignPatientId && treatmentId && startDate && endDate) {
+        console.log(assignPatientId, treatmentId, startDate, endDate)
+        if (assignPatientId && treatmentId && startDate && posology) {
             try {
                 await AngelTreatment().addPatient(u);
                 handleClickVariant('success', 'Patient well assigned');
@@ -152,7 +154,7 @@ export default function TreatmentContainer(props) {
                 handleClickVariant('error', JSON.stringify(e));
             }
         } else {
-            handleClickVariant('error', 'Patient, Start and End date are required');
+            handleClickVariant('error', 'Patient,Posology start date are required');
         }
     }
     const onPatientSelect = (drugId) => {
@@ -176,8 +178,12 @@ export default function TreatmentContainer(props) {
     const handleStartDateChange = (newValue) => {
         setStartDate(newValue);
     };
+
+    const handlePosology = (e) => {
+        console.log(e)
+        setPosology(e.target.value);
+    };
     const handleEndDateChange = (newValue) => {
-        console.log(newValue)
         setEndDate(newValue);
     };
 
@@ -219,6 +225,23 @@ export default function TreatmentContainer(props) {
                             Assign a patient
                         </Typography>
                         <ComboUsers type="patient" onSelect={onPatientSelect} />
+                        <Box>
+                            <FormControl fullWidth>
+                                <InputLabel id="demo-simple-select-label">Posology</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select"
+                                    value={posology?posology:''}
+                                    label="Posology"
+                                    onChange={handlePosology}
+                                >
+                                    <MenuItem value={'daily'}>Daily</MenuItem>
+                                    <MenuItem value={'morningnight'}>Morning/Night</MenuItem>
+                                    <MenuItem value={'spontaneously'}>Spontaneously</MenuItem>
+                                </Select>
+                            </FormControl>
+
+                        </Box>
 
                         <Box
                             style={{ display: 'flex', width: '100%', paddingTop: '8px' }}
@@ -253,8 +276,8 @@ export default function TreatmentContainer(props) {
             </div>
             <Button variant="outlined" style={{ marginRight: '5px' }} onClick={handleAssignDrugModal}>Assign drug</Button>
             <Button variant="outlined" style={{ marginRight: '5px' }} onClick={handleAssignPatientModal}>Assign patient</Button>
-            <Button variant="outlined" style={{ marginRight: '5px' }} onClick={() => document.getElementById("newButton").clk(treatmentId, name,'treatment_drugs')}>List of drugs</Button>
-            <Button variant="outlined" onClick={() => document.getElementById("newButton").clk(treatmentId, name,'treatment_patients')}>List of patients</Button>
+            <Button variant="outlined" style={{ marginRight: '5px' }} onClick={() => document.getElementById("newButton").clk(treatmentId, name, 'treatment_drugs')}>List of drugs</Button>
+            <Button variant="outlined" onClick={() => document.getElementById("newButton").clk(treatmentId, name, 'treatment_patients')}>List of patients</Button>
             <Box sx={{ width: '100%' }}>
                 <Typography variant="h6" gutterBottom component="div">
                     Treatment Details
