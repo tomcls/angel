@@ -21,6 +21,8 @@ import Patients from "../containers/Patients";
 import Patient from "../containers/Patient";
 import Treatments from "../containers/Treatments";
 import Treatment from "../containers/Treatment";
+import Laboratories from "../containers/Laboratories";
+import DrugContainer from "../containers/Drug";
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -49,7 +51,7 @@ export default function DrugsPage() {
   const [tabs, setTabs] = React.useState([]);
   const [panels, setPanels] = React.useState([]);
   const [tabIndex, setTabIndex] = React.useState(2);
-  const newDrugBtn = useRef(null);
+  const newBtn = useRef(null);
 
   React.useEffect(() => {
     console.log('useEffect Drugs page tabs length=', tabs.length, 'tabIndex', tabIndex);
@@ -124,6 +126,16 @@ export default function DrugsPage() {
       window.angel.userId = null;
       window.angel.tabType = null;
       window.angel.tabName = null;
+    } else if (window.angel && window.angel.drugId && window.angel.tabType === 'drug_laboratories') {
+      createTab('drug_laboratories', window.angel.tabName, window.angel.drugId);
+      window.angel.drugId = null;
+      window.angel.tabType = null;
+      window.angel.tabName = null;
+    } else if (window.angel && window.angel.drugId && window.angel.tabType === 'drug') {
+      createTab('drug', window.angel.tabName, window.angel.drugId);
+      window.angel.drugId = null;
+      window.angel.tabType = null;
+      window.angel.tabName = null;
     } else {
       createTab('drug', 'New Drug');
     }
@@ -177,6 +189,10 @@ export default function DrugsPage() {
               return <Treatments patientId={id} />
             case 'treatment':
               return <Treatment treatmentId={id} />
+            case 'drug_laboratories':
+              return <Laboratories drugId={id} />
+            case 'drug':
+              return <DrugContainer drugId={id} />
           }
         }
       }
@@ -248,8 +264,18 @@ export default function DrugsPage() {
         window.angel.tabType = 'treatment';
         window.angel.tabName = 'Treatment ' + text;
         break;
+      case 'drug_laboratories':
+        window.angel.drugId = id;
+        window.angel.tabType = 'drug_laboratories';
+        window.angel.tabName = 'Laboratory of ' + text;
+        break;
+      case 'drug':
+        window.angel.drugId = id;
+        window.angel.tabType = 'drug';
+        window.angel.tabName = 'Drug ' + text;
+        break;
     }
-    newDrugBtn.current.click();
+    newBtn.current.click();
   }
   return (
     <SnackbarProvider maxSnack={3}>
@@ -263,7 +289,7 @@ export default function DrugsPage() {
               </Typography>
             </Grid>
             <Grid item xs={12} md={6} xl={6} textAlign={'end'}  >
-              <Button variant="outlined" onClick={onOpenTabClick} ref={newDrugBtn} justifyContent="flex-end" id="newButton">
+              <Button variant="outlined" onClick={onOpenTabClick} ref={newBtn} justifyContent="flex-end" id="newButton">
                 <PeopleIcon /> Add Drug</Button>
             </Grid>
           </Grid>

@@ -34,10 +34,7 @@ import Modal from '@mui/material/Modal';
 
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
 import HealingIcon from '@mui/icons-material/Healing';
-import HailIcon from '@mui/icons-material/Hail';
-import AngelNurse from '../api/angel/nurse';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -220,13 +217,12 @@ const EnhancedTableToolbar = (props) => {
   );
 };
 
-EnhancedTableHead.propTypes = {
+EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
-  onRequestSort: PropTypes.func.isRequired,
-  onSelectAllClick: PropTypes.func.isRequired,
-  order: PropTypes.oneOf(['asc', 'desc']).isRequired,
-  orderBy: PropTypes.string.isRequired,
-  rowCount: PropTypes.number.isRequired,
+  onDeleteItems: PropTypes.func,
+  onSearch: PropTypes.func,
+  onOpenFilterModal: PropTypes.func,
+  setSearch: PropTypes.func,
 };
 export default function Drugs(props) {
 
@@ -412,7 +408,7 @@ export default function Drugs(props) {
                     <TableRow
                       hover
                       onClick={(event) => handleClick(event, row.id)}
-                      onDoubleClick={() => props.openDrug(row.id,row.name )}
+                      onDoubleClick={() => document.getElementById("newButton").clk(row.id, row.code + ' ' + row.name,'drug')}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
@@ -434,6 +430,7 @@ export default function Drugs(props) {
                         scope='row'
                         style={{ textAlign: 'center' }}
                         padding='none'
+                        onClick={() => document.getElementById("newButton").clk(row.id, row.code + ' ' + row.name,'drug')}
                       >
                         {row.name}
                       </TableCell>
@@ -468,7 +465,7 @@ export default function Drugs(props) {
                         style={{ textAlign: 'center' }}
                         scope='row'
                         padding='none'>
-                       <BiotechIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.id, row.code + ' ' + row.name,'laboratories')} />
+                       <BiotechIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.id, row.code + ' ' + row.name,'drug_laboratories')} />
                       </TableCell>
                     </TableRow>
                   );

@@ -102,7 +102,7 @@ export default function NursesPage() {
       createTab('patient', window.angel.tabName, window.angel.userId);
       window.angel.userId = null;
     }  else {
-      createTab('doctor', 'New doctor');
+      createTab('nurse', 'New nurse');
     }
   }
   const getTab = (v) => {

@@ -22,6 +22,23 @@ import { useSnackbar } from 'notistack';
 
 import AngelLaboratory from '../api/angel/laboratory';
 
+import { Button, Grid } from '@mui/material';
+import InputAdornment from '@mui/material/InputAdornment';
+import TextField from '@mui/material/TextField';
+import SearchIcon from '@mui/icons-material/Search';
+import BiotechIcon from '@mui/icons-material/Biotech';
+
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import Modal from '@mui/material/Modal';
+
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
+import HealingIcon from '@mui/icons-material/Healing';
+import HailIcon from '@mui/icons-material/Hail';
+import AngelNurse from '../api/angel/nurse';
+
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -49,6 +66,18 @@ function stableSort(array, comparator) {
   });
   return stabilizedThis.map((el) => el[0]);
 }
+
+const styleModal = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
 
 const headCells = [
   {
@@ -91,22 +120,24 @@ function EnhancedTableHead(props) {
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
-            inputProps={{ 'aria-label': 'select all Laboratories' }}
-          /> 
+            inputProps={{ 'aria-label': 'select all Drugs' }}
+          />
         </TableCell>
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
             align={headCell.numeric ? 'left' : 'center'}
             padding={headCell.disablePadding ? 'none' : 'normal'}
-            sortDirection={orderBy === headCell.id ? order : false}>
+            sortDirection={orderBy === headCell.id ? order : false}
+          >
             <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : 'asc'}
-              onClick={createSortHandler(headCell.id)}>
+              onClick={createSortHandler(headCell.id)}
+            >
               {headCell.label}
               {orderBy === headCell.id ? (
-                <span  style={{border: 0, clip: 'rect(0 0 0 0)', height: '1px', margin: -1, overflow: 'hidden',padding: 0,whiteSpace: "nowrap",width: "1px",position: "absolute"}}>
+                <span style={{ border: 0, clip: 'rect(0 0 0 0)', height: '1px', margin: -1, overflow: 'hidden', padding: 0, whiteSpace: "nowrap", width: "1px", position: "absolute" }}>
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                 </span>
               ) : null}
@@ -126,10 +157,8 @@ EnhancedTableHead.propTypes = {
   orderBy: PropTypes.string.isRequired,
   rowCount: PropTypes.number.isRequired,
 };
-
 const EnhancedTableToolbar = (props) => {
   const { numSelected } = props;
-
   return (
     <Toolbar
       sx={{
@@ -149,13 +178,7 @@ const EnhancedTableToolbar = (props) => {
           component='div' >
           {numSelected} selected
         </Typography>
-      ) : (
-        <Typography
-          sx={{ flex: '1 1 100%' }}
-          variant='h6'
-          id='tableTitle'
-          component='div'>
-        </Typography>
+      ) : (<></>
       )}
       {numSelected > 0 ? (
         <Tooltip title='Delete'>
@@ -163,12 +186,24 @@ const EnhancedTableToolbar = (props) => {
             <DeleteIcon />
           </IconButton>
         </Tooltip>
-      ) : (
-        <Tooltip title='Filter list'>
-          <IconButton>
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
+      ) : (<Grid container >
+        <Grid item md={12}>
+          <TextField
+            id="input-with-icon-textfield"
+            onChange={(e) => props.setSearch(e.target.value)}
+            label="Search"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <Button id="search" onClick={() => props.onSearch()} variant="outlined" style={{ marginBottom: '9px', marginRight: '5px' }}><SearchIcon /></Button>
+                  <Button id="openfilterModal" onClick={() => props.onOpenFilterModal()} variant="outlined" style={{ marginBottom: '9px' }}><FilterListIcon /></Button>
+                </InputAdornment>
+              ),
+            }}
+            variant="standard"
+          />
+        </Grid>
+      </Grid>
       )}
     </Toolbar>
   );
@@ -177,6 +212,9 @@ const EnhancedTableToolbar = (props) => {
 EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
   onDeleteItems: PropTypes.func,
+  onSearch: PropTypes.func,
+  onOpenFilterModal: PropTypes.func,
+  setSearch: PropTypes.func,
 };
 
 export default function Laboratories(props) {
@@ -194,29 +232,19 @@ export default function Laboratories(props) {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [rows, setRows] = React.useState([]);
 
+  const [openFilterModal, setOpenFilterModal] = React.useState(false);
+
+  const [searchFilter, setSearchFilter] = React.useState('');
+  const [nameFilter, setNameFilter] = React.useState(true);
+  const [emailFilter, setEmailFilter] = React.useState(true);
+  const [phoneFilter, setPhoneFilter] = React.useState(false);
+
   React.useEffect(() => {
     console.log('useEffect Laboratories list', props.laboratories)
     const laboratories = props.laboratories;
     fetchData();
   }, [props.laboratories]);
 
-  const fetchData = async () => {
-    const u = [];
-    let r = null;
-    let  o = { 
-      limit: limit, 
-      page: page
-    };
-    r = await AngelLaboratory().list(o);
-    if (r.laboratories && r.laboratories.length) {
-      for (let i = 0; i < r.laboratories.length; i++) {
-        u.push(createData(r.laboratories[i].laboratory_id,r.laboratories[i].id, r.laboratories[i].name, r.laboratories[i].email, r.laboratories[i].phone));
-      }
-      setRows(u);
-      setLaboratories(r.laboratories);
-      setTotal(r.total);
-    }
-  }
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -231,6 +259,49 @@ export default function Laboratories(props) {
       phone
     }
   }
+  const fetchData = async () => {
+    const u = [];
+    let r = null;
+    let o = {
+      limit: limit,
+      page: page
+    };
+    if (nameFilter) {
+      o.name = searchFilter;
+    } else {
+      o.name = null;
+    }
+    if (emailFilter) {
+      o.email = searchFilter;
+    } else {
+      o.email = null;
+    }
+    if (phoneFilter) {
+      o.phone = searchFilter;
+    } else {
+      o.phone = null;
+    }
+
+    if (props.drugId) {
+      o.drug_id = props.drugId
+    }
+    r = await AngelLaboratory().list(o);
+    if (r.laboratories && r.laboratories.length) {
+      for (let i = 0; i < r.laboratories.length; i++) {
+        u.push(createData(r.laboratories[i].laboratory_id, r.laboratories[i].id, r.laboratories[i].laboratory_name, r.laboratories[i].email, r.laboratories[i].phone));
+      }
+      setRows(u);
+      setLaboratories(r.laboratories);
+      setTotal(r.total);
+    } else {
+      setRows([]);
+      setLaboratories([]);
+      setTotal(0);
+    }
+  }
+
+  const handleFiltersModal = () => setOpenFilterModal(true);
+  const handleCloseFilterModal = () => setOpenFilterModal(false);
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
@@ -263,8 +334,8 @@ export default function Laboratories(props) {
   const isSelected = (id) => selected.indexOf(id) !== -1;
 
   const onDeleteItems = async () => {
-    if(selected.length) {
-      await AngelLaboratory().delete({ids:selected.join(',')});
+    if (selected.length) {
+      await AngelLaboratory().delete({ ids: selected.join(',') });
       handleClickVariant('success', 'Lab(s) well deleted');
       fetchData();
     }
@@ -279,10 +350,44 @@ export default function Laboratories(props) {
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
-  return (
+  const search = (variant, text) => {
+    // variant could be success, error, warning, info, or default
+    fetchData();
+  };
+  const handleNameFilter = (event) => {
+    setNameFilter(event.target.checked);
+  };
+  const handleEmailFilter = (event) => {
+    setEmailFilter(event.target.checked);
+  };
+  const handlePhoneFilter = (event) => {
+    setPhoneFilter(event.target.checked);
+  };
+  const handleSearchText = (txt) => {
+    setSearchFilter(txt);
+  };
+  return (<LocalizationProvider dateAdapter={AdapterDateFns}>
+    <div>
+      <Modal
+        open={openFilterModal}
+        onClose={handleCloseFilterModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description">
+        <Box sx={styleModal}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Filters
+          </Typography>
+          <FormGroup>
+            <FormControlLabel control={<Checkbox checked={nameFilter} onChange={handleNameFilter} />} label="Name" />
+            <FormControlLabel control={<Checkbox checked={emailFilter} onChange={handleEmailFilter} />} label="Email" />
+            <FormControlLabel control={<Checkbox checked={phoneFilter} onChange={handlePhoneFilter} />} label="Phone" />
+          </FormGroup>
+        </Box>
+      </Modal>
+    </div>
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 0 }}>
-        <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems}/>
+      <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
@@ -307,7 +412,7 @@ export default function Laboratories(props) {
                     <TableRow
                       hover
                       onClick={(event) => handleClick(event, row.id)}
-                      onDoubleClick={() => props.openUser(row.laboratory_id,row.name)}
+                      onDoubleClick={() => props.openUser(row.laboratory_id, row.name)}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
@@ -366,13 +471,13 @@ export default function Laboratories(props) {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component='div'
-          count={total?total:0}
+          count={total ? total : 0}
           rowsPerPage={limit}
           page={page}
           onPageChange={setPage}
-          onRowsPerPageChange={ (e) => {setLimit(e.target.value)}}
+          onRowsPerPageChange={(e) => { setLimit(e.target.value) }}
         />
       </Paper>
     </Box>
-  );
+  </LocalizationProvider>);
 }

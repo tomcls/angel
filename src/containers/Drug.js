@@ -13,6 +13,7 @@ import { Save } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import AngelDrug from '../api/angel/drugs';
+import ComboLaboratories from '../components/ComboLaboratories';
 
 export default function DrugContainer(props) {
     
@@ -25,7 +26,8 @@ export default function DrugContainer(props) {
     const [code, setCode] = React.useState('');
     const [description, setDescription] = React.useState('');
     const [langId, setLangId] = React.useState('en');
-   
+    const [laboratoryId, setLaboratoryId] = React.useState(() => '');
+    const [laboratoryName, setLaboratoryName] = React.useState(() => '');
     
     React.useEffect(() => {
         console.log("Drug container effect")
@@ -37,14 +39,14 @@ export default function DrugContainer(props) {
                 setDescription(drug.description);
                 setName(drug.name);
                 setCode(drug.code);
+                setLaboratoryId(drug.laboratory_id);
+                setLaboratoryName(drug.name);
             }
             fetchData();
         }
     }, []);
     const onEditorChange = (val) => {
         console.log('editor chaged', val)
-        
-        
     }
     const onInputChange = setter => e => {
         setter(e.target.value);
@@ -60,7 +62,8 @@ export default function DrugContainer(props) {
         } else {
             const u = {
                 name: name,
-                code: code
+                code: code,
+                laboratory_id: laboratoryId
             };
             if (id) {
                 u.id = id;
@@ -106,6 +109,11 @@ export default function DrugContainer(props) {
             }
         }
     }
+
+    const onLaboratorySelect = (o) => {
+        setLaboratoryId(o.id);
+        setLaboratoryName(o.name);
+    }
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <Box sx={{ width: '100%' }}>
@@ -140,6 +148,11 @@ export default function DrugContainer(props) {
                         />
                     </Grid>
                     <Grid item >
+
+                    <Typography variant="h6" gutterBottom component="div">
+                            laboratory
+                        </Typography>
+                        <ComboLaboratories onSelect={onLaboratorySelect} laboratory={{ id: laboratoryId, name: laboratoryName }} />
                     </Grid>
                 </Grid>
                 <Typography variant="h6" gutterBottom component="div" style={{ marginTop: '20px' }}>

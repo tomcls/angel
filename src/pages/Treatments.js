@@ -48,7 +48,7 @@ export default function TreatmentsPage() {
   const [tabs, setTabs] = React.useState([]);
   const [panels, setPanels] = React.useState([]);
   const [tabIndex, setTabIndex] = React.useState(2);
-  const newTreatmentBtn = useRef(null);
+  const newBtn = useRef(null);
 
   React.useEffect(() => {
     console.log('useEffect Treatments page tabs length=', tabs.length, 'tabIndex', tabIndex);
@@ -90,6 +90,11 @@ export default function TreatmentsPage() {
     } else if (window.angel && window.angel.nurseId) {
       createTab('nurse_patients', window.angel.tabName, window.angel.nurseId);
       window.angel.nurseId = null;
+      window.angel.tabType = null;
+      window.angel.tabName = null;
+    } else if (window.angel && window.angel.treatmentId && window.angel.tabType === 'treatment_drugs') {
+      createTab('treatment_drugs', window.angel.tabName, window.angel.treatmentId);
+      window.angel.treatmentId = null;
       window.angel.tabType = null;
       window.angel.tabName = null;
     } else if (window.angel && window.angel.treatmentId && window.angel.tabType === 'treatments') {
@@ -156,6 +161,8 @@ export default function TreatmentsPage() {
               return <Patient userId={id} />
             case 'treatment_patients':
               return <Patients treatmentId={id} />
+            case 'treatment_drugs':
+              return <Drugs treatmentId={id} />
             case 'nurse_patients':
               return <Patients openUser={openPatientTab} nurseId={id} openNurses={() => setSelectedTab('Main')} openDoctors={() => setSelectedTab('Main')} openTreatments={() => setSelectedTab('Main')} />
             case 'doc_patients':
@@ -219,6 +226,11 @@ export default function TreatmentsPage() {
         window.angel.treatmentId = id;
         window.angel.tabName = 'Patients of ' + text;
         break;
+      case 'treatment_drugs':
+        window.angel.tabType = 'treatment_drugs';
+        window.angel.treatmentId = id;
+        window.angel.tabName = 'Drugs of treatment ' + text;
+        break;
       case 'doctors':
         window.angel.userId = id;
         window.angel.tabType = 'doctors';
@@ -235,7 +247,7 @@ export default function TreatmentsPage() {
         window.angel.tabName = 'Treatment ' + text;
         break;
     }
-    newTreatmentBtn.current.click();
+    newBtn.current.click();
   }
 
   const createTabDrugs = (treatmentId, text) => {
@@ -251,24 +263,6 @@ export default function TreatmentsPage() {
     handleTabOptions(value);
   }
 
-  const openDrugsTab = (treatmentId) => {
-    console.log('openDrugsTab', treatmentId)
-    if (!window.angel) {
-      window.angel = {};
-    }
-    window.angel.treatmentId = treatmentId;
-    window.angel.modal = 'drugs';
-    newTreatmentBtn.current.click();
-  }
-  const openPatientsTab = (treatmentId) => {
-    console.log('openPatientsTab', treatmentId)
-    if (!window.angel) {
-      window.angel = {};
-    }
-    window.angel.treatmentId = treatmentId;
-    window.angel.modal = 'patients';
-    newTreatmentBtn.current.click();
-  }
   const openPatientTab = (userId, text) => {
     console.log('openPatientTab', userId, text)
     if (!window.angel) {
@@ -276,7 +270,7 @@ export default function TreatmentsPage() {
     }
     window.angel.userId = userId;
     window.angel.tabName = text;
-    newTreatmentBtn.current.click();
+    newBtn.current.click();
   }
   return (
     <SnackbarProvider maxSnack={3}>
@@ -290,7 +284,7 @@ export default function TreatmentsPage() {
               </Typography>
             </Grid>
             <Grid item xs={12} md={6} xl={6} textAlign={'end'}  >
-              <Button variant="outlined" onClick={onOpenTabClick} ref={newTreatmentBtn} justifyContent="flex-end" id="newButton">
+              <Button variant="outlined" onClick={onOpenTabClick} ref={newBtn} justifyContent="flex-end" id="newButton">
                 <PeopleIcon /> Add treatment</Button>
             </Grid>
           </Grid>

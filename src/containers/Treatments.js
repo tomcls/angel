@@ -210,13 +210,12 @@ const EnhancedTableToolbar = (props) => {
   );
 };
 
-EnhancedTableHead.propTypes = {
+EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
-  onRequestSort: PropTypes.func.isRequired,
-  onSelectAllClick: PropTypes.func.isRequired,
-  order: PropTypes.oneOf(['asc', 'desc']).isRequired,
-  orderBy: PropTypes.string.isRequired,
-  rowCount: PropTypes.number.isRequired,
+  onDeleteItems: PropTypes.func,
+  onSearch: PropTypes.func,
+  onOpenFilterModal: PropTypes.func,
+  setSearch: PropTypes.func,
 };
 
 export default function Treatments(props) {
@@ -424,6 +423,7 @@ export default function Treatments(props) {
                         scope='row'
                         style={{ textAlign: 'center' }}
                         padding='none'
+                        onClick={() => document.getElementById("newButton").clk(row.id, row.name,'treatment')}
                       >
                         {row.name}
                       </TableCell>

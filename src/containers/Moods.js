@@ -20,6 +20,18 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import AngelMood from "../api/angel/mood";
 import { useSnackbar } from 'notistack';
+import { Grid } from '@mui/material';
+import { Button } from '@mui/material';
+import InputAdornment from '@mui/material/InputAdornment';
+import TextField from '@mui/material/TextField';
+import SearchIcon from '@mui/icons-material/Search';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import Modal from '@mui/material/Modal';
+
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -48,6 +60,17 @@ function stableSort(array, comparator) {
   });
   return stabilizedThis.map((el) => el[0]);
 }
+const styleModal = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
 
 const headCells = [
   {
@@ -130,7 +153,6 @@ EnhancedTableHead.propTypes = {
 
 const EnhancedTableToolbar = (props) => {
   const { numSelected } = props;
-
   return (
     <Toolbar
       sx={{
@@ -147,33 +169,35 @@ const EnhancedTableToolbar = (props) => {
           sx={{ flex: '1 1 100%' }}
           color='inherit'
           variant='subtitle1'
-          component='div'
-        >
+          component='div' >
           {numSelected} selected
         </Typography>
-      ) : (
-        <Typography
-          sx={{ flex: '1 1 100%' }}
-          variant='h6'
-          id='tableTitle'
-          component='div'
-        >
-
-        </Typography>
+      ) : (<></>
       )}
-
       {numSelected > 0 ? (
         <Tooltip title='Delete'>
           <IconButton onClick={props.onDeleteItems}>
             <DeleteIcon />
           </IconButton>
         </Tooltip>
-      ) : (
-        <Tooltip title='Filter list'>
-          <IconButton>
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
+      ) : (<Grid container >
+        <Grid item md={12}>
+          <TextField
+            id="input-with-icon-textfield"
+            onChange={(e) => props.setSearch(e.target.value)}
+            label="Search"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <Button id="search" onClick={() => props.onSearch()} variant="outlined" style={{ marginBottom: '9px', marginRight: '5px' }}><SearchIcon /></Button>
+                  <Button id="openfilterModal" onClick={() => props.onOpenFilterModal()} variant="outlined" style={{ marginBottom: '9px' }}><FilterListIcon /></Button>
+                </InputAdornment>
+              ),
+            }}
+            variant="standard"
+          />
+        </Grid>
+      </Grid>
       )}
     </Toolbar>
   );
@@ -182,6 +206,9 @@ const EnhancedTableToolbar = (props) => {
 EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
   onDeleteItems: PropTypes.func,
+  onSearch: PropTypes.func,
+  onOpenFilterModal: PropTypes.func,
+  setSearch: PropTypes.func,
 };
 export default function Moods(props) {
 
@@ -199,25 +226,15 @@ export default function Moods(props) {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [rows, setRows] = React.useState([]);
 
+  const [openFilterModal, setOpenFilterModal] = React.useState(false);
+
+  const [searchFilter, setSearchFilter] = React.useState('');
+  const [nameFilter, setNameFilter] = React.useState(true);
+
   React.useEffect(() => {
     console.log('useEffect Moods list container')
     fetchData();
   }, []);
-  const fetchData = async () => {
-    const u = [];
-    const f = { limit: limit, page: page, lang_id: 'en' };
-    let r = await AngelMood().list(f);
-
-    if (r.moods && r.moods.length) {
-      for (let i = 0; i < r.moods.length; i++) {
-        //createData('Cupcake', 305, 3.7, 67, 4.3, <BeachAccessIcon color='primary' style={{ marginInline: '10px' }} />, <GridViewIcon color='primary' style={{ marginInline: '10px' }} />, <TrendingUpIcon color='primary' style={{ marginInline: '10px' }} />, 'ahmed')
-        u.push(createData(r.moods[i].mood_id, r.moods[i].name, r.moods[i].lang_id, r.moods[i].date_created));
-      }
-      setRows(u);
-      setMoods(r.moods);
-      setTotal(r.total);
-    }
-  }
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -231,6 +248,32 @@ export default function Moods(props) {
       created
     }
   }
+  const fetchData = async () => {
+    const u = [];
+    let r = null; //
+    let o = { limit: limit, page: page, lang_id: 'en' };
+
+    if (nameFilter) {
+      o.name = searchFilter;
+    } else {
+      o.name = null;
+    }
+    r = await AngelMood().list(o);
+
+    if (r.moods && r.moods.length) {
+      for (let i = 0; i < r.moods.length; i++) {
+        //createData('Cupcake', 305, 3.7, 67, 4.3, <BeachAccessIcon color='primary' style={{ marginInline: '10px' }} />, <GridViewIcon color='primary' style={{ marginInline: '10px' }} />, <TrendingUpIcon color='primary' style={{ marginInline: '10px' }} />, 'ahmed')
+        u.push(createData(r.moods[i].mood_id, r.moods[i].name, r.moods[i].lang_id, r.moods[i].date_created));
+      }
+      setRows(u);
+      setMoods(r.moods);
+      setTotal(r.total);
+    } else {
+      setRows([]);
+      setMoods([]);
+      setTotal(0);
+    }
+  }
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
@@ -240,6 +283,9 @@ export default function Moods(props) {
     }
     setSelected([]);
   };
+  const handleFiltersModal = () => setOpenFilterModal(true);
+  const handleCloseFilterModal = () => setOpenFilterModal(false);
+
 
   const handleClick = (event, id) => {
     const selectedIndex = selected.indexOf(id);
@@ -278,101 +324,129 @@ export default function Moods(props) {
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
+  const search = (variant, text) => {
+    // variant could be success, error, warning, info, or default
+    fetchData();
+  };
+  const handleNameFilter = (event) => {
+    setNameFilter(event.target.checked);
+  };
+  const handleSearchText = (txt) => {
+    setSearchFilter(txt);
+  };
+
   return (
-    <Box sx={{ width: '100%' }}>
-      <Paper sx={{ width: '100%', mb: 0 }}>
-        <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems}/>
-        <TableContainer>
-          <Table
-            sx={{ minWidth: 750 }}
-            aria-labelledby='tableTitle'
-            size={dense ? 'small' : 'medium'}
-          >
-            <EnhancedTableHead
-              numSelected={selected.length}
-              order={order}
-              orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
-              rowCount={rows.length}
-            />
-            <TableBody>
-              {stableSort(rows, getComparator(order, orderBy))
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => {
-                  const isItemSelected = isSelected(row.id);
-                  const labelId = `enhanced-table-checkbox-${index}`;
-                  return (
-                    <TableRow
-                      hover
-                      onClick={(event) => handleClick(event, row.id)}
-                      onDoubleClick={() => props.openMood(row.id, row.name)}
-                      role="checkbox"
-                      aria-checked={isItemSelected}
-                      tabIndex={-1}
-                      key={row.id}
-                      selected={isItemSelected}
-                    >
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          checked={isItemSelected}
-                          inputProps={{ 'aria-labelledby': labelId }}
-                        />
-                      </TableCell>
-                      <TableCell component="th" id={labelId} scope="row" padding="none" align='left'>
-                        {row.id}
-                      </TableCell>
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        scope='row'
-                        style={{ textAlign: 'center' }}
-                        padding='none'
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <div>
+        <Modal
+          open={openFilterModal}
+          onClose={handleCloseFilterModal}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description">
+          <Box sx={styleModal}>
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              Filters
+            </Typography>
+            <FormGroup>
+              <FormControlLabel control={<Checkbox checked={nameFilter} onChange={handleNameFilter} />} label="Name" />
+            </FormGroup>
+          </Box>
+        </Modal>
+      </div>
+      <Box sx={{ width: '100%' }}>
+        <Paper sx={{ width: '100%', mb: 0 }}>
+        <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
+          <TableContainer>
+            <Table
+              sx={{ minWidth: 750 }}
+              aria-labelledby='tableTitle'
+              size={dense ? 'small' : 'medium'}
+            >
+              <EnhancedTableHead
+                numSelected={selected.length}
+                order={order}
+                orderBy={orderBy}
+                onSelectAllClick={handleSelectAllClick}
+                onRequestSort={handleRequestSort}
+                rowCount={rows.length}
+              />
+              <TableBody>
+                {stableSort(rows, getComparator(order, orderBy))
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row, index) => {
+                    const isItemSelected = isSelected(row.id);
+                    const labelId = `enhanced-table-checkbox-${index}`;
+                    return (
+                      <TableRow
+                        hover
+                        onClick={(event) => handleClick(event, row.id)}
+                        onDoubleClick={() => props.openMood(row.id, row.name)}
+                        role="checkbox"
+                        aria-checked={isItemSelected}
+                        tabIndex={-1}
+                        key={row.id}
+                        selected={isItemSelected}
                       >
-                        {row.name}
-                      </TableCell>
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        scope='row'
-                        style={{ textAlign: 'center' }}
-                        padding='none'
-                      >
-                        {row.lang_id}
-                      </TableCell>
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        style={{ textAlign: 'center' }}
-                        scope='row'
-                        padding='none'>
-                        {row.created}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              {emptyRows > 0 && (
-                <TableRow
-                  style={{
-                    height: (dense ? 33 : 53) * emptyRows,
-                  }}
-                >
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component='div'
-          count={total ? total : 0}
-          rowsPerPage={limit}
-          page={page}
-          onPageChange={setPage}
-          onRowsPerPageChange={(e) => { setLimit(e.target.value) }}
-        />
-      </Paper>
-    </Box>
-  );
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            checked={isItemSelected}
+                            inputProps={{ 'aria-labelledby': labelId }}
+                          />
+                        </TableCell>
+                        <TableCell component="th" id={labelId} scope="row" padding="none" align='left'>
+                          {row.id}
+                        </TableCell>
+                        <TableCell
+                          component='th'
+                          id={labelId}
+                          scope='row'
+                          style={{ textAlign: 'center' }}
+                          padding='none'
+                        >
+                          {row.name}
+                        </TableCell>
+                        <TableCell
+                          component='th'
+                          id={labelId}
+                          scope='row'
+                          style={{ textAlign: 'center' }}
+                          padding='none'
+                        >
+                          {row.lang_id}
+                        </TableCell>
+                        <TableCell
+                          component='th'
+                          id={labelId}
+                          style={{ textAlign: 'center' }}
+                          scope='row'
+                          padding='none'>
+                          {row.created}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                {emptyRows > 0 && (
+                  <TableRow
+                    style={{
+                      height: (dense ? 33 : 53) * emptyRows,
+                    }}
+                  >
+                    <TableCell colSpan={6} />
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component='div'
+            count={total ? total : 0}
+            rowsPerPage={limit}
+            page={page}
+            onPageChange={setPage}
+            onRowsPerPageChange={(e) => { setLimit(e.target.value) }}
+          />
+        </Paper>
+      </Box>
+    </LocalizationProvider>);
 }

@@ -287,7 +287,7 @@ export default function NurseContainer(props) {
                 </Modal>
             </div>
             <Button onClick={handleAssignPatientModal} variant="outlined" style={{ marginRight: '5px' }}>Assign patient</Button>
-            <Button onClick={() => props.showNursePatients(nurseId)} variant="outlined" >List of patients</Button>
+            <Button onClick={() => document.getElementById("newButton").clk(nurseId, firstname + " "+lastname,'nurse_patients')} variant="outlined" >List of patients</Button>
             <Box sx={{ width: '100%' }}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} sm={6} md={4} xl={2} style={{ paddingTop: '40px' }}>

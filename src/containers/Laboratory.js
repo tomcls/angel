@@ -39,7 +39,7 @@ export default function LaboratoryContainer(props) {
                 const laboratory = await AngelLaboratory().find({ laboratory_id: props.laboratoryId });
                 setId(laboratory.laboratory_id);
                 setLaboratoryId(laboratory.laboratory_id);
-                setName(laboratory.name);
+                setName(laboratory.laboratory_name);
                 setEmail(laboratory.email);
                 setPhone(laboratory.phone);
                 setAddress(laboratory.address);
