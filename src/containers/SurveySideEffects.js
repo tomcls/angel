@@ -95,7 +95,7 @@ const headCells = [
     label: 'Firstname',
   },
   {
-    id: '                                                                                                                                                 b  ccx c,nnnnn n ',
+    id: 'lastname',
     numeric: false,
     disablePadding: false,
     label: 'Lastname',
@@ -231,14 +231,14 @@ export default function SurveySideEffects(props) {
   const { enqueueSnackbar } = useSnackbar();
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
-  const [limit, setLimit] = React.useState(5);
+  const [limit, setLimit] = React.useState(30);
   const [sideEffects, setSideEffects] = React.useState([]);
 
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('id');
   const [selected, setSelected] = React.useState([]);
   const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage, setRowsPerPage] = React.useState(30);
   const [rows, setRows] = React.useState([]);
 
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
@@ -290,11 +290,11 @@ export default function SurveySideEffects(props) {
     console.log(r)
     if (r.surveys && r.surveys.length) {
       for (let i = 0; i < r.surveys.length; i++) {
-        u.push(createData(r.surveys[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.surveys[i].avatar : defaultAvatar, r.surveys[i].sideEffect_id, r.surveys[i].id, r.surveys[i].sideEffect_name, r.surveys[i].firstname, r.surveys[i].lastname,r.surveys[i].score, r.surveys[i].date ));
+        u.push(createData(r.surveys[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.surveys[i].avatar : defaultAvatar, r.surveys[i].survey_side_effect_id, r.surveys[i].id, r.surveys[i].name, r.surveys[i].firstname, r.surveys[i].lastname,r.surveys[i].score, r.surveys[i].date ));
       }
       setRows(u);
       setSideEffects(r.surveys);
-      setTotal(r.total);
+      setTotal(r.count);
     } else {
       setRows([]);
       setSideEffects([]);
@@ -427,16 +427,13 @@ export default function SurveySideEffects(props) {
                         />
                       </TableCell>
                       <TableCell component="th" id={labelId} scope="row" padding="none" align='left'>
-                        <Avatar src={row.avatar} textAlign={'start'} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname,'patient')} />
-                      </TableCell>
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        scope='row'
-                        style={{ textAlign: 'center' }}
-                        padding='none'
-                      >
-                        {row.name}
+                          <Grid item xs={1} style={{ cursor: 'pointer'}}>
+                              <Grid container >
+                              <Typography style={{ paddingLeft: '5px', paddingTop: "12px", position: 'relative' }} component={'div'}> {row.id}</Typography>
+                                <Avatar  src={row.avatar} textAlign={'start'} onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname, 'patient')} style={{ margin: "5px" }} />
+                                <Typography style={{ paddingLeft: '5px', paddingTop: "12px", position: 'relative' }} component={'div'}> {row.name}</Typography>
+                              </Grid>
+                            </Grid>
                       </TableCell>
                       <TableCell
                         component='th'
@@ -444,7 +441,15 @@ export default function SurveySideEffects(props) {
                         style={{ textAlign: 'center' }}
                         scope='row'
                         padding='none'>
-                        {row.firstname }
+                        {row.name }
+                      </TableCell>
+                      <TableCell
+                        component='th'
+                        id={labelId}
+                        style={{ textAlign: 'center' }}
+                        scope='row'
+                        padding='none'>
+                        {row.firstname}
                       </TableCell>
                       <TableCell
                         component='th'
@@ -453,14 +458,6 @@ export default function SurveySideEffects(props) {
                         scope='row'
                         padding='none'>
                         {row.lastname}
-                      </TableCell>
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        style={{ textAlign: 'center' }}
-                        scope='row'
-                        padding='none'>
-                        {row.name}
                       </TableCell>
                       <TableCell
                         component='th'
