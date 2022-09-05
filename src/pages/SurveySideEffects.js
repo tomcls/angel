@@ -2,19 +2,29 @@ import React, { useRef } from "react";
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import Treatment from "../containers/Treatment";
+import Patient from "../containers/Patient";
 import Button from '@mui/material/Button';
 import PeopleIcon from '@mui/icons-material/People';
 import Bar from "../templates/Bar";
-import PatientTreatments from "../containers/PatientTreatments";
+import SideEffects from "../containers/SideEffects";
+import SideEffect from "../containers/SideEffect";
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import { Cancel } from "@mui/icons-material";
 import { SnackbarProvider } from 'notistack';
-import Drugs from "../containers/Drugs";
 import { Grid, Typography } from "@mui/material";
-import Tabs from "../components/Tabs";
+import NurseContainer from "../containers/Nurse";
+import Patients from "../containers/Patients";
+import Doctors from "../containers/Doctors";
+import Nurses from "../containers/Nurses";
+import Treatments from "../containers/Treatments";
+import SideEffectContainer from "../containers/SideEffect";
+import SurveySideEffects from "../containers/SurveySideEffects";
+
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -36,31 +46,25 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
   }),
 );
 
-export default function TreatmentsPage() {
+export default function SurveySideEffectsPage() {
 
   const [open, setOpen] = React.useState(true);
-  const [selectedTab, setSelectedTab] = React.useState("Main");
+  const [selectedTab, setSelectedTab] = React.useState('Main');
   const [tabs, setTabs] = React.useState([]);
-  const [panels, setPanels] = React.useState([]);
   const [tabIndex, setTabIndex] = React.useState(2);
-  const newBtn = useRef(null);
-  const t = new Tabs('treatment',tabIndex,tabs,setTabs,setSelectedTab,setTabIndex,newBtn);
+  const newSideEffectBtn = useRef(null);
 
   React.useEffect(() => {
-    console.log('useEffect Treatments page tabs length=', tabs.length, 'tabIndex', tabIndex);
-    let d = document.getElementById('newButton');
-    if (d) {
-      d.clk = function (id, text, type) { t.openTab(id, text, type); };
-    }
-  }, []);
-
+    console.log('useEffect sideEffects page');
+  });
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
- /* const handleTabOptions = (value) => {
+  const handleTabOptions = (value) => {
     setSelectedTab(value)
     setTabIndex(tabIndex + 1)
   }
+  
   const onOpenTabClick = () => {
     console.log('onOpenTabClick')
     if (window.angel && window.angel.userId && window.angel.tabType === 'nurses') {
@@ -86,11 +90,6 @@ export default function TreatmentsPage() {
     } else if (window.angel && window.angel.nurseId) {
       createTab('nurse_patients', window.angel.tabName, window.angel.nurseId);
       window.angel.nurseId = null;
-      window.angel.tabType = null;
-      window.angel.tabName = null;
-    } else if (window.angel && window.angel.treatmentId && window.angel.tabType === 'treatment_drugs') {
-      createTab('treatment_drugs', window.angel.tabName, window.angel.treatmentId);
-      window.angel.treatmentId = null;
       window.angel.tabType = null;
       window.angel.tabName = null;
     } else if (window.angel && window.angel.treatmentId && window.angel.tabType === 'treatments') {
@@ -119,7 +118,7 @@ export default function TreatmentsPage() {
       window.angel.tabType = null;
       window.angel.tabName = null;
     } else {
-      createTab('treatment', 'New treatment');
+      createTab('sideEffect', 'New sideEffect');
     }
   }
   const getTab = (v) => {
@@ -157,12 +156,10 @@ export default function TreatmentsPage() {
               return <Patient userId={id} />
             case 'treatment_patients':
               return <Patients treatmentId={id} />
-            case 'treatment_drugs':
-              return <Drugs treatmentId={id} />
             case 'nurse_patients':
-              return <Patients openUser={openPatientTab} nurseId={id} openNurses={() => setSelectedTab('Main')} openDoctors={() => setSelectedTab('Main')} openTreatments={() => setSelectedTab('Main')} />
+              return <Patients  nurseId={id} openNurses={() => setSelectedTab('Main')} openDoctors={() => setSelectedTab('Main')} openTreatments={() => setSelectedTab('Main')} />
             case 'doc_patients':
-              return <Patients openUser={openPatientTab} doctorId={id} openDoctors={() => setSelectedTab('Main')} openNurses={() => setSelectedTab('Main')} openTreatments={() => setSelectedTab('Main')} />
+              return <Patients  doctorId={id} openDoctors={() => setSelectedTab('Main')} openNurses={() => setSelectedTab('Main')} openTreatments={() => setSelectedTab('Main')} />
             case 'doctors':
               return <Doctors patientId={id} openPatients={openTab} />
             case 'nurses':
@@ -171,6 +168,8 @@ export default function TreatmentsPage() {
               return <Treatments patientId={id} />
             case 'treatment':
               return <Treatment treatmentId={id} />
+            case 'sideEffect':
+                return <SideEffectContainer drugId={id} />
           }
         }
       }
@@ -222,11 +221,6 @@ export default function TreatmentsPage() {
         window.angel.treatmentId = id;
         window.angel.tabName = 'Patients of ' + text;
         break;
-      case 'treatment_drugs':
-        window.angel.tabType = 'treatment_drugs';
-        window.angel.treatmentId = id;
-        window.angel.tabName = 'Drugs of treatment ' + text;
-        break;
       case 'doctors':
         window.angel.userId = id;
         window.angel.tabType = 'doctors';
@@ -243,20 +237,18 @@ export default function TreatmentsPage() {
         window.angel.tabName = 'Treatment ' + text;
         break;
     }
-    newBtn.current.click();
+    newSideEffectBtn.current.click();
   }
-*/
-  const createTabDrugs = (treatmentId, text) => {
-    console.log('createTabDrugs', treatmentId)
-    const value = `Blue Box ${tabIndex}`
+  const createTabSideEffect = (sideEffectId, text) => {
+    const value = text;
     const newTab = {
-      label: text,
-      value: value,
+      label: text ? text : 'New lab',
+      value: value ? value : tabIndex,
       idx: tabIndex,
-      child: () => <Drugs openDrug={createTabDrugs} treatmentId={treatmentId} />
+      child: () => <SideEffect sideEffectId={sideEffectId} />
     }
     setTabs([...tabs, newTab])
-    t.handleTabOptions(value);
+    handleTabOptions(value ? value : tabIndex);
   }
 
   return (
@@ -264,29 +256,29 @@ export default function TreatmentsPage() {
       <Box sx={{ display: 'flex' }}>
         <Bar open={setOpen} />
         <Main open={open} style={{ background: "rgb(229 229 229 / 41%)", marginBlock: "64px" }}>
-          <Grid container spacing={2} mb={'0px'} >
+        <Grid container spacing={2} mb={'0px'} >
             <Grid item xs={12} md={6} xl={6} >
               <Typography variant="h6" component="div" >
-                Treatments
+                SideEffects
               </Typography>
             </Grid>
             <Grid item xs={12} md={6} xl={6} textAlign={'end'}  >
-              <Button variant="outlined" onClick={t.onOpenTabClick} ref={newBtn} justifyContent="flex-end" id="newButton">
-                <PeopleIcon /> Add treatment</Button>
+              <Button variant="outlined" onClick={onOpenTabClick} ref={newSideEffectBtn} justifyContent="flex-end" id="newButton">
+                <PeopleIcon /> Add SideEffect</Button>
             </Grid>
           </Grid>
           <Box sx={{ width: '100%' }}>
             <TabContext value={selectedTab ? selectedTab : '1'}>
               <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <TabList onChange={handleChange} aria-label="" variant="scrollable" scrollButtons="auto" >
-                  <Tab label="List" value="Main" icon={<FormatListBulletedIcon />} iconPosition="start" />
+                  <Tab label="SideEffects" value="Main" icon={<FormatListBulletedIcon />} iconPosition="start" />
                   {tabs.map(tab => (
-                    <Tab key={tab.idx} label={tab.label} value={tab.value} icon={<Cancel onClick={(e) => t.handleCloseTab(e, tab.idx)} />} iconPosition="end" />
+                    <Tab key={tab.idx} label={tab.label} value={tab.value} icon={<Cancel onClick={(e) => handleCloseTab(e, tab.idx)} />} iconPosition="end" />
                   ))}
                 </TabList>
               </Box>
               <TabPanel value="Main" style={{ padding: "1px" }}>
-                <PatientTreatments openTreatment={t.openTab} />
+                <SurveySideEffects  />
               </TabPanel>
               {tabs.map(panel => (
                 <TabPanel key={panel.idx} label={panel.label} value={panel.value} >

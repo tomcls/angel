@@ -55,8 +55,8 @@ export default class Tabs {
                             return <NurseContainer userId={id} />
                         case 'patient':
                             return <PatientContainer userId={id} />
-                        case 'treatment_patients':
-                            return <Patients treatmentId={id} />
+                        case 'drug_patients':
+                            return <Patients drugId={id} />
                         case 'nurse_patients':
                             return <Patients openUser={this.openPatientTab} nurseId={id} openNurses={() => this.setSelectedTab('Main')} openDoctors={() => this.setSelectedTab('Main')} openTreatments={() => this.setSelectedTab('Main')} />
                         case 'doc_patients':
@@ -125,9 +125,9 @@ export default class Tabs {
                 window.angel.doctorId = id;
                 window.angel.tabName = 'Patients of Doc ' + text;
                 break;
-            case 'treatment_patients':
-                window.angel.tabType = 'treatment_patients';
-                window.angel.treatmentId = id;
+            case 'drug_patients':
+                window.angel.tabType = 'drug_patients';
+                window.angel.drugId = id;
                 window.angel.tabName = 'Patients of ' + text;
                 break;
             case 'doctors':
@@ -185,9 +185,9 @@ export default class Tabs {
             window.angel.nurseId = null;
             window.angel.tabType = null;
             window.angel.tabName = null;
-        } else if (window.angel && window.angel.treatmentId && window.angel.tabType === 'treatment_patients') {
-            this.createTab('treatment_patients', window.angel.tabName, window.angel.treatmentId);
-            window.angel.treatmentId = null;
+        } else if (window.angel && window.angel.drugId && window.angel.tabType === 'drug_patients') {
+            this.createTab('drug_patients', window.angel.tabName, window.angel.drugId);
+            window.angel.drugId = null;
             window.angel.tabType = null;
             window.angel.tabName = null;
         } else if (window.angel && window.angel.doctorId) {

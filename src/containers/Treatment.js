@@ -274,10 +274,6 @@ export default function TreatmentContainer(props) {
                     </Box>
                 </Modal>
             </div>
-            <Button variant="outlined" style={{ marginRight: '5px' }} onClick={handleAssignDrugModal}>Assign drug</Button>
-            <Button variant="outlined" style={{ marginRight: '5px' }} onClick={handleAssignPatientModal}>Assign patient</Button>
-            <Button variant="outlined" style={{ marginRight: '5px' }} onClick={() => document.getElementById("newButton").clk(treatmentId, name, 'treatment_drugs')}>List of drugs</Button>
-            <Button variant="outlined" onClick={() => document.getElementById("newButton").clk(treatmentId, name, 'treatment_patients')}>List of patients</Button>
             <Box sx={{ width: '100%' }}>
                 <Typography variant="h6" gutterBottom component="div">
                     Treatment Details

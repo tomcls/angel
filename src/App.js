@@ -28,6 +28,7 @@ import SurveysMoodsPage from './pages/SurveyMoods';
 import Settings from './pages/Settings';
 import { SnackbarProvider } from 'notistack';
 import CoordinatorsPage from './pages/Coordinators';
+import SurveySideEffectsPage from './pages/SurveySideEffects';
 
 function App() {
   const matches = useMediaQuery('(max-width:970px)');
@@ -56,6 +57,7 @@ function App() {
       <Route path="/side-effects" element={<SideEffectsPage />} />
       <Route path="/moods" element={<MoodsPage />} />
       <Route path="/survey-moods" element={<SurveysMoodsPage />} />
+      <Route path="/survey-effects" element={<SurveySideEffectsPage />} />
       <Route path="/settings" element={<SnackbarProvider maxSnack={3}><Settings /></SnackbarProvider>} />
     </Routes>
     </div>

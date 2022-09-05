@@ -41,6 +41,7 @@ import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
 import HealingIcon from '@mui/icons-material/Healing';
 import HailIcon from '@mui/icons-material/Hail';
 import AngelNurse from '../api/angel/nurse';
+import AngelDrug from '../api/angel/drugs';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -319,11 +320,11 @@ export default function Patients(props) {
       o.nurse_id = props.nurseId;
       r = await AngelNurse().patients(o);
     } else if (props.doctorId) {
-      o.doctorId = props.doctorId;
+      o.doctor_id = props.doctorId;
       r = await AngelDoctor().patients(o);
-    } else if (props.treatmentId) {
-      o.treatmentId = props.treatmentId;
-      r = await AngelTreatment().patients(o);
+    } else if (props.drugId) {
+      o.drug_id = props.drugId;
+      r = await AngelDrug().patients(o);
     } else {
       r = await AngelPatient().list(o);
     }

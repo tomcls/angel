@@ -18,15 +18,14 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
-import AngelDrug from "../api/angel/drugs";
-import AngelTreatment from '../api/angel/treatments';
 import { useSnackbar } from 'notistack';
 
-import { Button, Grid } from '@mui/material';
+import AngelSideEffect from '../api/angel/sideEffect';
+
+import { Avatar, Button, Grid } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
-import BiotechIcon from '@mui/icons-material/Biotech';
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -34,7 +33,7 @@ import Modal from '@mui/material/Modal';
 
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
+import AngelSurvey from '../api/angel/survey';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -63,6 +62,7 @@ function stableSort(array, comparator) {
   });
   return stabilizedThis.map((el) => el[0]);
 }
+
 const styleModal = {
   position: 'absolute',
   top: '50%',
@@ -89,27 +89,28 @@ const headCells = [
     label: 'Name',
   },
   {
-    id: 'code',
+    id: 'firstname',
     numeric: false,
     disablePadding: false,
-    label: 'Code',
+    label: 'Firstname',
   },
   {
-    id: 'created',
+    id: '                                                                                                                                                 b  ccx c,nnnnn n ',
     numeric: false,
     disablePadding: false,
-    label: 'Created',
-  }, {
-    id: 'patients',
-    numeric: false,
-    disablePadding: false,
-    label: 'Patients',
+    label: 'Lastname',
   },
   {
-    id: 'laboratory',
+    id: 'score',
     numeric: false,
     disablePadding: false,
-    label: 'Laboratory',
+    label: 'Score',
+  },
+  {
+    id: 'date',
+    numeric: false,
+    disablePadding: false,
+    label: 'Date',
   }
 ];
 
@@ -128,7 +129,7 @@ function EnhancedTableHead(props) {
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
             inputProps={{ 'aria-label': 'select all Drugs' }}
-          /> 
+          />
         </TableCell>
         {headCells.map((headCell) => (
           <TableCell
@@ -144,7 +145,7 @@ function EnhancedTableHead(props) {
             >
               {headCell.label}
               {orderBy === headCell.id ? (
-                <span  style={{border: 0, clip: 'rect(0 0 0 0)', height: '1px', margin: -1, overflow: 'hidden',padding: 0,whiteSpace: "nowrap",width: "1px",position: "absolute"}}>
+                <span style={{ border: 0, clip: 'rect(0 0 0 0)', height: '1px', margin: -1, overflow: 'hidden', padding: 0, whiteSpace: "nowrap", width: "1px", position: "absolute" }}>
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                 </span>
               ) : null}
@@ -164,7 +165,6 @@ EnhancedTableHead.propTypes = {
   orderBy: PropTypes.string.isRequired,
   rowCount: PropTypes.number.isRequired,
 };
-
 const EnhancedTableToolbar = (props) => {
   const { numSelected } = props;
   return (
@@ -224,82 +224,84 @@ EnhancedTableToolbar.propTypes = {
   onOpenFilterModal: PropTypes.func,
   setSearch: PropTypes.func,
 };
-export default function Drugs(props) {
+const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp0LF2WgeDkn_sQ1VuMnlnVGjkDvCN4jo2nLMt3b84ry328rg46eohB_JT3WTqOGJovY&usqp=CAU';//process.env.SENDGRID_APIKEY
 
-  const [drugs, setDrugs] = React.useState(null);
+export default function SurveySideEffects(props) {
 
+  const { enqueueSnackbar } = useSnackbar();
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
   const [limit, setLimit] = React.useState(5);
-  
+  const [sideEffects, setSideEffects] = React.useState([]);
+
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('id');
   const [selected, setSelected] = React.useState([]);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [rows, setRows] = React.useState([]);
-  const { enqueueSnackbar } = useSnackbar();
 
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
 
   const [searchFilter, setSearchFilter] = React.useState('');
-  const [codeFilter, setCodeFilter] = React.useState(true);
   const [nameFilter, setNameFilter] = React.useState(true);
+  const [scoreFilter, setScoreFilter] = React.useState(true);
 
   React.useEffect(() => {
-    console.log('useEffect Drugs list container')
-    
+    console.log('useEffect SideEffects list', props.sideEffects)
+    const sideEffects = props.sideEffects;
     fetchData();
-  }, []);
+  }, [props.sideEffects]);
+
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
-
-  const createData = (id, name, code, created) => {
+  const createData = (avatar,sideEffect_id, id, name, firstname, lastname, score,date) => {
     return {
+      avatar,
+      sideEffect_id,
       id,
       name,
-      code,
-      created
+      firstname,
+      lastname,
+      score,
+      date
     }
   }
   const fetchData = async () => {
     const u = [];
-    let  r = null ; //
-    let o = { limit: limit, page: page , lang_id: 'en'};
-
-    if (codeFilter) {
-      o.code = searchFilter;
-    } else {
-      o.code = null;
-    }
+    let r = null;
+    let o = {
+      limit: limit,
+      page: page
+    };
     if (nameFilter) {
       o.name = searchFilter;
     } else {
       o.name = null;
     }
-    if(props.treatmentId) {
-      o.treatment_id = props.treatmentId;
-      r = await AngelTreatment().drugs(o);
-    } else {
-      r = await AngelDrug().list(o);
+    o.lang_id = 'en';
+    if (props.sideEffectId) {
+      o.id = props.sideEffectId;
     }
-   
-    if (r.drugs && r.drugs.length) {
-      for (let i = 0; i < r.drugs.length; i++) {
-        u.push(createData(r.drugs[i].drug_id,r.drugs[i].drug_name, r.drugs[i].drug_code, r.drugs[i].date_created));
+    r = await AngelSurvey().sideEffects(o);
+    console.log(r)
+    if (r.surveys && r.surveys.length) {
+      for (let i = 0; i < r.surveys.length; i++) {
+        u.push(createData(r.surveys[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.surveys[i].avatar : defaultAvatar, r.surveys[i].sideEffect_id, r.surveys[i].id, r.surveys[i].sideEffect_name, r.surveys[i].firstname, r.surveys[i].lastname,r.surveys[i].score, r.surveys[i].date ));
       }
       setRows(u);
-      setDrugs(r.drugs);
+      setSideEffects(r.surveys);
       setTotal(r.total);
     } else {
       setRows([]);
-      setDrugs([]);
+      setSideEffects([]);
       setTotal(0);
     }
   }
+
   const handleFiltersModal = () => setOpenFilterModal(true);
   const handleCloseFilterModal = () => setOpenFilterModal(false);
 
@@ -334,53 +336,56 @@ export default function Drugs(props) {
   const isSelected = (id) => selected.indexOf(id) !== -1;
 
   const onDeleteItems = async () => {
-    if(selected.length) {
-      await AngelDrug().delete({ids:selected.join(',')});
-      handleClickVariant('success', 'Drug(s) well deleted');
+    if (selected.length) {
+      await AngelSideEffect().delete({ ids: selected.join(',') });
+      handleClickVariant('success', 'Lab(s) well deleted');
       fetchData();
     }
   }
+
+  const handleClickVariant = (variant, text) => {
+    // variant could be success, error, warning, info, or default
+    enqueueSnackbar(text, { variant });
+  };
+
+  // Avoid a layout jump when reaching the last page with empty rows.
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
   const search = (variant, text) => {
     // variant could be success, error, warning, info, or default
     fetchData();
   };
-  const handleCodeFilter = (event) => {
-    setCodeFilter(event.target.checked);
-  };
   const handleNameFilter = (event) => {
     setNameFilter(event.target.checked);
+  };
+  const handleEmailFilter = (event) => {
+    //setEmailFilter(event.target.checked);
+  };
+  const handlePhoneFilter = (event) => {
+    //setPhoneFilter(event.target.checked);
   };
   const handleSearchText = (txt) => {
     setSearchFilter(txt);
   };
-  const handleClickVariant = (variant, text) => {
-    // variant could be success, error, warning, info, or default
-    enqueueSnackbar(text, { variant });
-  };
-  // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
-
-  return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <div>
-        <Modal
-          open={openFilterModal}
-          onClose={handleCloseFilterModal}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description">
-          <Box sx={styleModal}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-              Filters
-            </Typography>
-            <FormGroup>
-              <FormControlLabel control={<Checkbox checked={codeFilter} onChange={handleCodeFilter} />} label="Code" />
-              <FormControlLabel control={<Checkbox checked={nameFilter} onChange={handleNameFilter} />} label="Name" />
-            </FormGroup>
-          </Box>
-        </Modal>
-      </div>
+  return (<LocalizationProvider dateAdapter={AdapterDateFns}>
+    <div>
+      <Modal
+        open={openFilterModal}
+        onClose={handleCloseFilterModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description">
+        <Box sx={styleModal}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Filters
+          </Typography>
+          <FormGroup>
+            <FormControlLabel control={<Checkbox checked={nameFilter} onChange={handleNameFilter} />} label="Name" />
+            <FormControlLabel control={<Checkbox checked={scoreFilter} onChange={handleEmailFilter} />} label="Score" />
+          </FormGroup>
+        </Box>
+      </Modal>
+    </div>
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 0 }}>
       <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
@@ -403,12 +408,12 @@ export default function Drugs(props) {
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   const isItemSelected = isSelected(row.id);
-                  const labelId = `enhanced-table-checkbox-${row.id}`;
+                  const labelId = `enhanced-table-checkbox-${index}`;
                   return (
                     <TableRow
                       hover
                       onClick={(event) => handleClick(event, row.id)}
-                      onDoubleClick={() => document.getElementById("newButton").clk(row.id, row.code + ' ' + row.name,'drug')}
+                      onDoubleClick={() => props.openUser(row.sideEffect_id, row.name)}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
@@ -422,7 +427,7 @@ export default function Drugs(props) {
                         />
                       </TableCell>
                       <TableCell component="th" id={labelId} scope="row" padding="none" align='left'>
-                        {row.id}
+                        <Avatar src={row.avatar} textAlign={'start'} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname,'patient')} />
                       </TableCell>
                       <TableCell
                         component='th'
@@ -430,18 +435,16 @@ export default function Drugs(props) {
                         scope='row'
                         style={{ textAlign: 'center' }}
                         padding='none'
-                        onClick={() => document.getElementById("newButton").clk(row.id, row.code + ' ' + row.name,'drug')}
                       >
                         {row.name}
                       </TableCell>
                       <TableCell
                         component='th'
                         id={labelId}
-                        scope='row'
                         style={{ textAlign: 'center' }}
-                        padding='none'
-                      >
-                        {row.code}
+                        scope='row'
+                        padding='none'>
+                        {row.firstname }
                       </TableCell>
                       <TableCell
                         component='th'
@@ -449,7 +452,7 @@ export default function Drugs(props) {
                         style={{ textAlign: 'center' }}
                         scope='row'
                         padding='none'>
-                        {row.created}
+                        {row.lastname}
                       </TableCell>
                       <TableCell
                         component='th'
@@ -457,7 +460,7 @@ export default function Drugs(props) {
                         style={{ textAlign: 'center' }}
                         scope='row'
                         padding='none'>
-                        <FamilyRestroomIcon  style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.id, row.code + ' ' + row.name,'drug_patients')} />
+                        {row.name}
                       </TableCell>
                       <TableCell
                         component='th'
@@ -465,7 +468,15 @@ export default function Drugs(props) {
                         style={{ textAlign: 'center' }}
                         scope='row'
                         padding='none'>
-                       <BiotechIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.id, row.code + ' ' + row.name,'drug_laboratories')} />
+                        {row.score}
+                      </TableCell>
+                      <TableCell
+                        component='th'
+                        id={labelId}
+                        style={{ textAlign: 'center' }}
+                        scope='row'
+                        padding='none'>
+                        {row.date}
                       </TableCell>
                     </TableRow>
                   );
@@ -485,11 +496,11 @@ export default function Drugs(props) {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component='div'
-          count={total?total:0}
+          count={total ? total : 0}
           rowsPerPage={limit}
           page={page}
           onPageChange={setPage}
-          onRowsPerPageChange={ (e) => {setLimit(e.target.value)}}
+          onRowsPerPageChange={(e) => { setLimit(e.target.value) }}
         />
       </Paper>
     </Box>

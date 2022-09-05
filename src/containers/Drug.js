@@ -10,10 +10,14 @@ import 'react-quill/dist/quill.snow.css';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { Save } from '@mui/icons-material';
-import { Button } from '@mui/material';
+import { Button, FormControl, InputLabel, MenuItem, Select, Modal } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import AngelDrug from '../api/angel/drugs';
 import ComboLaboratories from '../components/ComboLaboratories';
+
+import ComboDrugs from '../components/ComboDrugs';
+import ComboUsers from '../components/ComboUsers';
+import { DateTimePicker } from '@mui/lab';
 
 export default function DrugContainer(props) {
     
@@ -28,13 +32,21 @@ export default function DrugContainer(props) {
     const [langId, setLangId] = React.useState('en');
     const [laboratoryId, setLaboratoryId] = React.useState(() => '');
     const [laboratoryName, setLaboratoryName] = React.useState(() => '');
-    
+    const [openAssignDrugModal, setOpenAssignDrugModal] = React.useState(false);
+    const [openAssignPatientModal, setOpenAssignPatientModal] = React.useState(false);
+    const [assignPatientId, setAssignPatientId] = React.useState(null);//posology
+    const [assignDrugId, setAssignDrugId] = React.useState(null);
+    const [posology, setPosology] = React.useState('');
+    const [startDate, setStartDate] = React.useState('');
+    const [endDate, setEndDate] = React.useState('');
+
     React.useEffect(() => {
         console.log("Drug container effect")
         if (props.drugId) {
             async function fetchData() {
-                const drug = await AngelDrug().find({ drug_id: props.drugId });
+                const drug = await AngelDrug().find({ id: props.drugId });
                 setId(drug.drug_id);
+                setDrugId(drug.drug_id);
                 setDescriptionId(drug.drug_description_id);
                 setDescription(drug.description);
                 setName(drug.name);
@@ -45,6 +57,18 @@ export default function DrugContainer(props) {
             fetchData();
         }
     }, []);
+
+    const styleModal = {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 400,
+        bgcolor: 'background.paper',
+        border: '2px solid #000',
+        boxShadow: 24,
+        p: 4,
+    };
     const onEditorChange = (val) => {
         console.log('editor chaged', val)
     }
@@ -114,19 +138,130 @@ export default function DrugContainer(props) {
         setLaboratoryId(o.id);
         setLaboratoryName(o.name);
     }
+    const handleAssignDrugModal = () => setOpenAssignDrugModal(true);
+    const handleCloseAssignDrugModal = () => setOpenAssignDrugModal(false);
+    const handleAssignPatientModal = () => setOpenAssignPatientModal(true);
+
+    const onDrugSelect = (drugId) => {
+        setAssignDrugId(drugId);
+    }
+    
+    const handleCloseAssignPatientModal = () => setOpenAssignPatientModal(false);
+    const onPatientSelect = (drugId) => {
+        setAssignPatientId(drugId);
+    }
+    const handlePosology = (e) => {
+        console.log(e)
+        setPosology(e.target.value);
+    };
+    const handleStartDateChange = (newValue) => {
+        setStartDate(newValue);
+    };
+    const handleEndDateChange = (newValue) => {
+        setEndDate(newValue);
+    };
+
+    const onAssignPatient = async e => {
+        console.log(e);
+        const u = {
+            patient_id: assignPatientId,
+            drug_id: drugId,
+            posology: posology,
+            start_date: formatDate(startDate),
+            end_date: endDate?formatDate(endDate):null,
+        };
+        console.log(assignPatientId, drugId, startDate, endDate)
+        if (assignPatientId && drugId && startDate && posology) {
+            try {
+                await AngelDrug().addPatient(u);
+                handleClickVariant('success', 'Patient well assigned');
+            } catch (e) {
+                handleClickVariant('error', JSON.stringify(e));
+            }
+        } else {
+            handleClickVariant('error', 'Patient,Posology start date are required');
+        }
+    }
+    const formatDate = (v) => {
+        let d = new Date(v);
+        var datestring = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":00";
+        return datestring;
+    }
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
+             <div>
+                <Modal
+                    open={openAssignPatientModal}
+                    onClose={handleCloseAssignPatientModal}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description">
+                    <Box sx={styleModal}>
+                        <Typography id="modal-modal-title" variant="h6" component="h2">
+                            Assign a patient
+                        </Typography>
+                        <ComboUsers type="patient" onSelect={onPatientSelect} />
+                        <Box>
+                            <FormControl fullWidth>
+                                <InputLabel id="demo-simple-select-label">Posology</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select"
+                                    value={posology?posology:''}
+                                    label="Posology"
+                                    onChange={handlePosology}
+                                >
+                                    <MenuItem value={'daily'}>Daily</MenuItem>
+                                    <MenuItem value={'morningnight'}>Morning/Night</MenuItem>
+                                    <MenuItem value={'spontaneously'}>Spontaneously</MenuItem>
+                                </Select>
+                            </FormControl>
+
+                        </Box>
+
+                        <Box
+                            style={{ display: 'flex', width: '100%', paddingTop: '8px' }}
+                        >
+                            <DateTimePicker
+                                style={{ display: 'flex', width: '100%', minWidth: '100%' }}
+                                id="datestart"
+                                label="Start date"
+                                value={startDate ? startDate : ''}
+                                onChange={handleStartDateChange}
+                                renderInput={(params) => <TextField {...params} />}
+                            />
+                        </Box>
+                        <Box style={{ display: 'flex', width: '100%', paddingTop: '8px' }}>
+                            <DateTimePicker
+                                style={{ display: 'flex', width: '100%', minWidth: '100%' }}
+                                id="dateend"
+                                label="End date"
+                                value={endDate ? endDate : ''}
+                                onChange={handleEndDateChange}
+                                renderInput={(params) => <TextField {...params} />}
+                            />
+                        </Box>
+                        <Button
+                            style={{ borderRadius: '10px', marginTop: '20px' }}
+                            variant="outlined" startIcon={<Save />}
+                            onClick={onAssignPatient}>
+                            Assign
+                        </Button>
+                    </Box>
+                </Modal>
+            </div>
             <Box sx={{ width: '100%' }}>
                 <Typography variant="h6" gutterBottom component="div">
                     Drug Details
                 </Typography>
+            <Button variant="outlined" style={{ marginRight: '5px' }} onClick={handleAssignPatientModal}>Assign patient</Button>
+            <Button variant="outlined" onClick={() => document.getElementById("newButton").clk(drugId, name, 'drug_patients')}>List of patients</Button>
                 <Grid container spacing={2}>
                     <Grid item >
                         <TextField
                             style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
                             label="Name"
                             id="name"
-                            sx={{ '& > :not(style)': { mt: 1 } }}
+                            
                             value={name ? name : ''}
                             onChange={onInputChange(setName)}
                             InputProps={{
@@ -139,7 +274,7 @@ export default function DrugContainer(props) {
                             style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
                             label="code"
                             id="code"
-                            sx={{ '& > :not(style)': { mt: 1 } }}
+                           
                             value={code ? code : ''}
                             onChange={onInputChange(setCode)}
                             InputProps={{
@@ -148,10 +283,6 @@ export default function DrugContainer(props) {
                         />
                     </Grid>
                     <Grid item >
-
-                    <Typography variant="h6" gutterBottom component="div">
-                            laboratory
-                        </Typography>
                         <ComboLaboratories onSelect={onLaboratorySelect} laboratory={{ id: laboratoryId, name: laboratoryName }} />
                     </Grid>
                 </Grid>

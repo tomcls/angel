@@ -29,7 +29,6 @@ export default function ComboLaboratories(props) {
     (async () => {
       if (active) {
        AngelLaboratory().list().then((results) => {
-            console.log(results);
             setOptions(results.laboratories)
         });
       }
@@ -59,15 +58,17 @@ export default function ComboLaboratories(props) {
         setOpen(false);
       }}
       onChange={(event, newValue) => {
-        console.log(newValue,options);
+        console.log("console",newValue,options);
         setOptions(newValue ? [newValue, ...options] : options);
         setValue(newValue);
         if(newValue && newValue.id) {
-            props.onSelect({id:newValue.id, name:newValue.name});
+          console.log("qqqqqq",newValue)
+            console.log(newValue)
+            props.onSelect({id:newValue.id, name:newValue.laboratory_name});
         }
       }}
       value={value}
-      isOptionEqualToValue={(option, value) => option.name === value.name}
+      isOptionEqualToValue={(option, value) => option.laboratory_name === value.name}
       getOptionLabel={(option) => option.id+' '+option.name}
       options={options}
       loading={loading}

@@ -32,6 +32,7 @@ import Modal from '@mui/material/Modal';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
+import AngelDrug from '../api/angel/drugs';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -295,11 +296,9 @@ export default function PatientTreatments(props) {
     }
     if (props.patientId) {
       o.user_id = props.patientId;
-      r = await AngelTreatment().getUserTreatments(o);
-    } else {
-      r = await AngelTreatment().list(o);
-    }
-
+      
+    } 
+    r = await AngelDrug().getUserDrugs(o);
     if (r.treatments && r.treatments.length) {
       for (let i = 0; i < r.treatments.length; i++) {
         //createData('Cupcake', 305, 3.7, 67, 4.3, <BeachAccessIcon color='primary' style={{ marginInline: '10px' }} />, <GridViewIcon color='primary' style={{ marginInline: '10px' }} />, <TrendingUpIcon color='primary' style={{ marginInline: '10px' }} />, 'ahmed')

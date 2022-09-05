@@ -330,7 +330,7 @@ export default function Bar(props) {
             <ListItemIcon>
               <HealingIcon />
             </ListItemIcon>
-            <ListItemText primary={"Treatments"} />
+            <ListItemText primary={"Patients"} />
           </ListItemButton>
         </Collapse>
 
@@ -356,6 +356,12 @@ export default function Bar(props) {
               <MoodIcon />
             </ListItemIcon>
             <ListItemText primary={"Survey Moods"} />
+          </ListItemButton>
+          <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/survey-effects">
+            <ListItemIcon>
+              <MoodIcon />
+            </ListItemIcon>
+            <ListItemText primary={"Survey Side effects"} />
           </ListItemButton>
         </Collapse>
 
