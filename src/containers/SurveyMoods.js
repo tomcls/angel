@@ -13,19 +13,29 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
+import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
-import AngelSurvey from '../api/angel/survey';
-
+import { useSnackbar } from 'notistack';
 import Badge from '@mui/material/Badge';
-import TagFacesIcon from '@mui/icons-material/TagFaces';
-import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
-import SentimentSatisfiedIcon from '@mui/icons-material/SentimentSatisfied';
-import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied';
-import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
-import { Avatar, Grid } from '@mui/material';
+
+import AngelSideEffect from '../api/angel/mood';
+
+import { Avatar, Button, Grid } from '@mui/material';
+import InputAdornment from '@mui/material/InputAdornment';
+import TextField from '@mui/material/TextField';
+import SearchIcon from '@mui/icons-material/Search';
+
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import Modal from '@mui/material/Modal';
+
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import AngelSurvey from '../api/angel/survey';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -37,10 +47,13 @@ function descendingComparator(a, b, orderBy) {
   return 0;
 }
 function getComparator(order, orderBy) {
+  console.log(orderBy)
   return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
+// This method is created for cross-browser compatibility, if you don't
+// need to support IE11, you can use Array.prototype.sort() directly
 function stableSort(array, comparator) {
   const stabilizedThis = array.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -50,10 +63,52 @@ function stableSort(array, comparator) {
     }
     return a[1] - b[1];
   });
-  return stabilizedThis.map((el) => el[0]);
+  console.log(comparator)
+  let r = stabilizedThis.map((el) => el[0]);
+  return r;
 }
+
+const styleModal = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
+
+const headCells = [
+  {
+    id: 'id',
+    numeric: true,
+    disablePadding: true,
+    label: 'Patient Id',
+  },
+  {
+    id: 'name',
+    numeric: false,
+    disablePadding: false,
+    label: 'Name',
+  },
+  {
+    id: 'score',
+    numeric: false,
+    disablePadding: false,
+    label: 'Score',
+  },
+  {
+    id: 'date',
+    numeric: false,
+    disablePadding: false,
+    label: 'Date',
+  }
+];
+
 function EnhancedTableHead(props) {
-  const { order, orderBy, onRequestSort } = props;
+  const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -61,7 +116,15 @@ function EnhancedTableHead(props) {
   return (
     <TableHead>
       <TableRow>
-        {props.headCells().map((headCell) => (
+        <TableCell padding="checkbox">
+          <Checkbox
+            indeterminate={numSelected > 0 && numSelected < rowCount}
+            checked={rowCount > 0 && numSelected === rowCount}
+            onChange={onSelectAllClick}
+            inputProps={{ 'aria-label': 'select all Drugs' }}
+          />
+        </TableCell>
+        {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
             align={headCell.numeric ? 'left' : 'center'}
@@ -88,7 +151,6 @@ function EnhancedTableHead(props) {
 }
 
 EnhancedTableHead.propTypes = {
-  headCells: PropTypes.func,
   numSelected: PropTypes.number.isRequired,
   onRequestSort: PropTypes.func.isRequired,
   onSelectAllClick: PropTypes.func.isRequired,
@@ -96,10 +158,8 @@ EnhancedTableHead.propTypes = {
   orderBy: PropTypes.string.isRequired,
   rowCount: PropTypes.number.isRequired,
 };
-
 const EnhancedTableToolbar = (props) => {
   const { numSelected } = props;
-
   return (
     <Toolbar
       sx={{
@@ -116,32 +176,35 @@ const EnhancedTableToolbar = (props) => {
           sx={{ flex: '1 1 100%' }}
           color='inherit'
           variant='subtitle1'
-          component='div'
-        >
+          component='div' >
           {numSelected} selected
         </Typography>
-      ) : (
-        <Typography
-          sx={{ flex: '1 1 100%' }}
-          variant='h6'
-          id='tableTitle'
-          component='div'
-        >
-        </Typography>
+      ) : (<></>
       )}
-
       {numSelected > 0 ? (
         <Tooltip title='Delete'>
-          <IconButton>
+          <IconButton onClick={props.onDeleteItems}>
             <DeleteIcon />
           </IconButton>
         </Tooltip>
-      ) : (
-        <Tooltip title='Filter list'>
-          <IconButton>
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
+      ) : (<Grid container >
+        <Grid item md={12}>
+          <TextField
+            id="input-with-icon-textfield"
+            onChange={(e) => props.setSearch(e.target.value)}
+            label="Search"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <Button id="search" onClick={() => props.onSearch()} variant="outlined" style={{ marginBottom: '9px', marginRight: '5px' }}><SearchIcon /></Button>
+                  <Button id="openfilterModal" onClick={() => props.onOpenFilterModal()} variant="outlined" style={{ marginBottom: '9px' }}><FilterListIcon /></Button>
+                </InputAdornment>
+              ),
+            }}
+            variant="standard"
+          />
+        </Grid>
+      </Grid>
       )}
     </Toolbar>
   );
@@ -149,148 +212,250 @@ const EnhancedTableToolbar = (props) => {
 
 EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
+  onDeleteItems: PropTypes.func,
+  onSearch: PropTypes.func,
+  onOpenFilterModal: PropTypes.func,
+  setSearch: PropTypes.func,
 };
+const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp0LF2WgeDkn_sQ1VuMnlnVGjkDvCN4jo2nLMt3b84ry328rg46eohB_JT3WTqOGJovY&usqp=CAU';//process.env.SENDGRID_APIKEY
+
 export default function SurveyMoods(props) {
-  // eslint-disable-next-line
-  const [columns, setColumns] = React.useState(null);
-  const [headCells, setHeadCells] = React.useState([]);
+
+  const { enqueueSnackbar } = useSnackbar();
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
-  const [limit, setLimit] = React.useState(10);
+  const [limit, setLimit] = React.useState(30);
+  const [moods, setMoods] = React.useState([]);
 
   const [order, setOrder] = React.useState('desc');
-  const [orderBy, setOrderBy] = React.useState('id');
+  const [orderBy, setOrderBy] = React.useState('');
   const [selected, setSelected] = React.useState([]);
-  const [dense] = React.useState(false);
-  // eslint-disable-next-line
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [dense, setDense] = React.useState(false);
+  const [rowsPerPage, setRowsPerPage] = React.useState(30);
   const [rows, setRows] = React.useState([]);
 
-  const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp0LF2WgeDkn_sQ1VuMnlnVGjkDvCN4jo2nLMt3b84ry328rg46eohB_JT3WTqOGJovY&usqp=CAU';//process.env.SENDGRID_APIKEY
-  
+  const [openFilterModal, setOpenFilterModal] = React.useState(false);
+
+  const [searchFilter, setSearchFilter] = React.useState('');
+  const [firstnameFilter, setFirstnameFilter] = React.useState(true);
+  const [lastnameFilter, setLastnameFilter] = React.useState(true);
+  const [nameFilter, setNameFilter] = React.useState(true);
+  const [scoreFilter, setScoreFilter] = React.useState(true);
+  const [fromDateFilter, setFromDateFilter] = React.useState(null);
+  const [toDateFilter, setToDateFilter] = React.useState(null);
+
   React.useEffect(() => {
-    console.log('useEffect Survey Moods list container')
-    const columns = ['date_created', 'patient'];
-    const hc = [{
-      id: 'date_created',
-      numeric: false,
-      disablePadding: false,
-      label: 'Date',
-    },
-    {
-      id: 'patient',
-      numeric: false,
-      disablePadding: false,
-      label: 'Patient',
-    }];
-    async function fetchData() {
-      const r = await AngelSurvey().moods({ lang_id: 'en' });
-      //  Set HeadCells
-      if (r.moods && r.moods.length) {
-        for (let i = 0; i < r.moods.length; i++) {
-          columns.push(r.moods[i].name);
-          hc.push({
-            id: r.moods[i].id,
-            numeric: false,
-            disablePadding: false,
-            label: r.moods[i].name,
-          });
-        }
-        setColumns(columns);
-        setHeadCells(hc);
-      }
-
-      const records = [];
-      for (let d = 0; d < r.dates.length; d++) {
-
-        for (let u = 0; u < r.patients.length; u++) {
-          const rec = addSurveyItem(r.dates[d].date, r.patients[u].patient_id, r.surveys, columns);
-          records.push(rec);
-        }
-      }
-      console.log(records);
-      setRows(records);
-      setTotal(records.length);
-    }
+    console.log('useEffect Moods list')
     fetchData();
   }, []);
-  const handleRequestSort = (event, property, surveys) => {
+
+  const handleRequestSort = (event, property) => {
+    console.log('handleRequestSort', property)
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
-  const addSurveyItem = (date, patient_id, surveys, columns) => {
-    const rec = [];
-    for (let j = 0; j < surveys.length; j++) {
-
-      if (surveys[j].date_created === date && surveys[j].patient_id === patient_id) {
-        // add patient date and name if not yet added to record
-        if (rec.length === 0) {
-          rec.push(surveys[j].date_created);
-          rec.push({name:surveys[j].firstname.substring(0,2) + '. ' + surveys[j].lastname, avatar:surveys[j].avatar});
-          /*for (let i = 2; i < columns.length; i++) {
-            rec.push(0);
-            console.log("aaa")
-          }*/
-        }
-        let moodPosition = columns.indexOf(surveys[j].name);
-        if (moodPosition > rec.length - 1) {
-          rec.push(surveys[j].score);
-        } else {
-          rec.splice(moodPosition, 0, surveys[j].score);
-        }
-      }
+  const createData = (avatar, moodId, id, name, firstname, lastname, score, date) => {
+    return {
+      avatar,
+      moodId,
+      id,
+      name,
+      firstname,
+      lastname,
+      score,
+      date
     }
-    return rec;
   }
+  const fetchData = async () => {
+    const u = [];
+    let r = null;
+    let o = {
+      limit: limit,
+      page: page
+    };
+    if (nameFilter) {
+      o.name = searchFilter;
+    } else {
+      o.name = null;
+    }
+    if (firstnameFilter) {
+      o.firstname = searchFilter;
+    } else {
+      o.firstname = null;
+    }
+    if (lastnameFilter) {
+      o.lastname = searchFilter;
+    } else {
+      o.lastname = null;
+    }
+    if (scoreFilter) {
+      o.score = searchFilter;
+    } else {
+      o.score = null;
+    }
+    if (fromDateFilter) {
+      o.from_date = formatFromDate(fromDateFilter);;
+    } else {
+      o.from_date = null;
+    }
+    if (toDateFilter) {
+      o.to_date = formatToDate(toDateFilter);
+    } else {
+      o.to_date = null;
+    }
+    o.lang_id = 'en';
+    if (props.moodId) {
+      o.id = props.moodId;
+    }
+    r = await AngelSurvey().moods(o);
+    console.log(r)
+    if (r.surveys && r.surveys.length) {
+      for (let i = 0; i < r.surveys.length; i++) {
+        u.push(createData(r.surveys[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.surveys[i].avatar : defaultAvatar, r.surveys[i].survey_mood_id, r.surveys[i].patient_id, r.surveys[i].name, r.surveys[i].firstname, r.surveys[i].lastname, r.surveys[i].score, r.surveys[i].date));
+      }
+      setRows(u);
+      setMoods(r.surveys);
+      setTotal(r.count);
+    } else {
+      setRows([]);
+      setMoods([]);
+      setTotal(0);
+    }
+  }
+
+  const handleFiltersModal = () => setOpenFilterModal(true);
+  const handleCloseFilterModal = () => setOpenFilterModal(false);
+
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = rows.map((n) => n.name);
+      const newSelecteds = rows.map((n) => n.id);
       setSelected(newSelecteds);
       return;
     }
     setSelected([]);
   };
-  const renderIcon = (r, idx) => {
-    if (idx < 2) {
-      if(r && r.name) {
-        console.log(r)
-        return (<Grid container >
-          <Avatar src={r.avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.avatar : defaultAvatar} style={{   margin: "5px"  }}/>
-          <Typography style={{  paddingLeft: '5px', paddingTop: "12px", position: 'relative'  }} component={'div'}> {r.name}</Typography>
-          </Grid>)
-      }
-      return r;
-    } else if (r === 5) {
-      return (<Badge badgeContent={r} color="success">
-        <TagFacesIcon />
-      </Badge>)
-    } else if (r === 4) {
-      return (<Badge badgeContent={r} color="warning">
-        <SentimentSatisfiedAltIcon />
-      </Badge>)
-    } else if (r === 3) {
-      return (<Badge badgeContent={r} color="primary">
-        <SentimentSatisfiedIcon />
-      </Badge>)
-    } else if (r === 2) {
-      return (<Badge badgeContent={r} color="secondary">
-        <SentimentDissatisfiedIcon />
-      </Badge>)
-    } else if (r === 1) {
-      return (<Badge badgeContent={r} color="error"  >
-        <SentimentVeryDissatisfiedIcon />
-      </Badge>)
+
+  const isSelected = (id) => selected.indexOf(id) !== -1;
+
+  const onDeleteItems = async () => {
+    if (selected.length) {
+      await AngelSideEffect().delete({ ids: selected.join(',') });
+      handleClickVariant('success', 'Lab(s) well deleted');
+      fetchData();
     }
   }
+
+  const handleClickVariant = (variant, text) => {
+    // variant could be success, error, warning, info, or default
+    enqueueSnackbar(text, { variant });
+  };
+
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
-  const getHeadCells = () => headCells;
-  return (
+
+  const search = (variant, text) => {
+    // variant could be success, error, warning, info, or default
+    fetchData();
+  };
+  const handleFirstnameFilter = (event) => {
+    setFirstnameFilter(event.target.checked);
+  };
+  const handleLastnameFilter = (event) => {
+    setLastnameFilter(event.target.checked);
+  };
+  const handleNameFilter = (event) => {
+    setNameFilter(event.target.checked);
+  };
+  const handleEmailFilter = (event) => {
+    //setEmailFilter(event.target.checked);
+  };
+  const handlePhoneFilter = (event) => {
+    //setPhoneFilter(event.target.checked);
+  };
+  const handleSearchText = (txt) => {
+    setSearchFilter(txt);
+  };
+  const formatFromDate = (v) => {
+    let d = new Date(v);
+    var datestring = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + " 00:00:00";
+    return datestring;
+  }
+  const formatToDate = (v) => {
+    let d = new Date(v);
+    var datestring = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + " 23:59:59";
+    return datestring;
+  }
+  const setFromDate = (newValue) => {
+    console.log(newValue)
+    setFromDateFilter(newValue);
+  };
+  const setToDate = (newValue) => {
+    console.log(newValue)
+    setToDateFilter(newValue);
+  };
+  const renderBatch = (score) => {
+    if (score === 5) {
+      return (<Badge badgeContent={score} color="error">
+      </Badge>)
+    } else if (score === 4) {
+      return (<Badge badgeContent={score} color="warning">
+      </Badge>)
+    } else if (score === 3) {
+      return (<Badge badgeContent={score} color="primary">
+      </Badge>)
+    } else if (score === 2) {
+      return (<Badge badgeContent={score} color="secondary">
+      </Badge>)
+    } else if (score === 1) {
+      return (<Badge badgeContent={score} color="success"  >
+      </Badge>)
+    }
+  }
+  return (<LocalizationProvider dateAdapter={AdapterDateFns}>
+    <div>
+      <Modal
+        open={openFilterModal}
+        onClose={handleCloseFilterModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description">
+        <Box sx={styleModal}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Filters
+          </Typography>
+          <FormGroup>
+            <DatePicker
+            key="fromdate"
+            id="fromdate"
+              label="From date"
+              value={fromDateFilter}
+              onChange={(newValue) => {
+                setFromDate(newValue);
+              }}
+              renderInput={(params) => <TextField {...params} />}
+            />
+            <DatePicker
+            key="todate"
+            id="todate"
+              label="To date"
+              value={toDateFilter}
+              onChange={(newValue) => {
+                setToDate(newValue);
+              }}
+              renderInput={(params) => <TextField {...params} />}
+            />
+            <FormControlLabel control={<Checkbox checked={firstnameFilter} onChange={handleFirstnameFilter} />} label="Firstname" />
+            <FormControlLabel control={<Checkbox checked={lastnameFilter} onChange={handleLastnameFilter} />} label="Lastname" />
+            <FormControlLabel control={<Checkbox checked={nameFilter} onChange={handleNameFilter} />} label="Name" />
+            <FormControlLabel control={<Checkbox checked={scoreFilter} onChange={handleEmailFilter} />} label="Score" />
+          </FormGroup>
+        </Box>
+      </Modal>
+    </div>
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 0 }}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
@@ -298,7 +463,6 @@ export default function SurveyMoods(props) {
             size={dense ? 'small' : 'medium'}
           >
             <EnhancedTableHead
-              headCells={getHeadCells}
               numSelected={selected.length}
               order={order}
               orderBy={orderBy}
@@ -310,28 +474,56 @@ export default function SurveyMoods(props) {
               {stableSort(rows, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
+                  const isItemSelected = isSelected(row.id);
+                  const labelId = `enhanced-table-checkbox-${index}`;
                   return (
                     <TableRow
-                      hover                      
+                      hover
+                      role="checkbox"
+                      aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={index}
+                      key={row.id}
+                      selected={isItemSelected}
                     >
-                      {
-                        row.map((r, idx) => {
-                          return (
-                            <TableCell
-                              component='th'
-                              id={idx}
-                              key={idx}
-                              scope='row'
-                              style={{ textAlign: 'center' }}
-                              padding='none'
-                            >
-                              {renderIcon(r, idx)}
-                            </TableCell>
-                          )
-                        })
-                      }
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          checked={isItemSelected}
+                          inputProps={{ 'aria-labelledby': labelId }}
+                        />
+                      </TableCell>
+                      <TableCell component="th" id={labelId} scope="row" padding="none" align='left'>
+                        <Grid item xs={1} style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.id, row.firstname + ' ' + row.lastname, 'patient_surveys','panel2')}>
+                          <Grid container >
+                            <Typography style={{ paddingLeft: '5px', paddingTop: "12px", position: 'relative' }} component={'div'}> {row.id}</Typography>
+                            <Avatar src={row.avatar} textAlign={'start'}  style={{ margin: "5px" }} />
+                            <Typography style={{ paddingLeft: '5px', paddingTop: "12px", position: 'relative' }} component={'div'}> {row.firstname + ' ' + row.lastname}</Typography>
+                          </Grid>
+                        </Grid>
+                      </TableCell>
+                      <TableCell
+                        component='th'
+                        id={labelId}
+                        style={{ textAlign: 'center' }}
+                        scope='row'
+                        padding='none'>
+                        {row.name}
+                      </TableCell>
+                      <TableCell
+                        component='th'
+                        id={labelId}
+                        style={{ textAlign: 'center' }}
+                        scope='row'
+                        padding='none'>
+                        {renderBatch(row.score)}
+                      </TableCell>
+                      <TableCell
+                        component='th'
+                        id={labelId}
+                        style={{ textAlign: 'center' }}
+                        scope='row'
+                        padding='none'>
+                        {row.date}
+                      </TableCell>
                     </TableRow>
                   );
                 })}
@@ -348,7 +540,7 @@ export default function SurveyMoods(props) {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
+          rowsPerPageOptions={[5, 10, 25, 30, 35]}
           component='div'
           count={total ? total : 0}
           rowsPerPage={limit}
@@ -358,5 +550,5 @@ export default function SurveyMoods(props) {
         />
       </Paper>
     </Box>
-  );
+  </LocalizationProvider>);
 }

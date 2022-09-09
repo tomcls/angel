@@ -19,6 +19,7 @@ import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { useSnackbar } from 'notistack';
+import Badge from '@mui/material/Badge';
 
 import AngelSideEffect from '../api/angel/sideEffect';
 
@@ -34,6 +35,7 @@ import Modal from '@mui/material/Modal';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import AngelSurvey from '../api/angel/survey';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -45,6 +47,7 @@ function descendingComparator(a, b, orderBy) {
   return 0;
 }
 function getComparator(order, orderBy) {
+  console.log(orderBy)
   return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
@@ -60,7 +63,9 @@ function stableSort(array, comparator) {
     }
     return a[1] - b[1];
   });
-  return stabilizedThis.map((el) => el[0]);
+  console.log(comparator)
+  let r = stabilizedThis.map((el) => el[0]);
+  return r;
 }
 
 const styleModal = {
@@ -80,25 +85,13 @@ const headCells = [
     id: 'id',
     numeric: true,
     disablePadding: true,
-    label: 'Id',
+    label: 'Patient Id',
   },
   {
     id: 'name',
     numeric: false,
     disablePadding: false,
     label: 'Name',
-  },
-  {
-    id: 'firstname',
-    numeric: false,
-    disablePadding: false,
-    label: 'Firstname',
-  },
-  {
-    id: 'lastname',
-    numeric: false,
-    disablePadding: false,
-    label: 'Lastname',
   },
   {
     id: 'score',
@@ -235,7 +228,7 @@ export default function SurveySideEffects(props) {
   const [sideEffects, setSideEffects] = React.useState([]);
 
   const [order, setOrder] = React.useState('desc');
-  const [orderBy, setOrderBy] = React.useState('id');
+  const [orderBy, setOrderBy] = React.useState('');
   const [selected, setSelected] = React.useState([]);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(30);
@@ -244,24 +237,28 @@ export default function SurveySideEffects(props) {
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
 
   const [searchFilter, setSearchFilter] = React.useState('');
+  const [firstnameFilter, setFirstnameFilter] = React.useState(true);
+  const [lastnameFilter, setLastnameFilter] = React.useState(true);
   const [nameFilter, setNameFilter] = React.useState(true);
   const [scoreFilter, setScoreFilter] = React.useState(true);
+  const [fromDateFilter, setFromDateFilter] = React.useState(null);
+  const [toDateFilter, setToDateFilter] = React.useState(null);
 
   React.useEffect(() => {
-    console.log('useEffect SideEffects list', props.sideEffects)
-    const sideEffects = props.sideEffects;
+    console.log('useEffect SideEffects list')
     fetchData();
-  }, [props.sideEffects]);
+  }, []);
 
   const handleRequestSort = (event, property) => {
+    console.log('handleRequestSort', property)
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
-  const createData = (avatar,sideEffect_id, id, name, firstname, lastname, score,date) => {
+  const createData = (avatar, sideEffectId, id, name, firstname, lastname, score, date) => {
     return {
       avatar,
-      sideEffect_id,
+      sideEffectId,
       id,
       name,
       firstname,
@@ -282,6 +279,31 @@ export default function SurveySideEffects(props) {
     } else {
       o.name = null;
     }
+    if (firstnameFilter) {
+      o.firstname = searchFilter;
+    } else {
+      o.firstname = null;
+    }
+    if (lastnameFilter) {
+      o.lastname = searchFilter;
+    } else {
+      o.lastname = null;
+    }
+    if (scoreFilter) {
+      o.score = searchFilter;
+    } else {
+      o.score = null;
+    }
+    if (fromDateFilter) {
+      o.from_date = formatFromDate(fromDateFilter);;
+    } else {
+      o.from_date = null;
+    }
+    if (toDateFilter) {
+      o.to_date = formatToDate(toDateFilter);
+    } else {
+      o.to_date = null;
+    }
     o.lang_id = 'en';
     if (props.sideEffectId) {
       o.id = props.sideEffectId;
@@ -290,7 +312,7 @@ export default function SurveySideEffects(props) {
     console.log(r)
     if (r.surveys && r.surveys.length) {
       for (let i = 0; i < r.surveys.length; i++) {
-        u.push(createData(r.surveys[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.surveys[i].avatar : defaultAvatar, r.surveys[i].survey_side_effect_id, r.surveys[i].id, r.surveys[i].name, r.surveys[i].firstname, r.surveys[i].lastname,r.surveys[i].score, r.surveys[i].date ));
+        u.push(createData(r.surveys[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.surveys[i].avatar : defaultAvatar, r.surveys[i].survey_side_effect_id, r.surveys[i].patient_id, r.surveys[i].name, r.surveys[i].firstname, r.surveys[i].lastname, r.surveys[i].score, r.surveys[i].date));
       }
       setRows(u);
       setSideEffects(r.surveys);
@@ -314,25 +336,6 @@ export default function SurveySideEffects(props) {
     setSelected([]);
   };
 
-  const handleClick = (event, id) => {
-    const selectedIndex = selected.indexOf(id);
-    let newSelected = [];
-
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, id);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
-      );
-    }
-
-    setSelected(newSelected);
-  };
   const isSelected = (id) => selected.indexOf(id) !== -1;
 
   const onDeleteItems = async () => {
@@ -356,6 +359,12 @@ export default function SurveySideEffects(props) {
     // variant could be success, error, warning, info, or default
     fetchData();
   };
+  const handleFirstnameFilter = (event) => {
+    setFirstnameFilter(event.target.checked);
+  };
+  const handleLastnameFilter = (event) => {
+    setLastnameFilter(event.target.checked);
+  };
   const handleNameFilter = (event) => {
     setNameFilter(event.target.checked);
   };
@@ -368,6 +377,42 @@ export default function SurveySideEffects(props) {
   const handleSearchText = (txt) => {
     setSearchFilter(txt);
   };
+  const formatFromDate = (v) => {
+    let d = new Date(v);
+    var datestring = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + " 00:00:00";
+    return datestring;
+  }
+  const formatToDate = (v) => {
+    let d = new Date(v);
+    var datestring = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + " 23:59:59";
+    return datestring;
+  }
+  const setFromDate = (newValue) => {
+    console.log(newValue)
+    setFromDateFilter(newValue);
+  };
+  const setToDate = (newValue) => {
+    console.log(newValue)
+    setToDateFilter(newValue);
+  };
+  const renderBatch = (score) => {
+    if (score === 5) {
+      return (<Badge badgeContent={score} color="error">
+      </Badge>)
+    } else if (score === 4) {
+      return (<Badge badgeContent={score} color="warning">
+      </Badge>)
+    } else if (score === 3) {
+      return (<Badge badgeContent={score} color="primary">
+      </Badge>)
+    } else if (score === 2) {
+      return (<Badge badgeContent={score} color="secondary">
+      </Badge>)
+    } else if (score === 1) {
+      return (<Badge badgeContent={score} color="success"  >
+      </Badge>)
+    }
+  }
   return (<LocalizationProvider dateAdapter={AdapterDateFns}>
     <div>
       <Modal
@@ -380,6 +425,28 @@ export default function SurveySideEffects(props) {
             Filters
           </Typography>
           <FormGroup>
+            <DatePicker
+            key="fromdate"
+            id="fromdate"
+              label="From date"
+              value={fromDateFilter}
+              onChange={(newValue) => {
+                setFromDate(newValue);
+              }}
+              renderInput={(params) => <TextField {...params} />}
+            />
+            <DatePicker
+            key="todate"
+            id="todate"
+              label="To date"
+              value={toDateFilter}
+              onChange={(newValue) => {
+                setToDate(newValue);
+              }}
+              renderInput={(params) => <TextField {...params} />}
+            />
+            <FormControlLabel control={<Checkbox checked={firstnameFilter} onChange={handleFirstnameFilter} />} label="Firstname" />
+            <FormControlLabel control={<Checkbox checked={lastnameFilter} onChange={handleLastnameFilter} />} label="Lastname" />
             <FormControlLabel control={<Checkbox checked={nameFilter} onChange={handleNameFilter} />} label="Name" />
             <FormControlLabel control={<Checkbox checked={scoreFilter} onChange={handleEmailFilter} />} label="Score" />
           </FormGroup>
@@ -388,7 +455,7 @@ export default function SurveySideEffects(props) {
     </div>
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 0 }}>
-      <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
+        <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
@@ -412,8 +479,6 @@ export default function SurveySideEffects(props) {
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleClick(event, row.id)}
-                      onDoubleClick={() => props.openUser(row.sideEffect_id, row.name)}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
@@ -427,13 +492,13 @@ export default function SurveySideEffects(props) {
                         />
                       </TableCell>
                       <TableCell component="th" id={labelId} scope="row" padding="none" align='left'>
-                          <Grid item xs={1} style={{ cursor: 'pointer'}}>
-                              <Grid container >
-                              <Typography style={{ paddingLeft: '5px', paddingTop: "12px", position: 'relative' }} component={'div'}> {row.id}</Typography>
-                                <Avatar  src={row.avatar} textAlign={'start'} onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname, 'patient')} style={{ margin: "5px" }} />
-                                <Typography style={{ paddingLeft: '5px', paddingTop: "12px", position: 'relative' }} component={'div'}> {row.name}</Typography>
-                              </Grid>
-                            </Grid>
+                        <Grid item xs={1} style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.id, row.firstname + ' ' + row.lastname, 'patient_surveys','panel1')}>
+                          <Grid container >
+                            <Typography style={{ paddingLeft: '5px', paddingTop: "12px", position: 'relative' }} component={'div'}> {row.id}</Typography>
+                            <Avatar src={row.avatar} textAlign={'start'}  style={{ margin: "5px" }} />
+                            <Typography style={{ paddingLeft: '5px', paddingTop: "12px", position: 'relative' }} component={'div'}> {row.firstname + ' ' + row.lastname}</Typography>
+                          </Grid>
+                        </Grid>
                       </TableCell>
                       <TableCell
                         component='th'
@@ -441,7 +506,7 @@ export default function SurveySideEffects(props) {
                         style={{ textAlign: 'center' }}
                         scope='row'
                         padding='none'>
-                        {row.name }
+                        {row.name}
                       </TableCell>
                       <TableCell
                         component='th'
@@ -449,23 +514,7 @@ export default function SurveySideEffects(props) {
                         style={{ textAlign: 'center' }}
                         scope='row'
                         padding='none'>
-                        {row.firstname}
-                      </TableCell>
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        style={{ textAlign: 'center' }}
-                        scope='row'
-                        padding='none'>
-                        {row.lastname}
-                      </TableCell>
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        style={{ textAlign: 'center' }}
-                        scope='row'
-                        padding='none'>
-                        {row.score}
+                        {renderBatch(row.score)}
                       </TableCell>
                       <TableCell
                         component='th'
@@ -491,7 +540,7 @@ export default function SurveySideEffects(props) {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
+          rowsPerPageOptions={[5, 10, 25, 30, 35]}
           component='div'
           count={total ? total : 0}
           rowsPerPage={limit}

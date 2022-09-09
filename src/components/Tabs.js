@@ -6,6 +6,8 @@ import NurseContainer from "../containers/Nurse";
 import Nurses from "../containers/Nurses";
 import PatientContainer from "../containers/Patient";
 import Patients from "../containers/Patients";
+import PatientSurveyEffects from "../containers/PatientSurveyEffects";
+import PatientSurveys from "../containers/PatientSurveys";
 import PatientTreatments from "../containers/PatientTreatments";
 import TreatmentContainer from "../containers/Treatment";
 import Treatments from "../containers/Treatments";
@@ -37,7 +39,7 @@ export default class Tabs {
         this.setTabs(tabArr)
         this.setSelectedTab('Main');
     }
-    createTab = (type, text, id) => {
+    createTab = (type, text, id, panel) => {
         console.log(this.tabName + '.createTab', id, text, type)
         const value = text;
         let tab = this.getTab(value);
@@ -79,6 +81,8 @@ export default class Tabs {
                             return <Treatments drugId={id} />
                         case 'treatment':
                             return <TreatmentContainer treatmentId={id} />
+                        case 'patient_surveys':
+                            return <PatientSurveys patientId={id} panel={panel} />
                     }
                 }
             }
@@ -86,8 +90,8 @@ export default class Tabs {
             this.handleTabOptions(value ? value : this.tabIndex);
         }
     }
-    openTab = (id, text, type) => {
-        console.log(this.tabName + '.openTab', id, text, type)
+    openTab = (id, text, type, panel) => {
+        console.log(this.tabName + '.openTab', id, text, type,panel)
         if (!window.angel) {
             window.angel = {};
         }
@@ -160,6 +164,12 @@ export default class Tabs {
                 window.angel.tabType = 'treatment';
                 window.angel.tabName = 'Treatment ' + text;
                 break;
+            case 'patient_surveys':
+                window.angel.patientId = id;
+                window.angel.tabType = 'patient_surveys';
+                window.angel.tabName = 'Survey of ' + text;
+                window.angel.panelName = panel;
+                break;
         }
         this.newBtn.current.click();
     }
@@ -230,6 +240,12 @@ export default class Tabs {
             window.angel.treatmentId = null;
             window.angel.tabType = null;
             window.angel.tabName = null;
+        } else if (window.angel && window.angel.patientId && window.angel.tabType === 'patient_surveys') {
+            this.createTab('patient_surveys', window.angel.tabName, window.angel.patientId, window.angel.panelName );
+            window.angel.patientId = null;
+            window.angel.tabType = null;
+            window.angel.tabName = null;
+            window.angel.panelName = null;
         } else {
             this.createTab(this.tabName, 'New ' + this.tabName);
         }

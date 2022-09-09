@@ -18,21 +18,24 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
-import AngelTreatment from "../api/angel/treatments";
 import { useSnackbar } from 'notistack';
-import { Grid } from '@mui/material';
-import { Button } from '@mui/material';
+import Badge from '@mui/material/Badge';
+
+import AngelSideEffect from '../api/angel/sideEffect';
+
+import { Avatar, Button, Grid } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
+
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import Modal from '@mui/material/Modal';
 
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
-import AngelDrug from '../api/angel/drugs';
+import AngelSurvey from '../api/angel/survey';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -44,6 +47,7 @@ function descendingComparator(a, b, orderBy) {
   return 0;
 }
 function getComparator(order, orderBy) {
+  console.log(orderBy)
   return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
@@ -59,7 +63,9 @@ function stableSort(array, comparator) {
     }
     return a[1] - b[1];
   });
-  return stabilizedThis.map((el) => el[0]);
+  console.log(comparator)
+  let r = stabilizedThis.map((el) => el[0]);
+  return r;
 }
 
 const styleModal = {
@@ -88,40 +94,16 @@ const headCells = [
     label: 'Name',
   },
   {
-    id: 'code',
+    id: 'score',
     numeric: false,
     disablePadding: false,
-    label: 'Code',
+    label: 'Score',
   },
   {
-    id: 'posology',
+    id: 'date',
     numeric: false,
     disablePadding: false,
-    label: 'Posology',
-  },
-  {
-    id: 'start_date',
-    numeric: false,
-    disablePadding: false,
-    label: 'Start date',
-  },
-  {
-    id: 'end_date',
-    numeric: false,
-    disablePadding: false,
-    label: 'End date',
-  },
-  {
-    id: 'created',
-    numeric: false,
-    disablePadding: false,
-    label: 'Created',
-  },
-  {
-    id: 'patients',
-    numeric: false,
-    disablePadding: false,
-    label: 'Patients',
+    label: 'Date',
   }
 ];
 
@@ -139,7 +121,7 @@ function EnhancedTableHead(props) {
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
-            inputProps={{ 'aria-label': 'select all Treatments' }}
+            inputProps={{ 'aria-label': 'select all Drugs' }}
           />
         </TableCell>
         {headCells.map((headCell) => (
@@ -176,7 +158,6 @@ EnhancedTableHead.propTypes = {
   orderBy: PropTypes.string.isRequired,
   rowCount: PropTypes.number.isRequired,
 };
-
 const EnhancedTableToolbar = (props) => {
   const { numSelected } = props;
   return (
@@ -236,86 +217,120 @@ EnhancedTableToolbar.propTypes = {
   onOpenFilterModal: PropTypes.func,
   setSearch: PropTypes.func,
 };
+const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp0LF2WgeDkn_sQ1VuMnlnVGjkDvCN4jo2nLMt3b84ry328rg46eohB_JT3WTqOGJovY&usqp=CAU';//process.env.SENDGRID_APIKEY
 
-export default function PatientTreatments(props) {
+export default function PatientSurveyEffects(props) {
 
   const { enqueueSnackbar } = useSnackbar();
-  const [treatments, setTreatments] = React.useState(null);
-
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
-  const [limit, setLimit] = React.useState(5);
+  const [limit, setLimit] = React.useState(30);
+  const [sideEffects, setSideEffects] = React.useState([]);
 
   const [order, setOrder] = React.useState('desc');
-  const [orderBy, setOrderBy] = React.useState('id');
+  const [orderBy, setOrderBy] = React.useState('');
   const [selected, setSelected] = React.useState([]);
   const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage, setRowsPerPage] = React.useState(30);
   const [rows, setRows] = React.useState([]);
 
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
 
   const [searchFilter, setSearchFilter] = React.useState('');
-  const [codeFilter, setCodeFilter] = React.useState(true);
+  const [firstnameFilter, setFirstnameFilter] = React.useState(true);
+  const [lastnameFilter, setLastnameFilter] = React.useState(true);
   const [nameFilter, setNameFilter] = React.useState(true);
+  const [scoreFilter, setScoreFilter] = React.useState(true);
+  const [fromDateFilter, setFromDateFilter] = React.useState(null);
+  const [toDateFilter, setToDateFilter] = React.useState(null);
 
   React.useEffect(() => {
-    console.log('useEffect Treatments list container')
-    fetchData();
-  }, []);
+    console.log('useEffect SideEffects list', props.sideEffects)
+    const sideEffects = props.sideEffects;
+    fetchDataEffects();
+  }, [props.sideEffects]);
+
   const handleRequestSort = (event, property) => {
+    console.log('handleRequestSort', property)
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
-  const createData = (id, name, code, created,posology,start_date,end_date) => {
+  const createDataEffects = (avatar, sideEffectId, id, name, firstname, lastname, score, date) => {
     return {
+      avatar,
+      sideEffectId,
       id,
       name,
-      code,
-      created,
-      posology,
-      start_date,
-      end_date
+      firstname,
+      lastname,
+      score,
+      date
     }
   }
-  const fetchData = async () => {
+  const fetchDataEffects = async () => {
     const u = [];
-    let  r = null ; //
-    let o = { limit: limit, page: page , lang_id: 'en'};
-
-    if (codeFilter) {
-      o.code = searchFilter;
-    } else {
-      o.code = null;
-    }
+    let r = null;
+    let o = {
+      limit: limit,
+      page: page
+    };
     if (nameFilter) {
       o.name = searchFilter;
     } else {
       o.name = null;
     }
+    if (firstnameFilter) {
+      o.firstname = searchFilter;
+    } else {
+      o.firstname = null;
+    }
+    if (lastnameFilter) {
+      o.lastname = searchFilter;
+    } else {
+      o.lastname = null;
+    }
+    if (scoreFilter) {
+      o.score = searchFilter;
+    } else {
+      o.score = null;
+    }
+    if (fromDateFilter) {
+      o.from_date = formatFromDate(fromDateFilter);;
+    } else {
+      o.from_date = null;
+    }
+    if (toDateFilter) {
+      o.to_date = formatToDate(toDateFilter);
+    } else {
+      o.to_date = null;
+    }
+    o.lang_id = 'en';
+    if (props.sideEffectId) {
+      o.id = props.sideEffectId;
+    }
     if (props.patientId) {
       o.patient_id = props.patientId;
-    } 
+    }
     console.log(o)
-    r = await AngelDrug().getUserDrugs(o);
-    if (r.treatments && r.treatments.length) {
-      for (let i = 0; i < r.treatments.length; i++) {
-        //createData('Cupcake', 305, 3.7, 67, 4.3, <BeachAccessIcon color='primary' style={{ marginInline: '10px' }} />, <GridViewIcon color='primary' style={{ marginInline: '10px' }} />, <TrendingUpIcon color='primary' style={{ marginInline: '10px' }} />, 'ahmed')
-        u.push(createData(r.treatments[i].treatment_id, r.treatments[i].name, r.treatments[i].code, r.treatments[i].date_created,r.treatments[i].posology,r.treatments[i].start_date,r.treatments[i].end_date));
+    r = await AngelSurvey().sideEffects(o);
+    console.log(r)
+    if (r.surveys && r.surveys.length) {
+      for (let i = 0; i < r.surveys.length; i++) {
+        u.push(createDataEffects(r.surveys[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.surveys[i].avatar : defaultAvatar, r.surveys[i].survey_side_effect_id, r.surveys[i].id, r.surveys[i].name, r.surveys[i].firstname, r.surveys[i].lastname, r.surveys[i].score, r.surveys[i].date));
       }
       setRows(u);
-      setTreatments(r.treatments);
-      setTotal(r.total);
+      setSideEffects(r.surveys);
+      setTotal(r.count);
     } else {
       setRows([]);
-      setTreatments([]);
+      setSideEffects([]);
       setTotal(0);
     }
   }
+
   const handleFiltersModal = () => setOpenFilterModal(true);
   const handleCloseFilterModal = () => setOpenFilterModal(false);
-
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
@@ -348,55 +363,123 @@ export default function PatientTreatments(props) {
   const isSelected = (id) => selected.indexOf(id) !== -1;
 
   const onDeleteItems = async () => {
-    if(selected.length) {
-      await AngelTreatment().delete({ids:selected.join(',')});
-      handleClickVariant('success', 'Treatment(s) well deleted');
-      fetchData();
+    if (selected.length) {
+      await AngelSideEffect().delete({ ids: selected.join(',') });
+      handleClickVariant('success', 'Lab(s) well deleted');
+      fetchDataEffects();
     }
   }
-  const search = (variant, text) => {
-    // variant could be success, error, warning, info, or default
-    fetchData();
-  };
-  const handleCodeFilter = (event) => {
-    setCodeFilter(event.target.checked);
-  };
-  const handleNameFilter = (event) => {
-    setNameFilter(event.target.checked);
-  };
-  const handleSearchText = (txt) => {
-    setSearchFilter(txt);
-  };
 
   const handleClickVariant = (variant, text) => {
     // variant could be success, error, warning, info, or default
     enqueueSnackbar(text, { variant });
   };
+
+  // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
-  return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <div>
-        <Modal
-          open={openFilterModal}
-          onClose={handleCloseFilterModal}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description">
-          <Box sx={styleModal}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-              Filters
-            </Typography>
-            <FormGroup>
-              <FormControlLabel control={<Checkbox checked={codeFilter} onChange={handleCodeFilter} />} label="Code" />
-              <FormControlLabel control={<Checkbox checked={nameFilter} onChange={handleNameFilter} />} label="Name" />
-            </FormGroup>
-          </Box>
-        </Modal>
-      </div>
+  const search = (variant, text) => {
+    // variant could be success, error, warning, info, or default
+    fetchDataEffects();
+  };
+  const handleFirstnameFilter = (event) => {
+    setFirstnameFilter(event.target.checked);
+  };
+  const handleLastnameFilter = (event) => {
+    setLastnameFilter(event.target.checked);
+  };
+  const handleNameFilter = (event) => {
+    setNameFilter(event.target.checked);
+  };
+  const handleEmailFilter = (event) => {
+    //setEmailFilter(event.target.checked);
+  };
+  const handlePhoneFilter = (event) => {
+    //setPhoneFilter(event.target.checked);
+  };
+  const handleSearchText = (txt) => {
+    setSearchFilter(txt);
+  };
+  const formatFromDate = (v) => {
+    let d = new Date(v);
+    var datestring = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + " 00:00:00";
+    return datestring;
+  }
+  const formatToDate = (v) => {
+    let d = new Date(v);
+    var datestring = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + " 23:59:59";
+    return datestring;
+  }
+  const setFromDate = (newValue) => {
+    console.log(newValue)
+    setFromDateFilter(newValue);
+  };
+  const setToDate = (newValue) => {
+    console.log(newValue)
+    setToDateFilter(newValue);
+  };
+  const renderBatch = (score) => {
+    if (score === 5) {
+      return (<Badge badgeContent={score} color="error">
+      </Badge>)
+    } else if (score === 4) {
+      return (<Badge badgeContent={score} color="warning">
+      </Badge>)
+    } else if (score === 3) {
+      return (<Badge badgeContent={score} color="primary">
+      </Badge>)
+    } else if (score === 2) {
+      return (<Badge badgeContent={score} color="secondary">
+      </Badge>)
+    } else if (score === 1) {
+      return (<Badge badgeContent={score} color="success"  >
+      </Badge>)
+    }
+  }
+  return (<LocalizationProvider dateAdapter={AdapterDateFns}>
+    <div>
+      <Modal
+        open={openFilterModal}
+        onClose={handleCloseFilterModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description">
+        <Box sx={styleModal}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Filters
+          </Typography>
+          <FormGroup>
+            <DatePicker
+            key="fromdate"
+            id="fromdate"
+              label="From date"
+              value={fromDateFilter}
+              onChange={(newValue) => {
+                setFromDate(newValue);
+              }}
+              renderInput={(params) => <TextField {...params} />}
+            />
+            <DatePicker
+            key="todate"
+            id="todate"
+              label="To date"
+              value={toDateFilter}
+              onChange={(newValue) => {
+                setToDate(newValue);
+              }}
+              renderInput={(params) => <TextField {...params} />}
+            />
+            <FormControlLabel control={<Checkbox checked={firstnameFilter} onChange={handleFirstnameFilter} />} label="Firstname" />
+            <FormControlLabel control={<Checkbox checked={lastnameFilter} onChange={handleLastnameFilter} />} label="Lastname" />
+            <FormControlLabel control={<Checkbox checked={nameFilter} onChange={handleNameFilter} />} label="Name" />
+            <FormControlLabel control={<Checkbox checked={scoreFilter} onChange={handleEmailFilter} />} label="Score" />
+          </FormGroup>
+        </Box>
+      </Modal>
+    </div>
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 0 }}>
-      <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
+        <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
@@ -421,7 +504,7 @@ export default function PatientTreatments(props) {
                     <TableRow
                       hover
                       onClick={(event) => handleClick(event, row.id)}
-                      onDoubleClick={() => document.getElementById("newButton").clk(row.id, row.name,'treatment')}
+                      onDoubleClick={() => props.openUser(row.sideEffect_id, row.name)}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
@@ -435,26 +518,27 @@ export default function PatientTreatments(props) {
                         />
                       </TableCell>
                       <TableCell component="th" id={labelId} scope="row" padding="none" align='left'>
-                        {row.id}
+                        <Grid item xs={1} style={{ cursor: 'pointer' }}>
+                          <Grid container >
+                            <Typography style={{ paddingLeft: '5px', paddingTop: "12px", position: 'relative' }} component={'div'}> {row.id}</Typography>
+                          </Grid>
+                        </Grid>
                       </TableCell>
                       <TableCell
                         component='th'
                         id={labelId}
-                        scope='row'
                         style={{ textAlign: 'center' }}
-                        padding='none'
-                        onClick={() => document.getElementById("newButton").clk(row.id, row.name,'treatment')}
-                      >
+                        scope='row'
+                        padding='none'>
                         {row.name}
                       </TableCell>
                       <TableCell
                         component='th'
                         id={labelId}
-                        scope='row'
                         style={{ textAlign: 'center' }}
-                        padding='none'
-                      >
-                        {row.code}
+                        scope='row'
+                        padding='none'>
+                        {renderBatch(row.score)}
                       </TableCell>
                       <TableCell
                         component='th'
@@ -462,39 +546,7 @@ export default function PatientTreatments(props) {
                         style={{ textAlign: 'center' }}
                         scope='row'
                         padding='none'>
-                        {row.posology}
-                      </TableCell>
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        style={{ textAlign: 'center' }}
-                        scope='row'
-                        padding='none'>
-                        {row.start_date}
-                      </TableCell>
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        style={{ textAlign: 'center' }}
-                        scope='row'
-                        padding='none'>
-                        {row.end_date}
-                      </TableCell>
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        style={{ textAlign: 'center' }}
-                        scope='row'
-                        padding='none'>
-                        {row.created}
-                      </TableCell>
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        style={{ textAlign: 'center' }}
-                        scope='row'
-                        padding='none'>
-                       <FamilyRestroomIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.id, row.code + ' ' + row.name,'treatment_patients')} />
+                        {row.date}
                       </TableCell>
                     </TableRow>
                   );
@@ -512,7 +564,7 @@ export default function PatientTreatments(props) {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
+          rowsPerPageOptions={[5, 10, 25, 30, 35]}
           component='div'
           count={total ? total : 0}
           rowsPerPage={limit}
