@@ -28,14 +28,12 @@ import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
 
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import Modal from '@mui/material/Modal';
 
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import AngelSurvey from '../api/angel/survey';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { DatePicker } from "@material-ui/pickers";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -437,7 +435,7 @@ export default function PatientSurveyEffects(props) {
       </Badge>)
     }
   }
-  return (<LocalizationProvider dateAdapter={AdapterDateFns}>
+  return (<>
     <div>
       <Modal
         open={openFilterModal}
@@ -449,15 +447,18 @@ export default function PatientSurveyEffects(props) {
             Filters
           </Typography>
           <FormGroup>
-            <DatePicker
-            key="fromdate"
-            id="fromdate"
+          <DatePicker
+              autoOk
+              key="fromdate"
+              id="fromdate"
               label="From date"
+              clearable
+              disableFuture
               value={fromDateFilter}
+              
               onChange={(newValue) => {
                 setFromDate(newValue);
               }}
-              renderInput={(params) => <TextField {...params} />}
             />
             <DatePicker
             key="todate"
@@ -466,9 +467,7 @@ export default function PatientSurveyEffects(props) {
               value={toDateFilter}
               onChange={(newValue) => {
                 setToDate(newValue);
-              }}
-              renderInput={(params) => <TextField {...params} />}
-            />
+              }}  />
             <FormControlLabel control={<Checkbox checked={firstnameFilter} onChange={handleFirstnameFilter} />} label="Firstname" />
             <FormControlLabel control={<Checkbox checked={lastnameFilter} onChange={handleLastnameFilter} />} label="Lastname" />
             <FormControlLabel control={<Checkbox checked={nameFilter} onChange={handleNameFilter} />} label="Name" />
@@ -574,5 +573,5 @@ export default function PatientSurveyEffects(props) {
         />
       </Paper>
     </Box>
-  </LocalizationProvider>);
+  </>);
 }

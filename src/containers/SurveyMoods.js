@@ -28,14 +28,12 @@ import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
 
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import Modal from '@mui/material/Modal';
 
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import AngelSurvey from '../api/angel/survey';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { DatePicker } from "@material-ui/pickers";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -88,16 +86,16 @@ const headCells = [
     label: 'Patient Id',
   },
   {
-    id: 'name',
+    id: 'total_effects',
     numeric: false,
     disablePadding: false,
-    label: 'Name',
+    label: 'Total effects',
   },
   {
     id: 'score',
     numeric: false,
     disablePadding: false,
-    label: 'Score',
+    label: 'Total score',
   },
   {
     id: 'date',
@@ -255,7 +253,7 @@ export default function SurveyMoods(props) {
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
-  const createData = (avatar, moodId, id, name, firstname, lastname, score, date) => {
+  const createData = (avatar, moodId, id, name, firstname, lastname, score, date,total_effects) => {
     return {
       avatar,
       moodId,
@@ -264,7 +262,8 @@ export default function SurveyMoods(props) {
       firstname,
       lastname,
       score,
-      date
+      date,
+      total_effects
     }
   }
   const fetchData = async () => {
@@ -308,11 +307,11 @@ export default function SurveyMoods(props) {
     if (props.moodId) {
       o.id = props.moodId;
     }
-    r = await AngelSurvey().moods(o);
+    r = await AngelSurvey().groupMoods(o);
     console.log(r)
     if (r.surveys && r.surveys.length) {
       for (let i = 0; i < r.surveys.length; i++) {
-        u.push(createData(r.surveys[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.surveys[i].avatar : defaultAvatar, r.surveys[i].survey_mood_id, r.surveys[i].patient_id, r.surveys[i].name, r.surveys[i].firstname, r.surveys[i].lastname, r.surveys[i].score, r.surveys[i].date));
+        u.push(createData(r.surveys[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.surveys[i].avatar : defaultAvatar, r.surveys[i].survey_mood_id, r.surveys[i].patient_id, r.surveys[i].name, r.surveys[i].firstname, r.surveys[i].lastname, r.surveys[i].score, r.surveys[i].date, r.surveys[i].total_effects));
       }
       setRows(u);
       setMoods(r.surveys);
@@ -396,24 +395,24 @@ export default function SurveyMoods(props) {
     setToDateFilter(newValue);
   };
   const renderBatch = (score) => {
-    if (score === 5) {
+    if (score >= 20) {
       return (<Badge badgeContent={score} color="error">
       </Badge>)
-    } else if (score === 4) {
+    } else if (score >= 15) {
       return (<Badge badgeContent={score} color="warning">
       </Badge>)
-    } else if (score === 3) {
+    } else if (score >= 10) {
       return (<Badge badgeContent={score} color="primary">
       </Badge>)
-    } else if (score === 2) {
+    } else if (score >= 5) {
       return (<Badge badgeContent={score} color="secondary">
       </Badge>)
-    } else if (score === 1) {
+    } else if (score < 5) {
       return (<Badge badgeContent={score} color="success"  >
       </Badge>)
     }
   }
-  return (<LocalizationProvider dateAdapter={AdapterDateFns}>
+  return (<>
     <div>
       <Modal
         open={openFilterModal}
@@ -426,25 +425,26 @@ export default function SurveyMoods(props) {
           </Typography>
           <FormGroup>
             <DatePicker
-            key="fromdate"
-            id="fromdate"
+              autoOk
+              key="fromdate"
+              id="fromdate"
               label="From date"
+              clearable
+              disableFuture
               value={fromDateFilter}
+
               onChange={(newValue) => {
                 setFromDate(newValue);
               }}
-              renderInput={(params) => <TextField {...params} />}
             />
             <DatePicker
-            key="todate"
-            id="todate"
+              key="todate"
+              id="todate"
               label="To date"
               value={toDateFilter}
               onChange={(newValue) => {
                 setToDate(newValue);
-              }}
-              renderInput={(params) => <TextField {...params} />}
-            />
+              }} />
             <FormControlLabel control={<Checkbox checked={firstnameFilter} onChange={handleFirstnameFilter} />} label="Firstname" />
             <FormControlLabel control={<Checkbox checked={lastnameFilter} onChange={handleLastnameFilter} />} label="Lastname" />
             <FormControlLabel control={<Checkbox checked={nameFilter} onChange={handleNameFilter} />} label="Name" />
@@ -492,10 +492,10 @@ export default function SurveyMoods(props) {
                         />
                       </TableCell>
                       <TableCell component="th" id={labelId} scope="row" padding="none" align='left'>
-                        <Grid item xs={1} style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.id, row.firstname + ' ' + row.lastname, 'patient_surveys','panel2')}>
+                        <Grid item xs={1} style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.id, row.firstname + ' ' + row.lastname, 'patient_surveys', 'panel2')}>
                           <Grid container >
                             <Typography style={{ paddingLeft: '5px', paddingTop: "12px", position: 'relative' }} component={'div'}> {row.id}</Typography>
-                            <Avatar src={row.avatar} textAlign={'start'}  style={{ margin: "5px" }} />
+                            <Avatar src={row.avatar} textAlign={'start'} style={{ margin: "5px" }} />
                             <Typography style={{ paddingLeft: '5px', paddingTop: "12px", position: 'relative' }} component={'div'}> {row.firstname + ' ' + row.lastname}</Typography>
                           </Grid>
                         </Grid>
@@ -506,7 +506,7 @@ export default function SurveyMoods(props) {
                         style={{ textAlign: 'center' }}
                         scope='row'
                         padding='none'>
-                        {row.name}
+                        {row.total_effects}
                       </TableCell>
                       <TableCell
                         component='th'
@@ -550,5 +550,5 @@ export default function SurveyMoods(props) {
         />
       </Paper>
     </Box>
-  </LocalizationProvider>);
+  </>);
 }

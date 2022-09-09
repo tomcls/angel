@@ -289,7 +289,7 @@ export default function Bar(props) {
               <ListItemIcon>
                 <SupervisorAccountIcon />
               </ListItemIcon>
-              <ListItemText primary="Coordinators" />
+              <ListItemText primary="Administrators" />
             </ListItemButton>
             <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/patients">
               <ListItemIcon>

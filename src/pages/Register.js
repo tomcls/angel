@@ -128,7 +128,6 @@ export default function Register() {
                   >
                     <MenuItem value={'nurse'}>Nurse</MenuItem>
                     <MenuItem value={'doctor'}> Doctor</MenuItem>
-                    <MenuItem value={'coordinator'}>Coordinator</MenuItem>
                     <MenuItem value={'lab'}>Lab</MenuItem>
 
                   </Select>

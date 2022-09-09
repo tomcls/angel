@@ -18,6 +18,22 @@ export default  function AngelSurvey(config) {
             } catch (error) {
                 throw {error:error};
             }
+        },
+        groupEffects: async (params) => {
+            try {
+                const res = await axios.post(process.env.REACT_APP_API_URL+'/surveys/group-effects', params, {headers: {'Authorization':accessToken}});
+                return res.data;
+            } catch (error) {
+                throw {error:error};
+            }
+        },
+        groupMoods: async (params) => {
+            try {
+                const res = await axios.post(process.env.REACT_APP_API_URL+'/surveys/group-moods', params, {headers: {'Authorization':accessToken}});
+                return res.data;
+            } catch (error) {
+                throw {error:error};
+            }
         }
     }
 }

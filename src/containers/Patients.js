@@ -31,8 +31,6 @@ import { Button } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import Modal from '@mui/material/Modal';
 
 import FormGroup from '@mui/material/FormGroup';
@@ -409,7 +407,7 @@ export default function Patients(props) {
     setSearchFilter(txt);
   };
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
+    <>
       <div>
         <Modal
           open={openFilterModal}
@@ -564,6 +562,6 @@ export default function Patients(props) {
           />
         </Paper>
       </Box>
-    </LocalizationProvider>
+    </>
   );
 }

@@ -1,4 +1,4 @@
-import  React , { useRef } from 'react';
+import React, { useRef } from 'react';
 import AngelUser from '../api/angel/user';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -9,9 +9,8 @@ import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import Visibility from '@mui/icons-material/Visibility';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { DatePicker } from "@material-ui/pickers";
+//import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { Save } from '@mui/icons-material';
@@ -50,7 +49,7 @@ export default function PatientContainer(props) {
     const [zip, setZip] = React.useState('');
     const [country, setCountry] = React.useState('');
 
-    const [password,setPassword] = React.useState('');
+    const [password, setPassword] = React.useState('');
     const [showPassword, setShowPassword] = React.useState(false);
     const [active, setActive] = React.useState('N');
     const [switchState, setSwitchState] = React.useState(false);
@@ -80,9 +79,9 @@ export default function PatientContainer(props) {
                 setEmergencyContactName(user.emergency_contact_name);
                 setEmergencyContactPhone(user.emergency_contact_phone);
                 setEmergencyContactRelationship(user.emergency_contact_relationship);
-                setAvatar(user.avatar?process.env.REACT_APP_API_URL+'/public/uploads/'+user.avatar:defaultAvatar);
+                setAvatar(user.avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + user.avatar : defaultAvatar);
                 setActive(user.active);
-                if(user.active === 'N') {
+                if (user.active === 'N') {
                     setSwitchState(false);
                 } else {
                     setSwitchState(true);
@@ -116,7 +115,7 @@ export default function PatientContainer(props) {
                 zip: zip,
                 city: city,
                 country: country,
-                birthday: dateOfBirth ? formatDate(dateOfBirth): null,
+                birthday: dateOfBirth ? formatDate(dateOfBirth) : null,
                 close_monitoring: closeMonitoring,
                 emergency_contact_name: emergencyContactName,
                 emergency_contact_phone: emergencyContactPhone,
@@ -186,28 +185,27 @@ export default function PatientContainer(props) {
         event.preventDefault();
     };
     const savePassword = async () => {
-        if(password !== null) {
-            const r = await AngelUser().resetPwd({password: password, email: email});
+        if (password !== null) {
+            const r = await AngelUser().resetPwd({ password: password, email: email });
             handleClickVariant('success', 'Password well updated!');
         }
     }
     const setActif = (e) => {
-       setSwitchState(e.target.checked);
-       if(e.target.checked) {
-           setActive('Y');
-       } else {
+        setSwitchState(e.target.checked);
+        if (e.target.checked) {
+            setActive('Y');
+        } else {
             setActive('N');
-       }
+        }
     };
     const onFileChange = async (e) => {
-        setFile({file:e.target.files[0]});
-        const u = await AngelUser().upload(e.target.files[0], 'avatar',id);
-        setAvatar(process.env.REACT_APP_API_URL+'/public/uploads/'+u.filename);
+        setFile({ file: e.target.files[0] });
+        const u = await AngelUser().upload(e.target.files[0], 'avatar', id);
+        setAvatar(process.env.REACT_APP_API_URL + '/public/uploads/' + u.filename);
         handleClickVariant('success', 'Image well uploaded');
     };
     return (
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
-
+        <>
             <Box sx={{ width: '100%' }}>
                 <Typography variant="h6" gutterBottom component="div">
                     Personal informations
@@ -221,7 +219,7 @@ export default function PatientContainer(props) {
                             />
                             <Grid item xs={12} style={{ width: '100%', textAlign: "center" }}>
                                 <Button id="avatarLabel" onClick={() => uploadFileButton.current.click()}>Upload photo</Button>
-                                <input type="file" name="avatar" onChange={onFileChange} ref={uploadFileButton} style={{display: 'none'}}/>
+                                <input type="file" name="avatar" onChange={onFileChange} ref={uploadFileButton} style={{ display: 'none' }} />
                             </Grid>
                         </Grid>
                     </Grid>
@@ -244,14 +242,18 @@ export default function PatientContainer(props) {
                                 startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
                             }}
                         />
-                        <Box>
-                            <DateTimePicker
+                        <Box style={{marginTop:'28px'}}>
+                            <DatePicker
                                 style={{ display: 'flex', width: '100%', minWidth: '100%' }}
+                                autoOk
+                                key="birthday"
                                 id="birthday"
-                                label="Date of birth"
+                                label="Date of birthss"
+                                clearable
+                                inputVariant="outlined"
+                                disableFuture
                                 value={dateOfBirth ? dateOfBirth : ''}
                                 onChange={handleDateOfBirthChange}
-                                renderInput={(params) => <TextField {...params} />}
                             />
                         </Box>
                     </Grid>
@@ -447,10 +449,10 @@ export default function PatientContainer(props) {
                         <Typography variant="h6" mt={'20px'}>
                             Password and activation
                         </Typography>
-                        <FormControlLabel control={<Switch checked={switchState} onChange={setActif} value={active}   />} label="Actif" size="large"/>
+                        <FormControlLabel control={<Switch checked={switchState} onChange={setActif} value={active} />} label="Actif" size="large" />
                         <Grid container spacing={1}>
                             <Grid item xs={8}>
-                                <FormControl fullWidth variant="outlined" style={{marginTop: '18px'}}>
+                                <FormControl fullWidth variant="outlined" style={{ marginTop: '18px' }}>
                                     <InputLabel htmlFor="outlined-adornment-password">Change password</InputLabel>
                                     <OutlinedInput
                                         id="outlined-adornment-password"
@@ -472,10 +474,10 @@ export default function PatientContainer(props) {
                                     />
                                 </FormControl>
                             </Grid>
-                            <Grid item xs={4}  mt={'25px'}>
+                            <Grid item xs={4} mt={'25px'}>
                                 <Button
-                               
-                                    style={{ borderRadius: '10px',  marginLeft: '10px' }}
+
+                                    style={{ borderRadius: '10px', marginLeft: '10px' }}
                                     variant="outlined" startIcon={<Save />}
                                     onClick={savePassword}>
                                     Save
@@ -496,6 +498,6 @@ export default function PatientContainer(props) {
                     </Grid>
                 </Grid>
             </Box>
-        </LocalizationProvider>
+        </>
     );
 }
