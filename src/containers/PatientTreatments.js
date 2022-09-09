@@ -297,7 +297,6 @@ export default function PatientTreatments(props) {
     if (props.patientId) {
       o.patient_id = props.patientId;
     } 
-    console.log(o)
     r = await AngelDrug().getUserDrugs(o);
     if (r.treatments && r.treatments.length) {
       for (let i = 0; i < r.treatments.length; i++) {
