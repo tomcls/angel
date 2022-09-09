@@ -12,7 +12,7 @@ export default function AppStyle() {
                 styleOverrides: {
                     root: ({ theme }) => ({ // using with theme
                         width: '100%',
-                        marginBottom: '20px'
+                        marginBottom: '20px!important'
                     }),
                 },
             },

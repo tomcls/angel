@@ -11,7 +11,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import Visibility from '@mui/icons-material/Visibility';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { DatePicker } from "@material-ui/pickers";
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { Save } from '@mui/icons-material';
@@ -23,8 +23,6 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import AngelUser from "../api/angel/user";
 import { useSnackbar } from 'notistack';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 const drawerWidth = 240;
 
@@ -79,7 +77,7 @@ export default function Settings(props) {
   React.useEffect(() => {
     const u = JSON.parse(window.appStorage.getItem('user'));
     async function fetchData() {
-      const user = await getUser({id: u.id});
+      const user = await getUser({ id: u.id });
       setId(user.id);
       setFirstname(user.firstname);
       setLastname(user.lastname);
@@ -93,12 +91,12 @@ export default function Settings(props) {
       setCity(user.city);
       setCountry(user.country);
       setDateOfBirth(user.birthday);
-      setAvatar(user.avatar?process.env.REACT_APP_API_URL+'/public/uploads/'+user.avatar:defaultAvatar);
+      setAvatar(user.avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + user.avatar : defaultAvatar);
       setActive(user.active);
-      if(user.active === 'N') {
-          setSwitchState(false);
+      if (user.active === 'N') {
+        setSwitchState(false);
       } else {
-          setSwitchState(true);
+        setSwitchState(true);
       }
     }
     fetchData();
@@ -138,25 +136,25 @@ export default function Settings(props) {
         try {
           await AngelUser().update(u);
           const ucooky = JSON.parse(window.appStorage.getItem('user'));
-          ucooky.avatar=avatar;
-          ucooky.firstname=firstname;
-          ucooky.lastname=lastname;
-          ucooky.email=email;
-          ucooky.phone=phone;
-          ucooky.sex=sex;
-          ucooky.lang=lang;
-          ucooky.address=address;
-          ucooky.street_number=streetNumber;
-          ucooky.zip=zip;
-          ucooky.country=country;
-          ucooky.birthday=formatDate(dateOfBirth);
-          ucooky.active=active;
+          ucooky.avatar = avatar;
+          ucooky.firstname = firstname;
+          ucooky.lastname = lastname;
+          ucooky.email = email;
+          ucooky.phone = phone;
+          ucooky.sex = sex;
+          ucooky.lang = lang;
+          ucooky.address = address;
+          ucooky.street_number = streetNumber;
+          ucooky.zip = zip;
+          ucooky.country = country;
+          ucooky.birthday = formatDate(dateOfBirth);
+          ucooky.active = active;
           window.appStorage.setItem('user', JSON.stringify(ucooky), 1200000);
           handleClickVariant('success', 'User well updated');
         } catch (e) {
           handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
         }
-      } 
+      }
     }
   };
   const formatDate = (v) => {
@@ -192,250 +190,254 @@ export default function Settings(props) {
     setFile({ file: e.target.files[0] });
     const u = await AngelUser().upload(e.target.files[0], 'avatar', id);
     handleClickVariant('success', 'Image well uploaded');
-    setAvatar(process.env.REACT_APP_API_URL+'/public/uploads/'+u.filename);
+    setAvatar(process.env.REACT_APP_API_URL + '/public/uploads/' + u.filename);
     const user = JSON.parse(window.appStorage.getItem('user'));
-    user.avatar=u.filename;
+    user.avatar = u.filename;
     window.appStorage.setItem('user', JSON.stringify(user), 1200000);
   };
   return (
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <Box sx={{ display: 'flex' }}>
-          <Bar open={setOpen} />
-          <Main open={open} style={{ background: "rgb(229 229 229 / 41%)", marginBlock: "64px" }}>
-            <Typography variant="h6" gutterBottom component="div">
-              Personal informations
-            </Typography>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6} md={4} xl={2} style={{ paddingTop: '40px' }}>
-                <Grid item xs={12} style={{ width: '205px', height: '205px', textAlign: "center", border: '3px solid #ddd', borderRadius: '5px', margin: 'auto' }} >
-                  <Avatar variant="rounded"
-                    src={avatar}
-                    style={{ width: '200px', height: '200px', textAlign: "center", borderColor: 'gray', margin: 'auto' }}
-                  />
-                  <Grid item xs={12} style={{ width: '100%', textAlign: "center" }}>
-                    <Button id="avatarLabel" onClick={() => uploadFileButton.current.click()}>Upload photo</Button>
-                    <input type="file" name="avatar" onChange={onFileChange} ref={uploadFileButton} style={{ display: 'none' }} />
-                  </Grid>
-                </Grid>
-              </Grid>
-              <Grid item xs={12} sm={6} md={4} xl={4} >
-                <TextField
-                  label="Firstname"
-                  id="firstname"
-                  value={firstname ? firstname : ''}
-                  onChange={onInputChange(setFirstname)}
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
-                  }}
+    <>
+      <Box sx={{ display: 'flex' }}>
+        <Bar open={setOpen} />
+        <Main open={open} style={{ background: "rgb(229 229 229 / 41%)", marginBlock: "64px" }}>
+          <Typography variant="h6" gutterBottom component="div">
+            Personal informations
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6} md={4} xl={2} style={{ paddingTop: '20px' }}>
+              <Grid item xs={12} style={{ width: '205px', height: '205px', textAlign: "center", border: '3px solid #ddd', borderRadius: '5px', margin: 'auto' }} >
+                <Avatar variant="rounded"
+                  src={avatar}
+                  style={{ width: '200px', height: '200px', textAlign: "center", borderColor: 'gray', margin: 'auto' }}
                 />
-                <TextField
-                  label="Lastname"
-                  id="lastname"
-                  value={lastname ? lastname : ''}
-                  onChange={onInputChange(setLastname)}
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
-                  }}
-                />
-                <Box>
-                  <DateTimePicker
-                    style={{ display: 'flex', width: '100%', minWidth: '100%' }}
-                    id="birthday"
-                    label="Date of birth"
-                    value={dateOfBirth ? dateOfBirth : ''}
-                    onChange={handleDateOfBirthChange}
-                    renderInput={(params) => <TextField {...params} />}
-                  />
-                </Box>
-              </Grid>
-              <Grid item xs={12} sm={6} md={4} xl={4}>
-                <TextField
-                  label="Phone number"
-                  id="phone"
-                  value={phone ? phone : ''}
-                  onChange={onInputChange(setPhone)}
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
-                  }}
-                />
-                <TextField
-                  label="Email"
-                  id="outlined-start-adornment"
-
-                  value={email ? email : ''}
-                  onChange={onInputChange(setEmail)}
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
-                  }}
-                />
-                <Grid container spacing={1}>
-                  <Grid item xs={8}>
-                    <FormControl >
-                      <InputLabel id="langLabel">Mother tong</InputLabel>
-                      <Select
-                        style={{ display: 'flex', width: '100%' }}
-                        labelId="langLabel"
-                        id="lang"
-                        value={lang ? lang : ''}
-                        onChange={onInputChange(setLang)}
-                        label="Close monitoring?">
-                        <MenuItem value={'fr'}>Francais</MenuItem>
-                        <MenuItem value={'en'}>English</MenuItem>
-                        <MenuItem value={'de'}>Dutch</MenuItem>
-                        <MenuItem value={'ar'}>Arabic</MenuItem>
-                        <MenuItem value={'nl'}>Nederlands</MenuItem>
-                        <MenuItem value={'es'}>Spanish</MenuItem>
-                        <MenuItem value={'pl'}>Polsky</MenuItem>
-                        <MenuItem value={'it'}>Italian</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                  <Grid item xs={4}>
-                    <FormControl fullWidth>
-                      <InputLabel id="sexLabel">Sex</InputLabel>
-                      <Select
-                        style={{ display: 'flex', width: '100%' }}
-                        labelId="sexLabel"
-                        id="sex"
-                        value={sex ? sex : ''}
-                        onChange={onInputChange(setSex)}
-                        label="Sex" >
-                        <MenuItem value={'M'}>Male</MenuItem>
-                        <MenuItem value={'F'}>Femal</MenuItem>
-                        <MenuItem value={'B'}>Both</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Grid>
+                <Grid item xs={12} style={{ width: '100%', textAlign: "center" }}>
+                  <Button id="avatarLabel" onClick={() => uploadFileButton.current.click()}>Upload photo</Button>
+                  <input type="file" name="avatar" onChange={onFileChange} ref={uploadFileButton} style={{ display: 'none' }} />
                 </Grid>
-              </Grid>
-              <Grid item xs={12} sm={6} md={4} xl={4}  >
-                <Typography variant="h6" gutterBottom component="div">
-                  Address
-                </Typography>
-
-                <Grid container spacing={1}>
-                  <Grid item xs={8}>
-                    <TextField
-                      label=" Address"
-                      id="address"
-
-                      value={address ? address : ''}
-                      onChange={onInputChange(setAddress)}
-                      InputProps={{
-                        startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
-                      }}
-                    />
-                  </Grid>
-                  <Grid item xs={4}>
-                    <TextField
-                      label="Number"
-                      id="number"
-
-                      value={streetNumber ? streetNumber : ''}
-                      onChange={onInputChange(setStreetNumber)}
-                      InputProps={{
-                        startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
-                      }}
-                    />
-                  </Grid>
-                </Grid>
-                <Grid container spacing={1}>
-                  <Grid item xs={7}>
-                    <TextField
-                      label="City"
-                      id="city"
-
-                      value={city ? city : ''}
-                      onChange={onInputChange(setCity)}
-                      InputProps={{
-                        startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
-                      }} />
-                  </Grid>
-                  <Grid item xs={5}>
-                    <TextField
-                      label="Code postal"
-                      id="zip"
-
-                      value={zip ? zip : ''}
-                      onChange={onInputChange(setZip)}
-                      InputProps={{
-                        startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
-                      }}
-                    />
-                  </Grid>
-                </Grid>
-                <FormControl fullWidth >
-                  <InputLabel id="langLabel">Pays</InputLabel>
-                  <Select
-                    style={{ display: 'flex', width: '100%' }}
-                    labelId="countryLabel"
-                    id="country"
-                    value={country ? country : ''}
-                    onChange={onInputChange(setCountry)}
-                    label="Country">
-                    <MenuItem value={'belgium'}>Belgium</MenuItem>
-                    <MenuItem value={'luxembourg'}>Luxembourg</MenuItem>
-                    <MenuItem value={'espagne'}>Espagne</MenuItem>
-                    <MenuItem value={'hollande'}>Hollande</MenuItem>
-                    <MenuItem value={'italie'}>Italie</MenuItem>
-                    <MenuItem value={'france'}>France</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={6} md={4} xl={4}>
-                <Typography variant="h6" mt={'20px'}>
-                  Password and activation
-                </Typography>
-                <FormControlLabel style={{ marginTop: '18px' }} control={<Switch checked={switchState} onChange={setActif} value={active} />} label="Actif" size="large" />
-                <Grid container spacing={1}>
-                  <Grid item xs={8}>
-                    <FormControl fullWidth variant="outlined" style={{ marginTop: '39px' }}>
-                      <InputLabel htmlFor="outlined-adornment-password">Change password</InputLabel>
-                      <OutlinedInput
-                        id="outlined-adornment-password"
-                        type={showPassword ? 'text' : 'password'}
-                        onChange={onInputChange(setPassword)}
-                        endAdornment={
-                          <InputAdornment position="end">
-                            <IconButton
-                              aria-label="toggle password visibility"
-                              onClick={handleClickShowPassword}
-                              onMouseDown={handleMouseDownPassword}
-                              edge="end"
-                            >
-                              {showPassword ? <VisibilityOff /> : <Visibility />}
-                            </IconButton>
-                          </InputAdornment>
-                        }
-                        label="Change password"
-                      />
-                    </FormControl>
-                  </Grid>
-                  <Grid item xs={4} mt={'45px'}>
-                    <Button
-
-                      style={{ borderRadius: '10px', marginLeft: '10px' }}
-                      variant="outlined" startIcon={<Save />}
-                      onClick={savePassword}>
-                      Save
-                    </Button>
-                  </Grid>
-                </Grid>
-              </Grid>
-              <Grid item xs={12}>
-                <Typography variant="h6" gutterBottom component="div">
-                  &nbsp;
-                </Typography>
-                <Button
-                  style={{ borderRadius: '10px', marginTop: '10px' }}
-                  variant="outlined" startIcon={<Save />}
-                  onClick={onSubmit}>
-                  Save
-                </Button>
               </Grid>
             </Grid>
-          </Main>
-        </Box>
-      </LocalizationProvider>
+            <Grid item xs={12} sm={6} md={4} xl={4} >
+              <TextField
+                label="Firstname"
+                id="firstname"
+                value={firstname ? firstname : ''}
+                onChange={onInputChange(setFirstname)}
+                InputProps={{
+                  startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                }}
+              />
+              <TextField
+                label="Lastname"
+                id="lastname"
+                value={lastname ? lastname : ''}
+                onChange={onInputChange(setLastname)}
+                InputProps={{
+                  startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                }}
+              />
+              <Box>
+                <DatePicker
+                  style={{ display: 'flex', width: '100%', minWidth: '100%' }}
+                  autoOk
+                  key="birthday"
+                  id="birthday"
+                  label="Date of birth"
+                  clearable
+                  inputVariant="outlined"
+                  disableFuture
+                  value={dateOfBirth ? dateOfBirth : ''}
+                  onChange={handleDateOfBirthChange}
+                />
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4} xl={4}>
+              <TextField
+                label="Phone number"
+                id="phone"
+                value={phone ? phone : ''}
+                onChange={onInputChange(setPhone)}
+                InputProps={{
+                  startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                }}
+              />
+              <TextField
+                label="Email"
+                id="outlined-start-adornment"
+
+                value={email ? email : ''}
+                onChange={onInputChange(setEmail)}
+                InputProps={{
+                  startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                }}
+              />
+              <Grid container spacing={1}>
+                <Grid item xs={8}>
+                  <FormControl >
+                    <InputLabel id="langLabel">Mother tong</InputLabel>
+                    <Select
+                      style={{ display: 'flex', width: '100%' }}
+                      labelId="langLabel"
+                      id="lang"
+                      value={lang ? lang : ''}
+                      onChange={onInputChange(setLang)}
+                      label="Close monitoring?">
+                      <MenuItem value={'fr'}>Francais</MenuItem>
+                      <MenuItem value={'en'}>English</MenuItem>
+                      <MenuItem value={'de'}>Dutch</MenuItem>
+                      <MenuItem value={'ar'}>Arabic</MenuItem>
+                      <MenuItem value={'nl'}>Nederlands</MenuItem>
+                      <MenuItem value={'es'}>Spanish</MenuItem>
+                      <MenuItem value={'pl'}>Polsky</MenuItem>
+                      <MenuItem value={'it'}>Italian</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={4}>
+                  <FormControl fullWidth>
+                    <InputLabel id="sexLabel">Sex</InputLabel>
+                    <Select
+                      style={{ display: 'flex', width: '100%' }}
+                      labelId="sexLabel"
+                      id="sex"
+                      value={sex ? sex : ''}
+                      onChange={onInputChange(setSex)}
+                      label="Sex" >
+                      <MenuItem value={'M'}>Male</MenuItem>
+                      <MenuItem value={'F'}>Femal</MenuItem>
+                      <MenuItem value={'B'}>Both</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4} xl={4}  >
+              <Typography variant="h6" gutterBottom component="div">
+                Address
+              </Typography>
+
+              <Grid container spacing={1}>
+                <Grid item xs={8}>
+                  <TextField
+                    label=" Address"
+                    id="address"
+
+                    value={address ? address : ''}
+                    onChange={onInputChange(setAddress)}
+                    InputProps={{
+                      startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={4}>
+                  <TextField
+                    label="Number"
+                    id="number"
+
+                    value={streetNumber ? streetNumber : ''}
+                    onChange={onInputChange(setStreetNumber)}
+                    InputProps={{
+                      startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                    }}
+                  />
+                </Grid>
+              </Grid>
+              <Grid container spacing={1}>
+                <Grid item xs={7}>
+                  <TextField
+                    label="City"
+                    id="city"
+
+                    value={city ? city : ''}
+                    onChange={onInputChange(setCity)}
+                    InputProps={{
+                      startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                    }} />
+                </Grid>
+                <Grid item xs={5}>
+                  <TextField
+                    label="Code postal"
+                    id="zip"
+
+                    value={zip ? zip : ''}
+                    onChange={onInputChange(setZip)}
+                    InputProps={{
+                      startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                    }}
+                  />
+                </Grid>
+              </Grid>
+              <FormControl fullWidth >
+                <InputLabel id="langLabel">Pays</InputLabel>
+                <Select
+                  style={{ display: 'flex', width: '100%' }}
+                  labelId="countryLabel"
+                  id="country"
+                  value={country ? country : ''}
+                  onChange={onInputChange(setCountry)}
+                  label="Country">
+                  <MenuItem value={'belgium'}>Belgium</MenuItem>
+                  <MenuItem value={'luxembourg'}>Luxembourg</MenuItem>
+                  <MenuItem value={'espagne'}>Espagne</MenuItem>
+                  <MenuItem value={'hollande'}>Hollande</MenuItem>
+                  <MenuItem value={'italie'}>Italie</MenuItem>
+                  <MenuItem value={'france'}>France</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4} xl={4}>
+              <Typography variant="h6" mt={'8px'}>
+                Password and activation
+              </Typography>
+              <FormControlLabel style={{ marginTop: '18px' }} control={<Switch checked={switchState} onChange={setActif} value={active} />} label="Actif" size="large" />
+              <Grid container spacing={1}>
+                <Grid item xs={8}>
+                  <FormControl fullWidth variant="outlined" style={{ marginTop: '19px' }}>
+                    <InputLabel htmlFor="outlined-adornment-password">Change password</InputLabel>
+                    <OutlinedInput
+                      id="outlined-adornment-password"
+                      type={showPassword ? 'text' : 'password'}
+                      onChange={onInputChange(setPassword)}
+                      endAdornment={
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={handleClickShowPassword}
+                            onMouseDown={handleMouseDownPassword}
+                            edge="end"
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      }
+                      label="Change password"
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item xs={4} mt={'25px'}>
+                  <Button
+
+                    style={{ borderRadius: '10px', marginLeft: '10px' }}
+                    variant="outlined" startIcon={<Save />}
+                    onClick={savePassword}>
+                    Save
+                  </Button>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="h6" gutterBottom component="div">
+                &nbsp;
+              </Typography>
+              <Button
+                style={{ borderRadius: '10px', marginTop: '10px' }}
+                variant="outlined" startIcon={<Save />}
+                onClick={onSubmit}>
+                Save
+              </Button>
+            </Grid>
+          </Grid>
+        </Main>
+      </Box>
+    </>
   );
 }

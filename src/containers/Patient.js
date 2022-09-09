@@ -223,7 +223,7 @@ export default function PatientContainer(props) {
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Grid item xs={12} sm={6} md={4} xl={4} >
+                    <Grid item xs={12} sm={6} md={4} xl={4}  >
                         <TextField
                             label="Firstname"
                             id="firstname"
@@ -233,6 +233,7 @@ export default function PatientContainer(props) {
                                 startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
                             }}
                         />
+                    
                         <TextField
                             label="Lastname"
                             id="lastname"
@@ -241,14 +242,15 @@ export default function PatientContainer(props) {
                             InputProps={{
                                 startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
                             }}
+
                         />
-                        <Box style={{marginTop:'28px'}}>
+                        <Box >
                             <DatePicker
                                 style={{ display: 'flex', width: '100%', minWidth: '100%' }}
                                 autoOk
                                 key="birthday"
                                 id="birthday"
-                                label="Date of birthss"
+                                label="Date of birth"
                                 clearable
                                 inputVariant="outlined"
                                 disableFuture
@@ -446,7 +448,7 @@ export default function PatientContainer(props) {
                                 <MenuItem value={'N'}>No</MenuItem>
                             </Select>
                         </FormControl>
-                        <Typography variant="h6" mt={'20px'}>
+                        <Typography variant="h6" mt={'4px'}>
                             Password and activation
                         </Typography>
                         <FormControlLabel control={<Switch checked={switchState} onChange={setActif} value={active} />} label="Actif" size="large" />
@@ -497,7 +499,7 @@ export default function PatientContainer(props) {
                         </Button>
                     </Grid>
                 </Grid>
-            </Box>
+            </Box >
         </>
     );
 }

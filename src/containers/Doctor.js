@@ -9,9 +9,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import Visibility from '@mui/icons-material/Visibility';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { DatePicker } from "@material-ui/pickers";
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { Save } from '@mui/icons-material';
@@ -264,7 +262,7 @@ export default function DoctorContainer(props) {
     };
 
     return (
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <>
             <div>
                 <Modal
                     open={openAssignPatientModal}
@@ -288,8 +286,8 @@ export default function DoctorContainer(props) {
             <Button onClick={handleAssignPatientModal} variant="outlined"style={{ marginRight: '5px' }}>Assign patient</Button>
             <Button onClick={() => document.getElementById("newButton").clk(doctorId, firstname + " "+lastname,'doc_patients')} variant="outlined" >List of patients</Button>
             <Box sx={{ width: '100%' }}>
-                <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6} md={4} xl={2} style={{ paddingTop: '40px' }}>
+                <Grid container spacing={2} mt={2}>
+                    <Grid item xs={12} sm={6} md={4} xl={2} style={{ paddingTop: '15px' }}>
                         <Grid item xs={12} style={{ width: '205px', height: '205px', textAlign: "center", border: '3px solid #ddd', borderRadius: '5px', margin: 'auto' }} >
                             <Avatar variant="rounded"
                                 src={avatar}
@@ -320,14 +318,18 @@ export default function DoctorContainer(props) {
                                 startAdornment: <FaceIcon position="start"><Visibility /></FaceIcon>,
                             }}
                         />
-                        <Box>
-                            <DateTimePicker
-                                style={{ display: 'flex', width: '100%', minWidth: '100%' }}
+                        <Box >
+                            <DatePicker
+                                style={{  width: '100%', minWidth: '100%' }}
+                                autoOk
+                                key="birthday"
                                 id="birthday"
                                 label="Date of birth"
+                                clearable
+                                inputVariant="outlined"
+                                disableFuture
                                 value={dateOfBirth ? dateOfBirth : ''}
                                 onChange={handleDateOfBirthChange}
-                                renderInput={(params) => <TextField {...params} />}
                             />
                         </Box>
                     </Grid>
@@ -465,13 +467,13 @@ export default function DoctorContainer(props) {
                             Hospital
                         </Typography>
                         <ComboHospitals onSelect={onHospitalSelect} hospital={{ id: hospitalId, name: hospitalName }} />
-                        <Typography variant="h6" mt={'20px'}>
+                        <Typography variant="h6" mt={'10px'}>
                             Password and activation
                         </Typography>
                         <FormControlLabel control={<Switch checked={switchState} onChange={setActif} value={active} />} label="Actif" size="large" />
                         <Grid container spacing={1}>
                             <Grid item xs={8}>
-                                <FormControl fullWidth variant="outlined" style={{ marginTop: '18px' }}>
+                                <FormControl fullWidth variant="outlined" style={{ marginTop: '0px' }}>
                                     <InputLabel htmlFor="outlined-adornment-password">Change password</InputLabel>
                                     <OutlinedInput
                                         id="outlined-adornment-password"
@@ -493,7 +495,7 @@ export default function DoctorContainer(props) {
                                     />
                                 </FormControl>
                             </Grid>
-                            <Grid item xs={4} mt={'25px'}>
+                            <Grid item xs={4} mt={'10px'}>
                                 <Button
 
                                     style={{ borderRadius: '10px', marginLeft: '10px' }}
@@ -554,6 +556,6 @@ export default function DoctorContainer(props) {
                 </Grid>
             </Grid>
             </Box>
-        </LocalizationProvider>
+        </>
     );
 }

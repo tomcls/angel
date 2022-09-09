@@ -28,8 +28,6 @@ import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
 import BiotechIcon from '@mui/icons-material/Biotech';
 
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import Modal from '@mui/material/Modal';
 
 import FormGroup from '@mui/material/FormGroup';
@@ -363,7 +361,7 @@ export default function Drugs(props) {
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
+    <>
       <div>
         <Modal
           open={openFilterModal}
@@ -493,5 +491,5 @@ export default function Drugs(props) {
         />
       </Paper>
     </Box>
-  </LocalizationProvider>);
+  </>);
 }

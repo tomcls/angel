@@ -24,7 +24,7 @@ export default function Dropdown({arrofsub ,text,icon}) {
       </div>
   );
   return (
-    <Box sx={{ height: checked && arrofsub?"auto":30 }} style={{ marginBlock:"18px",   justifyContent: "unset",flexDirection:"column",alignItems:"center",
+    <Box sx={{ height: checked && arrofsub?"auto":30 }} style={{ marginBlock:"18px",   justifycontent: "unset",flexDirection:"column",alignItems:"center",
     display: "flex",
 }}>
       <FormControlLabel

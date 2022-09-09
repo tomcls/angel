@@ -7,8 +7,6 @@ import TextField from '@mui/material/TextField';
 import Visibility from '@mui/icons-material/Visibility';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { Save } from '@mui/icons-material';
 import { Button, FormControl, InputLabel, MenuItem, Select, Modal } from '@mui/material';
 import { useSnackbar } from 'notistack';
@@ -17,7 +15,7 @@ import ComboLaboratories from '../components/ComboLaboratories';
 
 import ComboDrugs from '../components/ComboDrugs';
 import ComboUsers from '../components/ComboUsers';
-import { DateTimePicker } from '@mui/lab';
+import { DatePicker } from "@material-ui/pickers";
 
 export default function DrugContainer(props) {
     
@@ -188,7 +186,7 @@ export default function DrugContainer(props) {
         return datestring;
     }
     return (
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <>
              <div>
                 <Modal
                     open={openAssignPatientModal}
@@ -221,24 +219,30 @@ export default function DrugContainer(props) {
                         <Box
                             style={{ display: 'flex', width: '100%', paddingTop: '8px' }}
                         >
-                            <DateTimePicker
+                            <DatePicker
                                 style={{ display: 'flex', width: '100%', minWidth: '100%' }}
+                                autoOk
+                                key="datestart"
                                 id="datestart"
                                 label="Start date"
+                                clearable
+                                inputVariant="outlined"
+                                disableFuture
                                 value={startDate ? startDate : ''}
-                                onChange={handleStartDateChange}
-                                renderInput={(params) => <TextField {...params} />}
-                            />
+                                onChange={handleStartDateChange}/>
                         </Box>
                         <Box style={{ display: 'flex', width: '100%', paddingTop: '8px' }}>
-                            <DateTimePicker
+                        <DatePicker
                                 style={{ display: 'flex', width: '100%', minWidth: '100%' }}
+                                autoOk
+                                key="dateend"
                                 id="dateend"
                                 label="End date"
+                                clearable
+                                inputVariant="outlined"
+                                disableFuture
                                 value={endDate ? endDate : ''}
-                                onChange={handleEndDateChange}
-                                renderInput={(params) => <TextField {...params} />}
-                            />
+                                onChange={handleEndDateChange}/>
                         </Box>
                         <Button
                             style={{ borderRadius: '10px', marginTop: '20px' }}
@@ -297,6 +301,6 @@ export default function DrugContainer(props) {
                     Save
                 </Button>
             </Box>
-        </LocalizationProvider>
+        </>
     );
 }
