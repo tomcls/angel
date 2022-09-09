@@ -20,7 +20,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import AngelTreatment from "../api/angel/treatments";
 import { useSnackbar } from 'notistack';
-import { Grid } from '@mui/material';
+import { Avatar, Grid } from '@mui/material';
 import { Button } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
@@ -116,12 +116,6 @@ const headCells = [
     numeric: false,
     disablePadding: false,
     label: 'Created',
-  },
-  {
-    id: 'patients',
-    numeric: false,
-    disablePadding: false,
-    label: 'Patients',
   }
 ];
 
@@ -236,6 +230,7 @@ EnhancedTableToolbar.propTypes = {
   onOpenFilterModal: PropTypes.func,
   setSearch: PropTypes.func,
 };
+const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp0LF2WgeDkn_sQ1VuMnlnVGjkDvCN4jo2nLMt3b84ry328rg46eohB_JT3WTqOGJovY&usqp=CAU';//process.env.SENDGRID_APIKEY
 
 export default function PatientTreatments(props) {
 
@@ -268,7 +263,7 @@ export default function PatientTreatments(props) {
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
-  const createData = (id, name, code, created,posology,start_date,end_date) => {
+  const createData = (id, name, code, created,posology,start_date,end_date,firstname,lastname,avatar,patient_id,drug_id) => {
     return {
       id,
       name,
@@ -276,7 +271,12 @@ export default function PatientTreatments(props) {
       created,
       posology,
       start_date,
-      end_date
+      end_date,
+      firstname,
+      lastname,
+      avatar,
+      patient_id,
+      drug_id
     }
   }
   const fetchData = async () => {
@@ -301,7 +301,7 @@ export default function PatientTreatments(props) {
     if (r.treatments && r.treatments.length) {
       for (let i = 0; i < r.treatments.length; i++) {
         //createData('Cupcake', 305, 3.7, 67, 4.3, <BeachAccessIcon color='primary' style={{ marginInline: '10px' }} />, <GridViewIcon color='primary' style={{ marginInline: '10px' }} />, <TrendingUpIcon color='primary' style={{ marginInline: '10px' }} />, 'ahmed')
-        u.push(createData(r.treatments[i].treatment_id, r.treatments[i].name, r.treatments[i].code, r.treatments[i].date_created,r.treatments[i].posology,r.treatments[i].start_date,r.treatments[i].end_date));
+        u.push(createData(r.treatments[i].id, r.treatments[i].name, r.treatments[i].code, r.treatments[i].date_created,r.treatments[i].posology,r.treatments[i].start_date,r.treatments[i].end_date,r.treatments[i].firstname,r.treatments[i].lastname,r.treatments[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.treatments[i].avatar : defaultAvatar, r.treatments[i].patient_id, r.treatments[i].drug_id));
       }
       setRows(u);
       setTreatments(r.treatments);
@@ -434,7 +434,14 @@ export default function PatientTreatments(props) {
                         />
                       </TableCell>
                       <TableCell component="th" id={labelId} scope="row" padding="none" align='left'>
-                        {row.id}
+                        {props.patientId ? row.id: <Grid item xs={1} style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient_surveys','panel3')}>
+                          <Grid container >
+                            <Typography style={{ paddingLeft: '5px', paddingTop: "12px", position: 'relative' }} component={'div'}> {row.id}</Typography>
+                            <Avatar src={row.avatar} textAlign={'start'}  style={{ margin: "5px" }} />
+                            <Typography style={{ paddingLeft: '5px', paddingTop: "12px", position: 'relative' }} component={'div'}> {row.firstname + ' ' + row.lastname}</Typography>
+                          </Grid>
+                        </Grid>}
+                        
                       </TableCell>
                       <TableCell
                         component='th'
@@ -442,7 +449,7 @@ export default function PatientTreatments(props) {
                         scope='row'
                         style={{ textAlign: 'center' }}
                         padding='none'
-                        onClick={() => document.getElementById("newButton").clk(row.id, row.name,'treatment')}
+                        onClick={() => document.getElementById("newButton").clk(row.drug_id, row.name,'treatment')}
                       >
                         {row.name}
                       </TableCell>
@@ -486,14 +493,6 @@ export default function PatientTreatments(props) {
                         scope='row'
                         padding='none'>
                         {row.created}
-                      </TableCell>
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        style={{ textAlign: 'center' }}
-                        scope='row'
-                        padding='none'>
-                       <FamilyRestroomIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.id, row.code + ' ' + row.name,'treatment_patients')} />
                       </TableCell>
                     </TableRow>
                   );

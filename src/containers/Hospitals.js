@@ -117,7 +117,7 @@ function EnhancedTableHead(props) {
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
             inputProps={{ 'aria-label': 'select all Hospitals' }}
-          /> 
+          />
         </TableCell>
         {headCells.map((headCell) => (
           <TableCell
@@ -131,7 +131,7 @@ function EnhancedTableHead(props) {
               onClick={createSortHandler(headCell.id)}>
               {headCell.label}
               {orderBy === headCell.id ? (
-                <span  style={{border: 0, clip: 'rect(0 0 0 0)', height: '1px', margin: -1, overflow: 'hidden',padding: 0,whiteSpace: "nowrap",width: "1px",position: "absolute"}}>
+                <span style={{ border: 0, clip: 'rect(0 0 0 0)', height: '1px', margin: -1, overflow: 'hidden', padding: 0, whiteSpace: "nowrap", width: "1px", position: "absolute" }}>
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                 </span>
               ) : null}
@@ -237,7 +237,7 @@ export default function Hospitals(props) {
   React.useEffect(() => {
     console.log('useEffect Hospitals list', props.hospitals)
     const hospitals = props.hospitals;
-   
+
     fetchData();
   }, [props.hospitals]);
 
@@ -281,7 +281,7 @@ export default function Hospitals(props) {
     r = await AngelHospital().list(o);
     if (r.hospitals && r.hospitals.length) {
       for (let i = 0; i < r.hospitals.length; i++) {
-        u.push(createData(r.hospitals[i].hospital_id,r.hospitals[i].id, r.hospitals[i].name, r.hospitals[i].email, r.hospitals[i].phone));
+        u.push(createData(r.hospitals[i].hospital_id, r.hospitals[i].id, r.hospitals[i].name, r.hospitals[i].email, r.hospitals[i].phone));
       }
       setRows(u);
       setHospitals(r.hospitals);
@@ -327,8 +327,8 @@ export default function Hospitals(props) {
   const isSelected = (id) => selected.indexOf(id) !== -1;
 
   const onDeleteItems = async () => {
-    if(selected.length) {
-      await AngelHospital().delete({ids:selected.join(',')});
+    if (selected.length) {
+      await AngelHospital().delete({ ids: selected.join(',') });
       handleClickVariant('success', 'Doctor(s) well deleted');
       fetchData();
     }
@@ -380,7 +380,7 @@ export default function Hospitals(props) {
     </div>
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 0 }}>
-      <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
+        <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
@@ -405,7 +405,7 @@ export default function Hospitals(props) {
                     <TableRow
                       hover
                       onClick={(event) => handleClick(event, row.id)}
-                      onDoubleClick={() => props.openUser(row.hospital_id,row.name)}
+                      onDoubleClick={() => props.openUser(row.hospital_id, row.name)}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
@@ -425,10 +425,11 @@ export default function Hospitals(props) {
                         component='th'
                         id={labelId}
                         scope='row'
-                        style={{ textAlign: 'center' }}
+                        style={{ textAlign: 'center', cursor: 'pointer' }}
                         padding='none'
+                        onClick={() => props.openUser(row.hospital_id, row.name)}
                       >
-                        {row.name}
+                        <b>{row.name}</b>
                       </TableCell>
                       <TableCell
                         component='th'
@@ -464,11 +465,11 @@ export default function Hospitals(props) {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component='div'
-          count={total?total:0}
+          count={total ? total : 0}
           rowsPerPage={limit}
           page={page}
           onPageChange={setPage}
-          onRowsPerPageChange={ (e) => {setLimit(e.target.value)}}
+          onRowsPerPageChange={(e) => { setLimit(e.target.value) }}
         />
       </Paper>
     </Box>

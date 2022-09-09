@@ -326,10 +326,11 @@ export default function SideEffects(props) {
                         component='th'
                         id={labelId}
                         scope='row'
-                        style={{ textAlign: 'center' }}
+                        style={{ textAlign: 'center', cursor: 'pointer'}}
                         padding='none'
+                        onClick={() => props.openSideEffect(row.id, row.name)}
                       >
-                        {row.name}
+                        <b>{row.name}</b>
                       </TableCell>
                       <TableCell
                         component='th'

@@ -41,9 +41,11 @@ import StarBorder from '@mui/icons-material/StarBorder';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import DashboardIcon from '@mui/icons-material/Dashboard';
-
+import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 import ListSubheader from '@mui/material/ListSubheader';
 import AppStyle from "./style";
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import ScienceIcon from '@mui/icons-material/Science';
 
 const drawerWidth = 240;
 
@@ -285,7 +287,7 @@ export default function Bar(props) {
           <List component="div" disablePadding>
             <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/coordinators">
               <ListItemIcon>
-                <FamilyRestroomIcon />
+                <SupervisorAccountIcon />
               </ListItemIcon>
               <ListItemText primary="Coordinators" />
             </ListItemButton>
@@ -309,7 +311,7 @@ export default function Bar(props) {
             </ListItemButton>
             <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/scientists">
               <ListItemIcon>
-                <EmojiPeopleIcon />
+                <ScienceIcon />
               </ListItemIcon>
               <ListItemText primary={"Scientists"} />
             </ListItemButton>
@@ -341,13 +343,13 @@ export default function Bar(props) {
         <Collapse in={openEffectDown} timeout="auto" unmountOnExit>
           <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/side-effects">
             <ListItemIcon>
-              <SickIcon />
+              <FormatListBulletedIcon />
             </ListItemIcon>
             <ListItemText primary={"Side Effects"} />
           </ListItemButton>
           <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/moods">
             <ListItemIcon>
-              <MoodIcon />
+              <FormatListBulletedIcon />
             </ListItemIcon>
             <ListItemText primary={"Moods"} />
           </ListItemButton>
@@ -359,7 +361,7 @@ export default function Bar(props) {
           </ListItemButton>
           <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/survey-effects">
             <ListItemIcon>
-              <MoodIcon />
+              <SickIcon />
             </ListItemIcon>
             <ListItemText primary={"Survey Side effects"} />
           </ListItemButton>
