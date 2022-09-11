@@ -59,6 +59,30 @@ export default  function AngelNurse(config) {
             } catch (error) {
                 throw {error:error};
             }
+        },
+        transfers: async (params) => {
+            try {
+                const res = await axios.post(process.env.REACT_APP_API_URL+'/nurses/transfers', params, {headers: {'Authorization':accessToken}});
+                return res.data;
+            } catch (error) {
+                throw {error:error};
+            }
+        },
+        addTransfers: async (params) => {
+            try {
+                const res = await axios.post(process.env.REACT_APP_API_URL+'/nurses/add-transfers', params, {headers: {'Authorization':accessToken}});
+                return res.data;
+            } catch (error) {
+                throw {error:error};
+            }
+        },
+        recoverTransfer: async (params) => {
+            try {
+                const res = await axios.post(process.env.REACT_APP_API_URL+'/nurses/recover-transfer', params, {headers: {'Authorization':accessToken}});
+                return res.data;
+            } catch (error) {
+                throw {error:error};
+            }
         }
     }
 }

@@ -18,11 +18,10 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
-
+import TransferWithinAStationIcon from '@mui/icons-material/TransferWithinAStation';
 import AngelUser from '../api/angel/user';
 import AngelPatient from '../api/angel/patient';
 import AngelDoctor from '../api/angel/doctor';
-import AngelTreatment from '../api/angel/treatments';
 import { Avatar } from '@mui/material';
 import { Grid } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
@@ -40,6 +39,8 @@ import HealingIcon from '@mui/icons-material/Healing';
 import HailIcon from '@mui/icons-material/Hail';
 import AngelNurse from '../api/angel/nurse';
 import AngelDrug from '../api/angel/drugs';
+import Transfer from '../components/Transfer';
+import ComboNurses from '../components/ComboNurses';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -203,13 +204,18 @@ const EnhancedTableToolbar = (props) => {
         </Typography>
       ) : (<></>
       )}
-      {numSelected > 0 ? (
+      {numSelected > 0 ? (<>
         <Tooltip title='Delete'>
           <IconButton onClick={props.onDeleteItems}>
             <DeleteIcon />
           </IconButton>
         </Tooltip>
-      ) : (<Grid container >
+        <Tooltip title='transfer'>
+          <IconButton onClick={props.onTransferItems}>
+            <TransferWithinAStationIcon />
+          </IconButton>
+        </Tooltip>
+      </>) : (<Grid container >
         <Grid item md={12}>
           <TextField
             id="input-with-icon-textfield"
@@ -220,6 +226,7 @@ const EnhancedTableToolbar = (props) => {
                 <InputAdornment position="end">
                   <Button id="search" onClick={() => props.onSearch()} variant="outlined" style={{ marginBottom: '9px', marginRight: '5px' }}><SearchIcon /></Button>
                   <Button id="openfilterModal" onClick={() => props.onOpenFilterModal()} variant="outlined" style={{ marginBottom: '9px' }}><FilterListIcon /></Button>
+                  <Button id="opentransferModal" onClick={() => props.onOpenTransferModal()} variant="outlined" style={{ marginBottom: '9px' }}><TransferWithinAStationIcon /></Button>
                 </InputAdornment>
               ),
             }}
@@ -235,18 +242,18 @@ const EnhancedTableToolbar = (props) => {
 EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
   onDeleteItems: PropTypes.func,
+  onTransferItems: PropTypes.func,
   onSearch: PropTypes.func,
   onOpenFilterModal: PropTypes.func,
   setSearch: PropTypes.func,
 };
 
 export default function Patients(props) {
-
   const { enqueueSnackbar } = useSnackbar();
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
   const [limit, setLimit] = React.useState(5);
-  const [patients, setPatients] = React.useState([]);
+  const [, setPatients] = React.useState([]);
 
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('id');
@@ -256,12 +263,14 @@ export default function Patients(props) {
   const [rows, setRows] = React.useState([]);
 
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
+  const [openTransferModal, setOpenTransferModal] = React.useState(false);
 
   const [searchFilter, setSearchFilter] = React.useState('');
   const [firstnameFilter, setFirstnameFilter] = React.useState(true);
   const [lastnameFilter, setLastnameFilter] = React.useState(true);
   const [emailFilter, setEmailFilter] = React.useState(true);
   const [phoneFilter, setPhoneFilter] = React.useState(false);
+  const [transferNurseId, setTransferNurseId] = React.useState();
 
   React.useEffect(() => {
     console.log('useEffect Patients list', props.users)
@@ -273,7 +282,7 @@ export default function Patients(props) {
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
-  const createData = (user_id, id, firstname, lastname, email, phone, lang, role, active, avatar) => {
+  const createData = (user_id, id, firstname, lastname, email, phone, lang, role, active, avatar,patient_id) => {
     return {
       user_id,
       id,
@@ -284,7 +293,8 @@ export default function Patients(props) {
       lang,
       role,
       active,
-      avatar
+      avatar,
+      patient_id
     }
   }
   const fetchData = async () => {
@@ -294,22 +304,22 @@ export default function Patients(props) {
       limit: limit,
       page: page
     };
-    if(firstnameFilter) {
+    if (firstnameFilter) {
       o.firstname = searchFilter;
     } else {
       o.firstname = null;
     }
-    if(lastnameFilter) {
+    if (lastnameFilter) {
       o.lastname = searchFilter;
     } else {
       o.lastname = null;
     }
-    if(emailFilter) {
+    if (emailFilter) {
       o.email = searchFilter;
     } else {
       o.email = null;
     }
-    if(phoneFilter) {
+    if (phoneFilter) {
       o.phone = searchFilter;
     } else {
       o.phone = null;
@@ -328,7 +338,7 @@ export default function Patients(props) {
     }
     if (r.users && r.users.length) {
       for (let i = 0; i < r.users.length; i++) {
-        u.push(createData(r.users[i].user_id, r.users[i].id, r.users[i].firstname, r.users[i].lastname, r.users[i].email, r.users[i].phone, r.users[i].lang, r.users[i].role, r.users[i].active, r.users[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.users[i].avatar : defaultAvatar));
+        u.push(createData(r.users[i].user_id, r.users[i].id, r.users[i].firstname, r.users[i].lastname, r.users[i].email, r.users[i].phone, r.users[i].lang, r.users[i].role, r.users[i].active, r.users[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.users[i].avatar : defaultAvatar,r.users[i].patient_id));
       }
       setRows(u);
       setPatients(r.users);
@@ -342,9 +352,13 @@ export default function Patients(props) {
   const handleFiltersModal = () => setOpenFilterModal(true);
   const handleCloseFilterModal = () => setOpenFilterModal(false);
 
+
+  const handleTransferModal = () => setOpenTransferModal(true);
+  const handleCloseTransferModal = () => setOpenTransferModal(false);
+
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = rows.map((n) => n.user_id);
+      const newSelecteds = rows.map((n) => n.patient_id);
       setSelected(newSelecteds);
       return;
     }
@@ -368,8 +382,8 @@ export default function Patients(props) {
       );
     }
     setSelected(newSelected);
+    console.log('selected', selected);
   };
-
   const onDeleteItems = async () => {
     if (selected.length) {
       await AngelUser().delete({ ids: selected.join(',') });
@@ -406,6 +420,35 @@ export default function Patients(props) {
   const handleSearchText = (txt) => {
     setSearchFilter(txt);
   };
+
+  const onNurseSelect = (nurseId) => {
+    console.log(nurseId)
+    setTransferNurseId(nurseId);
+  }
+  const transferPatients = async () => {
+    if(selected.length && transferNurseId &&  props.nurseId) {
+      let o = {
+        patients: selected,
+        nurse_from: props.nurseId,
+        nurse_to: transferNurseId
+      }
+      const tr = await AngelNurse().addTransfers(o);
+      handleCloseTransferModal();
+      handleClickVariant('success', 'Patient well transfered');
+      setSelected([]);
+      setTimeout(function(){
+        fetchData()
+      },500);
+    } else {
+      handleClickVariant('error', 'Please select some patients');
+    }
+  }
+  const onPatientRecovered = () => {
+    handleClickVariant('success', 'Patient well recovered');
+    setTimeout(function(){
+      fetchData()
+    },500);
+  }
   return (
     <>
       <div>
@@ -419,17 +462,33 @@ export default function Patients(props) {
               Filters
             </Typography>
             <FormGroup>
-              <FormControlLabel control={<Checkbox checked={firstnameFilter} onChange={handleFirstnameFilter}/>} label="Firstname" />
-              <FormControlLabel control={<Checkbox checked={lastnameFilter} onChange={handleLastnameFilter}/>} label="Lastname" />
-              <FormControlLabel control={<Checkbox checked={emailFilter} onChange={handleEmailFilter}/>} label="Email" />
-              <FormControlLabel control={<Checkbox checked={phoneFilter} onChange={handlePhoneFilter}/>} label="Phone" />
+              <FormControlLabel control={<Checkbox checked={firstnameFilter} onChange={handleFirstnameFilter} />} label="Firstname" />
+              <FormControlLabel control={<Checkbox checked={lastnameFilter} onChange={handleLastnameFilter} />} label="Lastname" />
+              <FormControlLabel control={<Checkbox checked={emailFilter} onChange={handleEmailFilter} />} label="Email" />
+              <FormControlLabel control={<Checkbox checked={phoneFilter} onChange={handlePhoneFilter} />} label="Phone" />
             </FormGroup>
+          </Box>
+        </Modal>
+      </div>
+      <div>
+        <Modal
+          open={openTransferModal}
+          onClose={handleCloseTransferModal}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description">
+          <Box sx={styleModal}>
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              Transfer
+            </Typography>
+            <ComboNurses onSelect={onNurseSelect} />
+            <Button id="transfer" onClick={transferPatients} variant="outlined" style={{ width: '100%' }}> Transfer {selected.length} patients</Button>
+            <Transfer nurseId={props.nurseId} onPatientRecovered={onPatientRecovered}/>
           </Box>
         </Modal>
       </div>
       <Box sx={{ width: '100%' }}>
         <Paper sx={{ width: '100%', mb: 0 }}>
-          <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
+          <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onTransferItems={handleTransferModal} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} onOpenTransferModal={handleTransferModal} />
           <TableContainer>
             <Table
               sx={{ minWidth: 750 }}
@@ -448,16 +507,16 @@ export default function Patients(props) {
                 {stableSort(rows, getComparator(order, orderBy))
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => {
-                    const isItemSelected = isSelected(row.user_id);
-                    const labelId = `enhanced-table-checkbox-${row.user_id}`;
+                    const isItemSelected = isSelected(row.patient_id);
+                    const labelId = `enhanced-table-checkbox-${row.patient_id}`;
                     return (
                       <TableRow
                         hover
-                        onDoubleClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname,'patient')}
+                        onDoubleClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname, 'patient')}
                         role="checkbox"
                         aria-checked={isItemSelected}
                         tabIndex={-1}
-                        key={row.id}
+                        key={row.patient_id}
                         selected={isItemSelected}
                       >
                         <TableCell padding="checkbox">
@@ -470,10 +529,10 @@ export default function Patients(props) {
                         <TableCell component="th" id={labelId} scope="row" padding="none" align='left' >
                           <Grid container spacing={2}>
                             <Grid item xs={1} textAlign={'start'} style={{ marginTop: '10px', fontWeight: 'bold' }}>
-                              {row.id}
+                              {row.patient_id}
                             </Grid>
                             <Grid item xs={1} style={{ cursor: 'pointer' }}>
-                              <Avatar src={row.avatar} textAlign={'start'} onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname,'patient')} />
+                              <Avatar src={row.avatar} textAlign={'start'} onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname, 'patient')} />
                             </Grid>
                           </Grid>
                         </TableCell>
@@ -518,7 +577,7 @@ export default function Patients(props) {
                           scope='row'
                           style={{ textAlign: 'center' }}
                           padding='none' >
-                          <EmojiPeopleIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname,'patient_nurses')}  />
+                          <EmojiPeopleIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname, 'patient_nurses')} />
                         </TableCell>
                         <TableCell
                           component='th'
@@ -526,7 +585,7 @@ export default function Patients(props) {
                           scope='row'
                           style={{ textAlign: 'center' }}
                           padding='none' >
-                          <HailIcon  style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname,'patient_doctors')} />
+                          <HailIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname, 'patient_doctors')} />
                         </TableCell>
                         <TableCell
                           component='th'
@@ -534,7 +593,7 @@ export default function Patients(props) {
                           scope='row'
                           style={{ textAlign: 'center' }}
                           padding='none' >
-                         <HealingIcon  style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.id, row.firstname + ' ' + row.lastname,'patient_treatments')} />
+                          <HealingIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.id, row.firstname + ' ' + row.lastname, 'patient_treatments')} />
                         </TableCell>
                       </TableRow>
                     );
