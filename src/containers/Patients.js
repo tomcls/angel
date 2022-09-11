@@ -210,7 +210,7 @@ const EnhancedTableToolbar = (props) => {
             <DeleteIcon />
           </IconButton>
         </Tooltip>
-        <Tooltip title='transfer'>
+        <Tooltip title='transfer' style={{display: props.nurseId?'inline-flex':'none'}}>
           <IconButton onClick={props.onTransferItems}>
             <TransferWithinAStationIcon />
           </IconButton>
@@ -226,7 +226,7 @@ const EnhancedTableToolbar = (props) => {
                 <InputAdornment position="end">
                   <Button id="search" onClick={() => props.onSearch()} variant="outlined" style={{ marginBottom: '9px', marginRight: '5px' }}><SearchIcon /></Button>
                   <Button id="openfilterModal" onClick={() => props.onOpenFilterModal()} variant="outlined" style={{ marginBottom: '9px' }}><FilterListIcon /></Button>
-                  <Button id="opentransferModal" onClick={() => props.onOpenTransferModal()} variant="outlined" style={{ marginBottom: '9px' }}><TransferWithinAStationIcon /></Button>
+                  <Button id="opentransferModal" onClick={() => props.onOpenTransferModal()} variant="outlined" style={{ marginLeft: '5px', marginBottom: '9px', display: props.nurseId?'inline-flex':'none' }}><TransferWithinAStationIcon /></Button>
                 </InputAdornment>
               ),
             }}
@@ -488,7 +488,7 @@ export default function Patients(props) {
       </div>
       <Box sx={{ width: '100%' }}>
         <Paper sx={{ width: '100%', mb: 0 }}>
-          <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onTransferItems={handleTransferModal} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} onOpenTransferModal={handleTransferModal} />
+          <EnhancedTableToolbar nurseId={props.nurseId} numSelected={selected.length} onDeleteItems={onDeleteItems} onTransferItems={handleTransferModal} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} onOpenTransferModal={handleTransferModal} />
           <TableContainer>
             <Table
               sx={{ minWidth: 750 }}
