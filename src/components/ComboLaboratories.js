@@ -13,14 +13,14 @@ function sleep(delay = 0) {
 export default function ComboLaboratories(props) {
   const [open, setOpen] = React.useState(false);
   const [options, setOptions] = React.useState([]);
-  const loading = open && options.length === 0;
-  const [value, setValue] = React.useState(null);
+  const [value, setValue] = React.useState('');
 
+  const loading = open && options.length === 0;
+  
   React.useEffect(() => {
       
     let active = true;
     if(props.laboratory) {
-        console.log(props.laboratory, active)
         setValue(props.laboratory);
     }
     if (!loading) {
@@ -58,12 +58,9 @@ export default function ComboLaboratories(props) {
         setOpen(false);
       }}
       onChange={(event, newValue) => {
-        console.log("console",newValue,options);
         setOptions(newValue ? [newValue, ...options] : options);
         setValue(newValue);
         if(newValue && newValue.id) {
-          console.log("qqqqqq",newValue)
-            console.log(newValue)
             props.onSelect({id:newValue.id, name:newValue.laboratory_name});
         }
       }}

@@ -12,10 +12,8 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import { Cancel } from "@mui/icons-material";
 import { SnackbarProvider } from 'notistack';
-import Patients from "../containers/Patients";
 import { Grid, Typography } from "@mui/material";
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
-import PatientContainer from "../containers/Patient";
 import Tabs from "../components/Tabs";
 const drawerWidth = 240;
 
@@ -49,55 +47,16 @@ export default function ScientistsPage() {
 
   React.useEffect(() => {
     console.log('useEffect Scientists page tabs length=', tabs.length, 'tabIndex', tabIndex);
+    let d = document.getElementById('newButton');
+    if (d) {
+      d.clk = function (id, text, type) { t.openTab(id, text, type); };
+    }
   }, []);
 
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
- /* const handleTabOptions = (value) => {
-    setSelectedTab(value)
-    setTabIndex(tabIndex + 1)
-  }
-  const createTab = () => {
-    if (window.angel && window.angel.scientistId) {
-      createTabPatients(window.angel.scientistId, 'list of patients');
-      window.angel.scientistId = null;
-    } else if (window.angel && window.angel.userId ) {
-      console.log("zzzzzzz",window.angel.userId, window.angel.tabName)
-      createTabPatient( window.angel.userId, window.angel.tabName);
-      window.angel.treatmentId = null;
-    } else {
-      createTabScientist();
-    }
-  }
-  const createTabPatients = (userId, text) => {
-    const value = `Blue Box ${tabIndex}`
-    const newTab = {
-      label: text,
-      value: value,
-      idx: tabIndex,
-      child: () => <Patients openUser={openPatientTab} scientistId={userId} />
-    }
-    setTabs([...tabs, newTab])
-    handleTabOptions(value ? value : tabIndex);
-  }
-  const createTabPatient = ( userId, text) => {
-    const value = text;
-    const newTab = {
-      label: text ? text : 'New patient',
-      value: value ? value : tabIndex,
-      idx: tabIndex,
-      child: () => <PatientContainer userId={userId} />
-    }
-    setTabs([...tabs, newTab])
-    handleTabOptions(value ? value : tabIndex);
-  }
-  const handleCloseTab = (event, idx) => {
-    event.stopPropagation();
-    const tabArr = tabs.filter(x => x.idx !== idx)
-    setTabs(tabArr)
-    setSelectedTab('Main');
-  }*/
+ 
   const createTabScientist = (userId, text) => {
     const value = text;
     const newTab = {
@@ -116,15 +75,6 @@ export default function ScientistsPage() {
     window.angel.scientistId = scientistId;
     newBtn.current.click();
   }
-  const openPatientTab = (userId, text) => {
-    console.log('openPatientTab',userId,text)
-    if (!window.angel) {
-      window.angel = {};
-    }
-    window.angel.userId = userId;
-    window.angel.tabName = text;
-    newBtn.current.click();
-  }
   return (
     <SnackbarProvider maxSnack={3}>
       <Box sx={{ display: 'flex' }}>
@@ -137,14 +87,14 @@ export default function ScientistsPage() {
               </Typography>
             </Grid>
             <Grid item xs={12} md={6} xl={6} textAlign={'end'}  >
-              <Button variant="outlined"  onClick={t.createTab} ref={newBtn} justifyContent="flex-end">
+              <Button variant="outlined" onClick={t.onOpenTabClick} justifyContent="flex-end" ref={newBtn} id="newButton">
                 <PeopleIcon /> Add scientist</Button>
             </Grid>
           </Grid>
           <Box sx={{ width: '100%' }}>
             <TabContext value={selectedTab ? selectedTab : '1'}>
               <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                <TabList onChange={handleChange} aria-label="" variant="scrollable" scrollButtons="auto" >
+                <TabList onChange={t.handleChange} aria-label="" variant="scrollable" scrollButtons="auto" >
                   <Tab label="List" value="Main" icon={<FormatListBulletedIcon />} iconPosition="start" />
                   {tabs.map(tab => (
                     <Tab key={tab.idx} label={tab.label} value={tab.value} icon={<Cancel onClick={(e) => t.handleCloseTab(e, tab.idx)} />} iconPosition="end" />

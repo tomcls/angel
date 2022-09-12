@@ -9,6 +9,7 @@ import Patients from "../containers/Patients";
 import PatientSurveyEffects from "../containers/PatientSurveyEffects";
 import PatientSurveys from "../containers/PatientSurveys";
 import PatientTreatments from "../containers/PatientTreatments";
+import ScientistContainer from "../containers/Scientist";
 import TreatmentContainer from "../containers/Treatment";
 import Treatments from "../containers/Treatments";
 
@@ -79,6 +80,8 @@ export default class Tabs {
                             return <DrugContainer drugId={id} />
                         case 'drug_treatments':
                             return <Treatments drugId={id} />
+                        case 'scientist':
+                                return <ScientistContainer scientistId={id} />
                         case 'treatment':
                             return <TreatmentContainer treatmentId={id} />
                         case 'patient_surveys':
@@ -96,6 +99,11 @@ export default class Tabs {
             window.angel = {};
         }
         switch (type) {
+            case 'scientist':
+                window.angel.userId = id;
+                window.angel.tabType = 'scientist';
+                window.angel.tabName = 'Scientist ' + text;
+                break;
             case 'doctor':
                 window.angel.userId = id;
                 window.angel.tabType = 'doctor';
