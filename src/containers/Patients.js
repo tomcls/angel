@@ -512,12 +512,11 @@ export default function Patients(props) {
                     return (
                       <TableRow
                         hover
-                        onDoubleClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname, 'patient')}
+                        
                         role="checkbox"
                         aria-checked={isItemSelected}
                         tabIndex={-1}
                         key={row.patient_id}
-                        selected={isItemSelected}
                       >
                         <TableCell padding="checkbox">
                           <Checkbox
@@ -540,10 +539,11 @@ export default function Patients(props) {
                           component='th'
                           id={labelId}
                           scope='row'
-                          style={{ textAlign: 'center' }}
+                          style={{ textAlign: 'center' ,cursor: 'pointer'}}
                           padding='none'
+                          onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname, 'patient')}
                         >
-                          {row.firstname}
+                         <b> {row.firstname}</b>
                         </TableCell>
                         <TableCell
                           component='th'

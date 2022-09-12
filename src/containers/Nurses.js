@@ -440,7 +440,6 @@ export default function Nurses(props) {
                       <TableRow
                         hover
                         onClick={(event) => handleClick(event, row.user_id)}
-                        onDoubleClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname,'nurse')}
                         role="checkbox"
                         aria-checked={isItemSelected}
                         tabIndex={-1}
@@ -463,13 +462,14 @@ export default function Nurses(props) {
                           </Grid>
                         </TableCell>
                         <TableCell
+                          onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname,'nurse')}
                           component='th'
                           id={labelId}
                           scope='row'
-                          style={{ textAlign: 'center' }}
+                          style={{ textAlign: 'center',cursor: 'pointer' }}
                           padding='none'
                         >
-                          {row.firstname}
+                         <b>{row.firstname}</b>
                         </TableCell>
                         <TableCell
                           component='th'

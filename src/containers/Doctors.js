@@ -439,7 +439,6 @@ export default function Doctors(props) {
                       <TableRow
                         hover
                         onClick={(event) => handleClick(event, row.user_id)}
-                        onDoubleClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname,'doctor')}
                         role="checkbox"
                         aria-checked={isItemSelected}
                         tabIndex={-1}
@@ -466,10 +465,11 @@ export default function Doctors(props) {
                           component='th'
                           id={labelId}
                           scope='row'
-                          style={{ textAlign: 'center' }}
+                          style={{ textAlign: 'center', cursor: 'pointer' }}
                           padding='none'
+                          onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname,'doctor')}
                         >
-                          {row.firstname}
+                          <b>{row.firstname}</b>
                         </TableCell>
                         <TableCell
                           component='th'

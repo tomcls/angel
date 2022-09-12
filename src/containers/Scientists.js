@@ -439,7 +439,6 @@ export default function Scientists(props) {
                       <TableRow
                         hover
                         onClick={(event) => handleClick(event, row.user_id)}
-                        onDoubleClick={() => props.openUser(row.user_id, row.firstname + ' ' + row.lastname)}
                         role="checkbox"
                         aria-checked={isItemSelected}
                         tabIndex={-1}
@@ -465,10 +464,11 @@ export default function Scientists(props) {
                           component='th'
                           id={labelId}
                           scope='row'
-                          style={{ textAlign: 'center' }}
+                          style={{ textAlign: 'center',cursor: 'pointer' }}
                           padding='none'
+                          onClick={() => props.openUser(row.user_id, row.firstname + ' ' + row.lastname)}
                         >
-                          {row.firstname}
+                         <b> {row.firstname}</b>
                         </TableCell>
                         <TableCell
                           component='th'
