@@ -90,18 +90,6 @@ const headCells = [
     numeric: false,
     disablePadding: false,
     label: 'Total effects',
-  },
-  {
-    id: 'score',
-    numeric: false,
-    disablePadding: false,
-    label: 'Total score',
-  },
-  {
-    id: 'date',
-    numeric: false,
-    disablePadding: false,
-    label: 'Date',
   }
 ];
 
@@ -125,7 +113,7 @@ function EnhancedTableHead(props) {
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? 'left' : 'center'}
+            align={headCell.numeric ? 'left' : 'left'}
             padding={headCell.disablePadding ? 'none' : 'normal'}
             sortDirection={orderBy === headCell.id ? order : false}
           >
@@ -253,17 +241,44 @@ export default function SurveyMoods(props) {
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
-  const createData = (avatar, moodId, id, name, firstname, lastname, score, date,total_effects) => {
+  const compare = ( a, b )  => {
+    if ( a.total < b.total ){
+      return 1;
+    }
+    if ( a.total > b.total ){
+      return -1;
+    }
+    return 0;
+  }
+  const createData = (avatar, moodId, id, name, firstname, lastname, total_moods, date) => {
+    console.log(total_moods)
+    let effects = name.split(',');
+    let effectString = '';
+    let t = total_moods.split(',');
+    let effectList = [];
+    for (let index = 0; index < effects.length; index++) {
+      const element = effects[index];
+      let o = {
+        name: element,
+        total: t[index]
+      }
+      effectList.push(o);
+    }
+    effectList.sort(compare);
+    for (let index = 0; index < effectList.length; index++) {
+      const element = effectList[index];
+      effectString += element.name + ' ('+element.total+'), ';
+    }
+    effectString = effectString.slice(0, -2);
     return {
       avatar,
       moodId,
       id,
-      name,
+      effectString,
       firstname,
       lastname,
-      score,
-      date,
-      total_effects
+      total_moods,
+      date
     }
   }
   const fetchData = async () => {
@@ -307,11 +322,11 @@ export default function SurveyMoods(props) {
     if (props.moodId) {
       o.id = props.moodId;
     }
-    r = await AngelSurvey().groupMoods(o);
+    r = await AngelSurvey().concatMoods(o);
     console.log(r)
     if (r.surveys && r.surveys.length) {
       for (let i = 0; i < r.surveys.length; i++) {
-        u.push(createData(r.surveys[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.surveys[i].avatar : defaultAvatar, r.surveys[i].survey_mood_id, r.surveys[i].patient_id, r.surveys[i].name, r.surveys[i].firstname, r.surveys[i].lastname, r.surveys[i].score, r.surveys[i].date, r.surveys[i].total_effects));
+        u.push(createData(r.surveys[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.surveys[i].avatar : defaultAvatar, r.surveys[i].survey_mood_id, r.surveys[i].patient_id, r.surveys[i].total_moods, r.surveys[i].firstname, r.surveys[i].lastname, r.surveys[i].mood_cnt, r.surveys[i].date));
       }
       setRows(u);
       setMoods(r.surveys);
@@ -503,26 +518,10 @@ export default function SurveyMoods(props) {
                       <TableCell
                         component='th'
                         id={labelId}
-                        style={{ textAlign: 'center' }}
+                        style={{ textAlign: 'left' }}
                         scope='row'
                         padding='none'>
-                        {row.total_effects}
-                      </TableCell>
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        style={{ textAlign: 'center' }}
-                        scope='row'
-                        padding='none'>
-                        {renderBatch(row.score)}
-                      </TableCell>
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        style={{ textAlign: 'center' }}
-                        scope='row'
-                        padding='none'>
-                        {row.date}
+                        {row.effectString}
                       </TableCell>
                     </TableRow>
                   );

@@ -86,22 +86,10 @@ const headCells = [
     label: 'Patient Id',
   },
   {
-    id: 'total_effects',
+    id: 'All effects of the day',
     numeric: false,
     disablePadding: false,
     label: 'Total effects',
-  },
-  {
-    id: 'score',
-    numeric: false,
-    disablePadding: false,
-    label: 'Total Score',
-  },
-  {
-    id: 'date',
-    numeric: false,
-    disablePadding: false,
-    label: 'Date',
   }
 ];
 
@@ -125,7 +113,7 @@ function EnhancedTableHead(props) {
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? 'left' : 'center'}
+            align={headCell.numeric ? 'left' : 'left'}
             padding={headCell.disablePadding ? 'none' : 'normal'}
             sortDirection={orderBy === headCell.id ? order : false}
           >
@@ -253,18 +241,44 @@ export default function SurveySideEffects(props) {
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
-  const createData = (avatar, sideEffectId, id, name, firstname, lastname, score, date,total_effects) => {
-    console.log(score,total_effects)
+  const compare = ( a, b )  => {
+    if ( a.total < b.total ){
+      return 1;
+    }
+    if ( a.total > b.total ){
+      return -1;
+    }
+    return 0;
+  }
+  const createData = (avatar, sideEffectId, id, name, firstname, lastname, total_effects, date) => {
+    console.log(total_effects)
+    let effects = name.split(',');
+    let effectString = '';
+    let t = total_effects.split(',');
+    let effectList = [];
+    for (let index = 0; index < effects.length; index++) {
+      const element = effects[index];
+      let o = {
+        name: element,
+        total: t[index]
+      }
+      effectList.push(o);
+    }
+    effectList.sort(compare);
+    for (let index = 0; index < effectList.length; index++) {
+      const element = effectList[index];
+      effectString += element.name + ' ('+element.total+'), ';
+    }
+    effectString = effectString.slice(0, -2);
     return {
       avatar,
       sideEffectId,
       id,
-      name,
+      effectString,
       firstname,
       lastname,
-      score,
-      date,
-      total_effects
+      total_effects,
+      date
     }
   }
   const fetchData = async () => {
@@ -308,11 +322,10 @@ export default function SurveySideEffects(props) {
     if (props.sideEffectId) {
       o.id = props.sideEffectId;
     }
-    r = await AngelSurvey().groupEffects(o);
-    console.log(r)
+    r = await AngelSurvey().concatEffects(o);
     if (r.surveys && r.surveys.length) {
       for (let i = 0; i < r.surveys.length; i++) {
-        u.push(createData(r.surveys[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.surveys[i].avatar : defaultAvatar, r.surveys[i].survey_side_effect_id, r.surveys[i].patient_id, r.surveys[i].name, r.surveys[i].firstname, r.surveys[i].lastname, r.surveys[i].score, r.surveys[i].date, r.surveys[i].total_effects));
+        u.push(createData(r.surveys[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.surveys[i].avatar : defaultAvatar, r.surveys[i].survey_side_effect_id, r.surveys[i].patient_id, r.surveys[i].total_effects, r.surveys[i].firstname, r.surveys[i].lastname, r.surveys[i].effect_cnt, r.surveys[i].date));
       }
       setRows(u);
       setSideEffects(r.surveys);
@@ -504,26 +517,10 @@ export default function SurveySideEffects(props) {
                       <TableCell
                         component='th'
                         id={labelId}
-                        style={{ textAlign: 'center' }}
+                        style={{ textAlign: 'left' }}
                         scope='row'
                         padding='none'>
-                        {row.total_effects}
-                      </TableCell>
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        style={{ textAlign: 'center' }}
-                        scope='row'
-                        padding='none'>
-                        {renderBatch(row.score)}
-                      </TableCell>
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        style={{ textAlign: 'center' }}
-                        scope='row'
-                        padding='none'>
-                        {row.date}
+                        {row.effectString}
                       </TableCell>
                     </TableRow>
                   );

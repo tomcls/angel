@@ -50,7 +50,7 @@ export default function DrugContainer(props) {
                 setName(drug.name);
                 setCode(drug.code);
                 setLaboratoryId(drug.laboratory_id);
-                setLaboratoryName(drug.name);
+                setLaboratoryName(drug.laboratory_name);
             }
             fetchData();
         }
