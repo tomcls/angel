@@ -9,7 +9,8 @@ import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import Visibility from '@mui/icons-material/Visibility';
-import { DatePicker } from "@material-ui/pickers";
+import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
+//import { DatePicker } from "@material-ui/pickers";
 //import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
@@ -233,7 +234,7 @@ export default function PatientContainer(props) {
                                 startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
                             }}
                         />
-                    
+
                         <TextField
                             label="Lastname"
                             id="lastname"
@@ -245,17 +246,14 @@ export default function PatientContainer(props) {
 
                         />
                         <Box >
-                            <DatePicker
-                                style={{ display: 'flex', width: '100%', minWidth: '100%' }}
-                                autoOk
+                            <MobileDatePicker
                                 key="birthday"
                                 id="birthday"
                                 label="Date of birth"
-                                clearable
-                                inputVariant="outlined"
-                                disableFuture
+                                inputFormat="MM/dd/yyyy"
                                 value={dateOfBirth ? dateOfBirth : ''}
                                 onChange={handleDateOfBirthChange}
+                                renderInput={(params) => <TextField {...params} />}
                             />
                         </Box>
                     </Grid>

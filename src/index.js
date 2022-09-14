@@ -8,8 +8,8 @@ import './utils/localStorage';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { frFR, enUS, nlNL } from '@mui/material/locale';
 import AppStyle from "./templates/style";
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/lab';
 const theme = createTheme(
   {
     components: {
@@ -27,13 +27,13 @@ const theme = createTheme(
 const mainTheme = createTheme(AppStyle().main());
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+  <LocalizationProvider dateAdapter={AdapterDateFns}>
   <BrowserRouter>
     <ThemeProvider theme={mainTheme}>
       <App />
     </ThemeProvider>
   </BrowserRouter>
-  </MuiPickersUtilsProvider>
+  </LocalizationProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

@@ -33,7 +33,7 @@ import Modal from '@mui/material/Modal';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import AngelSurvey from '../api/angel/survey';
-import { DatePicker } from "@material-ui/pickers";
+import { MobileDatePicker } from '@mui/lab';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -439,27 +439,24 @@ export default function SurveyMoods(props) {
             Filters
           </Typography>
           <FormGroup>
-            <DatePicker
-              autoOk
+          <MobileDatePicker
               key="fromdate"
               id="fromdate"
               label="From date"
-              clearable
-              disableFuture
-              value={fromDateFilter}
-
-              onChange={(newValue) => {
-                setFromDate(newValue);
-              }}
+              inputFormat="MM/dd/yyyy"
+              value={fromDateFilter ? fromDateFilter : ''}
+              onChange={(newValue) => {setFromDate(newValue);}}
+              renderInput={(params) => <TextField {...params} />}
             />
-            <DatePicker
+            <MobileDatePicker
               key="todate"
               id="todate"
               label="To date"
-              value={toDateFilter}
-              onChange={(newValue) => {
-                setToDate(newValue);
-              }} />
+              inputFormat="MM/dd/yyyy"
+              value={toDateFilter ? toDateFilter : ''}
+              onChange={(newValue) => {setToDate(newValue);}}
+              renderInput={(params) => <TextField {...params} />}
+            />
             <FormControlLabel control={<Checkbox checked={firstnameFilter} onChange={handleFirstnameFilter} />} label="Firstname" />
             <FormControlLabel control={<Checkbox checked={lastnameFilter} onChange={handleLastnameFilter} />} label="Lastname" />
             <FormControlLabel control={<Checkbox checked={nameFilter} onChange={handleNameFilter} />} label="Name" />

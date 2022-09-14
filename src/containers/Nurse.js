@@ -1,4 +1,4 @@
-import  React, { useRef } from 'react';
+import React, { useRef } from 'react';
 import AngelUser from '../api/angel/user';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -9,7 +9,6 @@ import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import Visibility from '@mui/icons-material/Visibility';
-import { DatePicker } from "@material-ui/pickers";
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { Save } from '@mui/icons-material';
@@ -32,6 +31,7 @@ import PlaceIcon from '@mui/icons-material/Place';
 import EmailIcon from '@mui/icons-material/Email';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import FaceIcon from '@mui/icons-material/Face';
+import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 export default function NurseContainer(props) {
 
     const { enqueueSnackbar } = useSnackbar();
@@ -67,7 +67,7 @@ export default function NurseContainer(props) {
 
     const [active, setActive] = React.useState('N');
     const [switchState, setSwitchState] = React.useState(false);
-    
+
     const [file, setFile] = React.useState(null);
     const uploadFileButton = useRef(null);
 
@@ -75,7 +75,7 @@ export default function NurseContainer(props) {
     React.useEffect(() => {
         console.log("Nurse container effect")
         if (props.userId) {
-            
+
             fetchData();
         }
     }, []);
@@ -98,7 +98,7 @@ export default function NurseContainer(props) {
         setAvatar(user.avatar);
         setHospitalId(user.hospital_id);
         setHospitalName(user.hospital_name);
-        setAvatar(user.avatar?process.env.REACT_APP_API_URL+'/public/uploads/'+user.avatar:defaultAvatar);
+        setAvatar(user.avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + user.avatar : defaultAvatar);
         if (user.daysin) {
             setWeek(JSON.parse(user.daysin));
         }
@@ -133,7 +133,7 @@ export default function NurseContainer(props) {
                 zip: zip,
                 city: city,
                 country: country,
-                birthday: dateOfBirth ? formatDate(dateOfBirth): null,
+                birthday: dateOfBirth ? formatDate(dateOfBirth) : null,
                 active: active
             };
             if (id) {
@@ -257,9 +257,9 @@ export default function NurseContainer(props) {
     };
 
     const onFileChange = async (e) => {
-        setFile({file:e.target.files[0]});
-        const u = await AngelUser().upload(e.target.files[0], 'avatar',id);
-        setAvatar(process.env.REACT_APP_API_URL+'/public/uploads/'+u.filename);
+        setFile({ file: e.target.files[0] });
+        const u = await AngelUser().upload(e.target.files[0], 'avatar', id);
+        setAvatar(process.env.REACT_APP_API_URL + '/public/uploads/' + u.filename);
         handleClickVariant('success', 'Image well uploaded');
     };
     return (
@@ -285,11 +285,11 @@ export default function NurseContainer(props) {
                 </Modal>
             </div>
             <Button onClick={handleAssignPatientModal} variant="outlined" style={{ marginRight: '5px' }}>Assign patient</Button>
-            <Button onClick={() => document.getElementById("newButton").clk(nurseId, firstname + " "+lastname,'nurse_patients')} variant="outlined" >List of patients</Button>
+            <Button onClick={() => document.getElementById("newButton").clk(nurseId, firstname + " " + lastname, 'nurse_patients')} variant="outlined" >List of patients</Button>
             <Box sx={{ width: '100%' }} mt={2}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} sm={6} md={4} xl={2} style={{ paddingTop: '15px' }}>
-                       <Grid item xs={12} style={{  width: '205px', height: '205px', textAlign: "center", border: '3px solid #ddd', borderRadius: '5px', margin: 'auto' }} >
+                        <Grid item xs={12} style={{ width: '205px', height: '205px', textAlign: "center", border: '3px solid #ddd', borderRadius: '5px', margin: 'auto' }} >
 
                             <Avatar variant="rounded"
                                 src={avatar}
@@ -297,7 +297,7 @@ export default function NurseContainer(props) {
                             />
                             <Grid item xs={12} style={{ width: '100%', textAlign: "center" }}>
                                 <Button id="avatarLabel" onClick={() => uploadFileButton.current.click()}>Upload photo</Button>
-                                <input type="file" name="avatar" onChange={onFileChange} ref={uploadFileButton} style={{display: 'none'}}/>
+                                <input type="file" name="avatar" onChange={onFileChange} ref={uploadFileButton} style={{ display: 'none' }} />
                             </Grid>
                         </Grid>
                     </Grid>
@@ -321,17 +321,14 @@ export default function NurseContainer(props) {
                             }}
                         />
                         <Box >
-                            <DatePicker
-                                style={{  width: '100%', minWidth: '100%' }}
-                                autoOk
+                            <MobileDatePicker
                                 key="birthday"
                                 id="birthday"
                                 label="Date of birth"
-                                clearable
-                                inputVariant="outlined"
-                                disableFuture
+                                inputFormat="MM/dd/yyyy"
                                 value={dateOfBirth ? dateOfBirth : ''}
                                 onChange={handleDateOfBirthChange}
+                                renderInput={(params) => <TextField {...params} />}
                             />
                         </Box>
                     </Grid>
@@ -420,7 +417,7 @@ export default function NurseContainer(props) {
 
                                     value={streetNumber ? streetNumber : ''}
                                     onChange={onInputChange(setStreetNumber)}
-                                   
+
                                 />
                             </Grid>
                         </Grid>
@@ -468,7 +465,7 @@ export default function NurseContainer(props) {
                         <Typography variant="h6" gutterBottom component="div">
                             Hospital
                         </Typography>
-                        <ComboHospitals onSelect={onHospitalSelect} hospital={{ id: hospitalId, name: hospitalName }}  />
+                        <ComboHospitals onSelect={onHospitalSelect} hospital={{ id: hospitalId, name: hospitalName }} />
                         <Typography variant="h6" mt={'0px'}>
                             Password and activation
                         </Typography>
@@ -510,53 +507,53 @@ export default function NurseContainer(props) {
                     </Grid>
                 </Grid>
 
-            <Grid container spacing={2}>
-                <Grid item xs={12} style={{ paddingTop: '40px' }}>
-                    <Typography variant="h6" gutterBottom component="div">
-                        Days in.
-                    </Typography>
-                    <ToggleButtonGroup
-                        value={week}
-                        onChange={onWeekDayClick}
-                        aria-label="Days in"
-                        size="small"
-                        color="info"
-                    >
-                        <ToggleButton value="mon" aria-label="mon" color="info">
-                            Mon
-                        </ToggleButton>
-                        <ToggleButton value="tue" aria-label="tue">
-                            Tue
-                        </ToggleButton>
-                        <ToggleButton value="wed" aria-label="wed">
-                            Wed
-                        </ToggleButton>
-                        <ToggleButton value="thu" aria-label="thu" >
-                            Thu
-                        </ToggleButton>
-                        <ToggleButton value="fri" aria-label="fri" >
-                            Fri
-                        </ToggleButton>
-                        <ToggleButton value="sat" aria-label="sat" >
-                            Sat
-                        </ToggleButton>
-                        <ToggleButton value="sun" aria-label="sun" >
-                            Sun
-                        </ToggleButton>
-                    </ToggleButtonGroup>
+                <Grid container spacing={2}>
+                    <Grid item xs={12} style={{ paddingTop: '40px' }}>
+                        <Typography variant="h6" gutterBottom component="div">
+                            Days in.
+                        </Typography>
+                        <ToggleButtonGroup
+                            value={week}
+                            onChange={onWeekDayClick}
+                            aria-label="Days in"
+                            size="small"
+                            color="info"
+                        >
+                            <ToggleButton value="mon" aria-label="mon" color="info">
+                                Mon
+                            </ToggleButton>
+                            <ToggleButton value="tue" aria-label="tue">
+                                Tue
+                            </ToggleButton>
+                            <ToggleButton value="wed" aria-label="wed">
+                                Wed
+                            </ToggleButton>
+                            <ToggleButton value="thu" aria-label="thu" >
+                                Thu
+                            </ToggleButton>
+                            <ToggleButton value="fri" aria-label="fri" >
+                                Fri
+                            </ToggleButton>
+                            <ToggleButton value="sat" aria-label="sat" >
+                                Sat
+                            </ToggleButton>
+                            <ToggleButton value="sun" aria-label="sun" >
+                                Sun
+                            </ToggleButton>
+                        </ToggleButtonGroup>
+                    </Grid>
+                    <Grid container>
+                        <Typography variant="h6" gutterBottom component="div">
+                            &nbsp;
+                        </Typography>
+                        <Button
+                            style={{ borderRadius: '10px', marginTop: '10px' }}
+                            variant="outlined" startIcon={<Save />}
+                            onClick={onSubmit}>
+                            Save
+                        </Button>
+                    </Grid>
                 </Grid>
-                <Grid container>
-                    <Typography variant="h6" gutterBottom component="div">
-                        &nbsp;
-                    </Typography>
-                    <Button
-                        style={{ borderRadius: '10px', marginTop: '10px' }}
-                        variant="outlined" startIcon={<Save />}
-                        onClick={onSubmit}>
-                        Save
-                    </Button>
-                </Grid>
-            </Grid>
             </Box>
         </>
     );

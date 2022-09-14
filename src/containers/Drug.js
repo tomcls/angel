@@ -12,13 +12,11 @@ import { Button, FormControl, InputLabel, MenuItem, Select, Modal } from '@mui/m
 import { useSnackbar } from 'notistack';
 import AngelDrug from '../api/angel/drugs';
 import ComboLaboratories from '../components/ComboLaboratories';
-
-import ComboDrugs from '../components/ComboDrugs';
 import ComboUsers from '../components/ComboUsers';
-import { DatePicker } from "@material-ui/pickers";
+import { MobileDatePicker } from '@mui/lab';
 
 export default function DrugContainer(props) {
-    
+
     const { enqueueSnackbar } = useSnackbar();
 
     const [id, setId] = React.useState(null);
@@ -109,7 +107,7 @@ export default function DrugContainer(props) {
         }
     };
     const setDrugDescription = async (drugId) => {
-        
+
         const u = {
             id: descriptionId,
             drug_id: drugId ? drugId : id,
@@ -143,7 +141,7 @@ export default function DrugContainer(props) {
     const onDrugSelect = (drugId) => {
         setAssignDrugId(drugId);
     }
-    
+
     const handleCloseAssignPatientModal = () => setOpenAssignPatientModal(false);
     const onPatientSelect = (drugId) => {
         setAssignPatientId(drugId);
@@ -166,7 +164,7 @@ export default function DrugContainer(props) {
             drug_id: drugId,
             posology: posology,
             start_date: formatDate(startDate),
-            end_date: endDate?formatDate(endDate):null,
+            end_date: endDate ? formatDate(endDate) : null,
         };
         console.log(assignPatientId, drugId, startDate, endDate)
         if (assignPatientId && drugId && startDate && posology) {
@@ -187,7 +185,7 @@ export default function DrugContainer(props) {
     }
     return (
         <>
-             <div>
+            <div>
                 <Modal
                     open={openAssignPatientModal}
                     onClose={handleCloseAssignPatientModal}
@@ -204,7 +202,7 @@ export default function DrugContainer(props) {
                                 <Select
                                     labelId="demo-simple-select-label"
                                     id="demo-simple-select"
-                                    value={posology?posology:''}
+                                    value={posology ? posology : ''}
                                     label="Posology"
                                     onChange={handlePosology}
                                 >
@@ -219,30 +217,26 @@ export default function DrugContainer(props) {
                         <Box
                             style={{ display: 'flex', width: '100%', paddingTop: '8px' }}
                         >
-                            <DatePicker
-                                style={{ display: 'flex', width: '100%', minWidth: '100%' }}
-                                autoOk
+                            <MobileDatePicker
                                 key="datestart"
                                 id="datestart"
                                 label="Start date"
-                                clearable
-                                inputVariant="outlined"
-                                disableFuture
+                                inputFormat="MM/dd/yyyy"
                                 value={startDate ? startDate : ''}
-                                onChange={handleStartDateChange}/>
+                                onChange={handleStartDateChange}
+                                renderInput={(params) => <TextField {...params} />}
+                            />
                         </Box>
                         <Box style={{ display: 'flex', width: '100%', paddingTop: '8px' }}>
-                        <DatePicker
-                                style={{ display: 'flex', width: '100%', minWidth: '100%' }}
-                                autoOk
+                            <MobileDatePicker
                                 key="dateend"
                                 id="dateend"
                                 label="End date"
-                                clearable
-                                inputVariant="outlined"
-                                disableFuture
+                                inputFormat="MM/dd/yyyy"
                                 value={endDate ? endDate : ''}
-                                onChange={handleEndDateChange}/>
+                                onChange={handleEndDateChange}
+                                renderInput={(params) => <TextField {...params} />}
+                            />
                         </Box>
                         <Button
                             style={{ borderRadius: '10px', marginTop: '20px' }}
@@ -257,15 +251,15 @@ export default function DrugContainer(props) {
                 <Typography variant="h6" gutterBottom component="div">
                     Drug Details
                 </Typography>
-            <Button variant="outlined" style={{ marginRight: '5px' }} onClick={handleAssignPatientModal}>Assign patient</Button>
-            <Button variant="outlined" onClick={() => document.getElementById("newButton").clk(drugId, name, 'drug_patients')}>List of patients</Button>
+                <Button variant="outlined" style={{ marginRight: '5px' }} onClick={handleAssignPatientModal}>Assign patient</Button>
+                <Button variant="outlined" onClick={() => document.getElementById("newButton").clk(drugId, name, 'drug_patients')}>List of patients</Button>
                 <Grid container spacing={2}>
                     <Grid item >
                         <TextField
                             style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
                             label="Name"
                             id="name"
-                            
+
                             value={name ? name : ''}
                             onChange={onInputChange(setName)}
                             InputProps={{
@@ -278,7 +272,7 @@ export default function DrugContainer(props) {
                             style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
                             label="code"
                             id="code"
-                           
+
                             value={code ? code : ''}
                             onChange={onInputChange(setCode)}
                             InputProps={{
@@ -293,7 +287,7 @@ export default function DrugContainer(props) {
                 <Typography variant="h6" gutterBottom component="div" style={{ marginTop: '20px' }}>
                     Drug descriptions
                 </Typography>
-                <ReactQuill theme="snow" value={description} onChange={setDescription}/>
+                <ReactQuill theme="snow" value={description} onChange={setDescription} />
                 <Button
                     style={{ borderRadius: '10px', marginTop: '20px' }}
                     variant="outlined" startIcon={<Save />}

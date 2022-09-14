@@ -9,7 +9,6 @@ import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import Visibility from '@mui/icons-material/Visibility';
-import { DatePicker } from "@material-ui/pickers";
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { Save } from '@mui/icons-material';
@@ -19,8 +18,6 @@ import IconButton from '@mui/material/IconButton';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-
-
 import { useSnackbar } from 'notistack';
 import AngelScientist from '../api/angel/scientist';
 import ComboLaboratories from '../components/ComboLaboratories';
@@ -28,6 +25,7 @@ import PlaceIcon from '@mui/icons-material/Place';
 import EmailIcon from '@mui/icons-material/Email';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import FaceIcon from '@mui/icons-material/Face';
+import { MobileDatePicker } from '@mui/lab';
 export default function ScientistContainer(props) {
 
     const { enqueueSnackbar } = useSnackbar();
@@ -245,17 +243,14 @@ export default function ScientistContainer(props) {
                             }}
                         />
                         <Box >
-                            <DatePicker
-                                style={{  width: '100%', minWidth: '100%' }}
-                                autoOk
+                            <MobileDatePicker
                                 key="birthday"
                                 id="birthday"
                                 label="Date of birth"
-                                clearable
-                                inputVariant="outlined"
-                                disableFuture
+                                inputFormat="MM/dd/yyyy"
                                 value={dateOfBirth ? dateOfBirth : ''}
                                 onChange={handleDateOfBirthChange}
+                                renderInput={(params) => <TextField {...params} />}
                             />
                         </Box>
                     </Grid>

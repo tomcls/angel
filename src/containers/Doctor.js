@@ -9,7 +9,6 @@ import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import Visibility from '@mui/icons-material/Visibility';
-import { DatePicker } from "@material-ui/pickers";
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { Save } from '@mui/icons-material';
@@ -32,6 +31,7 @@ import PlaceIcon from '@mui/icons-material/Place';
 import EmailIcon from '@mui/icons-material/Email';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import FaceIcon from '@mui/icons-material/Face';
+import { MobileDatePicker } from '@mui/lab';
 export default function DoctorContainer(props) {
 
     const { enqueueSnackbar } = useSnackbar();
@@ -319,17 +319,14 @@ export default function DoctorContainer(props) {
                             }}
                         />
                         <Box >
-                            <DatePicker
-                                style={{  width: '100%', minWidth: '100%' }}
-                                autoOk
+                            <MobileDatePicker
                                 key="birthday"
                                 id="birthday"
                                 label="Date of birth"
-                                clearable
-                                inputVariant="outlined"
-                                disableFuture
+                                inputFormat="MM/dd/yyyy"
                                 value={dateOfBirth ? dateOfBirth : ''}
                                 onChange={handleDateOfBirthChange}
+                                renderInput={(params) => <TextField {...params} />}
                             />
                         </Box>
                     </Grid>
