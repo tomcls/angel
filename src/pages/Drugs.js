@@ -288,12 +288,12 @@ export default function DrugsPage() {
           <Grid container spacing={2} mb={'0px'} >
             <Grid item xs={12} md={6} xl={6} >
               <Typography variant="h6" component="div" >
-                Drugs
+                Treatments
               </Typography>
             </Grid>
             <Grid item xs={12} md={6} xl={6} textAlign={'end'}  >
               <Button variant="outlined" onClick={t.onOpenTabClick} ref={newBtn} justifyContent="flex-end" id="newButton">
-                <PeopleIcon /> Add Drug</Button>
+                <PeopleIcon /> Add treatment</Button>
             </Grid>
           </Grid>
           <Box sx={{ width: '100%' }}>

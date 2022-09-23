@@ -512,15 +512,15 @@ export default function Patients(props) {
                     return (
                       <TableRow
                         hover
-                        
+                        onClick={(event) => handleClick(event, row.patient_id)}
                         role="checkbox"
                         aria-checked={isItemSelected}
                         tabIndex={-1}
                         key={row.patient_id}
+                        selected={isItemSelected}
                       >
                         <TableCell padding="checkbox">
                           <Checkbox
-                            onClick={(event) => handleClick(event, row.user_id)}
                             checked={isItemSelected}
                             inputProps={{ 'aria-labelledby': labelId }}
                           />
@@ -577,7 +577,7 @@ export default function Patients(props) {
                           scope='row'
                           style={{ textAlign: 'center' }}
                           padding='none' >
-                          <EmojiPeopleIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname, 'patient_nurses')} />
+                          <EmojiPeopleIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient_nurses')} />
                         </TableCell>
                         <TableCell
                           component='th'
@@ -593,7 +593,7 @@ export default function Patients(props) {
                           scope='row'
                           style={{ textAlign: 'center' }}
                           padding='none' >
-                          <HealingIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.id, row.firstname + ' ' + row.lastname, 'patient_treatments')} />
+                          <HealingIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient_treatments')} />
                         </TableCell>
                       </TableRow>
                     );

@@ -1,13 +1,7 @@
 export default function AppStyle() {
     const mainThemeOptions = {
         components: {
-            MuiSvgIcon: {
-                styleOverrides: {
-                    root: ({ theme }) => ({ // using with theme
-                        color: theme.palette.primary.main,
-                    }),
-                },
-            },
+           
             MuiTextField: {
                 styleOverrides: {
                     root: ({ theme }) => ({ // using with theme

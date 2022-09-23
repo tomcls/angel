@@ -23,7 +23,7 @@ import Badge from '@mui/material/Badge';
 
 import AngelSideEffect from '../api/angel/mood';
 
-import { Avatar, Button, Grid } from '@mui/material';
+import { Avatar, Button, Grid, List, ListItem, ListItemText } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
@@ -34,6 +34,12 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import AngelSurvey from '../api/angel/survey';
 import { MobileDatePicker } from '@mui/lab';
+
+import SickIcon from '@mui/icons-material/Sick';
+import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
+import SentimentSatisfiedIcon from '@mui/icons-material/SentimentSatisfied';
+import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
+import MoodIcon from '@mui/icons-material/Mood';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -86,10 +92,10 @@ const headCells = [
     label: 'Patient Id',
   },
   {
-    id: 'total_effects',
+    id: 'moods',
     numeric: false,
     disablePadding: false,
-    label: 'Total effects',
+    label: 'Moods',
   }
 ];
 
@@ -241,33 +247,35 @@ export default function SurveyMoods(props) {
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
-  const compare = ( a, b )  => {
-    if ( a.total < b.total ){
+  const compare = (a, b) => {
+    if (a.total < b.total) {
       return 1;
     }
-    if ( a.total > b.total ){
+    if (a.total > b.total) {
       return -1;
     }
     return 0;
   }
-  const createData = (avatar, moodId, id, name, firstname, lastname, total_moods, date) => {
+  const createData = (avatar, moodId, id, name, firstname, lastname, total_moods, date, score) => {
     console.log(total_moods)
     let effects = name.split(',');
     let effectString = '';
     let t = total_moods.split(',');
+    let s = score.split(',');
     let effectList = [];
     for (let index = 0; index < effects.length; index++) {
       const element = effects[index];
       let o = {
         name: element,
-        total: t[index]
+        total: t[index],
+        score: s[index]
       }
       effectList.push(o);
     }
     effectList.sort(compare);
     for (let index = 0; index < effectList.length; index++) {
       const element = effectList[index];
-      effectString += element.name + ' ('+element.total+'), ';
+      effectString += element.name + ' (' + element.total + '), ';
     }
     effectString = effectString.slice(0, -2);
     return {
@@ -278,7 +286,8 @@ export default function SurveyMoods(props) {
       firstname,
       lastname,
       total_moods,
-      date
+      date,
+      effectList
     }
   }
   const fetchData = async () => {
@@ -326,7 +335,15 @@ export default function SurveyMoods(props) {
     console.log(r)
     if (r.surveys && r.surveys.length) {
       for (let i = 0; i < r.surveys.length; i++) {
-        u.push(createData(r.surveys[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.surveys[i].avatar : defaultAvatar, r.surveys[i].survey_mood_id, r.surveys[i].patient_id, r.surveys[i].total_moods, r.surveys[i].firstname, r.surveys[i].lastname, r.surveys[i].mood_cnt, r.surveys[i].date));
+        u.push(createData(
+          r.surveys[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.surveys[i].avatar : defaultAvatar,
+          r.surveys[i].survey_mood_id, r.surveys[i].patient_id,
+          r.surveys[i].total_moods,
+          r.surveys[i].firstname,
+          r.surveys[i].lastname,
+          r.surveys[i].mood_cnt,
+          r.surveys[i].date,
+          r.surveys[i].score));
       }
       setRows(u);
       setMoods(r.surveys);
@@ -409,22 +426,30 @@ export default function SurveyMoods(props) {
     console.log(newValue)
     setToDateFilter(newValue);
   };
-  const renderBatch = (score) => {
-    if (score >= 20) {
-      return (<Badge badgeContent={score} color="error">
-      </Badge>)
-    } else if (score >= 15) {
-      return (<Badge badgeContent={score} color="warning">
-      </Badge>)
-    } else if (score >= 10) {
-      return (<Badge badgeContent={score} color="primary">
-      </Badge>)
-    } else if (score >= 5) {
-      return (<Badge badgeContent={score} color="secondary">
-      </Badge>)
-    } else if (score < 5) {
-      return (<Badge badgeContent={score} color="success"  >
-      </Badge>)
+  const getColor = (score) => {
+    if (score == 5) {
+      return "error";
+    } else if (score == 4) {
+      return "warning";
+    } else if (score == 3) {
+      return "primary";
+    } else if (score == 2) {
+      return "secondary";
+    } else if (score == 1) {
+      return "success";
+    }
+  }
+  const getIcon = (score) => {
+    if (score == 5) {
+      return (<SickIcon color="error" />);
+    } else if (score == 4) {
+      return (<SentimentVeryDissatisfiedIcon  color="warning" />);
+    } else if (score == 3) {
+      return (<SentimentSatisfiedIcon color="primary"/>);
+    } else if (score == 2) {
+      return (<SentimentSatisfiedAltIcon color="success" />);
+    } else if (score == 1) {
+      return (<MoodIcon color="success" />);
     }
   }
   return (<>
@@ -439,13 +464,13 @@ export default function SurveyMoods(props) {
             Filters
           </Typography>
           <FormGroup>
-          <MobileDatePicker
+            <MobileDatePicker
               key="fromdate"
               id="fromdate"
               label="From date"
               inputFormat="MM/dd/yyyy"
               value={fromDateFilter ? fromDateFilter : ''}
-              onChange={(newValue) => {setFromDate(newValue);}}
+              onChange={(newValue) => { setFromDate(newValue); }}
               renderInput={(params) => <TextField {...params} />}
             />
             <MobileDatePicker
@@ -454,7 +479,7 @@ export default function SurveyMoods(props) {
               label="To date"
               inputFormat="MM/dd/yyyy"
               value={toDateFilter ? toDateFilter : ''}
-              onChange={(newValue) => {setToDate(newValue);}}
+              onChange={(newValue) => { setToDate(newValue); }}
               renderInput={(params) => <TextField {...params} />}
             />
             <FormControlLabel control={<Checkbox checked={firstnameFilter} onChange={handleFirstnameFilter} />} label="Firstname" />
@@ -518,7 +543,24 @@ export default function SurveyMoods(props) {
                         style={{ textAlign: 'left' }}
                         scope='row'
                         padding='none'>
-                        {row.effectString}
+                        <Box sx={{ flexGrow: 1 }}>
+                          <Grid container spacing={2} >
+                            {
+                              row.effectList.map(
+                                (e, index) => {
+                                  return (<>
+                                    <Grid item xs >
+                                      <Typography> {e.name}</Typography>
+                                      </Grid>
+                                    <Grid item xs >
+                                      {getIcon(e.score)}
+                                      <Badge badgeContent={e.score} color={getColor(e.score)} style={{ position:'absolute'}} ></Badge>
+                                  </Grid></>)
+                                }
+                              )
+                            }
+                          </Grid>
+                        </Box>
                       </TableCell>
                     </TableRow>
                   );

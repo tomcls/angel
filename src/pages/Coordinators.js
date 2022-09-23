@@ -131,12 +131,12 @@ export default function CoordinatorsPage() {
           <Grid container spacing={2} mb={'0px'} >
             <Grid item xs={12} md={6} xl={6} >
               <Typography variant="h6"  component="div" >
-                Coordinators
+                Administrators
               </Typography>
             </Grid>
             <Grid item xs={12} md={6} xl={6} textAlign={'end'}  >
               <Button variant="outlined"  onClick={createTab} ref={newCoordinatorBtn} justifyContent="flex-end">
-                <PeopleIcon /> Add coordinator</Button>
+                <PeopleIcon /> Add Administrator</Button>
             </Grid>
           </Grid>
           <Box sx={{ width: '100%' }}>
