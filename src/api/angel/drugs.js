@@ -91,6 +91,18 @@ export default  function AngelDrug(config) {
             } catch (error) {
                 throw {error:error};
             }
+        },
+        upload: async (file,name,drugId) => {
+            try {
+                const formData = new FormData();
+                formData.append(name,file);
+                formData.append('drugId',drugId);
+                
+                const res = await axios.post(process.env.REACT_APP_API_URL+'/drugs/upload',formData, {headers: {'Authorization':accessToken,'content-type': 'multipart/form-data'}});
+                return res.data;
+            } catch (error) {
+                throw {error:error};
+            }
         }
     }
 }

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useRef } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
@@ -14,6 +14,7 @@ import AngelDrug from '../api/angel/drugs';
 import ComboLaboratories from '../components/ComboLaboratories';
 import ComboUsers from '../components/ComboUsers';
 import { MobileDatePicker } from '@mui/lab';
+import Avatar from '@mui/material/Avatar';
 
 export default function DrugContainer(props) {
 
@@ -35,6 +36,10 @@ export default function DrugContainer(props) {
     const [posology, setPosology] = React.useState('');
     const [startDate, setStartDate] = React.useState('');
     const [endDate, setEndDate] = React.useState('');
+    const defaultAvatar = 'https://dreamguys.co.in/preadmin/html/school/dark/assets/img/placeholder.jpg';//process.env.SENDGRID_APIKEY
+    const [image, setImage] = React.useState(defaultAvatar);
+    const [file, setFile] = React.useState(null);
+    const uploadFileButton = useRef(null);
 
     React.useEffect(() => {
         console.log("Drug container effect")
@@ -49,6 +54,8 @@ export default function DrugContainer(props) {
                 setCode(drug.code);
                 setLaboratoryId(drug.laboratory_id);
                 setLaboratoryName(drug.laboratory_name);
+                setImage(drug.image ? process.env.REACT_APP_API_URL + '/public/drugs/images/' + drug.image : defaultAvatar);
+                console.log(process.env.REACT_APP_API_URL + '/public/drugs/images/' + drug.image)
             }
             fetchData();
         }
@@ -183,6 +190,12 @@ export default function DrugContainer(props) {
         var datestring = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":00";
         return datestring;
     }
+    const onFileChange = async (e) => {
+        setFile({ file: e.target.files[0] });
+        const u = await AngelDrug().upload(e.target.files[0], 'drug', id);
+        setImage(process.env.REACT_APP_API_URL + '/public/drugs/images/' + u.filename);
+        handleClickVariant('success', 'Image well uploaded');
+    };
     return (
         <>
             <div>
@@ -254,6 +267,18 @@ export default function DrugContainer(props) {
                 <Button variant="outlined" style={{ marginRight: '5px' }} onClick={handleAssignPatientModal}>Assign patient</Button>
                 <Button variant="outlined" onClick={() => document.getElementById("newButton").clk(drugId, name, 'drug_patients')}>List of patients</Button>
                 <Grid container spacing={2}>
+                    <Grid item xs={12} sm={6} md={4} xl={2} style={{ paddingTop: '40px' }}>
+                        <Grid item xs={12} style={{ width: '205px', height: '205px', textAlign: "center", border: '3px solid #ddd', borderRadius: '5px', margin: 'auto' }} >
+                            <Avatar variant="rounded"
+                                src={image}
+                                style={{ width: '200px', height: '200px', textAlign: "center", borderColor: 'gray', margin: 'auto' }}
+                            />
+                            <Grid item xs={12} style={{ width: '100%', textAlign: "center" }}>
+                                <Button id="avatarLabel" onClick={() => uploadFileButton.current.click()}>Upload image</Button>
+                                <input type="file" name="avatar" onChange={onFileChange} ref={uploadFileButton} style={{ display: 'none' }} />
+                            </Grid>
+                        </Grid>
+                    </Grid>
                     <Grid item >
                         <TextField
                             style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
@@ -266,8 +291,6 @@ export default function DrugContainer(props) {
                                 startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
                             }}
                         />
-                    </Grid>
-                    <Grid item >
                         <TextField
                             style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
                             label="code"
@@ -281,10 +304,12 @@ export default function DrugContainer(props) {
                         />
                     </Grid>
                     <Grid item >
+                    </Grid>
+                    <Grid item >
                         <ComboLaboratories onSelect={onLaboratorySelect} laboratory={{ id: laboratoryId, name: laboratoryName }} />
                     </Grid>
                 </Grid>
-                <Typography variant="h6" gutterBottom component="div" style={{ marginTop: '20px' }}>
+                <Typography variant="h6" gutterBottom component="div" style={{ marginTop: '40px' }}>
                     Drug descriptions
                 </Typography>
                 <ReactQuill theme="snow" value={description} onChange={setDescription} />
