@@ -32,7 +32,7 @@ export default function Login() {
         console.log(result.user)
         window.appStorage.setItem('user', JSON.stringify(result.user), 1200000);
         window.appStorage.setItem('token', JSON.stringify(result.accessToken), 1200000);
-        navigate('/dashboard', {replace: true});return;
+        navigate('/patients', {replace: true});return;
       } else {
         setHasLoginError(true);
       }

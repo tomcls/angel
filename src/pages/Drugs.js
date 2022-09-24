@@ -14,6 +14,7 @@ import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import { Cancel } from "@mui/icons-material";
 import { SnackbarProvider } from 'notistack';
 import Tabs from "../components/Tabs";
+import MainBar from "../templates/MainBar";
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -40,7 +41,6 @@ export default function DrugsPage() {
   const [open, setOpen] = React.useState(true);
   const [selectedTab, setSelectedTab] = React.useState("Main");
   const [tabs, setTabs] = React.useState([]);
-  const [panels, setPanels] = React.useState([]);
   const [tabIndex, setTabIndex] = React.useState(2);
   const newBtn = useRef(null);
   const t = new Tabs('drug',tabIndex,tabs,setTabs,setSelectedTab,setTabIndex,newBtn);
@@ -60,7 +60,7 @@ export default function DrugsPage() {
   return (
     <SnackbarProvider maxSnack={3}>
       <Box sx={{ display: 'flex' }}>
-        <Bar open={setOpen} />
+        <MainBar open={setOpen}/>
         <Main open={open} style={{ background: "rgb(229 229 229 / 41%)", marginBlock: "64px" }}>
           <Grid container spacing={2} mb={'0px'} >
             <Grid item xs={12} md={6} xl={6} >

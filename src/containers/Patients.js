@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, {useEffect, useCallback} from 'react';
 import PropTypes from 'prop-types';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -131,7 +131,7 @@ const headCells = [
 ];
 
 function EnhancedTableHead(props) {
-  const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -253,13 +253,13 @@ export default function Patients(props) {
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
   const [limit, setLimit] = React.useState(5);
-  const [, setPatients] = React.useState([]);
+  const [ ,setPatients] = React.useState([]);
 
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('id');
   const [selected, setSelected] = React.useState([]);
-  const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [dense,] = React.useState(false);
+  const [rowsPerPage] = React.useState(5);
   const [rows, setRows] = React.useState([]);
 
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
@@ -272,32 +272,9 @@ export default function Patients(props) {
   const [phoneFilter, setPhoneFilter] = React.useState(false);
   const [transferNurseId, setTransferNurseId] = React.useState();
 
-  React.useEffect(() => {
-    console.log('useEffect Patients list', props.users)
-    const users = props.users;
-    fetchData();
-  }, [props.users]);
-  const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
-  };
-  const createData = (user_id, id, firstname, lastname, email, phone, lang, role, active, avatar,patient_id) => {
-    return {
-      user_id,
-      id,
-      firstname,
-      lastname,
-      email,
-      phone,
-      lang,
-      role,
-      active,
-      avatar,
-      patient_id
-    }
-  }
-  const fetchData = async () => {
+  const fetchData = useCallback( async () => {
+    const stg = JSON.parse(window.appStorage.getItem('user'));
+   
     const u = [];
     let r = null;
     let o = {
@@ -324,16 +301,24 @@ export default function Patients(props) {
     } else {
       o.phone = null;
     }
-    if (props.nurseId) {
+    if (stg.nurse_id) {
+      console.log("a")
+      o.nurse_id = stg.nurse_id;
+      r = await AngelNurse().patients(o);
+    } else if (props.nurseId) {
+      console.log("b")
       o.nurse_id = props.nurseId;
       r = await AngelNurse().patients(o);
     } else if (props.doctorId) {
+      console.log("c")
       o.doctor_id = props.doctorId;
       r = await AngelDoctor().patients(o);
     } else if (props.drugId) {
+      console.log("d")
       o.drug_id = props.drugId;
       r = await AngelDrug().patients(o);
     } else {
+      console.log("e")
       r = await AngelPatient().list(o);
     }
     if (r.users && r.users.length) {
@@ -347,6 +332,34 @@ export default function Patients(props) {
       setRows([]);
       setPatients([]);
       setTotal(0);
+    }
+  }, [emailFilter,firstnameFilter,lastnameFilter,limit,page, phoneFilter, props.doctorId, props.drugId, props.nurseId,searchFilter]);
+
+  useEffect(() => {
+    
+    fetchData();
+  }, [fetchData]);
+
+  const handleRequestSort = (event, property) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  };
+
+
+  const createData = (user_id, id, firstname, lastname, email, phone, lang, role, active, avatar,patient_id) => {
+    return {
+      user_id,
+      id,
+      firstname,
+      lastname,
+      email,
+      phone,
+      lang,
+      role,
+      active,
+      avatar,
+      patient_id
     }
   }
   const handleFiltersModal = () => setOpenFilterModal(true);
@@ -432,7 +445,7 @@ export default function Patients(props) {
         nurse_from: props.nurseId,
         nurse_to: transferNurseId
       }
-      const tr = await AngelNurse().addTransfers(o);
+      await AngelNurse().addTransfers(o);
       handleCloseTransferModal();
       handleClickVariant('success', 'Patient well transfered');
       setSelected([]);

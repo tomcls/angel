@@ -1,11 +1,8 @@
 import React, { useRef } from "react";
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import Input from "../components/Input";
-import SearchIcon from '@mui/icons-material/Search';
 import Button from '@mui/material/Button';
 import PeopleIcon from '@mui/icons-material/People';
-import Bar from "../templates/Bar";
 import Moods from "../containers/Moods";
 import Mood from "../containers/Mood";
 import Tab from '@mui/material/Tab';
@@ -24,6 +21,7 @@ import Nurses from "../containers/Nurses";
 import Treatments from "../containers/Treatments";
 import PatientContainer from "../containers/Patient";
 import TreatmentContainer from "../containers/Treatment";
+import MainBar from "../templates/MainBar";
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -51,7 +49,6 @@ export default function MoodsPage() {
   const [selectedTab, setSelectedTab] = React.useState("Main");
   const [tabs, setTabs] = React.useState([]);
   const [tabIndex, setTabIndex] = React.useState(2);
-  const newMoodBtn = useRef(null);
   const newBtn = useRef(null);
 
   React.useEffect(() => {
@@ -78,7 +75,6 @@ export default function MoodsPage() {
   }
   
   const onOpenTabClick = () => {
-    console.log('onOpenTabClick')
     if (window.angel && window.angel.userId && window.angel.tabType === 'nurses') {
       createTab('nurses', window.angel.tabName, window.angel.userId);
       window.angel.userId = null;
@@ -140,7 +136,7 @@ export default function MoodsPage() {
   }
   const getTab = (v) => {
     for (let i = 0; i < tabs.length; i++) {
-      if (tabs[i].value == v) {
+      if (tabs[i].value === v) {
         return tabs[i];
       }
     }
@@ -265,7 +261,7 @@ export default function MoodsPage() {
   return (
     <SnackbarProvider maxSnack={3}>
       <Box sx={{ display: 'flex' }}>
-        <Bar open={setOpen} />
+        <MainBar open={setOpen} />
         <Main open={open} style={{ background: "rgb(229 229 229 / 41%)", marginBlock: "64px" }}>
         <Grid container spacing={2} mb={'0px'} >
             <Grid item xs={12} md={6} xl={6} >

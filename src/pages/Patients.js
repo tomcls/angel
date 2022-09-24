@@ -1,14 +1,9 @@
-import React, { useRef } from "react";
+import React, { useRef,useMemo } from "react";
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import PeopleIcon from '@mui/icons-material/People';
-import Bar from "../templates/Bar";
 import Patients from "../containers/Patients";
-import Patient from "../containers/Patient";
-import Nurses from "../containers/Nurses";
-import Treatments from "../containers/Treatments";
-import Doctors from "../containers/Doctors";
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
@@ -18,9 +13,8 @@ import { SnackbarProvider } from 'notistack';
 import Typography from '@mui/material/Typography';
 import { Grid } from "@mui/material";
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
-import NurseContainer from "../containers/Nurse";
-import PatientTreatments from "../containers/PatientTreatments";
 import Tabs from '../components/Tabs';
+import MainBar from "../templates/MainBar";
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -49,14 +43,19 @@ export default function PatientsPage() {
   const [tabs, setTabs] = React.useState([]);
   const [tabIndex, setTabIndex] = React.useState(2);
   const newBtn = useRef(null);
-  const t = new Tabs('patient',tabIndex,tabs,setTabs,setSelectedTab,setTabIndex,newBtn);
+  //const t = new Tabs('patient',tabIndex,tabs,setTabs,setSelectedTab,setTabIndex,newBtn);
+
+  const t  = useMemo(() => {
+    return  new Tabs('patient',tabIndex,tabs,setTabs,setSelectedTab,setTabIndex,newBtn)
+  }, [tabIndex,tabs]);
+
   React.useEffect(() => {
     console.log('useEffect patients page');
     let d = document.getElementById('newButton');
     if (d) {
       d.clk = function (id, text, type) { t.openTab(id, text, type); };
     }
-  });
+  },[t]);
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
@@ -67,7 +66,7 @@ export default function PatientsPage() {
   return (
     <SnackbarProvider maxSnack={3}>
       <Box sx={{ display: 'flex' }}>
-        <Bar open={setOpen} />
+        <MainBar open={setOpen}/>
         <Main open={open} style={{ marginBlock: "64px" }}>
           <Grid container spacing={2} mb={'0px'} >
             <Grid item xs={12} md={6} xl={6} >

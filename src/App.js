@@ -36,7 +36,7 @@ function App() {
   return (
     <div className="App" style={{marginBlock:matches?"80px":"0px"}}>
       <Routes>
-      <Route path="/" element={<Dashboard />} />
+      <Route path="/" element={<Patients />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/register" element={<Register />} />
       <Route path="/thank" element={<Thank />} />

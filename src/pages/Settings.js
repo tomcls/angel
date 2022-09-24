@@ -1,7 +1,5 @@
 import React, { useRef } from "react";
 import { styled } from '@mui/material/styles';
-import Bar from "../templates/Bar";
-
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
@@ -23,6 +21,7 @@ import Switch from '@mui/material/Switch';
 import AngelUser from "../api/angel/user";
 import { useSnackbar } from 'notistack';
 import { MobileDatePicker } from "@mui/lab";
+import MainBar from "../templates/MainBar";
 
 const drawerWidth = 240;
 
@@ -71,7 +70,7 @@ export default function Settings(props) {
   const [showPassword, setShowPassword] = React.useState(false);
   const [active, setActive] = React.useState('N');
   const [switchState, setSwitchState] = React.useState(false);
-  const [file, setFile] = React.useState(null);
+  const [, setFile] = React.useState(null);
   const uploadFileButton = useRef(null);
 
   React.useEffect(() => {
@@ -198,7 +197,7 @@ export default function Settings(props) {
   return (
     <>
       <Box sx={{ display: 'flex' }}>
-        <Bar open={setOpen} />
+        <MainBar open={setOpen} />
         <Main open={open} style={{ background: "rgb(229 229 229 / 41%)", marginBlock: "64px" }}>
           <Typography variant="h6" gutterBottom component="div">
             Personal informations

@@ -6,7 +6,6 @@ import Treatment from "../containers/Treatment";
 import Patient from "../containers/Patient";
 import Button from '@mui/material/Button';
 import PeopleIcon from '@mui/icons-material/People';
-import Bar from "../templates/Bar";
 import Laboratories from "../containers/Laboratories";
 import Laboratory from "../containers/Laboratory";
 import Tab from '@mui/material/Tab';
@@ -22,6 +21,7 @@ import Doctors from "../containers/Doctors";
 import Nurses from "../containers/Nurses";
 import Treatments from "../containers/Treatments";
 import LaboratoryContainer from "../containers/Laboratory";
+import MainBar from "../templates/MainBar";
 
 const drawerWidth = 240;
 
@@ -121,7 +121,7 @@ export default function LaboratoriesPage() {
   }
   const getTab = (v) => {
     for (let i = 0; i < tabs.length; i++) {
-      if (tabs[i].value == v) {
+      if (tabs[i].value === v) {
         return tabs[i];
       }
     }
@@ -252,7 +252,7 @@ export default function LaboratoriesPage() {
   return (
     <SnackbarProvider maxSnack={3}>
       <Box sx={{ display: 'flex' }}>
-        <Bar open={setOpen} />
+        <MainBar open={setOpen} />
         <Main open={open} style={{ background: "rgb(229 229 229 / 41%)", marginBlock: "64px" }}>
         <Grid container spacing={2} mb={'0px'} >
             <Grid item xs={12} md={6} xl={6} >

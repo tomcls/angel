@@ -23,7 +23,7 @@ import Badge from '@mui/material/Badge';
 
 import AngelSideEffect from '../api/angel/mood';
 
-import { Avatar, Button, Grid, List, ListItem, ListItemText } from '@mui/material';
+import { Avatar, Button, Grid } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
@@ -100,7 +100,7 @@ const headCells = [
 ];
 
 function EnhancedTableHead(props) {
-  const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -217,13 +217,13 @@ export default function SurveyMoods(props) {
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
   const [limit, setLimit] = React.useState(30);
-  const [moods, setMoods] = React.useState([]);
+  const [, setMoods] = React.useState([]);
 
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('');
   const [selected, setSelected] = React.useState([]);
-  const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(30);
+  const [dense, ] = React.useState(false);
+  const [rowsPerPage, ] = React.useState(30);
   const [rows, setRows] = React.useState([]);
 
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
@@ -232,13 +232,12 @@ export default function SurveyMoods(props) {
   const [firstnameFilter, setFirstnameFilter] = React.useState(true);
   const [lastnameFilter, setLastnameFilter] = React.useState(true);
   const [nameFilter, setNameFilter] = React.useState(true);
-  const [scoreFilter, setScoreFilter] = React.useState(true);
-  const [fromDateFilter, setFromDateFilter] = React.useState(null);
-  const [toDateFilter, setToDateFilter] = React.useState(null);
-
+  const [scoreFilter,] = React.useState(true);
+  const [dateCreatedFilter, setDateCreatedFilter] = React.useState(new Date());
   React.useEffect(() => {
-    console.log('useEffect Moods list')
+    console.log('useEffect Moods list');
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleRequestSort = (event, property) => {
@@ -257,7 +256,6 @@ export default function SurveyMoods(props) {
     return 0;
   }
   const createData = (avatar, moodId, id, name, firstname, lastname, total_moods, date, score) => {
-    console.log(total_moods)
     let effects = name.split(',');
     let effectString = '';
     let t = total_moods.split(',');
@@ -317,15 +315,10 @@ export default function SurveyMoods(props) {
     } else {
       o.score = null;
     }
-    if (fromDateFilter) {
-      o.from_date = formatFromDate(fromDateFilter);;
+    if (dateCreatedFilter) {
+      o.date_created = formatDateCreated(dateCreatedFilter);;
     } else {
-      o.from_date = null;
-    }
-    if (toDateFilter) {
-      o.to_date = formatToDate(toDateFilter);
-    } else {
-      o.to_date = null;
+      o.date_created = null;
     }
     o.lang_id = 'en';
     if (props.moodId) {
@@ -402,53 +395,46 @@ export default function SurveyMoods(props) {
   const handleEmailFilter = (event) => {
     //setEmailFilter(event.target.checked);
   };
-  const handlePhoneFilter = (event) => {
-    //setPhoneFilter(event.target.checked);
-  };
   const handleSearchText = (txt) => {
     setSearchFilter(txt);
   };
-  const formatFromDate = (v) => {
+  const formatDateCreated = (v) => {
     let d = new Date(v);
-    var datestring = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + " 00:00:00";
+    let month = d.getMonth() + 1;
+    if(month < 10){
+      month = '0'+month;
+    }
+    var datestring = d.getFullYear() + "-" + month + "-" + d.getDate() ;
     return datestring;
   }
-  const formatToDate = (v) => {
-    let d = new Date(v);
-    var datestring = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + " 23:59:59";
-    return datestring;
-  }
-  const setFromDate = (newValue) => {
-    console.log(newValue)
-    setFromDateFilter(newValue);
-  };
-  const setToDate = (newValue) => {
-    console.log(newValue)
-    setToDateFilter(newValue);
+  const onSearch = (newValue) => {
+    console.log('eee')
+    handleCloseFilterModal();
+    search();
   };
   const getColor = (score) => {
-    if (score == 5) {
+    if (score === ''+5) {
       return "error";
-    } else if (score == 4) {
+    } else if (score === ''+4) {
       return "warning";
-    } else if (score == 3) {
+    } else if (score === ''+3) {
       return "primary";
-    } else if (score == 2) {
+    } else if (score === ''+2) {
       return "secondary";
-    } else if (score == 1) {
+    } else if (score === ''+1) {
       return "success";
     }
   }
   const getIcon = (score) => {
-    if (score == 5) {
+    if (score === ''+5) {
       return (<SickIcon color="error" />);
-    } else if (score == 4) {
+    } else if (score === ''+4) {
       return (<SentimentVeryDissatisfiedIcon  color="warning" />);
-    } else if (score == 3) {
+    } else if (score === ''+3) {
       return (<SentimentSatisfiedIcon color="primary"/>);
-    } else if (score == 2) {
+    } else if (score === ''+2) {
       return (<SentimentSatisfiedAltIcon color="success" />);
-    } else if (score == 1) {
+    } else if (score === ''+1) {
       return (<MoodIcon color="success" />);
     }
   }
@@ -467,19 +453,10 @@ export default function SurveyMoods(props) {
             <MobileDatePicker
               key="fromdate"
               id="fromdate"
-              label="From date"
+              label="Select a day"
               inputFormat="MM/dd/yyyy"
-              value={fromDateFilter ? fromDateFilter : ''}
-              onChange={(newValue) => { setFromDate(newValue); }}
-              renderInput={(params) => <TextField {...params} />}
-            />
-            <MobileDatePicker
-              key="todate"
-              id="todate"
-              label="To date"
-              inputFormat="MM/dd/yyyy"
-              value={toDateFilter ? toDateFilter : ''}
-              onChange={(newValue) => { setToDate(newValue); }}
+              value={dateCreatedFilter ? dateCreatedFilter : ''}
+              onChange={(newValue) => { setDateCreatedFilter(newValue); }}
               renderInput={(params) => <TextField {...params} />}
             />
             <FormControlLabel control={<Checkbox checked={firstnameFilter} onChange={handleFirstnameFilter} />} label="Firstname" />
@@ -487,6 +464,7 @@ export default function SurveyMoods(props) {
             <FormControlLabel control={<Checkbox checked={nameFilter} onChange={handleNameFilter} />} label="Name" />
             <FormControlLabel control={<Checkbox checked={scoreFilter} onChange={handleEmailFilter} />} label="Score" />
           </FormGroup>
+          <Button variant="outlined" style={{width:'100%'}} onClick={onSearch}>Search</Button>
         </Box>
       </Modal>
     </div>
@@ -549,10 +527,10 @@ export default function SurveyMoods(props) {
                               row.effectList.map(
                                 (e, index) => {
                                   return (<>
-                                    <Grid item xs >
+                                    <Grid item >
                                       <Typography> {e.name}</Typography>
                                       </Grid>
-                                    <Grid item xs >
+                                    <Grid item  >
                                       {getIcon(e.score)}
                                       <Badge badgeContent={e.score} color={getColor(e.score)} style={{ position:'absolute'}} ></Badge>
                                   </Grid></>)

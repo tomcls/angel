@@ -1,8 +1,6 @@
 import React from "react";
-import { styled, useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
+import { styled, useTheme, ThemeProvider } from '@mui/material/styles';
 import { NavLink } from 'react-router-dom';
-import { frFR, enUS, nlNL } from '@mui/material/locale';
-import { useNavigate } from 'react-router-dom';
 import Drawer from '@mui/material/Drawer';
 import CssBaseline from '@mui/material/CssBaseline';
 import MuiAppBar from '@mui/material/AppBar';
@@ -37,13 +35,10 @@ import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
 import Collapse from '@mui/material/Collapse';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import StarBorder from '@mui/icons-material/StarBorder';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
-import DashboardIcon from '@mui/icons-material/Dashboard';
+import { ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
-import ListSubheader from '@mui/material/ListSubheader';
-import AppStyle from "./style";
+
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import ScienceIcon from '@mui/icons-material/Science';
 
@@ -65,11 +60,6 @@ const AppBar = styled(MuiAppBar, {
     }),
   }),
 }));
-const drawerTheme = createTheme({
-  ...AppStyle().main(),
-  ...AppStyle().drawer(),
-  enUS
-});
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -84,23 +74,15 @@ const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp
 
 export default function Bar(props) {
   const theme = useTheme();
-  const navigate = useNavigate();
   const [open, setOpen] = React.useState(true);
   const [openProfile, setopenProfile] = React.useState(false);
   const anchorRef = React.useRef(null);
-  const [user, setUser] = React.useState(null);
 
   const [openUserDown, setOpenUserDown] = React.useState(true);
   const [openTreatmentDown, setOpenTreatmentDown] = React.useState(true);
   const [openEffectDown, setOpenEffectDown] = React.useState(true);
   const [openFactoriesDown, setOpenFactoriesDown] = React.useState(false);
   React.useEffect(() => {
-
-    const u = validateCredentials();
-    if (u) {
-      setUser(u);
-    }
-    console.log('useEffect Bar', u, props)
     if (prevOpen.current === true && openProfile === false) {
       anchorRef.current.focus();
     }
@@ -116,12 +98,7 @@ export default function Bar(props) {
       return;
     }
     setopenProfile(false);
-  };
-  const logout = () => {
-    window.appStorage.removeItem("user");
-    window.appStorage.removeItem("token");
-    navigate('/login', { replace: true }); return;
-  };
+  }
   function handleListKeyDown(event) {
     if (event.key === 'Tab') {
       event.preventDefault();
@@ -140,14 +117,6 @@ export default function Bar(props) {
     setOpen(false);
     props.open(false)
   };
-  const validateCredentials = () => {
-    const u = JSON.parse(window.appStorage.getItem('user'));
-    const t = JSON.parse(window.appStorage.getItem('token'));
-    if (u && u.id && t) {
-      return u;
-    }
-    navigate('/login', { replace: true }); return;
-  }
   const handleUserClick = () => {
     console.log(openUserDown)
     setOpenUserDown(!openUserDown);
@@ -164,7 +133,7 @@ export default function Bar(props) {
     console.log(openFactoriesDown)
     setOpenFactoriesDown(!openFactoriesDown);
   };
-  return (<ThemeProvider theme={drawerTheme}>
+  return (<ThemeProvider theme={props.theme}>
     <CssBaseline />
     <AppBar position="fixed" open={open} style={{ color: "white", backgroundColor: "#24292e", boxShadow: "unset", display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
       <Toolbar>
@@ -189,14 +158,14 @@ export default function Bar(props) {
             onClick={handleToggle}
             style={{ marginInline: "15px" }}>
             <Avatar sx={{ width: 40, height: 40 }}
-              src={user && user.avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + user.avatar : defaultAvatar} />
+              src={props.user && props.user.avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + props.user.avatar : defaultAvatar} />
             <Typography style={{ fontSize: "16px", color: "white", marginInline: "15px" }} component={'span'}>
 
-              {user && user.id ? user.firstname : ''} {user && user.id ? user.lastname : ''}
+              {props.user && props.user.id ? props.user.firstname : ''} {props.user && props.user.id ? props.user.lastname : ''}
 
               <br />
               <Typography style={{ fontSize: "12px", color: "lightgray" }}>
-                {user && user.id ? user.type : ''}
+                {props.user && props.user.id ? props.user.type : ''}
               </Typography>
             </Typography>
             <ArrowDropDownIcon style={{ color: "black", }} />
@@ -223,7 +192,7 @@ export default function Bar(props) {
                       aria-labelledby="composition-button"
                       onKeyDown={handleListKeyDown}>
                       <MenuItem component={NavLink} exact="true" to="/settings"> <SettingsIcon style={{ marginInline: "10px" }} /> Settings</MenuItem>
-                      <MenuItem onClick={logout}> <LogoutIcon style={{ marginInline: "10px" }} /> Log out</MenuItem>
+                      <MenuItem onClick={props.logout}> <LogoutIcon style={{ marginInline: "10px" }} /> Log out</MenuItem>
                     </MenuList>
                   </ClickAwayListener>
                 </Paper>
@@ -262,23 +231,12 @@ export default function Bar(props) {
         component="nav"
         aria-labelledby="nested-list-subheader"
       >
-
-        <ListItemButton component={NavLink} exact="true" to="/dashboard"   >
-          <ListItemIcon>
-            <DashboardIcon />
-          </ListItemIcon>
-          <ListItemText primary={"Dashboard"} />
-        </ListItemButton>
-
-
         <ListItemButton component={NavLink} exact="true" to="/notifications">
           <ListItemIcon>
             <NotificationsNoneIcon />
           </ListItemIcon>
           <ListItemText primary={"Notifications"} />
         </ListItemButton>
-
-
         <ListItemButton onClick={handleUserClick}>
           <ListItemText primary={"All users"} />
           {openUserDown ? <ExpandLess /> : <ExpandMore />}

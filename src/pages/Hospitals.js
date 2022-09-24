@@ -1,11 +1,8 @@
 import React,  { useRef } from "react";
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import Input from "../components/Input";
-import SearchIcon from '@mui/icons-material/Search';
 import Button from '@mui/material/Button';
 import PeopleIcon from '@mui/icons-material/People';
-import Bar from "../templates/Bar";
 import Hospitals from "../containers/Hospitals";
 import Hospital from "../containers/Hospital";
 import Tab from '@mui/material/Tab';
@@ -24,6 +21,7 @@ import Doctors from "../containers/Doctors";
 import Nurses from "../containers/Nurses";
 import Treatments from "../containers/Treatments";
 import TreatmentContainer from "../containers/Treatment";
+import MainBar from "../templates/MainBar";
 
 const drawerWidth = 240;
 
@@ -138,7 +136,7 @@ export default function HospitalsPage() {
   }
   const getTab = (v) => {
     for (let i = 0; i < tabs.length; i++) {
-      if (tabs[i].value == v) {
+      if (tabs[i].value === v) {
         return tabs[i];
       }
     }
@@ -152,7 +150,6 @@ export default function HospitalsPage() {
   }
 
   const createTab = (type, text, id) => {
-    console.log('createTab', type, text, id)
     const value = text;
     let tab = getTab(value);
     let newTab = null;
@@ -263,7 +260,7 @@ export default function HospitalsPage() {
   return (
     <SnackbarProvider maxSnack={3}>
       <Box sx={{ display: 'flex' }}>
-        <Bar open={setOpen} />
+        <MainBar open={setOpen} />
         <Main open={open} style={{ background: "rgb(229 229 229 / 41%)", marginBlock: "64px" }}>
           <Grid container spacing={2} mb={'0px'} >
             <Grid item xs={12} md={6} xl={6} >

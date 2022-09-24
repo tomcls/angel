@@ -4,7 +4,6 @@ import Box from '@mui/material/Box';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import Button from '@mui/material/Button';
 import PeopleIcon from '@mui/icons-material/People';
-import Bar from "../templates/Bar";
 import PatientTreatments from "../containers/PatientTreatments";
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
@@ -12,9 +11,9 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import { Cancel } from "@mui/icons-material";
 import { SnackbarProvider } from 'notistack';
-import Drugs from "../containers/Drugs";
 import { Grid, Typography } from "@mui/material";
 import Tabs from "../components/Tabs";
+import MainBar from "../templates/MainBar";
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -41,7 +40,6 @@ export default function TreatmentsPage() {
   const [open, setOpen] = React.useState(true);
   const [selectedTab, setSelectedTab] = React.useState("Main");
   const [tabs, setTabs] = React.useState([]);
-  const [panels, setPanels] = React.useState([]);
   const [tabIndex, setTabIndex] = React.useState(2);
   const newBtn = useRef(null);
   const t = new Tabs('treatment',tabIndex,tabs,setTabs,setSelectedTab,setTabIndex,newBtn);
@@ -58,23 +56,12 @@ export default function TreatmentsPage() {
     setSelectedTab(newValue);
   };
  
-  const createTabDrugs = (treatmentId, text) => {
-    console.log('createTabDrugs', treatmentId)
-    const value = `Blue Box ${tabIndex}`
-    const newTab = {
-      label: text,
-      value: value,
-      idx: tabIndex,
-      child: () => <Drugs openDrug={createTabDrugs} treatmentId={treatmentId} />
-    }
-    setTabs([...tabs, newTab])
-    t.handleTabOptions(value);
-  }
+  
 
   return (
     <SnackbarProvider maxSnack={3}>
       <Box sx={{ display: 'flex' }}>
-        <Bar open={setOpen} />
+        <MainBar open={setOpen} />
         <Main open={open} style={{ background: "rgb(229 229 229 / 41%)", marginBlock: "64px" }}>
           <Grid container spacing={2} mb={'0px'} >
             <Grid item xs={12} md={6} xl={6} >

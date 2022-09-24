@@ -3,7 +3,6 @@ import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import PeopleIcon from '@mui/icons-material/People';
-import Bar from "../templates/Bar";
 import SideEffects from "../containers/SideEffects";
 import SideEffect from "../containers/SideEffect";
 import Tab from '@mui/material/Tab';
@@ -14,6 +13,7 @@ import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import { Cancel } from "@mui/icons-material";
 import { SnackbarProvider } from 'notistack';
 import { Grid, Typography } from "@mui/material";
+import MainBar from "../templates/MainBar";
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -40,7 +40,6 @@ export default function SideEffectsPage() {
   const [open, setOpen] = React.useState(true);
   const [selectedTab, setSelectedTab] = React.useState("Main");
   const [tabs, setTabs] = React.useState([]);
-  const [panels, setPanels] = React.useState([]);
   const [tabIndex, setTabIndex] = React.useState(2);
   const newBtn = useRef(null);
 
@@ -55,18 +54,6 @@ export default function SideEffectsPage() {
     setSelectedTab(value)
     setTabIndex(tabIndex + 1)
   }
-  const onOpenTabClick = () => {
-    console.log('onOpenTabClick')
-      createTab('treatment', 'New treatment');
-  }
-  const getTab = (v) => {
-    for (let i = 0; i < tabs.length; i++) {
-      if (tabs[i].value == v) {
-        return tabs[i];
-      }
-    }
-    return null;
-  }
   const handleCloseTab = (event, idx) => {
     event.stopPropagation();
     const tabArr = tabs.filter(x => x.idx !== idx)
@@ -74,31 +61,8 @@ export default function SideEffectsPage() {
     setSelectedTab('Main');
   }
 
-  const createTab = (type, text, id) => {
-    console.log('createTab', type, text, id)
-    const value = text;
-    let tab = getTab(value);
-    let newTab = null;
-    if (tab) {
-      setSelectedTab(tab.value);
-    } else {
-      
-      setTabs([...tabs, newTab])
-      handleTabOptions(value ? value : tabIndex);
-    }
-  }
-  const openTab = (id, text, type) => {
-    console.log('openTab', type, text, id)
-    if (!window.angel) {
-      window.angel = {};
-    }
-    
-    newBtn.current.click();
-  }
   const createTabSideEffect = (sideEffectId, text) => {
-    console.log(sideEffectId);
     const value = text;
-    console.log(value, tabIndex)
     const newTab = {
       label: text ? text : 'New SideEffect',
       value: value ? value : tabIndex,
@@ -108,18 +72,10 @@ export default function SideEffectsPage() {
     setTabs([...tabs, newTab])
     handleTabOptions(value ? value : tabIndex);
   }
-  
-  const openSideEffectSideEffectTab = (sideEffectId) => {
-    if (!window.angel) {
-      window.angel = {};
-    }
-    window.angel.sideEffectId = sideEffectId;
-    newBtn.current.click();
-  }
   return (
     <SnackbarProvider maxSnack={3}>
       <Box sx={{ display: 'flex' }}>
-        <Bar open={setOpen} />
+        <MainBar open={setOpen} />
         <Main open={open} style={{ background: "rgb(229 229 229 / 41%)", marginBlock: "64px" }}>
           <Grid container spacing={2} mb={'0px'} >
             <Grid item xs={12} md={6} xl={6} >

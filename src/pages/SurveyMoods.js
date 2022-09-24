@@ -1,7 +1,6 @@
 import React, { useRef } from "react";
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import Bar from "../templates/Bar";
 import SurveyMoods from "../containers/SurveyMoods";
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
@@ -15,6 +14,7 @@ import Tabs from '../components/Tabs';
 import Button from '@mui/material/Button';
 import PeopleIcon from '@mui/icons-material/People';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import MainBar from "../templates/MainBar";
 
 const drawerWidth = 240;
 
@@ -60,7 +60,7 @@ export default function SurveyMoodsPage() {
   return (
     <SnackbarProvider maxSnack={3}>
       <Box sx={{ display: 'flex' }}>
-        <Bar open={setOpen} />
+        <MainBar open={setOpen} />
         <Main open={open} style={{ background: "rgb(229 229 229 / 41%)", marginBlock: "64px" }}>
         <Grid container spacing={2} mb={'0px'} >
             <Grid item xs={12} md={6} xl={6} >
@@ -77,7 +77,7 @@ export default function SurveyMoodsPage() {
             <TabContext value={selectedTab ? selectedTab : '1'}>
               <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <TabList onChange={handleChange} aria-label="" variant="scrollable" scrollButtons="auto" >
-                  <Tab label="List" value="Main" icon={<FormatListBulletedIcon />} iconPosition="start" />
+                  <Tab key='main' label="List" value="Main" icon={<FormatListBulletedIcon />} iconPosition="start" />
                   {tabs.map(tab => (
                     <Tab key={tab.idx} label={tab.label} value={tab.value} icon={<Cancel onClick={(e) => t.handleCloseTab(e, tab.idx)} />} iconPosition="end" />
                   ))}
