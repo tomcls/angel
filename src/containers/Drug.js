@@ -38,8 +38,11 @@ export default function DrugContainer(props) {
     const [endDate, setEndDate] = React.useState('');
     const defaultAvatar = 'https://dreamguys.co.in/preadmin/html/school/dark/assets/img/placeholder.jpg';//process.env.SENDGRID_APIKEY
     const [image, setImage] = React.useState(defaultAvatar);
+    const [notice, setNotice] = React.useState('');
     const [file, setFile] = React.useState(null);
+    const [document, setDocument] = React.useState(null);
     const uploadFileButton = useRef(null);
+    const uploadNoticeButton = useRef(null);
 
     React.useEffect(() => {
         console.log("Drug container effect")
@@ -55,6 +58,7 @@ export default function DrugContainer(props) {
                 setLaboratoryId(drug.laboratory_id);
                 setLaboratoryName(drug.laboratory_name);
                 setImage(drug.image ? process.env.REACT_APP_API_URL + '/public/drugs/images/' + drug.image : defaultAvatar);
+                setNotice(drug.notice);
                 console.log(process.env.REACT_APP_API_URL + '/public/drugs/images/' + drug.image)
             }
             fetchData();
@@ -196,6 +200,12 @@ export default function DrugContainer(props) {
         setImage(process.env.REACT_APP_API_URL + '/public/drugs/images/' + u.filename);
         handleClickVariant('success', 'Image well uploaded');
     };
+    const onNoticeChange = async (e) => {
+        setDocument({ file: e.target.files[0] });
+        const u = await AngelDrug().notice(e.target.files[0], 'drug', descriptionId);
+        setNotice(process.env.REACT_APP_API_URL + '/public/drugs/documents/' + u.filename);
+        handleClickVariant('success', 'Document well uploaded');
+    };
     return (
         <>
             <div>
@@ -299,7 +309,7 @@ export default function DrugContainer(props) {
                             value={code ? code : ''}
                             onChange={onInputChange(setCode)}
                             InputProps={{
-                                startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                                startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>
                             }}
                         />
                     </Grid>
@@ -313,6 +323,15 @@ export default function DrugContainer(props) {
                     Drug descriptions
                 </Typography>
                 <ReactQuill theme="snow" value={description} onChange={setDescription} />
+                <Grid container spacing={2} direction="row" style={{textalign: 'center'}}>
+                    <Grid item style={{ marginTop: '6px' }} >
+                        <a href={process.env.REACT_APP_API_URL + '/public/drugs/documents/'+notice} target="_blank" style={{  color: '#0d99ff' }}>{notice}</a>
+                    </Grid>
+                    <Grid item  >
+                        <Button id="noticeLabel" onClick={() => uploadNoticeButton.current.click()}>Upload notice</Button>
+                        <input type="file" name="notice" onChange={onNoticeChange} ref={uploadNoticeButton} style={{ display: 'none' }} />
+                    </Grid>
+                </Grid>
                 <Button
                     style={{ borderRadius: '10px', marginTop: '20px' }}
                     variant="outlined" startIcon={<Save />}

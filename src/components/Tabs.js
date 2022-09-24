@@ -165,7 +165,7 @@ export default class Tabs {
             case 'drug':
                 window.angel.drugId = id;
                 window.angel.tabType = 'drug';
-                window.angel.tabName = 'Drug ' + text;
+                window.angel.tabName = 'Treatment ' + text;
                 break;
             case 'treatment':
                 window.angel.treatmentId = id;

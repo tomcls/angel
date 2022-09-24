@@ -22,7 +22,7 @@ import AngelDrug from "../api/angel/drugs";
 import AngelTreatment from '../api/angel/treatments';
 import { useSnackbar } from 'notistack';
 
-import { Button, Grid } from '@mui/material';
+import { Avatar, Button, Grid } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
@@ -33,6 +33,8 @@ import Modal from '@mui/material/Modal';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
+import LinkIcon from '@mui/icons-material/Link';
+const defaultAvatar = 'https://dreamguys.co.in/preadmin/html/school/dark/assets/img/placeholder.jpg';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -108,6 +110,12 @@ const headCells = [
     numeric: false,
     disablePadding: false,
     label: 'Laboratory',
+  },
+  {
+    id: 'notice',
+    numeric: false,
+    disablePadding: false,
+    label: 'Notice',
   }
 ];
 
@@ -126,7 +134,7 @@ function EnhancedTableHead(props) {
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
             inputProps={{ 'aria-label': 'select all Drugs' }}
-          /> 
+          />
         </TableCell>
         {headCells.map((headCell) => (
           <TableCell
@@ -142,7 +150,7 @@ function EnhancedTableHead(props) {
             >
               {headCell.label}
               {orderBy === headCell.id ? (
-                <span  style={{border: 0, clip: 'rect(0 0 0 0)', height: '1px', margin: -1, overflow: 'hidden',padding: 0,whiteSpace: "nowrap",width: "1px",position: "absolute"}}>
+                <span style={{ border: 0, clip: 'rect(0 0 0 0)', height: '1px', margin: -1, overflow: 'hidden', padding: 0, whiteSpace: "nowrap", width: "1px", position: "absolute" }}>
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                 </span>
               ) : null}
@@ -229,7 +237,7 @@ export default function Drugs(props) {
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
   const [limit, setLimit] = React.useState(5);
-  
+
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('id');
   const [selected, setSelected] = React.useState([]);
@@ -246,7 +254,7 @@ export default function Drugs(props) {
 
   React.useEffect(() => {
     console.log('useEffect Drugs list container')
-    
+
     fetchData();
   }, []);
   const handleRequestSort = (event, property) => {
@@ -255,18 +263,20 @@ export default function Drugs(props) {
     setOrderBy(property);
   };
 
-  const createData = (id, name, code, created) => {
+  const createData = (id, name, code, created,image,notice) => {
     return {
       id,
       name,
       code,
-      created
+      created,
+      image,
+      notice
     }
   }
   const fetchData = async () => {
     const u = [];
-    let  r = null ; //
-    let o = { limit: limit, page: page , lang_id: 'en'};
+    let r = null; //
+    let o = { limit: limit, page: page, lang_id: 'en' };
 
     if (codeFilter) {
       o.code = searchFilter;
@@ -278,16 +288,23 @@ export default function Drugs(props) {
     } else {
       o.name = null;
     }
-    if(props.treatmentId) {
+    if (props.treatmentId) {
       o.treatment_id = props.treatmentId;
       r = await AngelTreatment().drugs(o);
     } else {
       r = await AngelDrug().list(o);
     }
-   
+
     if (r.drugs && r.drugs.length) {
       for (let i = 0; i < r.drugs.length; i++) {
-        u.push(createData(r.drugs[i].drug_id,r.drugs[i].drug_name, r.drugs[i].drug_code, r.drugs[i].date_created));
+        u.push(createData(
+          r.drugs[i].drug_id, 
+          r.drugs[i].drug_name, 
+          r.drugs[i].drug_code, 
+          r.drugs[i].date_created, 
+          r.drugs[i].image ? process.env.REACT_APP_API_URL + '/public/drugs/images/' + r.drugs[i].image : defaultAvatar,
+          r.drugs[i].notice ? process.env.REACT_APP_API_URL + '/public/drugs/documents/' + r.drugs[i].notice : null)
+          );
       }
       setRows(u);
       setDrugs(r.drugs);
@@ -332,9 +349,9 @@ export default function Drugs(props) {
   const isSelected = (id) => selected.indexOf(id) !== -1;
 
   const onDeleteItems = async () => {
-    if(selected.length) {
-      await AngelDrug().delete({ids:selected.join(',')});
-      handleClickVariant('success', 'Drug(s) well deleted');
+    if (selected.length) {
+      await AngelDrug().delete({ ids: selected.join(',') });
+      handleClickVariant('success', 'Treatment(s) well deleted');
       fetchData();
     }
   }
@@ -379,117 +396,132 @@ export default function Drugs(props) {
           </Box>
         </Modal>
       </div>
-    <Box sx={{ width: '100%' }}>
-      <Paper sx={{ width: '100%', mb: 0 }}>
-      <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
-        <TableContainer>
-          <Table
-            sx={{ minWidth: 750 }}
-            aria-labelledby='tableTitle'
-            size={dense ? 'small' : 'medium'}
-          >
-            <EnhancedTableHead
-              numSelected={selected.length}
-              order={order}
-              orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
-              rowCount={rows.length}
-            />
-            <TableBody>
-              {stableSort(rows, getComparator(order, orderBy))
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => {
-                  const isItemSelected = isSelected(row.id);
-                  const labelId = `enhanced-table-checkbox-${row.id}`;
-                  return (
-                    <TableRow
-                      hover
-                      onClick={(event) => handleClick(event, row.id)}
-                      onDoubleClick={() => document.getElementById("newButton").clk(row.id, row.code + ' ' + row.name,'drug')}
-                      role="checkbox"
-                      aria-checked={isItemSelected}
-                      tabIndex={-1}
-                      key={row.id}
-                      selected={isItemSelected}
-                    >
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          checked={isItemSelected}
-                          inputProps={{ 'aria-labelledby': labelId }}
-                        />
-                      </TableCell>
-                      <TableCell component="th" id={labelId} scope="row" padding="none" align='left'>
-                        {row.id}
-                      </TableCell>
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        scope='row'
-                        style={{ textAlign: 'center' }}
-                        padding='none'
-                        onClick={() => document.getElementById("newButton").clk(row.id, row.code + ' ' + row.name,'drug')}
+      <Box sx={{ width: '100%' }}>
+        <Paper sx={{ width: '100%', mb: 0 }}>
+          <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
+          <TableContainer>
+            <Table
+              sx={{ minWidth: 750 }}
+              aria-labelledby='tableTitle'
+              size={dense ? 'small' : 'medium'}
+            >
+              <EnhancedTableHead
+                numSelected={selected.length}
+                order={order}
+                orderBy={orderBy}
+                onSelectAllClick={handleSelectAllClick}
+                onRequestSort={handleRequestSort}
+                rowCount={rows.length}
+              />
+              <TableBody>
+                {stableSort(rows, getComparator(order, orderBy))
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row, index) => {
+                    const isItemSelected = isSelected(row.id);
+                    const labelId = `enhanced-table-checkbox-${row.id}`;
+                    return (
+                      <TableRow
+                        hover
+                        onClick={(event) => handleClick(event, row.id)}
+                        onDoubleClick={() => document.getElementById("newButton").clk(row.id, row.code + ' ' + row.name, 'drug')}
+                        role="checkbox"
+                        aria-checked={isItemSelected}
+                        tabIndex={-1}
+                        key={row.id}
+                        selected={isItemSelected}
                       >
-                        {row.name}
-                      </TableCell>
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        scope='row'
-                        style={{ textAlign: 'center' }}
-                        padding='none'
-                      >
-                        {row.code}
-                      </TableCell>
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        style={{ textAlign: 'center' }}
-                        scope='row'
-                        padding='none'>
-                        {row.created}
-                      </TableCell>
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        style={{ textAlign: 'center' }}
-                        scope='row'
-                        padding='none'>
-                        <FamilyRestroomIcon  style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.id, row.code + ' ' + row.name,'drug_patients')} />
-                      </TableCell>
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        style={{ textAlign: 'center' }}
-                        scope='row'
-                        padding='none'>
-                       <BiotechIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.id, row.code + ' ' + row.name,'drug_laboratories')} />
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              {emptyRows > 0 && (
-                <TableRow
-                  style={{
-                    height: (dense ? 33 : 53) * emptyRows,
-                  }}
-                >
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component='div'
-          count={total?total:0}
-          rowsPerPage={limit}
-          page={page}
-          onPageChange={setPage}
-          onRowsPerPageChange={ (e) => {setLimit(e.target.value)}}
-        />
-      </Paper>
-    </Box>
-  </>);
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            checked={isItemSelected}
+                            inputProps={{ 'aria-labelledby': labelId }}
+                          />
+                        </TableCell>
+                        <TableCell component="th" id={labelId} scope="row" padding="none" align='left'>
+                          <Grid container spacing={2}>
+                            <Grid item xs={1} textAlign={'start'} style={{ marginTop: '10px', fontWeight: 'bold' }}>
+                              {row.id}
+                            </Grid>
+                            <Grid item xs={1} style={{ cursor: 'pointer' }}>
+                              <Avatar variant="rounded" src={row.image} textAlign={'start'} onClick={() => document.getElementById("newButton").clk(row.id, row.code + ' ' + row.name, 'drug')} />
+                            </Grid>
+                          </Grid>
+                        </TableCell>
+                        <TableCell
+                          component='th'
+                          id={labelId}
+                          scope='row'
+                          style={{ textAlign: 'center' }}
+                          padding='none'
+                          onClick={() => document.getElementById("newButton").clk(row.id, row.code + ' ' + row.name, 'drug')}
+                        >
+                          {row.name}
+                        </TableCell>
+                        <TableCell
+                          component='th'
+                          id={labelId}
+                          scope='row'
+                          style={{ textAlign: 'center' }}
+                          padding='none'
+                        >
+                          {row.code}
+                        </TableCell>
+                        <TableCell
+                          component='th'
+                          id={labelId}
+                          style={{ textAlign: 'center' }}
+                          scope='row'
+                          padding='none'>
+                          {row.created}
+                        </TableCell>
+                        <TableCell
+                          component='th'
+                          id={labelId}
+                          style={{ textAlign: 'center' }}
+                          scope='row'
+                          padding='none'>
+                          <FamilyRestroomIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.id, row.code + ' ' + row.name, 'drug_patients')} />
+                        </TableCell>
+                        <TableCell
+                          component='th'
+                          id={labelId}
+                          style={{ textAlign: 'center' }}
+                          scope='row'
+                          padding='none'>
+                          <BiotechIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.id, row.code + ' ' + row.name, 'drug_laboratories')} />
+                        </TableCell>
+                        <TableCell
+                          component='th'
+                          id={labelId}
+                          style={{ textAlign: 'center' }}
+                          scope='row'
+                          padding='none'>
+                            {row.notice?<a href={row.notice} target="blank"> <LinkIcon style={{ cursor: 'pointer' }}  /></a>: ' - '}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                {emptyRows > 0 && (
+                  <TableRow
+                    style={{
+                      height: (dense ? 33 : 53) * emptyRows,
+                    }}
+                  >
+                    <TableCell colSpan={6} />
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component='div'
+            count={total ? total : 0}
+            rowsPerPage={limit}
+            page={page}
+            onPageChange={setPage}
+            onRowsPerPageChange={(e) => { setLimit(e.target.value) }}
+          />
+        </Paper>
+      </Box>
+    </>);
 }
