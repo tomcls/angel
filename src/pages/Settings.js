@@ -203,7 +203,7 @@ export default function Settings(props) {
             Personal informations
           </Typography>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6} md={4} xl={2} style={{ paddingTop: '20px' }}>
+            <Grid item xs={12} sm={6} md={4} xl={2} style={{ paddingTop: '42px' }}>
               <Grid item xs={12} style={{ width: '205px', height: '205px', textAlign: "center", border: '3px solid #ddd', borderRadius: '5px', margin: 'auto' }} >
                 <Avatar variant="rounded"
                   src={avatar}

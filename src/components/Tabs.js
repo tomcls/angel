@@ -68,7 +68,7 @@ export default class Tabs {
                         case 'doctor':
                             return <DoctorContainer userId={id} showDoctorPatients={this.openTab} />
                         case 'nurses':
-                            return <Nurses patientId={id} openPatients={this.openTab} />
+                            return <Nurses patientId={id} openPatients={this.openTab} text={text}/>
                         case 'treatments':
                             return <Treatments patientId={id} />
                         case 'patient_treatments':

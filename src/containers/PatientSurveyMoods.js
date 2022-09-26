@@ -105,7 +105,7 @@ const headCells = [
 ];
 
 function EnhancedTableHead(props) {
-  const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -222,13 +222,13 @@ export default function PatientSurveyMoods(props) {
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
   const [limit, setLimit] = React.useState(30);
-  const [moods, setMoods] = React.useState([]);
+  const [, setMoods] = React.useState([]);
 
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('');
   const [selected, setSelected] = React.useState([]);
-  const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(30);
+  const [dense, ] = React.useState(false);
+  const [rowsPerPage, ] = React.useState(30);
   const [rows, setRows] = React.useState([]);
 
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
@@ -237,13 +237,13 @@ export default function PatientSurveyMoods(props) {
   const [firstnameFilter, setFirstnameFilter] = React.useState(true);
   const [lastnameFilter, setLastnameFilter] = React.useState(true);
   const [nameFilter, setNameFilter] = React.useState(true);
-  const [scoreFilter, setScoreFilter] = React.useState(true);
+  const [scoreFilter, ] = React.useState(true);
   const [fromDateFilter, setFromDateFilter] = React.useState(null);
   const [toDateFilter, setToDateFilter] = React.useState(null);
 
   React.useEffect(() => {
-    const moods = props.moods;
     fetchDataEffects();
+    // eslint-disable-next-line
   }, [props.moods]);
 
   const handleRequestSort = (event, property) => {
@@ -387,9 +387,6 @@ export default function PatientSurveyMoods(props) {
   };
   const handleEmailFilter = (event) => {
     //setEmailFilter(event.target.checked);
-  };
-  const handlePhoneFilter = (event) => {
-    //setPhoneFilter(event.target.checked);
   };
   const handleSearchText = (txt) => {
     setSearchFilter(txt);

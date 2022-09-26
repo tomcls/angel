@@ -19,20 +19,17 @@ import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { useSnackbar } from 'notistack';
-
 import AngelSideEffect from '../api/angel/sideEffect';
-
 import { Avatar, Button, Grid } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
-
 import Modal from '@mui/material/Modal';
-
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import AngelSurvey from '../api/angel/survey';
 import { MobileDatePicker } from '@mui/lab';
+import Filter from '../utils/filters';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -177,6 +174,7 @@ const EnhancedTableToolbar = (props) => {
             id="input-with-icon-textfield"
             onChange={(e) => props.setSearch(e.target.value)}
             label="Search"
+            value={props.searchText}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -203,6 +201,8 @@ EnhancedTableToolbar.propTypes = {
 };
 const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp0LF2WgeDkn_sQ1VuMnlnVGjkDvCN4jo2nLMt3b84ry328rg46eohB_JT3WTqOGJovY&usqp=CAU';//process.env.SENDGRID_APIKEY
 
+const fltr = new Filter('surveySideEffects');
+
 export default function SurveySideEffects(props) {
 
   const { enqueueSnackbar } = useSnackbar();
@@ -220,16 +220,17 @@ export default function SurveySideEffects(props) {
 
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
 
-  const [searchFilter, setSearchFilter] = React.useState('');
+  const [searchFilter, setSearchFilter] = React.useState(fltr.get('search',props));
   const [firstnameFilter, setFirstnameFilter] = React.useState(true);
   const [lastnameFilter, setLastnameFilter] = React.useState(true);
   const [nameFilter, setNameFilter] = React.useState(true);
   const [scoreFilter, ] = React.useState(true);
 
-  const [dateCreatedFilter, setDateCreatedFilter] = React.useState(new Date());
+  const [dateCreatedFilter, setDateCreatedFilter] = React.useState(fltr.get('date_created',props)?fltr.get('date_created',props):new Date());
 
   React.useEffect(() => {
     fetchData();
+    // eslint-disable-next-line
   }, []);
 
   const handleRequestSort = (event, property) => {
@@ -304,7 +305,6 @@ export default function SurveySideEffects(props) {
     } else {
       o.score = null;
     }
-    console.log("aaaaaaaaaaaaaaaaaaaaaa",dateCreatedFilter)
     if (dateCreatedFilter) {
       o.date_created = formatDateCreated(dateCreatedFilter);
       console.log(o.date_created)
@@ -379,6 +379,7 @@ export default function SurveySideEffects(props) {
   };
   const handleSearchText = (txt) => {
     setSearchFilter(txt);
+    fltr.set('search',props,txt);
   };
   const formatDateCreated = (v) => {
     let d = new Date(v);
@@ -410,6 +411,11 @@ export default function SurveySideEffects(props) {
     handleCloseFilterModal();
     search();
   };
+  const onDateCreateChanged = (d) => {
+    console.log('onDateCreateChanged',d)
+    fltr.set('date_created',props,d);
+    setDateCreatedFilter(d); 
+  }
   return (<>
     <div>
       <Modal
@@ -428,7 +434,7 @@ export default function SurveySideEffects(props) {
               label="Select a day"
               inputFormat="MM/dd/yyyy"
               value={dateCreatedFilter ? dateCreatedFilter : ''}
-              onChange={(newValue) => { setDateCreatedFilter(newValue); }}
+              onChange={onDateCreateChanged}
               renderInput={(params) => <TextField {...params} />}
             />
             <FormControlLabel control={<Checkbox checked={firstnameFilter} onChange={handleFirstnameFilter} />} label="Firstname" />
@@ -442,7 +448,7 @@ export default function SurveySideEffects(props) {
     </div>
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 0 }}>
-        <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
+        <EnhancedTableToolbar searchText={searchFilter} numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
         <Grid container>
           <Grid item pl={2}><Typography>Search for:</Typography></Grid>
           <Grid item pl={2}><Typography>{dateCreatedFilter?renderDateCreated(dateCreatedFilter):''}</Typography></Grid>

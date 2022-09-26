@@ -235,31 +235,31 @@ export default function BarNurse(props) {
               <ListItemIcon>
                 <FamilyRestroomIcon />
               </ListItemIcon>
-              <ListItemText primary="Patients" />
+              <ListItemText primary="List" />
             </ListItemButton>
-          </List>
-        </Collapse>
-        <ListItemButton onClick={handleTreatmentClick}>
-          <ListItemText primary={"Treatments"} />
-          {openTreatmentDown ? <ExpandLess /> : <ExpandMore />}
-        </ListItemButton>
-        <Collapse in={openTreatmentDown} timeout="auto" unmountOnExit>
-          <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/drugs">
-            <ListItemIcon>
-              <VaccinesIcon />
-            </ListItemIcon>
-            <ListItemText primary={"Treatements"} />
-          </ListItemButton>
+            <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/survey-moods">
+              <ListItemIcon>
+                <MoodIcon />
+              </ListItemIcon>
+              <ListItemText primary={"Survey Moods"} />
+            </ListItemButton>
+            <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/survey-effects">
+              <ListItemIcon>
+                <SickIcon />
+              </ListItemIcon>
+              <ListItemText primary={"Survey Side effects"} />
+            </ListItemButton>
           <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/treatments">
             <ListItemIcon>
               <HealingIcon />
             </ListItemIcon>
-            <ListItemText primary={"Patients"} />
+            <ListItemText primary={"Treatments"} />
           </ListItemButton>
+          </List>
         </Collapse>
 
         <ListItemButton onClick={handleEffectClick}>
-          <ListItemText primary={"Effects and moods"} />
+          <ListItemText primary={"Manage list of"} />
           {openEffectDown ? <ExpandLess /> : <ExpandMore />}
         </ListItemButton>
         <Collapse in={openEffectDown} timeout="auto" unmountOnExit>
@@ -275,17 +275,11 @@ export default function BarNurse(props) {
             </ListItemIcon>
             <ListItemText primary={"Moods"} />
           </ListItemButton>
-          <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/survey-moods">
+          <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/drugs">
             <ListItemIcon>
-              <MoodIcon />
+              <VaccinesIcon />
             </ListItemIcon>
-            <ListItemText primary={"Survey Moods"} />
-          </ListItemButton>
-          <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/survey-effects">
-            <ListItemIcon>
-              <SickIcon />
-            </ListItemIcon>
-            <ListItemText primary={"Survey Side effects"} />
+            <ListItemText primary={"Treatements"} />
           </ListItemButton>
         </Collapse>
 

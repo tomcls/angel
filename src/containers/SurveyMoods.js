@@ -190,6 +190,7 @@ const EnhancedTableToolbar = (props) => {
             id="input-with-icon-textfield"
             onChange={(e) => props.setSearch(e.target.value)}
             label="Search"
+            value={props.searchText}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -233,14 +234,13 @@ export default function SurveyMoods(props) {
 
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
 
-  const [searchFilter, setSearchFilter] = React.useState('');
+  const [searchFilter, setSearchFilter] = React.useState(fltr.get('search',props));
   const [firstnameFilter, setFirstnameFilter] = React.useState(true);
   const [lastnameFilter, setLastnameFilter] = React.useState(true);
   const [nameFilter, setNameFilter] = React.useState(true);
   const [scoreFilter,] = React.useState(true);
   const [dateCreatedFilter, setDateCreatedFilter] = React.useState(fltr.get('date_created',props)?fltr.get('date_created',props):new Date());
   React.useEffect(() => {
-    console.log('useEffect Moods list');
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -409,6 +409,7 @@ export default function SurveyMoods(props) {
     //setEmailFilter(event.target.checked);
   };
   const handleSearchText = (txt) => {
+    fltr.set('search',props,txt);
     setSearchFilter(txt);
   };
   const formatDateCreated = (v) => {
@@ -504,7 +505,7 @@ export default function SurveyMoods(props) {
     </div>
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 0 }}>
-        <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
+        <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} searchText={searchFilter}/>
         <Grid container>
           <Grid item pl={2}><Typography>Search for:</Typography></Grid>
           <Grid item pl={2}><Typography>{dateCreatedFilter?renderDateCreated(dateCreatedFilter):''}</Typography></Grid>

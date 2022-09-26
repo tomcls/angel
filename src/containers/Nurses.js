@@ -22,7 +22,7 @@ import AngelUser from '../api/angel/user';
 import AngelNurse from "../api/angel/nurse";
 import { Avatar, Grid } from '@mui/material';
 import { useSnackbar } from 'notistack';
-
+import SickIcon from '@mui/icons-material/Sick';
 import { Button } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
@@ -35,6 +35,7 @@ import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
+import '../utils/localStorage';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -76,6 +77,9 @@ const styleModal = {
   boxShadow: 24,
   p: 4,
 };
+
+const stg = window.appStorage ? JSON.parse(window.appStorage.getItem('user')):null;
+console.log(stg);
 const headCells = [
   {
     id: 'id',
@@ -115,7 +119,7 @@ const headCells = [
     id: 'patients',
     numeric: false,
     disablePadding: false,
-    label: 'Patients',
+    label: (stg && (stg.nurse_id || stg.doctor_id)) ? 'Surveys' : 'Patients',
   }, {
     id: 'active',
     numeric: false,
@@ -124,7 +128,7 @@ const headCells = [
   },
 ];
 function EnhancedTableHead(props) {
-  const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -234,6 +238,8 @@ EnhancedTableToolbar.propTypes = {
   onOpenFilterModal: PropTypes.func,
   setSearch: PropTypes.func,
 };
+
+
 export default function Nurses(props) {
 
   const { enqueueSnackbar } = useSnackbar();
@@ -246,8 +252,8 @@ export default function Nurses(props) {
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('id');
   const [selected, setSelected] = React.useState([]);
-  const [dense, ] = React.useState(false);
-  const [rowsPerPage, ] = React.useState(5);
+  const [dense,] = React.useState(false);
+  const [rowsPerPage,] = React.useState(5);
   const [rows, setRows] = React.useState([]);
 
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
@@ -310,7 +316,7 @@ export default function Nurses(props) {
       setTotal(r.total);
     }
   }
-  const createData = (user_id, id,nurse_id, firstname, lastname, email, phone, hospital_name, role, active, avatar) => {
+  const createData = (user_id, id, nurse_id, firstname, lastname, email, phone, hospital_name, role, active, avatar) => {
     return {
       user_id,
       id,
@@ -457,19 +463,19 @@ export default function Nurses(props) {
                               {row.id}
                             </Grid>
                             <Grid item xs={1} style={{ cursor: 'pointer' }}>
-                              <Avatar src={row.avatar} textAlign={'start'} onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname,'nurse')} />
+                              <Avatar src={row.avatar} textAlign={'start'} onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname, 'nurse')} />
                             </Grid>
                           </Grid>
                         </TableCell>
                         <TableCell
-                          onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname,'nurse')}
+                          onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname, 'nurse')}
                           component='th'
                           id={labelId}
                           scope='row'
-                          style={{ textAlign: 'center',cursor: 'pointer' }}
+                          style={{ textAlign: 'center', cursor: 'pointer' }}
                           padding='none'
                         >
-                         <b>{row.firstname}</b>
+                          <b>{row.firstname}</b>
                         </TableCell>
                         <TableCell
                           component='th'
@@ -512,7 +518,12 @@ export default function Nurses(props) {
                           scope='row'
                           style={{ textAlign: 'center' }}
                           padding='none' >
-                          <FamilyRestroomIcon style={{ cursor: 'pointer' }} onClick={() => props.openPatients(row.nurse_id, row.firstname + ' ' + row.lastname,'nurse_patients')} />
+                          {
+                            (stg.nurse_id || stg.doctor_id) ?
+                              <SickIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(props.patientId, props.text, 'patient_surveys')} /> :
+                              <FamilyRestroomIcon style={{ cursor: 'pointer' }} onClick={() => props.openPatients(row.nurse_id, row.firstname + ' ' + row.lastname, 'nurse_patients')} />
+                          }
+
                         </TableCell>
                         <TableCell
                           component='th'
