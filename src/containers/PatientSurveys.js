@@ -23,7 +23,7 @@ export default function PatientSurveys(props) {
   },[props.panel]);
   return (
     <div>
-      <Accordion expanded={true} onChange={handleChange('panel1')}>
+      <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
         <AccordionSummary
           
           expandIcon={<ExpandMoreIcon />}
@@ -39,7 +39,7 @@ export default function PatientSurveys(props) {
           <PatientSurveyEffects patientId={props.patientId} />
         </AccordionDetails>
       </Accordion>
-      <Accordion expanded={true} onChange={handleChange('panel2')}>
+      <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel2bh-content"
@@ -54,7 +54,7 @@ export default function PatientSurveys(props) {
             <PatientSurveyMoods patientId={props.patientId} />
         </AccordionDetails>
       </Accordion>
-      <Accordion expanded={true} onChange={handleChange('panel3')}>
+      <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel3bh-content"

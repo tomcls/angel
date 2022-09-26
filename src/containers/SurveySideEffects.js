@@ -61,7 +61,6 @@ function stableSort(array, comparator) {
     }
     return a[1] - b[1];
   });
-  console.log(comparator)
   let r = stabilizedThis.map((el) => el[0]);
   return r;
 }
@@ -227,8 +226,8 @@ export default function SurveySideEffects(props) {
   const [lastnameFilter, setLastnameFilter] = React.useState(true);
   const [nameFilter, setNameFilter] = React.useState(true);
   const [scoreFilter, setScoreFilter] = React.useState(true);
-  const [fromDateFilter, setFromDateFilter] = React.useState(null);
-  const [toDateFilter, setToDateFilter] = React.useState(null);
+
+  const [dateCreatedFilter, setDateCreatedFilter] = React.useState(new Date());
 
   React.useEffect(() => {
     console.log('useEffect SideEffects list!!!!!!!!!!!!!')
@@ -308,15 +307,12 @@ export default function SurveySideEffects(props) {
     } else {
       o.score = null;
     }
-    if (fromDateFilter) {
-      o.from_date = formatFromDate(fromDateFilter);;
+    console.log("aaaaaaaaaaaaaaaaaaaaaa",dateCreatedFilter)
+    if (dateCreatedFilter) {
+      o.date_created = formatDateCreated(dateCreatedFilter);
+      console.log(o.date_created)
     } else {
-      o.from_date = null;
-    }
-    if (toDateFilter) {
-      o.to_date = formatToDate(toDateFilter);
-    } else {
-      o.to_date = null;
+      o.date_created = null;
     }
     o.lang_id = 'en';
     if (props.sideEffectId) {
@@ -390,42 +386,36 @@ export default function SurveySideEffects(props) {
   const handleSearchText = (txt) => {
     setSearchFilter(txt);
   };
-  const formatFromDate = (v) => {
+  const formatDateCreated = (v) => {
     let d = new Date(v);
-    var datestring = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + " 00:00:00";
-    return datestring;
-  }
-  const formatToDate = (v) => {
-    let d = new Date(v);
-    var datestring = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + " 23:59:59";
-    return datestring;
-  }
-  const setFromDate = (newValue) => {
-    console.log(newValue)
-    setFromDateFilter(newValue);
-  };
-  const setToDate = (newValue) => {
-    console.log(newValue)
-    setToDateFilter(newValue);
-  };
-  const renderBatch = (score) => {
-    if (score >= 20) {
-      return (<Badge badgeContent={score} color="error">
-      </Badge>)
-    } else if (score >= 15) {
-      return (<Badge badgeContent={score} color="warning">
-      </Badge>)
-    } else if (score >= 10) {
-      return (<Badge badgeContent={score} color="primary">
-      </Badge>)
-    } else if (score >= 5) {
-      return (<Badge badgeContent={score} color="secondary">
-      </Badge>)
-    } else if (score < 5) {
-      return (<Badge badgeContent={score} color="success"  >
-      </Badge>)
+    let month = d.getMonth() + 1;
+    if(month < 10){
+      month = '0'+month;
     }
+    let day = d.getDate();
+    if(day < 10){
+      day = '0'+day;
+    }
+    var datestring = d.getFullYear() + "-" + month + "-" + day ;
+    return datestring;
   }
+  const renderDateCreated = (v) => {
+    let d = new Date(v);
+    let month = d.getMonth() + 1;
+    if(month < 10){
+      month = '0'+month;
+    }
+    let day = d.getDate();
+    if(day < 10){
+      day = '0'+day;
+    }
+    var datestring =    day +"/" + month + "/" +d.getFullYear();
+    return datestring;
+  }
+  const onSearch = (newValue) => {
+    handleCloseFilterModal();
+    search();
+  };
   return (<>
     <div>
       <Modal
@@ -438,28 +428,20 @@ export default function SurveySideEffects(props) {
             Filters
           </Typography>
           <FormGroup>
-          <MobileDatePicker
+            <MobileDatePicker
               key="fromdate"
               id="fromdate"
-              label="From date"
+              label="Select a day"
               inputFormat="MM/dd/yyyy"
-              value={fromDateFilter ? fromDateFilter : ''}
-              onChange={(newValue) => {setFromDate(newValue);}}
-              renderInput={(params) => <TextField {...params} />}
-            />
-            <MobileDatePicker
-              key="todate"
-              id="todate"
-              label="To date"
-              inputFormat="MM/dd/yyyy"
-              value={toDateFilter ? toDateFilter : ''}
-              onChange={(newValue) => {setToDate(newValue);}}
+              value={dateCreatedFilter ? dateCreatedFilter : ''}
+              onChange={(newValue) => { setDateCreatedFilter(newValue); }}
               renderInput={(params) => <TextField {...params} />}
             />
             <FormControlLabel control={<Checkbox checked={firstnameFilter} onChange={handleFirstnameFilter} />} label="Firstname" />
             <FormControlLabel control={<Checkbox checked={lastnameFilter} onChange={handleLastnameFilter} />} label="Lastname" />
             <FormControlLabel control={<Checkbox checked={nameFilter} onChange={handleNameFilter} />} label="Name" />
             <FormControlLabel control={<Checkbox checked={scoreFilter} onChange={handleEmailFilter} />} label="Score" />
+          <Button variant="outlined" style={{width:'100%'}} onClick={onSearch}>Search</Button>
           </FormGroup>
         </Box>
       </Modal>
@@ -467,6 +449,10 @@ export default function SurveySideEffects(props) {
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 0 }}>
         <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
+        <Grid container>
+          <Grid item pl={2}><Typography>Search for:</Typography></Grid>
+          <Grid item pl={2}><Typography>{dateCreatedFilter?renderDateCreated(dateCreatedFilter):''}</Typography></Grid>
+        </Grid>
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}

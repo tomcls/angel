@@ -92,6 +92,12 @@ const headCells = [
     label: 'Patient Id',
   },
   {
+    id: 'effects',
+    numeric: true,
+    disablePadding: true,
+    label: 'Total effects',
+  },
+  {
     id: 'moods',
     numeric: false,
     disablePadding: false,
@@ -255,7 +261,7 @@ export default function SurveyMoods(props) {
     }
     return 0;
   }
-  const createData = (avatar, moodId, id, name, firstname, lastname, total_moods, date, score) => {
+  const createData = (avatar, moodId, id, name, firstname, lastname, total_moods, date, score,totalEffect) => {
     let effects = name.split(',');
     let effectString = '';
     let t = total_moods.split(',');
@@ -285,7 +291,8 @@ export default function SurveyMoods(props) {
       lastname,
       total_moods,
       date,
-      effectList
+      effectList,
+      totalEffect
     }
   }
   const fetchData = async () => {
@@ -330,13 +337,15 @@ export default function SurveyMoods(props) {
       for (let i = 0; i < r.surveys.length; i++) {
         u.push(createData(
           r.surveys[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.surveys[i].avatar : defaultAvatar,
-          r.surveys[i].survey_mood_id, r.surveys[i].patient_id,
+          r.surveys[i].survey_mood_id, 
+          r.surveys[i].patient_id,
           r.surveys[i].total_moods,
           r.surveys[i].firstname,
           r.surveys[i].lastname,
           r.surveys[i].mood_cnt,
           r.surveys[i].date,
-          r.surveys[i].score));
+          r.surveys[i].score,
+          getTotalEffectByPateintId(r.surveys[i].patient_id,r.effects)));
       }
       setRows(u);
       setMoods(r.surveys);
@@ -347,7 +356,15 @@ export default function SurveyMoods(props) {
       setTotal(0);
     }
   }
-
+  const getTotalEffectByPateintId = (patient_id, effectList) => {
+    for (let index = 0; index < effectList.length; index++) {
+      const element = effectList[index];
+      if(patient_id === element['patient_id']) {
+        return element['total']
+      }
+    }
+    return 0;
+  }
   const handleFiltersModal = () => setOpenFilterModal(true);
   const handleCloseFilterModal = () => setOpenFilterModal(false);
 
@@ -404,11 +421,27 @@ export default function SurveyMoods(props) {
     if(month < 10){
       month = '0'+month;
     }
-    var datestring = d.getFullYear() + "-" + month + "-" + d.getDate() ;
+    let day = d.getDate();
+    if(day < 10){
+      day = '0'+day;
+    }
+    var datestring = d.getFullYear() + "-" + month + "-" + day ;
+    return datestring;
+  }
+  const renderDateCreated = (v) => {
+    let d = new Date(v);
+    let month = d.getMonth() + 1;
+    if(month < 10){
+      month = '0'+month;
+    }
+    let day = d.getDate();
+    if(day < 10){
+      day = '0'+day;
+    }
+    var datestring =    day +"/" + month + "/" +d.getFullYear();
     return datestring;
   }
   const onSearch = (newValue) => {
-    console.log('eee')
     handleCloseFilterModal();
     search();
   };
@@ -471,6 +504,10 @@ export default function SurveyMoods(props) {
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 0 }}>
         <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
+        <Grid container>
+          <Grid item pl={2}><Typography>Search for:</Typography></Grid>
+          <Grid item pl={2}><Typography>{dateCreatedFilter?renderDateCreated(dateCreatedFilter):''}</Typography></Grid>
+        </Grid>
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
@@ -514,6 +551,9 @@ export default function SurveyMoods(props) {
                             <Typography style={{ paddingLeft: '5px', paddingTop: "12px", position: 'relative' }} component={'div'}> {row.firstname + ' ' + row.lastname}</Typography>
                           </Grid>
                         </Grid>
+                      </TableCell>
+                      <TableCell component="th" id={labelId} scope="row" padding="none" align='left'>
+                        <b>{row.totalEffect}</b>
                       </TableCell>
                       <TableCell
                         component='th'
