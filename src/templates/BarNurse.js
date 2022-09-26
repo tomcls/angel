@@ -32,7 +32,7 @@ import Collapse from '@mui/material/Collapse';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
+import { Divider, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 
 const drawerWidth = 240;
@@ -53,14 +53,15 @@ const AppBar = styled(MuiAppBar, {
     }),
   }),
 }));
+
+
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
-  backgroundColor: "white",
   padding: theme.spacing(0, 1),
+  // necessary for content to be below app bar
   ...theme.mixins.toolbar,
   justifyContent: 'flex-end',
-  width: "100%"
 }));
 
 const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp0LF2WgeDkn_sQ1VuMnlnVGjkDvCN4jo2nLMt3b84ry328rg46eohB_JT3WTqOGJovY&usqp=CAU';//process.env.SENDGRID_APIKEY
@@ -215,6 +216,7 @@ export default function BarNurse(props) {
           {theme.direction === 'ltr' ? <ChevronLeftIcon color={'drawerIconDark'} /> : <ChevronRightIcon color={'drawerIconDark'} />}
         </IconButton>
       </DrawerHeader>
+        <Divider />
       <List sx={{ width: '100%', maxWidth: 360 }}
         component="nav"
         aria-labelledby="nested-list-subheader"

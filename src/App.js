@@ -31,10 +31,8 @@ import CoordinatorsPage from './pages/Coordinators';
 import SurveySideEffectsPage from './pages/SurveySideEffects';
 
 function App() {
-  const matches = useMediaQuery('(max-width:970px)');
-
   return (
-    <div className="App" style={{marginBlock:matches?"80px":"0px"}}>
+    <div className="App" >
       <Routes>
       <Route path="/" element={<Patients />} />
       <Route path="/dashboard" element={<Dashboard />} />

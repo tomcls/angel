@@ -293,6 +293,7 @@ export default function SurveyMoods(props) {
     }
   }
   const fetchData = async () => {
+    const stg = JSON.parse(window.appStorage.getItem('user'));
     const u = [];
     let r = null;
     let o = {
@@ -328,7 +329,11 @@ export default function SurveyMoods(props) {
     if (props.moodId) {
       o.id = props.moodId;
     }
+    if (stg.nurse_id) {
+      o.nurse_id = stg.nurse_id;
+    } 
     r = await AngelSurvey().concatMoods(o);
+    console.log(r)
     if (r.surveys && r.surveys.length) {
       for (let i = 0; i < r.surveys.length; i++) {
         u.push(createData(
@@ -353,10 +358,12 @@ export default function SurveyMoods(props) {
     }
   }
   const getTotalEffectByPateintId = (patient_id, effectList) => {
-    for (let index = 0; index < effectList.length; index++) {
-      const element = effectList[index];
-      if(patient_id === element['patient_id']) {
-        return element['total']
+    if(effectList && effectList.length) {
+      for (let index = 0; index < effectList.length; index++) {
+        const element = effectList[index];
+        if(patient_id === element['patient_id']) {
+          return element['total']
+        }
       }
     }
     return 0;

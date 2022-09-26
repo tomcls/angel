@@ -34,7 +34,6 @@ import Modal from '@mui/material/Modal';
 import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
 import '../utils/localStorage';
 
 function descendingComparator(a, b, orderBy) {
@@ -520,7 +519,7 @@ export default function Nurses(props) {
                           padding='none' >
                           {
                             (stg.nurse_id || stg.doctor_id) ?
-                              <SickIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(props.patientId, props.text, 'patient_surveys')} /> :
+                              <SickIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(props.patientId, props.text, 'patient_surveys', 'panel1')} /> :
                               <FamilyRestroomIcon style={{ cursor: 'pointer' }} onClick={() => props.openPatients(row.nurse_id, row.firstname + ' ' + row.lastname, 'nurse_patients')} />
                           }
 

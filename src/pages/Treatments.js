@@ -42,34 +42,34 @@ export default function TreatmentsPage() {
   const [tabs, setTabs] = React.useState([]);
   const [tabIndex, setTabIndex] = React.useState(2);
   const newBtn = useRef(null);
-  const t = new Tabs('treatment',tabIndex,tabs,setTabs,setSelectedTab,setTabIndex,newBtn);
+  const t = new Tabs('treatment', tabIndex, tabs, setTabs, setSelectedTab, setTabIndex, newBtn);
 
   React.useEffect(() => {
     console.log('useEffect Treatments page tabs length=', tabs.length, 'tabIndex', tabIndex);
     let d = document.getElementById('newButton');
     if (d) {
-      d.clk = function (id, text, type,panel) { t.openTab(id, text, type,panel); };
+      d.clk = function (id, text, type, panel) { t.openTab(id, text, type, panel); };
     }
   }, []);
 
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
- 
-  
+
+
 
   return (
     <SnackbarProvider maxSnack={3}>
       <Box sx={{ display: 'flex' }}>
         <MainBar open={setOpen} />
-        <Main open={open} style={{ background: "rgb(229 229 229 / 41%)", marginBlock: "64px" }}>
-          <Grid container spacing={2} mb={'0px'} >
-            <Grid item xs={12} md={6} xl={6} >
+        <Main open={open}>
+          <Grid container spacing={2} mb={'0px'} mt={5} >
+            <Grid item xs={6} md={6} xl={6} >
               <Typography variant="h6" component="div" >
                 Treatments
               </Typography>
             </Grid>
-            <Grid item xs={12} md={6} xl={6} textAlign={'end'}  >
+            <Grid item xs={6} md={6} xl={6} textAlign={'end'}  >
               <Button variant="outlined" onClick={t.onOpenTabClick} ref={newBtn} justifyContent="flex-end" id="newButton">
                 <PeopleIcon /> Add treatment</Button>
             </Grid>

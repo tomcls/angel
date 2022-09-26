@@ -1,4 +1,4 @@
-import React, { useRef,useMemo } from "react";
+import React, { useRef, useMemo } from "react";
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -45,36 +45,36 @@ export default function PatientsPage() {
   const newBtn = useRef(null);
   //const t = new Tabs('patient',tabIndex,tabs,setTabs,setSelectedTab,setTabIndex,newBtn);
 
-  const t  = useMemo(() => {
-    return  new Tabs('patient',tabIndex,tabs,setTabs,setSelectedTab,setTabIndex,newBtn)
-  }, [tabIndex,tabs]);
+  const t = useMemo(() => {
+    return new Tabs('patient', tabIndex, tabs, setTabs, setSelectedTab, setTabIndex, newBtn)
+  }, [tabIndex, tabs]);
 
   React.useEffect(() => {
     console.log('useEffect patients page');
     let d = document.getElementById('newButton');
     if (d) {
-      d.clk = function (id, text, type) { t.openTab(id, text, type); };
+      d.clk = function (id, text, type, panel) { t.openTab(id, text, type, panel); };
     }
-  },[t]);
+  }, [t]);
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
-  
+
   const openPatientTab = (userId, text) => {
     t.createTab('patient', text, userId)
   }
   return (
     <SnackbarProvider maxSnack={3}>
       <Box sx={{ display: 'flex' }}>
-        <MainBar open={setOpen}/>
-        <Main open={open} style={{ marginBlock: "64px" }}>
-          <Grid container spacing={2} mb={'0px'} >
-            <Grid item xs={12} md={6} xl={6} >
+        <MainBar open={setOpen} />
+        <Main open={open}>
+          <Grid container mb={'0px'} mt={6} >
+            <Grid item xs={6} md={6} xl={6} >
               <Typography variant="h6" component="div" >
                 Patients
               </Typography>
             </Grid>
-            <Grid item xs={12} md={6} xl={6} textAlign={'end'}  >
+            <Grid item xs={6} md={6} xl={6} textAlign={'end'}  >
               <Button variant="outlined" onClick={t.onOpenTabClick} justifyContent="flex-end" ref={newBtn} id="newButton">
                 <PeopleIcon /> Add patient</Button>
             </Grid>

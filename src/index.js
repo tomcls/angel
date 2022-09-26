@@ -37,7 +37,7 @@ root.render(
   <LocalizationProvider dateAdapter={AdapterDateFns}>
   <BrowserRouter>
     <ThemeProvider theme={mainTheme}>
-      <App />
+      <App/>
     </ThemeProvider>
   </BrowserRouter>
   </LocalizationProvider>

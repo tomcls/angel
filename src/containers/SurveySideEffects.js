@@ -279,6 +279,7 @@ export default function SurveySideEffects(props) {
     }
   }
   const fetchData = async () => {
+    const stg = JSON.parse(window.appStorage.getItem('user'));
     const u = [];
     let r = null;
     let o = {
@@ -315,6 +316,9 @@ export default function SurveySideEffects(props) {
     if (props.sideEffectId) {
       o.id = props.sideEffectId;
     }
+    if (stg.nurse_id) {
+      o.nurse_id = stg.nurse_id;
+    } 
     r = await AngelSurvey().concatEffects(o);
     if (r.surveys && r.surveys.length) {
       for (let i = 0; i < r.surveys.length; i++) {

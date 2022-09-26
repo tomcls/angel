@@ -198,10 +198,14 @@ export default function Settings(props) {
     <>
       <Box sx={{ display: 'flex' }}>
         <MainBar open={setOpen} />
-        <Main open={open} style={{ background: "rgb(229 229 229 / 41%)", marginBlock: "64px" }}>
-          <Typography variant="h6" gutterBottom component="div">
-            Personal informations
-          </Typography>
+        <Main open={open}>
+        <Grid container spacing={2} mb={'0px'} mt={5} >
+            <Grid item xs={12} md={6} xl={6} >
+            <Typography variant="h6" gutterBottom component="div">
+              Personal informations
+            </Typography>
+            </Grid>
+          </Grid>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6} md={4} xl={2} style={{ paddingTop: '42px' }}>
               <Grid item xs={12} style={{ width: '205px', height: '205px', textAlign: "center", border: '3px solid #ddd', borderRadius: '5px', margin: 'auto' }} >

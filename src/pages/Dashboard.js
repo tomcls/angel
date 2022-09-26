@@ -226,8 +226,8 @@ export default function Dashboard(props) {
     <SnackbarProvider maxSnack={3}>
       <Box sx={{ display: 'flex' }}>
         <Bar open={setOpen} />
-        <Main open={open} style={{ background: "rgb(229 229 229 / 41%)", marginBlock: "64px" }}>
-          <Grid container spacing={2} mb={'0px'} >
+        <Main open={open} >
+          <Grid container spacing={2} mb={'0px'} mt={5} >
             <Grid item xs={12} md={6} xl={6} >
               <Typography variant="h6" component="div" >
                 Dashboard
@@ -237,7 +237,7 @@ export default function Dashboard(props) {
 
             </Grid>
           </Grid>
-          <Grid container spacing={2} mb={'0px'} >
+          <Grid container spacing={2} mb={'0px'} mt={5} >
             <Grid item xs={12} md={3} xl={3} >
               <Card sx={{ display: 'flex' }}>
                 <CardContent  sx={{ display: 'flex',flexDirection:'row', justifyContent:'space-around',paddingBottom:'0px',marginBottom:'0px' }}>
