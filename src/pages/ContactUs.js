@@ -1,22 +1,12 @@
 import React ,{useState}from "react" ;
-
 import Button from "../components/Button";
-import Input from "../components/Input";
-import PersonIcon from '@mui/icons-material/Person';
-import LockIcon from '@mui/icons-material/Lock';
 import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
-import CardMedia from '@mui/material/CardMedia';
-import Card from '@mui/material/Card';
-import Divider from '@mui/material/Divider';
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
-import logo from "../Assets/img/logo.png";
 import box from "../Assets/img/box.png";
 import useMediaQuery from '@mui/material/useMediaQuery';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import TextField from '@mui/material/TextField';
 import TextareaAutosize from '@mui/material/TextareaAutosize';
 
@@ -31,7 +21,6 @@ const itemData = [
   ]
 function Thank() {
   const matches = useMediaQuery('(max-width:970px)');
-const [callsuccess, setcallsuccess] = useState(true)
   return (
     <div className="App">
       <Box sx={{ flexGrow: 1 }}>

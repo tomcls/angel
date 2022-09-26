@@ -19,7 +19,6 @@ import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { useSnackbar } from 'notistack';
-import Badge from '@mui/material/Badge';
 
 import AngelSideEffect from '../api/angel/sideEffect';
 
@@ -93,7 +92,7 @@ const headCells = [
 ];
 
 function EnhancedTableHead(props) {
-  const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -210,13 +209,13 @@ export default function SurveySideEffects(props) {
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
   const [limit, setLimit] = React.useState(30);
-  const [sideEffects, setSideEffects] = React.useState([]);
+  const [, setSideEffects] = React.useState([]);
 
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('');
   const [selected, setSelected] = React.useState([]);
-  const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(30);
+  const [dense, ] = React.useState(false);
+  const [rowsPerPage, ] = React.useState(30);
   const [rows, setRows] = React.useState([]);
 
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
@@ -225,17 +224,15 @@ export default function SurveySideEffects(props) {
   const [firstnameFilter, setFirstnameFilter] = React.useState(true);
   const [lastnameFilter, setLastnameFilter] = React.useState(true);
   const [nameFilter, setNameFilter] = React.useState(true);
-  const [scoreFilter, setScoreFilter] = React.useState(true);
+  const [scoreFilter, ] = React.useState(true);
 
   const [dateCreatedFilter, setDateCreatedFilter] = React.useState(new Date());
 
   React.useEffect(() => {
-    console.log('useEffect SideEffects list!!!!!!!!!!!!!')
     fetchData();
   }, []);
 
   const handleRequestSort = (event, property) => {
-    console.log('handleRequestSort', property)
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
@@ -379,9 +376,6 @@ export default function SurveySideEffects(props) {
   };
   const handleEmailFilter = (event) => {
     //setEmailFilter(event.target.checked);
-  };
-  const handlePhoneFilter = (event) => {
-    //setPhoneFilter(event.target.checked);
   };
   const handleSearchText = (txt) => {
     setSearchFilter(txt);

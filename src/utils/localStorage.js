@@ -21,3 +21,4 @@ window.appStorage = {
       localStorage.clear()
     }
   }
+  

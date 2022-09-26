@@ -3,7 +3,6 @@ import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import PeopleIcon from '@mui/icons-material/People';
-import Bar from "../templates/Bar";
 import Doctors from "../containers/Doctors";
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';

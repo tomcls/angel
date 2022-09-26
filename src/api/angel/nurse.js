@@ -8,7 +8,7 @@ export default  function AngelNurse(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/nurses/list', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         update: async (params) => {
@@ -17,7 +17,7 @@ export default  function AngelNurse(config) {
                 return res.data;
             } catch (error) {
                 console.log(error)
-                throw {error:error};
+                throw new error(error);
             }
         },
         find: async (params) => {
@@ -25,7 +25,7 @@ export default  function AngelNurse(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/nurses/get', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         add: async (params) => {
@@ -33,7 +33,7 @@ export default  function AngelNurse(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/nurses/add', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         patients: async (params) => {
@@ -41,7 +41,7 @@ export default  function AngelNurse(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/nurses/patients', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         addPatient: async (params) => {
@@ -49,7 +49,7 @@ export default  function AngelNurse(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/nurses/add-patient', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         getNurses: async (params) => {
@@ -57,7 +57,7 @@ export default  function AngelNurse(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/nurses/nurses', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         transfers: async (params) => {
@@ -65,7 +65,7 @@ export default  function AngelNurse(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/nurses/transfers', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         addTransfers: async (params) => {
@@ -73,7 +73,7 @@ export default  function AngelNurse(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/nurses/add-transfers', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         recoverTransfer: async (params) => {
@@ -81,7 +81,7 @@ export default  function AngelNurse(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/nurses/recover-transfer', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         }
     }

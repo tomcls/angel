@@ -6,7 +6,6 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import throttle from 'lodash/throttle';
-import AngelPatient from '../api/angel/patient';
 import AngelNurse from '../api/angel/nurse';
 
 export default function ComboNurses(props) {

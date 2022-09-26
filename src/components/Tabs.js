@@ -6,7 +6,6 @@ import NurseContainer from "../containers/Nurse";
 import Nurses from "../containers/Nurses";
 import PatientContainer from "../containers/Patient";
 import Patients from "../containers/Patients";
-import PatientSurveyEffects from "../containers/PatientSurveyEffects";
 import PatientSurveys from "../containers/PatientSurveys";
 import PatientTreatments from "../containers/PatientTreatments";
 import ScientistContainer from "../containers/Scientist";
@@ -28,7 +27,7 @@ export default class Tabs {
     }
     getTab = (v) => {
         for (let i = 0; i < this.tabs.length; i++) {
-            if (this.tabs[i].value == v) {
+            if (this.tabs[i].value === ''+v) {
                 return this.tabs[i];
             }
         }
@@ -86,6 +85,8 @@ export default class Tabs {
                             return <TreatmentContainer treatmentId={id} />
                         case 'patient_surveys':
                             return <PatientSurveys patientId={id} panel={panel} />
+                        default:
+                            return;
                     }
                 }
             }
@@ -178,6 +179,8 @@ export default class Tabs {
                 window.angel.tabName = 'Survey of ' + text;
                 window.angel.panelName = panel;
                 break;
+            default: 
+            return;
         }
         this.newBtn.current.click();
     }

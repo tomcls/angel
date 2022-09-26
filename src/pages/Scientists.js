@@ -43,7 +43,7 @@ export default function ScientistsPage() {
   const [tabs, setTabs] = React.useState([]);
   const [tabIndex, setTabIndex] = React.useState(2);
   const newBtn = useRef(null);
-  const t = new Tabs('scientist',tabIndex,tabs,setTabs,setSelectedTab,setTabIndex,newBtn);
+  const t = new Tabs('scientist', tabIndex, tabs, setTabs, setSelectedTab, setTabIndex, newBtn);
 
   React.useEffect(() => {
     console.log('useEffect Scientists page tabs length=', tabs.length, 'tabIndex', tabIndex);
@@ -52,11 +52,6 @@ export default function ScientistsPage() {
       d.clk = function (id, text, type) { t.openTab(id, text, type); };
     }
   }, []);
-
-  const handleChange = (event, newValue) => {
-    setSelectedTab(newValue);
-  };
- 
   const createTabScientist = (userId, text) => {
     const value = text;
     const newTab = {
@@ -82,7 +77,7 @@ export default function ScientistsPage() {
         <Main open={open} style={{ background: "rgb(229 229 229 / 41%)", marginBlock: "64px" }}>
           <Grid container spacing={2} mb={'0px'} >
             <Grid item xs={12} md={6} xl={6} >
-              <Typography variant="h6"  component="div" >
+              <Typography variant="h6" component="div" >
                 Scientists
               </Typography>
             </Grid>

@@ -54,19 +54,16 @@ export default function ScientistContainer(props) {
     const [laboratoryId, setLaboratoryId] = React.useState(() => '');
     const [laboratoryName, setLaboratoryName] = React.useState(() => '');
 
-    const [openAssignPatientModal, setOpenAssignModal] = React.useState(false);
 
-    const [assignPatientId, setAssignPatientId] = React.useState(null);
 
     const [active, setActive] = React.useState('N');
     const [switchState, setSwitchState] = React.useState(false);
     
-    const [file, setFile] = React.useState(null);
+    const [, setFile] = React.useState(null);
     const uploadFileButton = useRef(null);
 
 
     React.useEffect(() => {
-        console.log("Scientist container effect")
         if (props.userId) {
             async function fetchData() {
                 const user = await AngelScientist().find({ user_id: props.userId });
@@ -129,7 +126,7 @@ export default function ScientistContainer(props) {
             if (id) {
                 u.id = id;
                 try {
-                    const user = await AngelUser().update(u);
+                    await AngelUser().update(u);
                     await setScientist();
                     handleClickVariant('success', 'User well updated');
                 } catch (e) {
@@ -189,7 +186,7 @@ export default function ScientistContainer(props) {
     }
     const savePassword = async () => {
         if (password !== null) {
-            const r = await AngelUser().resetPwd({ password: password, email: email });
+            await AngelUser().resetPwd({ password: password, email: email });
             handleClickVariant('success', 'Password well updated!');
         }
     }
@@ -203,7 +200,7 @@ export default function ScientistContainer(props) {
     };
     const onFileChange = async (e) => {
         setFile({file:e.target.files[0]});
-        const u = await AngelUser().upload(e.target.files[0], 'avatar',id);
+        await AngelUser().upload(e.target.files[0], 'avatar',id);
         handleClickVariant('success', 'Image well uploaded');
     };
     return (

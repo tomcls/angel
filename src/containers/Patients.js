@@ -41,6 +41,8 @@ import AngelNurse from '../api/angel/nurse';
 import AngelDrug from '../api/angel/drugs';
 import Transfer from '../components/Transfer';
 import ComboNurses from '../components/ComboNurses';
+import Filter from '../utils/filters';
+import { FlightRounded } from '@material-ui/icons';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -219,6 +221,7 @@ const EnhancedTableToolbar = (props) => {
         <Grid item md={12}>
           <TextField
             id="input-with-icon-textfield"
+            value={props.searchText}
             onChange={(e) => props.setSearch(e.target.value)}
             label="Search"
             InputProps={{
@@ -247,6 +250,7 @@ EnhancedTableToolbar.propTypes = {
   onOpenFilterModal: PropTypes.func,
   setSearch: PropTypes.func,
 };
+const fltr = new Filter('patients');
 
 export default function Patients(props) {
   const { enqueueSnackbar } = useSnackbar();
@@ -265,7 +269,7 @@ export default function Patients(props) {
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
   const [openTransferModal, setOpenTransferModal] = React.useState(false);
 
-  const [searchFilter, setSearchFilter] = React.useState('');
+  const [searchFilter, setSearchFilter] = React.useState(fltr.get('search',props));
   const [firstnameFilter, setFirstnameFilter] = React.useState(true);
   const [lastnameFilter, setLastnameFilter] = React.useState(true);
   const [emailFilter, setEmailFilter] = React.useState(true);
@@ -302,23 +306,18 @@ export default function Patients(props) {
       o.phone = null;
     }
     if (stg.nurse_id) {
-      console.log("a")
       o.nurse_id = stg.nurse_id;
       r = await AngelNurse().patients(o);
     } else if (props.nurseId) {
-      console.log("b")
       o.nurse_id = props.nurseId;
       r = await AngelNurse().patients(o);
     } else if (props.doctorId) {
-      console.log("c")
       o.doctor_id = props.doctorId;
       r = await AngelDoctor().patients(o);
     } else if (props.drugId) {
-      console.log("d")
       o.drug_id = props.drugId;
       r = await AngelDrug().patients(o);
     } else {
-      console.log("e")
       r = await AngelPatient().list(o);
     }
     if (r.users && r.users.length) {
@@ -432,6 +431,7 @@ export default function Patients(props) {
   };
   const handleSearchText = (txt) => {
     setSearchFilter(txt);
+    fltr.set('search',props,txt);
   };
 
   const onNurseSelect = (nurseId) => {
@@ -501,7 +501,7 @@ export default function Patients(props) {
       </div>
       <Box sx={{ width: '100%' }}>
         <Paper sx={{ width: '100%', mb: 0 }}>
-          <EnhancedTableToolbar nurseId={props.nurseId} numSelected={selected.length} onDeleteItems={onDeleteItems} onTransferItems={handleTransferModal} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} onOpenTransferModal={handleTransferModal} />
+          <EnhancedTableToolbar nurseId={props.nurseId} numSelected={selected.length} onDeleteItems={onDeleteItems} onTransferItems={handleTransferModal} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} onOpenTransferModal={handleTransferModal} searchText={searchFilter}/>
           <TableContainer>
             <Table
               sx={{ minWidth: 750 }}

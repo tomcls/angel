@@ -14,7 +14,6 @@ import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import CircleNotificationsIcon from '@mui/icons-material/CircleNotifications';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AngelSurvey from "../api/angel/survey";
-import { Reorder } from "@material-ui/icons";
 
 const drawerWidth = 240;
 
@@ -176,7 +175,6 @@ export default function Dashboard(props) {
     const o = optionsChartMoods;
     console.log(o)
     const xAxis = [];
-    const bars = [];
     const series = [];
     for (let i = 0; i < records.length; i++) {
       xAxis.push(records[i][0]);

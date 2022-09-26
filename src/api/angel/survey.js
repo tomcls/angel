@@ -8,7 +8,7 @@ export default  function AngelSurvey(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/surveys/moods', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         sideEffects: async (params) => {
@@ -16,7 +16,7 @@ export default  function AngelSurvey(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/surveys/effects', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         groupEffects: async (params) => {
@@ -24,7 +24,7 @@ export default  function AngelSurvey(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/surveys/group-effects', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         concatEffects: async (params) => {
@@ -32,7 +32,7 @@ export default  function AngelSurvey(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/surveys/concat-effects', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         groupMoods: async (params) => {
@@ -40,7 +40,7 @@ export default  function AngelSurvey(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/surveys/group-moods', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         concatMoods: async (params) => {
@@ -48,7 +48,7 @@ export default  function AngelSurvey(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/surveys/concat-moods', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         }
     }

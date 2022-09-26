@@ -1,4 +1,4 @@
-import React,  { useRef } from "react";
+import React, { useRef } from "react";
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -72,7 +72,7 @@ export default function HospitalsPage() {
     setTabs([...tabs, newTab])
     handleTabOptions(value ? value : tabIndex);
   }
- 
+
   const onOpenTabClick = () => {
     console.log('onOpenTabClick')
     if (window.angel && window.angel.userId && window.angel.tabType === 'nurses') {
@@ -171,9 +171,9 @@ export default function HospitalsPage() {
             case 'treatment_drugs':
               return <Drugs treatmentId={id} />
             case 'nurse_patients':
-              return <Patients  nurseId={id} openNurses={() => setSelectedTab('Main')} openDoctors={() => setSelectedTab('Main')} openTreatments={() => setSelectedTab('Main')} />
+              return <Patients nurseId={id} openNurses={() => setSelectedTab('Main')} openDoctors={() => setSelectedTab('Main')} openTreatments={() => setSelectedTab('Main')} />
             case 'doc_patients':
-              return <Patients  doctorId={id} openDoctors={() => setSelectedTab('Main')} openNurses={() => setSelectedTab('Main')} openTreatments={() => setSelectedTab('Main')} />
+              return <Patients doctorId={id} openDoctors={() => setSelectedTab('Main')} openNurses={() => setSelectedTab('Main')} openTreatments={() => setSelectedTab('Main')} />
             case 'doctors':
               return <Doctors patientId={id} openPatients={openTab} />
             case 'nurses':
@@ -182,6 +182,8 @@ export default function HospitalsPage() {
               return <Treatments patientId={id} />
             case 'treatment':
               return <TreatmentContainer treatmentId={id} />
+            default:
+              return;
           }
         }
       }
@@ -253,6 +255,8 @@ export default function HospitalsPage() {
         window.angel.tabType = 'treatment';
         window.angel.tabName = 'Treatment ' + text;
         break;
+      default:
+        return;
     }
     newBtn.current.click();
   }

@@ -46,7 +46,6 @@ function descendingComparator(a, b, orderBy) {
   return 0;
 }
 function getComparator(order, orderBy) {
-  console.log(orderBy)
   return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
@@ -62,7 +61,6 @@ function stableSort(array, comparator) {
     }
     return a[1] - b[1];
   });
-  console.log(comparator)
   let r = stabilizedThis.map((el) => el[0]);
   return r;
 }
@@ -244,13 +242,11 @@ export default function PatientSurveyMoods(props) {
   const [toDateFilter, setToDateFilter] = React.useState(null);
 
   React.useEffect(() => {
-    console.log('useEffect Moods list', props.moods)
     const moods = props.moods;
     fetchDataEffects();
   }, [props.moods]);
 
   const handleRequestSort = (event, property) => {
-    console.log('handleRequestSort', property)
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
@@ -311,9 +307,7 @@ export default function PatientSurveyMoods(props) {
     if (props.patientId) {
       o.patient_id = props.patientId;
     }
-    console.log(o)
     r = await AngelSurvey().moods(o);
-    console.log(r)
     if (r.surveys && r.surveys.length) {
       for (let i = 0; i < r.surveys.length; i++) {
         u.push(createDataMoods(r.surveys[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.surveys[i].avatar : defaultAvatar, r.surveys[i].survey_mood_id, r.surveys[i].id, r.surveys[i].name, r.surveys[i].firstname, r.surveys[i].lastname, r.surveys[i].score, r.surveys[i].date));
@@ -411,11 +405,9 @@ export default function PatientSurveyMoods(props) {
     return datestring;
   }
   const setFromDate = (newValue) => {
-    console.log(newValue)
     setFromDateFilter(newValue);
   };
   const setToDate = (newValue) => {
-    console.log(newValue)
     setToDateFilter(newValue);
   };
   const renderBatch = (score) => {

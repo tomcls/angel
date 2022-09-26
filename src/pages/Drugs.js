@@ -4,7 +4,6 @@ import Box from '@mui/material/Box';
 import { Grid, Typography } from "@mui/material";
 import Button from '@mui/material/Button';
 import PeopleIcon from '@mui/icons-material/People';
-import Bar from "../templates/Bar";
 import Drugs from "../containers/Drugs";
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';

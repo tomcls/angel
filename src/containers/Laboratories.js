@@ -26,7 +26,6 @@ import { Button, Grid } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
-import BiotechIcon from '@mui/icons-material/Biotech';
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -34,10 +33,6 @@ import Modal from '@mui/material/Modal';
 
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
-import HealingIcon from '@mui/icons-material/Healing';
-import HailIcon from '@mui/icons-material/Hail';
-import AngelNurse from '../api/angel/nurse';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -107,7 +102,7 @@ const headCells = [
 ];
 
 function EnhancedTableHead(props) {
-  const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+  const {  onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -223,13 +218,13 @@ export default function Laboratories(props) {
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
   const [limit, setLimit] = React.useState(5);
-  const [laboratories, setLaboratories] = React.useState([]);
+  const [, setLaboratories] = React.useState([]);
 
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('id');
   const [selected, setSelected] = React.useState([]);
-  const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [dense, ] = React.useState(false);
+  const [rowsPerPage, ] = React.useState(5);
   const [rows, setRows] = React.useState([]);
 
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
@@ -241,7 +236,6 @@ export default function Laboratories(props) {
 
   React.useEffect(() => {
     console.log('useEffect Laboratories list', props.laboratories)
-    const laboratories = props.laboratories;
     fetchData();
   }, [props.laboratories]);
 

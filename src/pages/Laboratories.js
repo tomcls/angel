@@ -168,6 +168,8 @@ export default function LaboratoriesPage() {
               return <Treatment treatmentId={id} />
             case 'laboratory':
                 return <LaboratoryContainer drugId={id} />
+            default:
+                  return;
           }
         }
       }
@@ -234,6 +236,8 @@ export default function LaboratoriesPage() {
         window.angel.tabType = 'treatment';
         window.angel.tabName = 'Treatment ' + text;
         break;
+      default:
+          return;
     }
     newLaboratoryBtn.current.click();
   }

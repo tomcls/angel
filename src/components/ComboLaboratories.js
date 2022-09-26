@@ -4,12 +4,6 @@ import Autocomplete from '@mui/material/Autocomplete';
 import CircularProgress from '@mui/material/CircularProgress';
 import AngelLaboratory from '../api/angel/laboratory';
 
-function sleep(delay = 0) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, delay);
-  });
-}
-
 export default function ComboLaboratories(props) {
   const [open, setOpen] = React.useState(false);
   const [options, setOptions] = React.useState([]);

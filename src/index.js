@@ -10,6 +10,13 @@ import { frFR, enUS, nlNL } from '@mui/material/locale';
 import AppStyle from "./templates/style";
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/lab';
+const u = JSON.parse(window.appStorage.getItem('user'));
+let lang = enUS
+if(u && u.lang === 'fr'){
+  lang = frFR;
+} else if(u && u.lang === 'nl'){
+  lang = nlNL;
+}
 const theme = createTheme(
   {
     components: {
@@ -22,7 +29,7 @@ const theme = createTheme(
       },
     }
   },
-  enUS,
+  lang,
 );
 const mainTheme = createTheme(AppStyle().main());
 const root = ReactDOM.createRoot(document.getElementById('root'));

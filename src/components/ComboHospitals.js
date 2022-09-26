@@ -4,11 +4,6 @@ import Autocomplete from '@mui/material/Autocomplete';
 import CircularProgress from '@mui/material/CircularProgress';
 import AngelHospital from '../api/angel/hospital';
 
-function sleep(delay = 0) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, delay);
-  });
-}
 
 export default function ComboHospitals(props) {
   const [open, setOpen] = React.useState(false);

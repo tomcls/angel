@@ -183,6 +183,8 @@ export default function MoodsPage() {
               return <Treatments patientId={id} />
             case 'treatment':
               return <TreatmentContainer treatmentId={id} />
+            default:
+              return;
           }
         }
       }
@@ -254,6 +256,8 @@ export default function MoodsPage() {
         window.angel.tabType = 'treatment';
         window.angel.tabName = 'Treatment ' + text;
         break;
+      default:
+          return;
     }
     newBtn.current.click();
   }

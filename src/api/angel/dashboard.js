@@ -8,7 +8,7 @@ export default  function AngelDashboard(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/dashboard/moods', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         }
     }

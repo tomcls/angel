@@ -30,7 +30,7 @@ export default function Register() {
   const [profile, setProfile] = useState('');
   const [password, setPassword] = useState('');
   const [hasRegisterError, setRegisterError] = useState(null);
-  const [openProfile, setopenProfile] = React.useState(false);
+  const [openProfile, ] = React.useState(false);
   const anchorRef = React.useRef(null);
 
   const prevOpen = React.useRef(openProfile);

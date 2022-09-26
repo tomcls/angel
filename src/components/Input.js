@@ -1,24 +1,12 @@
 import React, { useState } from "react";
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-import  withStyles  from "@mui/styles/withStyles";
 
 export default function InputWithIcon({text,icon,type,onChange}) {
-  const [field, setField] = useState("");
 
   function onFieldChange(e) {
     onChange(e.target.value)
   }
-  const CustomTextField = withStyles({ 
-    /*root: {
-      '& .MuiOutlinedInput-root': {
-        '& fieldset': {
-          borderRadius: type?"25px":"10px"
-          
-        },
-      },
-    },*/
-  })(TextField);
   return (
     <Box sx={{ '& > :not(style)': { mt: 1 } }} style={{display: "flex", justifyContent: "center", width:"100%", borderradius:type?"25px":"10px"}}>
       <Box sx={{ display: 'flex', alignItems: 'flex-end' ,width:"100%",borderradius:type?"25px":"10px",}}>

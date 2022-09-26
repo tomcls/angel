@@ -14,7 +14,7 @@ export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const matches = useMediaQuery('(max-width:970px)');
-  const [openProfile, setopenProfile] = React.useState(false);
+  const [openProfile, ] = React.useState(false);
   const anchorRef = React.useRef(null);
   const prevOpen = React.useRef(openProfile);
 

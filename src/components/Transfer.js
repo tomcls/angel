@@ -35,15 +35,13 @@ export default function Transfer(props) {
         setChecked(newChecked);
     };
     const getBack = async (transferId) =>  {
-        const tr = await AngelNurse().recoverTransfer({ transfer_id: transferId });
+         await AngelNurse().recoverTransfer({ transfer_id: transferId });
         props.onPatientRecovered();
         fetchData();
     }
     return (
         <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
             {transfers && transfers.length ? transfers.map((transfer) => {
-                const labelId = `checkbox-list-label-${transfer.id}`;
-
                 return (
                     <ListItem
                         key={transfer.id}

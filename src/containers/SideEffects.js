@@ -77,7 +77,7 @@ const headCells = [
 ];
 
 function EnhancedTableHead(props) {
-  const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+  const {  onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -186,7 +186,7 @@ EnhancedTableToolbar.propTypes = {
 export default function SideEffects(props) {
 
   const { enqueueSnackbar } = useSnackbar();
-  const [sideEffects, setSideEffects] = React.useState(null);
+  const [, setSideEffects] = React.useState(null);
 
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
@@ -195,13 +195,12 @@ export default function SideEffects(props) {
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('id');
   const [selected, setSelected] = React.useState([]);
-  const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [dense, ] = React.useState(false);
+  const [rowsPerPage, ] = React.useState(5);
   const [rows, setRows] = React.useState([]);
 
   React.useEffect(() => {
     console.log('useEffect SideEffects list container')
-    
     fetchData();
   }, []);
   const fetchData = async () => {

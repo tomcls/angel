@@ -8,7 +8,7 @@ export default  function AngelDrug(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/drugs/list', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         update: async (params) => {
@@ -17,7 +17,7 @@ export default  function AngelDrug(config) {
                 return res.data;
             } catch (error) {
                 console.log(error)
-                throw {error:error};
+                throw new error(error);
             }
         },
         find: async (params) => {
@@ -25,7 +25,7 @@ export default  function AngelDrug(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/drugs/get', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         search: async (params) => {
@@ -33,7 +33,7 @@ export default  function AngelDrug(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/drugs/search', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         add: async (params) => {
@@ -41,7 +41,7 @@ export default  function AngelDrug(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/drugs/add', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         delete: async (params) => {
@@ -49,7 +49,7 @@ export default  function AngelDrug(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/drugs/delete', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         addDescription: async (params) => {
@@ -57,7 +57,7 @@ export default  function AngelDrug(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/drug-descriptions/add', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         updateDescription: async (params) => {
@@ -65,7 +65,7 @@ export default  function AngelDrug(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/drug-descriptions/update', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         addPatient: async (params) => {
@@ -73,7 +73,7 @@ export default  function AngelDrug(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/drugs/add-patient', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         patients: async (params) => {
@@ -81,7 +81,7 @@ export default  function AngelDrug(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/drugs/patients', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         getUserDrugs: async (params) => {
@@ -89,7 +89,7 @@ export default  function AngelDrug(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/drugs/user-drugs', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         upload: async (file,name,drugId) => {
@@ -101,7 +101,7 @@ export default  function AngelDrug(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/drugs/upload',formData, {headers: {'Authorization':accessToken,'content-type': 'multipart/form-data'}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         notice: async (file,name,id) => {
@@ -113,7 +113,7 @@ export default  function AngelDrug(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/drugs/notice',formData, {headers: {'Authorization':accessToken,'content-type': 'multipart/form-data'}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         }
     }

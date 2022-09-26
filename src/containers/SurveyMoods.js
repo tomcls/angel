@@ -40,6 +40,7 @@ import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDiss
 import SentimentSatisfiedIcon from '@mui/icons-material/SentimentSatisfied';
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
 import MoodIcon from '@mui/icons-material/Mood';
+import Filter from '../utils/filters';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -51,7 +52,6 @@ function descendingComparator(a, b, orderBy) {
   return 0;
 }
 function getComparator(order, orderBy) {
-  console.log(orderBy)
   return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
@@ -67,7 +67,6 @@ function stableSort(array, comparator) {
     }
     return a[1] - b[1];
   });
-  console.log(comparator)
   let r = stabilizedThis.map((el) => el[0]);
   return r;
 }
@@ -216,7 +215,7 @@ EnhancedTableToolbar.propTypes = {
   setSearch: PropTypes.func,
 };
 const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp0LF2WgeDkn_sQ1VuMnlnVGjkDvCN4jo2nLMt3b84ry328rg46eohB_JT3WTqOGJovY&usqp=CAU';//process.env.SENDGRID_APIKEY
-
+const fltr = new Filter('surveyMoods');
 export default function SurveyMoods(props) {
 
   const { enqueueSnackbar } = useSnackbar();
@@ -239,15 +238,13 @@ export default function SurveyMoods(props) {
   const [lastnameFilter, setLastnameFilter] = React.useState(true);
   const [nameFilter, setNameFilter] = React.useState(true);
   const [scoreFilter,] = React.useState(true);
-  const [dateCreatedFilter, setDateCreatedFilter] = React.useState(new Date());
+  const [dateCreatedFilter, setDateCreatedFilter] = React.useState(fltr.get('date_created',props)?fltr.get('date_created',props):new Date());
   React.useEffect(() => {
     console.log('useEffect Moods list');
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
   const handleRequestSort = (event, property) => {
-    console.log('handleRequestSort', property)
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
@@ -332,7 +329,6 @@ export default function SurveyMoods(props) {
       o.id = props.moodId;
     }
     r = await AngelSurvey().concatMoods(o);
-    console.log(r)
     if (r.surveys && r.surveys.length) {
       for (let i = 0; i < r.surveys.length; i++) {
         u.push(createData(
@@ -426,6 +422,7 @@ export default function SurveyMoods(props) {
       day = '0'+day;
     }
     var datestring = d.getFullYear() + "-" + month + "-" + day ;
+    
     return datestring;
   }
   const renderDateCreated = (v) => {
@@ -471,6 +468,10 @@ export default function SurveyMoods(props) {
       return (<MoodIcon color="success" />);
     }
   }
+  const onDateCreateChanged = (d) => {
+    fltr.set('date_created',props,d);
+    setDateCreatedFilter(d); 
+  }
   return (<>
     <div>
       <Modal
@@ -489,7 +490,7 @@ export default function SurveyMoods(props) {
               label="Select a day"
               inputFormat="MM/dd/yyyy"
               value={dateCreatedFilter ? dateCreatedFilter : ''}
-              onChange={(newValue) => { setDateCreatedFilter(newValue); }}
+              onChange={onDateCreateChanged}
               renderInput={(params) => <TextField {...params} />}
             />
             <FormControlLabel control={<Checkbox checked={firstnameFilter} onChange={handleFirstnameFilter} />} label="Firstname" />

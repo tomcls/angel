@@ -8,7 +8,7 @@ export default  function AngelDoctor(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/doctors/list', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new Error(error);
             }
         },
         update: async (params) => {
@@ -16,8 +16,7 @@ export default  function AngelDoctor(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/doctors/update', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                console.log(error)
-                throw {error:error};
+                throw new error(error);
             }
         },
         find: async (params) => {
@@ -25,7 +24,7 @@ export default  function AngelDoctor(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/doctors/get', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         add: async (params) => {
@@ -33,7 +32,7 @@ export default  function AngelDoctor(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/doctors/add', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         patients: async (params) => {
@@ -41,7 +40,7 @@ export default  function AngelDoctor(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/doctors/patients', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         addPatient: async (params) => {
@@ -49,7 +48,7 @@ export default  function AngelDoctor(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/doctors/add-patient', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         getDoctors: async (params) => {
@@ -57,7 +56,7 @@ export default  function AngelDoctor(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/doctors/doctors', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         }
     }

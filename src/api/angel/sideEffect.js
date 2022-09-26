@@ -8,7 +8,7 @@ export default  function AngelSideEffect(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/side-effects/list', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         update: async (params) => {
@@ -17,7 +17,7 @@ export default  function AngelSideEffect(config) {
                 return res.data;
             } catch (error) {
                 console.log(error)
-                throw {error:error};
+                throw new error(error);
             }
         },
         find: async (params) => {
@@ -25,7 +25,7 @@ export default  function AngelSideEffect(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/side-effects/get', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         search: async (params) => {
@@ -33,7 +33,7 @@ export default  function AngelSideEffect(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/side-effects/search', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         add: async (params) => {
@@ -41,7 +41,7 @@ export default  function AngelSideEffect(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/side-effects/add', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         delete: async (params) => {
@@ -49,7 +49,7 @@ export default  function AngelSideEffect(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/side-effects/delete', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         addDescription: async (params) => {
@@ -57,7 +57,7 @@ export default  function AngelSideEffect(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/side-effect-descriptions/add', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         },
         updateDescription: async (params) => {
@@ -65,7 +65,7 @@ export default  function AngelSideEffect(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/side-effect-descriptions/update', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw {error:error};
+                throw new error(error);
             }
         }
     }
