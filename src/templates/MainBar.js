@@ -4,7 +4,7 @@ import { createTheme } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import { frFR, enUS, nlNL } from '@mui/material/locale';
 import AppStyle from "./style";
-import BarNurse from "./BarNurse";
+import SubBar from "./SubBar";
 
 export default function MainBar(props) {
     const [user, setUser] = React.useState(null);
@@ -40,8 +40,8 @@ export default function MainBar(props) {
     const renderBar = (user) => {
         
         const u = JSON.parse(window.appStorage.getItem('user'));
-        if(u && u.nurse_id) {
-            return (<BarNurse open={props.open} user={user} logout={logout} theme={drawerTheme} />)
+        if(u && (u.nurse_id || u.doctor_id)) {
+            return (<SubBar open={props.open} user={user} logout={logout} theme={drawerTheme} />)
         } else {
             return(<Bar open={props.open} user={user} logout={logout} theme={drawerTheme} />)
         }

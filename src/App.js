@@ -10,7 +10,7 @@ import Register from "./pages/Register";
 import Thank from './pages/Thank';
 import ContactUs from "./pages/ContactUs";
 import Dashboard from "./pages/Dashboard";
-import useMediaQuery from '@mui/material/useMediaQuery';
+//import useMediaQuery from '@mui/material/useMediaQuery';
 import Privacy from './pages/Privacy';
 import RequestPassword from './pages/RequestPwd';
 import ResetPassword from './pages/ResetPwd';

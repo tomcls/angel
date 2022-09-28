@@ -15,6 +15,7 @@ import { Grid } from "@mui/material";
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import Tabs from '../components/Tabs';
 import MainBar from "../templates/MainBar";
+import Translation from '../utils/translation';
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -43,7 +44,8 @@ export default function PatientsPage() {
   const [tabs, setTabs] = React.useState([]);
   const [tabIndex, setTabIndex] = React.useState(2);
   const newBtn = useRef(null);
-  //const t = new Tabs('patient',tabIndex,tabs,setTabs,setSelectedTab,setTabIndex,newBtn);
+  const stg = JSON.parse(window.appStorage.getItem('user'));
+  const lg = new Translation(stg.lang);
 
   const t = useMemo(() => {
     return new Tabs('patient', tabIndex, tabs, setTabs, setSelectedTab, setTabIndex, newBtn)
@@ -71,19 +73,19 @@ export default function PatientsPage() {
           <Grid container mb={'0px'} mt={6} >
             <Grid item xs={6} md={6} xl={6} >
               <Typography variant="h6" component="div" >
-                Patients
+                {lg.get('Patients')}
               </Typography>
             </Grid>
             <Grid item xs={6} md={6} xl={6} textAlign={'end'}  >
               <Button variant="outlined" onClick={t.onOpenTabClick} justifyContent="flex-end" ref={newBtn} id="newButton">
-                <PeopleIcon /> Add patient</Button>
+                <PeopleIcon /> {lg.get('Add patient')}</Button>
             </Grid>
           </Grid>
           <Box sx={{ width: '100%' }}>
             <TabContext value={selectedTab ? selectedTab : '1'}>
               <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <TabList onChange={handleChange} aria-label="" variant="scrollable" scrollButtons="auto" >
-                  <Tab label="List" value="Main" icon={<FormatListBulletedIcon />} iconPosition="start" />
+                  <Tab label= {lg.get('List')} value="Main" icon={<FormatListBulletedIcon />} iconPosition="start" />
                   {tabs.map(tab => (
                     <Tab key={tab.idx} label={tab.label} value={tab.value} icon={<Cancel onClick={(e) => t.handleCloseTab(e, tab.idx)} />} iconPosition="end" />
                   ))}

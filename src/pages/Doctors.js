@@ -58,8 +58,8 @@ export default function DoctorsPage() {
   return (
     <SnackbarProvider maxSnack={3}>
       <Box sx={{ display: 'flex' }}>
-      <Main open={open}/>
-        <Main open={open} >
+      <MainBar open={setOpen} />
+        <Main open={open}>
           <Grid container spacing={2} mb={'0px'} mt={5} >
             <Grid item xs={6} md={6} xl={6} >
               <Typography variant="h6" component="div" >

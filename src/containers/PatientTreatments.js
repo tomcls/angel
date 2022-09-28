@@ -253,6 +253,7 @@ export default function PatientTreatments(props) {
   const [searchFilter, setSearchFilter] = React.useState('');
   const [codeFilter, setCodeFilter] = React.useState(true);
   const [nameFilter, setNameFilter] = React.useState(true);
+  const stg = JSON.parse(window.appStorage.getItem('user'));
 
   React.useEffect(() => {
     console.log('useEffect Treatments list container')
@@ -263,7 +264,7 @@ export default function PatientTreatments(props) {
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
-  const createData = (id, name, code, created,posology,start_date,end_date,firstname,lastname,avatar,patient_id,drug_id) => {
+  const createData = (id, name, code, created, posology, start_date, end_date, firstname, lastname, avatar, patient_id, drug_id) => {
     return {
       id,
       name,
@@ -281,8 +282,8 @@ export default function PatientTreatments(props) {
   }
   const fetchData = async () => {
     const u = [];
-    let  r = null ; //
-    let o = { limit: limit, page: page , lang_id: 'en'};
+    let r = null; //
+    let o = { limit: limit, page: page, lang_id: 'en' };
 
     if (codeFilter) {
       o.code = searchFilter;
@@ -296,12 +297,18 @@ export default function PatientTreatments(props) {
     }
     if (props.patientId) {
       o.patient_id = props.patientId;
-    } 
+    }
+    if (stg.nurse_id) {
+      o.nurse_id = stg.nurse_id;
+    }
+    if (stg.doctor_id) {
+      o.doctor_id = stg.doctor_id;
+    }
     r = await AngelDrug().getUserDrugs(o);
     if (r.treatments && r.treatments.length) {
       for (let i = 0; i < r.treatments.length; i++) {
         //createData('Cupcake', 305, 3.7, 67, 4.3, <BeachAccessIcon color='primary' style={{ marginInline: '10px' }} />, <GridViewIcon color='primary' style={{ marginInline: '10px' }} />, <TrendingUpIcon color='primary' style={{ marginInline: '10px' }} />, 'ahmed')
-        u.push(createData(r.treatments[i].id, r.treatments[i].name, r.treatments[i].code, r.treatments[i].date_created,r.treatments[i].posology,r.treatments[i].start_date,r.treatments[i].end_date,r.treatments[i].firstname,r.treatments[i].lastname,r.treatments[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.treatments[i].avatar : defaultAvatar, r.treatments[i].patient_id, r.treatments[i].drug_id));
+        u.push(createData(r.treatments[i].id, r.treatments[i].name, r.treatments[i].code, r.treatments[i].date_created, r.treatments[i].posology, r.treatments[i].start_date, r.treatments[i].end_date, r.treatments[i].firstname, r.treatments[i].lastname, r.treatments[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.treatments[i].avatar : defaultAvatar, r.treatments[i].patient_id, r.treatments[i].drug_id));
       }
       setRows(u);
       setTreatments(r.treatments);
@@ -347,8 +354,8 @@ export default function PatientTreatments(props) {
   const isSelected = (id) => selected.indexOf(id) !== -1;
 
   const onDeleteItems = async () => {
-    if(selected.length) {
-      await AngelTreatment().delete({ids:selected.join(',')});
+    if (selected.length) {
+      await AngelTreatment().delete({ ids: selected.join(',') });
       handleClickVariant('success', 'Treatment(s) well deleted');
       fetchData();
     }
@@ -393,132 +400,136 @@ export default function PatientTreatments(props) {
           </Box>
         </Modal>
       </div>
-    <Box sx={{ width: '100%' }}>
-      <Paper sx={{ width: '100%', mb: 0 }}>
-      <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
-        <TableContainer>
-          <Table
-            sx={{ minWidth: 750 }}
-            aria-labelledby='tableTitle'
-            size={dense ? 'small' : 'medium'}
-          >
-            <EnhancedTableHead
-              numSelected={selected.length}
-              order={order}
-              orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
-              rowCount={rows.length}
-            />
-            <TableBody>
-              {stableSort(rows, getComparator(order, orderBy))
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => {
-                  const isItemSelected = isSelected(row.id);
-                  const labelId = `enhanced-table-checkbox-${index}`;
-                  return (
-                    <TableRow
-                      hover
-                      onClick={(event) => handleClick(event, row.id)}
-                      onDoubleClick={() => document.getElementById("newButton").clk(row.id, row.name,'treatment')}
-                      role="checkbox"
-                      aria-checked={isItemSelected}
-                      tabIndex={-1}
-                      key={row.id}
-                      selected={isItemSelected}
-                    >
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          checked={isItemSelected}
-                          inputProps={{ 'aria-labelledby': labelId }}
-                        />
-                      </TableCell>
-                      <TableCell component="th" id={labelId} scope="row" padding="none" align='left'>
-                        {props.patientId ? row.id: <Grid item xs={1} style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient_surveys','panel3')}>
-                          <Grid container >
-                            <Typography style={{ paddingLeft: '5px', paddingTop: "12px", position: 'relative' }} component={'div'}> {row.id}</Typography>
-                            <Avatar src={row.avatar} textAlign={'start'}  style={{ margin: "5px" }} />
-                            <Typography style={{ paddingLeft: '5px', paddingTop: "12px", position: 'relative' }} component={'div'}> {row.firstname + ' ' + row.lastname}</Typography>
-                          </Grid>
-                        </Grid>}
-                        
-                      </TableCell>
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        scope='row'
-                        style={{ textAlign: 'center' }}
-                        padding='none'
-                        onClick={() => document.getElementById("newButton").clk(row.drug_id, row.name,'treatment')}
+      <Box sx={{ width: '100%' }}>
+        <Paper sx={{ width: '100%', mb: 0 }}>
+          <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
+          <TableContainer>
+            <Table
+              sx={{ minWidth: 750 }}
+              aria-labelledby='tableTitle'
+              size={dense ? 'small' : 'medium'}
+            >
+              <EnhancedTableHead
+                numSelected={selected.length}
+                order={order}
+                orderBy={orderBy}
+                onSelectAllClick={handleSelectAllClick}
+                onRequestSort={handleRequestSort}
+                rowCount={rows.length}
+              />
+              <TableBody>
+                {stableSort(rows, getComparator(order, orderBy))
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row, index) => {
+                    const isItemSelected = isSelected(row.id);
+                    const labelId = `enhanced-table-checkbox-${index}`;
+                    return (
+                      <TableRow
+                        hover
+                        onClick={(event) => handleClick(event, row.id)}
+                        onDoubleClick={() => document.getElementById("newButton").clk(row.id, row.name, 'treatment')}
+                        role="checkbox"
+                        aria-checked={isItemSelected}
+                        tabIndex={-1}
+                        key={row.id}
+                        selected={isItemSelected}
                       >
-                        {row.name}
-                      </TableCell>
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        scope='row'
-                        style={{ textAlign: 'center' }}
-                        padding='none'
-                      >
-                        {row.code}
-                      </TableCell>
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        style={{ textAlign: 'center' }}
-                        scope='row'
-                        padding='none'>
-                        {row.posology}
-                      </TableCell>
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        style={{ textAlign: 'center' }}
-                        scope='row'
-                        padding='none'>
-                        {row.start_date}
-                      </TableCell>
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        style={{ textAlign: 'center' }}
-                        scope='row'
-                        padding='none'>
-                        {row.end_date}
-                      </TableCell>
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        style={{ textAlign: 'center' }}
-                        scope='row'
-                        padding='none'>
-                        {row.created}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              {emptyRows > 0 && (
-                <TableRow
-                  style={{
-                    height: (dense ? 33 : 53) * emptyRows,
-                  }}
-                >
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component='div'
-          count={total ? total : 0}
-          rowsPerPage={limit}
-          page={page}
-          onPageChange={setPage}
-          onRowsPerPageChange={(e) => { setLimit(e.target.value) }}
-        />
-      </Paper>
-    </Box>
-  </LocalizationProvider>);
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            checked={isItemSelected}
+                            inputProps={{ 'aria-labelledby': labelId }}
+                          />
+                        </TableCell>
+                        <TableCell component="th" id={labelId} scope="row" padding="none" align='left'>
+                          {props.patientId ? row.id :
+                            <Grid container spacing={2}>
+                              <Grid item xs={1} textAlign={'start'} style={{ marginTop: '10px', fontWeight: 'bold' }}>
+                                {row.id}
+                              </Grid>
+                              <Grid item xs={1} style={{ cursor: 'pointer' }}>
+                                <Avatar src={row.avatar} textAlign={'start'} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient_surveys', 'panel3')} />
+                              </Grid>
+                              <Grid item style={{ cursor: 'pointer', marginLeft: '20px', paddingTop: '18px' }}>
+                                {row.firstname + ' ' + row.lastname}
+                              </Grid>
+                            </Grid>}
+                        </TableCell>
+                        <TableCell
+                          component='th'
+                          id={labelId}
+                          scope='row'
+                          style={{ textAlign: 'center' }}
+                          padding='none'
+                          onClick={() => document.getElementById("newButton").clk(row.drug_id, row.name, 'treatment')}
+                        >
+                          {row.name}
+                        </TableCell>
+                        <TableCell
+                          component='th'
+                          id={labelId}
+                          scope='row'
+                          style={{ textAlign: 'center' }}
+                          padding='none'
+                        >
+                          {row.code}
+                        </TableCell>
+                        <TableCell
+                          component='th'
+                          id={labelId}
+                          style={{ textAlign: 'center' }}
+                          scope='row'
+                          padding='none'>
+                          {row.posology}
+                        </TableCell>
+                        <TableCell
+                          component='th'
+                          id={labelId}
+                          style={{ textAlign: 'center' }}
+                          scope='row'
+                          padding='none'>
+                          {row.start_date}
+                        </TableCell>
+                        <TableCell
+                          component='th'
+                          id={labelId}
+                          style={{ textAlign: 'center' }}
+                          scope='row'
+                          padding='none'>
+                          {row.end_date}
+                        </TableCell>
+                        <TableCell
+                          component='th'
+                          id={labelId}
+                          style={{ textAlign: 'center' }}
+                          scope='row'
+                          padding='none'>
+                          {row.created}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                {emptyRows > 0 && (
+                  <TableRow
+                    style={{
+                      height: (dense ? 33 : 53) * emptyRows,
+                    }}
+                  >
+                    <TableCell colSpan={6} />
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component='div'
+            count={total ? total : 0}
+            rowsPerPage={limit}
+            page={page}
+            onPageChange={setPage}
+            onRowsPerPageChange={(e) => { setLimit(e.target.value) }}
+          />
+        </Paper>
+      </Box>
+    </LocalizationProvider>);
 }

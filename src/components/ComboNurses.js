@@ -77,7 +77,7 @@ export default function ComboNurses(props) {
         setInputValue(newInputValue);
       }}
       renderInput={(params) => (
-        <TextField {...params} label="Find a nurse" fullWidth />
+        <TextField {...params} label={props.lg.get('Find a nurse')} fullWidth />
       )}
       renderOption={(props, option) => {
 

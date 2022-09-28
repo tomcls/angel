@@ -1,4 +1,4 @@
-import React, {useEffect, useCallback} from 'react';
+import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -25,6 +25,7 @@ import AngelDoctor from '../api/angel/doctor';
 import { Avatar } from '@mui/material';
 import { Grid } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
+import SickIcon from '@mui/icons-material/Sick';
 
 import { Button } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -42,7 +43,8 @@ import AngelDrug from '../api/angel/drugs';
 import Transfer from '../components/Transfer';
 import ComboNurses from '../components/ComboNurses';
 import Filter from '../utils/filters';
-import { FlightRounded } from '@material-ui/icons';
+import Translation from '../utils/translation';
+
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -54,6 +56,7 @@ function descendingComparator(a, b, orderBy) {
   return 0;
 }
 function getComparator(order, orderBy) {
+  console.log(order, orderBy)
   return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
@@ -61,6 +64,7 @@ function getComparator(order, orderBy) {
 // This method is created for cross-browser compatibility, if you don't
 // need to support IE11, you can use Array.prototype.sort() directly
 function stableSort(array, comparator) {
+  
   const stabilizedThis = array.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -84,60 +88,104 @@ const styleModal = {
   p: 4,
 };
 
-const headCells = [
-  {
-    id: 'id',
-    numeric: true,
-    disablePadding: true,
-    label: 'Id',
-  },
-  {
-    id: 'firstname',
-    numeric: false,
-    disablePadding: false,
-    label: 'Prénom',
-  },
-  {
-    id: 'lastname',
-    numeric: false,
-    disablePadding: false,
-    label: 'Nom',
-  },
-  {
-    id: 'email',
-    numeric: false,
-    disablePadding: false,
-    label: 'Email',
-  },
-  {
-    id: 'phone',
-    numeric: false,
-    disablePadding: false,
-    label: 'Téléphone',
-  }, {
-    id: 'nurse',
-    numeric: false,
-    disablePadding: false,
-    label: 'Nurses',
-  }, {
-    id: 'doctor',
-    numeric: false,
-    disablePadding: false,
-    label: 'Doctors',
-  }, {
-    id: 'treatments',
-    numeric: false,
-    disablePadding: false,
-    label: 'Treatments',
-  },
-];
-
 function EnhancedTableHead(props) {
   const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
-
+  let headCells = [
+    {
+      id: 'id',
+      numeric: true,
+      disablePadding: true,
+      label: 'Id',
+    },
+    {
+      id: 'firstname',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Firstname'),
+    },
+    {
+      id: 'lastname',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Lastname'),
+    },
+    {
+      id: 'email',
+      numeric: false,
+      disablePadding: false,
+      label: 'Email',
+    },
+    {
+      id: 'phone',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Phone'),
+    }
+  ];
+  const headCellsAmin = [
+    {
+      id: 'nurse',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Nurses'),
+    }, {
+      id: 'doctor',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Doctors'),
+    }, {
+      id: 'treatments',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Treatments'),
+    },
+  ];
+  const headCellsNurse = [
+    {
+      id: 'surveys',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Survey'),
+    }, {
+      id: 'doctor',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Doctors'),
+    }, {
+      id: 'treatments',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Treatments'),
+    }
+  ];
+  const headCellsDoctor = [
+    {
+      id: 'surveys',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Survey'),
+    }, {
+      id: 'nurse',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Nurses'),
+    }, {
+      id: 'treatments',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Treatments'),
+    }
+  ];
+  if (props.user && props.user.nurse_id) {
+    headCells = [...headCells, ...headCellsNurse]
+  } else if (props.user && props.user.doctor_id) {
+    headCells = [...headCells, ...headCellsDoctor]
+  } else {
+    headCells = [...headCells, ...headCellsAmin];
+  }
   return (
     <TableHead>
       <TableRow>
@@ -185,6 +233,7 @@ const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp
 
 const EnhancedTableToolbar = (props) => {
   const { numSelected } = props;
+
   return (
     <Toolbar
       sx={{
@@ -202,7 +251,7 @@ const EnhancedTableToolbar = (props) => {
           color='inherit'
           variant='subtitle1'
           component='div' >
-          {numSelected} selected
+          {numSelected} {props.lg.get('selected')}
         </Typography>
       ) : (<></>
       )}
@@ -212,7 +261,7 @@ const EnhancedTableToolbar = (props) => {
             <DeleteIcon />
           </IconButton>
         </Tooltip>
-        <Tooltip title='transfer' style={{display: props.nurseId?'inline-flex':'none'}}>
+        <Tooltip title='transfer' style={{ display: props.nurseId ? 'inline-flex' : 'none' }}>
           <IconButton onClick={props.onTransferItems}>
             <TransferWithinAStationIcon />
           </IconButton>
@@ -223,13 +272,13 @@ const EnhancedTableToolbar = (props) => {
             id="input-with-icon-textfield"
             value={props.searchText}
             onChange={(e) => props.setSearch(e.target.value)}
-            label="Search"
+            label={props.lg.get('Search')}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
                   <Button id="search" onClick={() => props.onSearch()} variant="outlined" style={{ marginBottom: '9px', marginRight: '5px' }}><SearchIcon /></Button>
                   <Button id="openfilterModal" onClick={() => props.onOpenFilterModal()} variant="outlined" style={{ marginBottom: '9px' }}><FilterListIcon /></Button>
-                  <Button id="opentransferModal" onClick={() => props.onOpenTransferModal()} variant="outlined" style={{ marginLeft: '5px', marginBottom: '9px', display: props.nurseId?'inline-flex':'none' }}><TransferWithinAStationIcon /></Button>
+                  <Button id="opentransferModal" onClick={() => props.onOpenTransferModal()} variant="outlined" style={{ marginLeft: '5px', marginBottom: '9px', display: (props.nurseId || props.nurse_id || props.doctor_id) ? 'inline-flex' : 'none' }}><TransferWithinAStationIcon /></Button>
                 </InputAdornment>
               ),
             }}
@@ -257,10 +306,10 @@ export default function Patients(props) {
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
   const [limit, setLimit] = React.useState(5);
-  const [ ,setPatients] = React.useState([]);
+  const [, setPatients] = React.useState([]);
 
   const [order, setOrder] = React.useState('desc');
-  const [orderBy, setOrderBy] = React.useState('id');
+  const [orderBy, setOrderBy] = React.useState(null);
   const [selected, setSelected] = React.useState([]);
   const [dense,] = React.useState(false);
   const [rowsPerPage] = React.useState(5);
@@ -269,16 +318,18 @@ export default function Patients(props) {
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
   const [openTransferModal, setOpenTransferModal] = React.useState(false);
 
-  const [searchFilter, setSearchFilter] = React.useState(fltr.get('search',props));
+  const [searchFilter, setSearchFilter] = React.useState(fltr.get('search', props));
   const [firstnameFilter, setFirstnameFilter] = React.useState(true);
   const [lastnameFilter, setLastnameFilter] = React.useState(true);
   const [emailFilter, setEmailFilter] = React.useState(true);
   const [phoneFilter, setPhoneFilter] = React.useState(false);
   const [transferNurseId, setTransferNurseId] = React.useState();
 
-  const fetchData = useCallback( async () => {
-    const stg = JSON.parse(window.appStorage.getItem('user'));
-   
+  const stg = JSON.parse(window.appStorage.getItem('user'));
+  const lg = new Translation(stg.lang);
+
+  const fetchData = useCallback(async () => {
+
     const u = [];
     let r = null;
     let o = {
@@ -308,6 +359,9 @@ export default function Patients(props) {
     if (stg.nurse_id) {
       o.nurse_id = stg.nurse_id;
       r = await AngelNurse().patients(o);
+    } else if (stg.doctor_id) {
+      o.doctor_id = stg.doctor_id;
+      r = await AngelDoctor().patients(o);
     } else if (props.nurseId) {
       o.nurse_id = props.nurseId;
       r = await AngelNurse().patients(o);
@@ -322,7 +376,7 @@ export default function Patients(props) {
     }
     if (r.users && r.users.length) {
       for (let i = 0; i < r.users.length; i++) {
-        u.push(createData(r.users[i].user_id, r.users[i].id, r.users[i].firstname, r.users[i].lastname, r.users[i].email, r.users[i].phone, r.users[i].lang, r.users[i].role, r.users[i].active, r.users[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.users[i].avatar : defaultAvatar,r.users[i].patient_id));
+        u.push(createData(r.users[i].user_id, r.users[i].id, r.users[i].firstname, r.users[i].lastname, r.users[i].email, r.users[i].phone, r.users[i].lang, r.users[i].role, r.users[i].active, r.users[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.users[i].avatar : defaultAvatar, r.users[i].patient_id, r.users[i].close_monitoring));
       }
       setRows(u);
       setPatients(r.users);
@@ -332,10 +386,10 @@ export default function Patients(props) {
       setPatients([]);
       setTotal(0);
     }
-  }, [emailFilter,firstnameFilter,lastnameFilter,limit,page, phoneFilter, props.doctorId, props.drugId, props.nurseId,searchFilter]);
+  }, [emailFilter, firstnameFilter, lastnameFilter, limit, page, phoneFilter, props.doctorId, props.drugId, props.nurseId, searchFilter]);
 
   useEffect(() => {
-    
+
     fetchData();
   }, [fetchData]);
 
@@ -346,7 +400,7 @@ export default function Patients(props) {
   };
 
 
-  const createData = (user_id, id, firstname, lastname, email, phone, lang, role, active, avatar,patient_id) => {
+  const createData = (user_id, id, firstname, lastname, email, phone, lang, role, active, avatar, patient_id,close_monitoring) => {
     return {
       user_id,
       id,
@@ -358,7 +412,8 @@ export default function Patients(props) {
       role,
       active,
       avatar,
-      patient_id
+      patient_id,
+      close_monitoring
     }
   }
   const handleFiltersModal = () => setOpenFilterModal(true);
@@ -431,7 +486,7 @@ export default function Patients(props) {
   };
   const handleSearchText = (txt) => {
     setSearchFilter(txt);
-    fltr.set('search',props,txt);
+    fltr.set('search', props, txt);
   };
 
   const onNurseSelect = (nurseId) => {
@@ -439,7 +494,7 @@ export default function Patients(props) {
     setTransferNurseId(nurseId);
   }
   const transferPatients = async () => {
-    if(selected.length && transferNurseId &&  props.nurseId) {
+    if (selected.length && transferNurseId && props.nurseId) {
       let o = {
         patients: selected,
         nurse_from: props.nurseId,
@@ -449,18 +504,18 @@ export default function Patients(props) {
       handleCloseTransferModal();
       handleClickVariant('success', 'Patient well transfered');
       setSelected([]);
-      setTimeout(function(){
+      setTimeout(function () {
         fetchData()
-      },500);
+      }, 500);
     } else {
       handleClickVariant('error', 'Please select some patients');
     }
   }
   const onPatientRecovered = () => {
     handleClickVariant('success', 'Patient well recovered');
-    setTimeout(function(){
+    setTimeout(function () {
       fetchData()
-    },500);
+    }, 500);
   }
   return (
     <>
@@ -491,17 +546,17 @@ export default function Patients(props) {
           aria-describedby="modal-modal-description">
           <Box sx={styleModal}>
             <Typography id="modal-modal-title" variant="h6" component="h2">
-              Transfer
+              {lg.get('Transfer')}
             </Typography>
-            <ComboNurses onSelect={onNurseSelect} />
-            <Button id="transfer" onClick={transferPatients} variant="outlined" style={{ width: '100%' }}> Transfer {selected.length} patients</Button>
-            <Transfer nurseId={props.nurseId} onPatientRecovered={onPatientRecovered}/>
+            <ComboNurses onSelect={onNurseSelect} lg={lg}/>
+            <Button id="transfer" onClick={transferPatients} variant="outlined" style={{ width: '100%' }}> {lg.get('Validate')} {selected.length} {lg.get('Patients')}</Button>
+            <Transfer nurseId={props.nurseId} onPatientRecovered={onPatientRecovered} />
           </Box>
         </Modal>
       </div>
       <Box sx={{ width: '100%' }}>
         <Paper sx={{ width: '100%', mb: 0 }}>
-          <EnhancedTableToolbar nurseId={props.nurseId} numSelected={selected.length} onDeleteItems={onDeleteItems} onTransferItems={handleTransferModal} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} onOpenTransferModal={handleTransferModal} searchText={searchFilter}/>
+          <EnhancedTableToolbar lg={lg} nurseId={props.nurseId} nurse_id={(stg && stg.nurse_id)?stg.nurse_id:null} doctor_id={(stg && stg.doctor_id)?stg.doctor_id:null} numSelected={selected.length} onDeleteItems={onDeleteItems} onTransferItems={handleTransferModal} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} onOpenTransferModal={handleTransferModal} searchText={searchFilter} />
           <TableContainer>
             <Table
               sx={{ minWidth: 750 }}
@@ -515,6 +570,8 @@ export default function Patients(props) {
                 onSelectAllClick={handleSelectAllClick}
                 onRequestSort={handleRequestSort}
                 rowCount={rows.length}
+                user={stg}
+                lg={lg}
               />
               <TableBody>
                 {stableSort(rows, getComparator(order, orderBy))
@@ -531,6 +588,7 @@ export default function Patients(props) {
                         tabIndex={-1}
                         key={row.patient_id}
                         selected={isItemSelected}
+                        style={{ backgroundColor: row.close_monitoring==='Y' ?'rgba(0,27,138,0.4)':'#fff'}}
                       >
                         <TableCell padding="checkbox">
                           <Checkbox
@@ -552,11 +610,11 @@ export default function Patients(props) {
                           component='th'
                           id={labelId}
                           scope='row'
-                          style={{ textAlign: 'center' ,cursor: 'pointer'}}
+                          style={{ textAlign: 'center', cursor: 'pointer' }}
                           padding='none'
                           onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname, 'patient')}
                         >
-                         <b> {row.firstname}</b>
+                          <b> {row.firstname}</b>
                         </TableCell>
                         <TableCell
                           component='th'
@@ -590,7 +648,11 @@ export default function Patients(props) {
                           scope='row'
                           style={{ textAlign: 'center' }}
                           padding='none' >
-                          <EmojiPeopleIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient_nurses')} />
+                          {
+                            (stg && (stg.nurse_id || stg.doctor_id)) ?
+                              <SickIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient_surveys', 'panel1')} /> :
+                              <EmojiPeopleIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient_nurses')} />
+                          }
                         </TableCell>
                         <TableCell
                           component='th'
@@ -598,7 +660,11 @@ export default function Patients(props) {
                           scope='row'
                           style={{ textAlign: 'center' }}
                           padding='none' >
-                          <HailIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname, 'patient_doctors')} />
+                          {
+                            (stg && stg.doctor_id) ?
+                              <EmojiPeopleIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient_nurses')} /> :
+                              <HailIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname, 'patient_doctors')} />
+                          }
                         </TableCell>
                         <TableCell
                           component='th'

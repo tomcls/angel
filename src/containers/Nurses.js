@@ -78,7 +78,7 @@ const styleModal = {
 };
 
 const stg = window.appStorage ? JSON.parse(window.appStorage.getItem('user')):null;
-console.log(stg);
+
 const headCells = [
   {
     id: 'id',
@@ -249,7 +249,7 @@ export default function Nurses(props) {
   const [limit, setLimit] = React.useState(5);
 
   const [order, setOrder] = React.useState('desc');
-  const [orderBy, setOrderBy] = React.useState('id');
+  const [orderBy, setOrderBy] = React.useState(null);
   const [selected, setSelected] = React.useState([]);
   const [dense,] = React.useState(false);
   const [rowsPerPage,] = React.useState(5);

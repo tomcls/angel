@@ -228,18 +228,18 @@ export default function SurveyMoods(props) {
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('');
   const [selected, setSelected] = React.useState([]);
-  const [dense, ] = React.useState(false);
-  const [rowsPerPage, ] = React.useState(30);
+  const [dense,] = React.useState(false);
+  const [rowsPerPage,] = React.useState(30);
   const [rows, setRows] = React.useState([]);
 
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
 
-  const [searchFilter, setSearchFilter] = React.useState(fltr.get('search',props));
+  const [searchFilter, setSearchFilter] = React.useState(fltr.get('search', props));
   const [firstnameFilter, setFirstnameFilter] = React.useState(true);
   const [lastnameFilter, setLastnameFilter] = React.useState(true);
   const [nameFilter, setNameFilter] = React.useState(true);
   const [scoreFilter,] = React.useState(true);
-  const [dateCreatedFilter, setDateCreatedFilter] = React.useState(fltr.get('date_created',props)?fltr.get('date_created',props):new Date());
+  const [dateCreatedFilter, setDateCreatedFilter] = React.useState(fltr.get('date_created', props) ? fltr.get('date_created', props) : new Date());
   React.useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -258,7 +258,7 @@ export default function SurveyMoods(props) {
     }
     return 0;
   }
-  const createData = (avatar, moodId, id, name, firstname, lastname, total_moods, date, score,totalEffect) => {
+  const createData = (avatar, moodId, id, name, firstname, lastname, total_moods, date, score, totalEffect) => {
     let effects = name.split(',');
     let effectString = '';
     let t = total_moods.split(',');
@@ -331,14 +331,16 @@ export default function SurveyMoods(props) {
     }
     if (stg.nurse_id) {
       o.nurse_id = stg.nurse_id;
-    } 
+    }
+    if (stg.doctor_id) {
+      o.doctor_id = stg.doctor_id;
+    }
     r = await AngelSurvey().concatMoods(o);
-    console.log(r)
     if (r.surveys && r.surveys.length) {
       for (let i = 0; i < r.surveys.length; i++) {
         u.push(createData(
           r.surveys[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.surveys[i].avatar : defaultAvatar,
-          r.surveys[i].survey_mood_id, 
+          r.surveys[i].survey_mood_id,
           r.surveys[i].patient_id,
           r.surveys[i].total_moods,
           r.surveys[i].firstname,
@@ -346,7 +348,7 @@ export default function SurveyMoods(props) {
           r.surveys[i].mood_cnt,
           r.surveys[i].date,
           r.surveys[i].score,
-          getTotalEffectByPateintId(r.surveys[i].patient_id,r.effects)));
+          getTotalEffectByPateintId(r.surveys[i].patient_id, r.effects)));
       }
       setRows(u);
       setMoods(r.surveys);
@@ -358,10 +360,10 @@ export default function SurveyMoods(props) {
     }
   }
   const getTotalEffectByPateintId = (patient_id, effectList) => {
-    if(effectList && effectList.length) {
+    if (effectList && effectList.length) {
       for (let index = 0; index < effectList.length; index++) {
         const element = effectList[index];
-        if(patient_id === element['patient_id']) {
+        if (patient_id === element['patient_id']) {
           return element['total']
         }
       }
@@ -416,34 +418,34 @@ export default function SurveyMoods(props) {
     //setEmailFilter(event.target.checked);
   };
   const handleSearchText = (txt) => {
-    fltr.set('search',props,txt);
+    fltr.set('search', props, txt);
     setSearchFilter(txt);
   };
   const formatDateCreated = (v) => {
     let d = new Date(v);
     let month = d.getMonth() + 1;
-    if(month < 10){
-      month = '0'+month;
+    if (month < 10) {
+      month = '0' + month;
     }
     let day = d.getDate();
-    if(day < 10){
-      day = '0'+day;
+    if (day < 10) {
+      day = '0' + day;
     }
-    var datestring = d.getFullYear() + "-" + month + "-" + day ;
-    
+    var datestring = d.getFullYear() + "-" + month + "-" + day;
+
     return datestring;
   }
   const renderDateCreated = (v) => {
     let d = new Date(v);
     let month = d.getMonth() + 1;
-    if(month < 10){
-      month = '0'+month;
+    if (month < 10) {
+      month = '0' + month;
     }
     let day = d.getDate();
-    if(day < 10){
-      day = '0'+day;
+    if (day < 10) {
+      day = '0' + day;
     }
-    var datestring =    day +"/" + month + "/" +d.getFullYear();
+    var datestring = day + "/" + month + "/" + d.getFullYear();
     return datestring;
   }
   const onSearch = (newValue) => {
@@ -451,34 +453,34 @@ export default function SurveyMoods(props) {
     search();
   };
   const getColor = (score) => {
-    if (score === ''+5) {
+    if (score === '' + 5) {
       return "error";
-    } else if (score === ''+4) {
+    } else if (score === '' + 4) {
       return "warning";
-    } else if (score === ''+3) {
+    } else if (score === '' + 3) {
       return "primary";
-    } else if (score === ''+2) {
+    } else if (score === '' + 2) {
       return "secondary";
-    } else if (score === ''+1) {
+    } else if (score === '' + 1) {
       return "success";
     }
   }
   const getIcon = (score) => {
-    if (score === ''+5) {
+    if (score === '' + 5) {
       return (<SickIcon color="error" />);
-    } else if (score === ''+4) {
-      return (<SentimentVeryDissatisfiedIcon  color="warning" />);
-    } else if (score === ''+3) {
-      return (<SentimentSatisfiedIcon color="primary"/>);
-    } else if (score === ''+2) {
+    } else if (score === '' + 4) {
+      return (<SentimentVeryDissatisfiedIcon color="warning" />);
+    } else if (score === '' + 3) {
+      return (<SentimentSatisfiedIcon color="primary" />);
+    } else if (score === '' + 2) {
       return (<SentimentSatisfiedAltIcon color="success" />);
-    } else if (score === ''+1) {
+    } else if (score === '' + 1) {
       return (<MoodIcon color="success" />);
     }
   }
   const onDateCreateChanged = (d) => {
-    fltr.set('date_created',props,d);
-    setDateCreatedFilter(d); 
+    fltr.set('date_created', props, d);
+    setDateCreatedFilter(d);
   }
   return (<>
     <div>
@@ -506,16 +508,16 @@ export default function SurveyMoods(props) {
             <FormControlLabel control={<Checkbox checked={nameFilter} onChange={handleNameFilter} />} label="Name" />
             <FormControlLabel control={<Checkbox checked={scoreFilter} onChange={handleEmailFilter} />} label="Score" />
           </FormGroup>
-          <Button variant="outlined" style={{width:'100%'}} onClick={onSearch}>Search</Button>
+          <Button variant="outlined" style={{ width: '100%' }} onClick={onSearch}>Search</Button>
         </Box>
       </Modal>
     </div>
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 0 }}>
-        <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} searchText={searchFilter}/>
+        <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} searchText={searchFilter} />
         <Grid container>
           <Grid item pl={2}><Typography>Search for:</Typography></Grid>
-          <Grid item pl={2}><Typography>{dateCreatedFilter?renderDateCreated(dateCreatedFilter):''}</Typography></Grid>
+          <Grid item pl={2}><Typography>{dateCreatedFilter ? renderDateCreated(dateCreatedFilter) : ''}</Typography></Grid>
         </Grid>
         <TableContainer>
           <Table
@@ -553,11 +555,15 @@ export default function SurveyMoods(props) {
                         />
                       </TableCell>
                       <TableCell component="th" id={labelId} scope="row" padding="none" align='left'>
-                        <Grid item xs={1} style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.id, row.firstname + ' ' + row.lastname, 'patient_surveys', 'panel2')}>
-                          <Grid container >
-                            <Typography style={{ paddingLeft: '5px', paddingTop: "12px", position: 'relative' }} component={'div'}> {row.id}</Typography>
-                            <Avatar src={row.avatar} textAlign={'start'} style={{ margin: "5px" }} />
-                            <Typography style={{ paddingLeft: '5px', paddingTop: "12px", position: 'relative' }} component={'div'}> {row.firstname + ' ' + row.lastname}</Typography>
+                        <Grid container spacing={2}>
+                          <Grid item xs={1} textAlign={'start'} style={{ marginTop: '10px', fontWeight: 'bold' }}>
+                            {row.id}
+                          </Grid>
+                          <Grid item xs={1} style={{ cursor: 'pointer' }}>
+                            <Avatar src={row.avatar} textAlign={'start'} onClick={() => document.getElementById("newButton").clk(row.id, row.firstname + ' ' + row.lastname, 'patient_surveys', 'panel2')} />
+                          </Grid>
+                          <Grid item style={{ cursor: 'pointer', marginLeft: '20px', paddingTop: '18px' }}>
+                            {row.firstname + ' ' + row.lastname}
                           </Grid>
                         </Grid>
                       </TableCell>
@@ -571,18 +577,18 @@ export default function SurveyMoods(props) {
                         scope='row'
                         padding='none'>
                         <Box sx={{ flexGrow: 1 }}>
-                          <Grid container spacing={2} >
+                          <Grid container  >
                             {
                               row.effectList.map(
                                 (e, index) => {
                                   return (<>
-                                    <Grid item >
+                                    <Grid item pl={2}>
                                       <Typography> {e.name}</Typography>
-                                      </Grid>
-                                    <Grid item  >
+                                    </Grid>
+                                    <Grid item pl={2} >
                                       {getIcon(e.score)}
-                                      <Badge badgeContent={e.score} color={getColor(e.score)} style={{ position:'absolute'}} ></Badge>
-                                  </Grid></>)
+                                      <Badge badgeContent={e.score} color={getColor(e.score)} style={{ position: 'absolute' }} ></Badge>
+                                    </Grid></>)
                                 }
                               )
                             }

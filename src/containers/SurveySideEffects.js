@@ -214,19 +214,19 @@ export default function SurveySideEffects(props) {
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('');
   const [selected, setSelected] = React.useState([]);
-  const [dense, ] = React.useState(false);
-  const [rowsPerPage, ] = React.useState(30);
+  const [dense,] = React.useState(false);
+  const [rowsPerPage,] = React.useState(30);
   const [rows, setRows] = React.useState([]);
 
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
 
-  const [searchFilter, setSearchFilter] = React.useState(fltr.get('search',props));
+  const [searchFilter, setSearchFilter] = React.useState(fltr.get('search', props));
   const [firstnameFilter, setFirstnameFilter] = React.useState(true);
   const [lastnameFilter, setLastnameFilter] = React.useState(true);
   const [nameFilter, setNameFilter] = React.useState(true);
-  const [scoreFilter, ] = React.useState(true);
+  const [scoreFilter,] = React.useState(true);
 
-  const [dateCreatedFilter, setDateCreatedFilter] = React.useState(fltr.get('date_created',props)?fltr.get('date_created',props):new Date());
+  const [dateCreatedFilter, setDateCreatedFilter] = React.useState(fltr.get('date_created', props) ? fltr.get('date_created', props) : new Date());
 
   React.useEffect(() => {
     fetchData();
@@ -238,11 +238,11 @@ export default function SurveySideEffects(props) {
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
-  const compare = ( a, b )  => {
-    if ( a.total < b.total ){
+  const compare = (a, b) => {
+    if (a.total < b.total) {
       return 1;
     }
-    if ( a.total > b.total ){
+    if (a.total > b.total) {
       return -1;
     }
     return 0;
@@ -264,7 +264,7 @@ export default function SurveySideEffects(props) {
     effectList.sort(compare);
     for (let index = 0; index < effectList.length; index++) {
       const element = effectList[index];
-      effectString += element.name + ' ('+element.total+'), ';
+      effectString += element.name + ' (' + element.total + '), ';
     }
     effectString = effectString.slice(0, -2);
     return {
@@ -318,7 +318,10 @@ export default function SurveySideEffects(props) {
     }
     if (stg.nurse_id) {
       o.nurse_id = stg.nurse_id;
-    } 
+    }
+    if (stg.doctor_id) {
+      o.doctor_id = stg.doctor_id;
+    }
     r = await AngelSurvey().concatEffects(o);
     if (r.surveys && r.surveys.length) {
       for (let i = 0; i < r.surveys.length; i++) {
@@ -383,32 +386,32 @@ export default function SurveySideEffects(props) {
   };
   const handleSearchText = (txt) => {
     setSearchFilter(txt);
-    fltr.set('search',props,txt);
+    fltr.set('search', props, txt);
   };
   const formatDateCreated = (v) => {
     let d = new Date(v);
     let month = d.getMonth() + 1;
-    if(month < 10){
-      month = '0'+month;
+    if (month < 10) {
+      month = '0' + month;
     }
     let day = d.getDate();
-    if(day < 10){
-      day = '0'+day;
+    if (day < 10) {
+      day = '0' + day;
     }
-    var datestring = d.getFullYear() + "-" + month + "-" + day ;
+    var datestring = d.getFullYear() + "-" + month + "-" + day;
     return datestring;
   }
   const renderDateCreated = (v) => {
     let d = new Date(v);
     let month = d.getMonth() + 1;
-    if(month < 10){
-      month = '0'+month;
+    if (month < 10) {
+      month = '0' + month;
     }
     let day = d.getDate();
-    if(day < 10){
-      day = '0'+day;
+    if (day < 10) {
+      day = '0' + day;
     }
-    var datestring =    day +"/" + month + "/" +d.getFullYear();
+    var datestring = day + "/" + month + "/" + d.getFullYear();
     return datestring;
   }
   const onSearch = (newValue) => {
@@ -416,9 +419,9 @@ export default function SurveySideEffects(props) {
     search();
   };
   const onDateCreateChanged = (d) => {
-    console.log('onDateCreateChanged',d)
-    fltr.set('date_created',props,d);
-    setDateCreatedFilter(d); 
+    console.log('onDateCreateChanged', d)
+    fltr.set('date_created', props, d);
+    setDateCreatedFilter(d);
   }
   return (<>
     <div>
@@ -445,7 +448,7 @@ export default function SurveySideEffects(props) {
             <FormControlLabel control={<Checkbox checked={lastnameFilter} onChange={handleLastnameFilter} />} label="Lastname" />
             <FormControlLabel control={<Checkbox checked={nameFilter} onChange={handleNameFilter} />} label="Name" />
             <FormControlLabel control={<Checkbox checked={scoreFilter} onChange={handleEmailFilter} />} label="Score" />
-          <Button variant="outlined" style={{width:'100%'}} onClick={onSearch}>Search</Button>
+            <Button variant="outlined" style={{ width: '100%' }} onClick={onSearch}>Search</Button>
           </FormGroup>
         </Box>
       </Modal>
@@ -455,7 +458,7 @@ export default function SurveySideEffects(props) {
         <EnhancedTableToolbar searchText={searchFilter} numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
         <Grid container>
           <Grid item pl={2}><Typography>Search for:</Typography></Grid>
-          <Grid item pl={2}><Typography>{dateCreatedFilter?renderDateCreated(dateCreatedFilter):''}</Typography></Grid>
+          <Grid item pl={2}><Typography>{dateCreatedFilter ? renderDateCreated(dateCreatedFilter) : ''}</Typography></Grid>
         </Grid>
         <TableContainer>
           <Table
@@ -493,11 +496,15 @@ export default function SurveySideEffects(props) {
                         />
                       </TableCell>
                       <TableCell component="th" id={labelId} scope="row" padding="none" align='left'>
-                        <Grid item xs={1} style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.id, row.firstname + ' ' + row.lastname, 'patient_surveys', 'panel1')}>
-                          <Grid container >
-                            <Typography style={{ paddingLeft: '5px', paddingTop: "12px", position: 'relative' }} component={'div'}> {row.id}</Typography>
-                            <Avatar src={row.avatar} textAlign={'start'} style={{ margin: "5px" }} />
-                            <Typography style={{ paddingLeft: '5px', paddingTop: "12px", position: 'relative' }} component={'div'}> {row.firstname + ' ' + row.lastname}</Typography>
+                        <Grid container spacing={2}>
+                          <Grid item xs={1} textAlign={'start'} style={{ marginTop: '10px', fontWeight: 'bold' }}>
+                            {row.id}
+                          </Grid>
+                          <Grid item xs={1} style={{ cursor: 'pointer' }}>
+                            <Avatar src={row.avatar} textAlign={'start'} onClick={() => document.getElementById("newButton").clk(row.id, row.firstname + ' ' + row.lastname, 'patient_surveys', 'panel1')} />
+                          </Grid>
+                          <Grid item style={{ cursor: 'pointer', marginLeft: '20px', paddingTop: '18px' }}>
+                            {row.firstname + ' ' + row.lastname}
                           </Grid>
                         </Grid>
                       </TableCell>
