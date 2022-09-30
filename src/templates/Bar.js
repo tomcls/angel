@@ -37,8 +37,7 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
-import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
-
+import LocalPoliceIcon from '@mui/icons-material/LocalPolice';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import ScienceIcon from '@mui/icons-material/Science';
 
@@ -245,7 +244,7 @@ export default function Bar(props) {
           <List component="div" disablePadding>
             <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/coordinators">
               <ListItemIcon>
-                <SupervisorAccountIcon />
+                <LocalPoliceIcon />
               </ListItemIcon>
               <ListItemText primary="Administrators" />
             </ListItemButton>

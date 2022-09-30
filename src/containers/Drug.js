@@ -8,13 +8,13 @@ import Visibility from '@mui/icons-material/Visibility';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { Save } from '@mui/icons-material';
-import { Button, FormControl, InputLabel, MenuItem, Select, Modal } from '@mui/material';
+import { Button, Modal } from '@mui/material';
 import { useSnackbar } from 'notistack';
-import AngelDrug from '../api/angel/drugs';
 import ComboLaboratories from '../components/ComboLaboratories';
-import ComboUsers from '../components/ComboUsers';
-import { MobileDatePicker } from '@mui/lab';
 import Avatar from '@mui/material/Avatar';
+import PosologyComponent from '../components/Posology';
+import AngelDrug from '../api/angel/drugs';
+import AngelPosology from '../api/angel/posologies';
 
 export default function DrugContainer(props) {
 
@@ -29,13 +29,7 @@ export default function DrugContainer(props) {
     const [langId, setLangId] = React.useState('en');
     const [laboratoryId, setLaboratoryId] = React.useState(() => '');
     const [laboratoryName, setLaboratoryName] = React.useState(() => '');
-    const [openAssignDrugModal, setOpenAssignDrugModal] = React.useState(false);
     const [openAssignPatientModal, setOpenAssignPatientModal] = React.useState(false);
-    const [assignPatientId, setAssignPatientId] = React.useState(null);//posology
-    const [assignDrugId, setAssignDrugId] = React.useState(null);
-    const [posology, setPosology] = React.useState('');
-    const [startDate, setStartDate] = React.useState('');
-    const [endDate, setEndDate] = React.useState('');
     const defaultAvatar = 'https://dreamguys.co.in/preadmin/html/school/dark/assets/img/placeholder.jpg';//process.env.SENDGRID_APIKEY
     const [image, setImage] = React.useState(defaultAvatar);
     const [notice, setNotice] = React.useState('');
@@ -44,8 +38,13 @@ export default function DrugContainer(props) {
     const uploadFileButton = useRef(null);
     const uploadNoticeButton = useRef(null);
 
+    const [repetition, ] = React.useState(props.repetition);
+    const [note, ] = React.useState(props.note);
+    const [days, ] = React.useState(props.days);
+    const [hours, ] = React.useState([12]);
+    const [patientId, setPatientId] = React.useState(props.patientId);
+
     React.useEffect(() => {
-        console.log("Drug container effect")
         if (props.drugId) {
             async function fetchData() {
                 const drug = await AngelDrug().find({ id: props.drugId });
@@ -59,26 +58,11 @@ export default function DrugContainer(props) {
                 setLaboratoryName(drug.laboratory_name);
                 setImage(drug.image ? process.env.REACT_APP_API_URL + '/public/drugs/images/' + drug.image : defaultAvatar);
                 setNotice(drug.notice);
-                console.log(process.env.REACT_APP_API_URL + '/public/drugs/images/' + drug.image)
             }
             fetchData();
         }
     }, []);
 
-    const styleModal = {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 400,
-        bgcolor: 'background.paper',
-        border: '2px solid #000',
-        boxShadow: 24,
-        p: 4,
-    };
-    const onEditorChange = (val) => {
-        console.log('editor chaged', val)
-    }
     const onInputChange = setter => e => {
         setter(e.target.value);
     };
@@ -145,48 +129,34 @@ export default function DrugContainer(props) {
         setLaboratoryId(o.id);
         setLaboratoryName(o.name);
     }
-    const handleAssignDrugModal = () => setOpenAssignDrugModal(true);
-    const handleCloseAssignDrugModal = () => setOpenAssignDrugModal(false);
     const handleAssignPatientModal = () => setOpenAssignPatientModal(true);
-
-    const onDrugSelect = (drugId) => {
-        setAssignDrugId(drugId);
-    }
-
     const handleCloseAssignPatientModal = () => setOpenAssignPatientModal(false);
-    const onPatientSelect = (drugId) => {
-        setAssignPatientId(drugId);
-    }
-    const handlePosology = (e) => {
-        console.log(e)
-        setPosology(e.target.value);
-    };
-    const handleStartDateChange = (newValue) => {
-        setStartDate(newValue);
-    };
-    const handleEndDateChange = (newValue) => {
-        setEndDate(newValue);
-    };
-
     const onAssignPatient = async e => {
-        console.log(e);
-        const u = {
-            patient_id: assignPatientId,
-            drug_id: drugId,
-            posology: posology,
-            start_date: formatDate(startDate),
-            end_date: endDate ? formatDate(endDate) : null,
-        };
-        console.log(assignPatientId, drugId, startDate, endDate)
-        if (assignPatientId && drugId && startDate && posology) {
+        if (!e.patient_id || !e.drug_id || !e.startDate || !e.hours || !e.days) {
             try {
-                await AngelDrug().addPatient(u);
-                handleClickVariant('success', 'Patient well assigned');
+                const u = {
+                    patient_id: e.patient_id,
+                    drug_id: e.drug_id,
+                    start_date: formatDate(e.start_date),
+                    end_date: e.end_date ? formatDate(e.end_date) : null,
+                    days: JSON.stringify(e.days),
+                    hours: JSON.stringify(e.hours),
+                    repetition: e.repetition,
+                    type: e.type ? e.type : null,
+                    note: e.note ? e.note : null
+                };
+                const a = await AngelDrug().addPatient(u);
+                if(a && a.code ) {
+                    handleClickVariant('error', a.code);
+                } else {
+                    handleClickVariant('success', 'Patient well assigned');
+                    handleCloseAssignPatientModal();
+                }
             } catch (e) {
                 handleClickVariant('error', JSON.stringify(e));
             }
         } else {
-            handleClickVariant('error', 'Patient,Posology start date are required');
+            handleClickVariant('error', 'Patient, hours and frequency are required');
         }
     }
     const formatDate = (v) => {
@@ -208,68 +178,13 @@ export default function DrugContainer(props) {
     };
     return (
         <>
-            <div>
-                <Modal
-                    open={openAssignPatientModal}
-                    onClose={handleCloseAssignPatientModal}
-                    aria-labelledby="modal-modal-title"
-                    aria-describedby="modal-modal-description">
-                    <Box sx={styleModal}>
-                        <Typography id="modal-modal-title" variant="h6" component="h2">
-                            Assign a patient
-                        </Typography>
-                        <ComboUsers type="patient" onSelect={onPatientSelect} />
-                        <Box>
-                            <FormControl fullWidth>
-                                <InputLabel id="demo-simple-select-label">Posology</InputLabel>
-                                <Select
-                                    labelId="demo-simple-select-label"
-                                    id="demo-simple-select"
-                                    value={posology ? posology : ''}
-                                    label="Posology"
-                                    onChange={handlePosology}
-                                >
-                                    <MenuItem value={'daily'}>Daily</MenuItem>
-                                    <MenuItem value={'morningnight'}>Morning/Night</MenuItem>
-                                    <MenuItem value={'spontaneously'}>Spontaneously</MenuItem>
-                                </Select>
-                            </FormControl>
-
-                        </Box>
-
-                        <Box
-                            style={{ display: 'flex', width: '100%', paddingTop: '8px' }}
-                        >
-                            <MobileDatePicker
-                                key="datestart"
-                                id="datestart"
-                                label="Start date"
-                                inputFormat="MM/dd/yyyy"
-                                value={startDate ? startDate : ''}
-                                onChange={handleStartDateChange}
-                                renderInput={(params) => <TextField {...params} />}
-                            />
-                        </Box>
-                        <Box style={{ display: 'flex', width: '100%', paddingTop: '8px' }}>
-                            <MobileDatePicker
-                                key="dateend"
-                                id="dateend"
-                                label="End date"
-                                inputFormat="MM/dd/yyyy"
-                                value={endDate ? endDate : ''}
-                                onChange={handleEndDateChange}
-                                renderInput={(params) => <TextField {...params} />}
-                            />
-                        </Box>
-                        <Button
-                            style={{ borderRadius: '10px', marginTop: '20px' }}
-                            variant="outlined" startIcon={<Save />}
-                            onClick={onAssignPatient}>
-                            Assign
-                        </Button>
-                    </Box>
-                </Modal>
-            </div>
+            <Modal
+                open={openAssignPatientModal}
+                onClose={handleCloseAssignPatientModal}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description">
+                <PosologyComponent onSave={onAssignPatient} days={days} repetition={repetition} hours={hours} note={note} patientId={patientId} drugId={drugId} />
+            </Modal>
             <Box sx={{ width: '100%' }}>
                 <Typography variant="h6" gutterBottom component="div">
                     Drug Details
@@ -323,9 +238,9 @@ export default function DrugContainer(props) {
                     Drug descriptions
                 </Typography>
                 <ReactQuill theme="snow" value={description} onChange={setDescription} />
-                <Grid container spacing={2} direction="row" style={{textalign: 'center'}}>
+                <Grid container spacing={2} direction="row" style={{ textalign: 'center' }}>
                     <Grid item style={{ marginTop: '6px' }} >
-                        <a href={process.env.REACT_APP_API_URL + '/public/drugs/documents/'+notice} target="_blank" style={{  color: '#0d99ff' }}>{notice}</a>
+                        <a href={process.env.REACT_APP_API_URL + '/public/drugs/documents/' + notice} target="_blank" style={{ color: '#0d99ff' }}>{notice}</a>
                     </Grid>
                     <Grid item  >
                         <Button id="noticeLabel" onClick={() => uploadNoticeButton.current.click()}>Upload notice</Button>

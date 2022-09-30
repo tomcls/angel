@@ -9,15 +9,14 @@ import throttle from 'lodash/throttle';
 import AngelPatient from '../api/angel/patient';
 
 export default function ComboUsers(props) {
-  const [value, setValue] = React.useState(null);
+  const [value, setValue] = React.useState(props.patient?props.patient:null);
   const [inputValue, setInputValue] = React.useState('');
   const [options, setOptions] = React.useState([]);
-
   const fetch = React.useMemo(
     () =>
       throttle((request, callback) => {
-            AngelPatient().search({ firstname: request.input, email: request.input, lastname: request.input }).then((results) => {
-            callback(results);
+        AngelPatient().search({ firstname: request.input, email: request.input, lastname: request.input }).then((results) => {
+          callback(results);
         });
       }, 200),
     [],
@@ -26,11 +25,12 @@ export default function ComboUsers(props) {
   React.useEffect(() => {
     let active = true;
 
+    console.log('ComboUsers',props.patient)
+    
     if (inputValue === '') {
       setOptions(value ? [value] : []);
       return undefined;
     }
-
     fetch({ input: inputValue }, (results) => {
       if (active) {
         let newOptions = [];
@@ -50,15 +50,16 @@ export default function ComboUsers(props) {
     return () => {
       active = false;
     };
-  }, [value, inputValue, fetch]);
+  }, [value, inputValue, fetch,props.patient]);
 
   return (
     <Autocomplete
+      size='small'
       id="users-combo"
-      sx={{ width: 300 }}
+      sx={{ width: '100%' }}
       getOptionLabel={(option) => {
-            return typeof option === 'string' ? option : option.patient_id+ " "+option.firstname+ " "+option.lastname
-        }
+        return typeof option === 'string' ? option : option.patient_id + " " + option.firstname + " " + option.lastname
+      }
       }
       filterOptions={(x) => x}
       options={options}
@@ -68,16 +69,17 @@ export default function ComboUsers(props) {
       value={value}
       onChange={(event, newValue) => {
         setOptions(newValue ? [newValue, ...options] : options);
+        console.log("aaaaa", newValue)
         setValue(newValue);
-        if(newValue && newValue.patient_id) {
-            props.onSelect(newValue.patient_id);
+        if (newValue && newValue.patient_id) {
+          props.onSelect(newValue.patient_id);
         }
       }}
       onInputChange={(event, newInputValue) => {
         setInputValue(newInputValue);
       }}
       renderInput={(params) => (
-        <TextField {...params} label="Find patient" fullWidth />
+        <TextField {...params} label="Find patient" fullWidth sx={{ mt: 0 }} />
       )}
       renderOption={(props, option) => {
 
@@ -92,7 +94,7 @@ export default function ComboUsers(props) {
               </Grid>
               <Grid item xs>
                 <Typography variant="body2" color="text.secondary">
-                  {option.patient_id+ " "+option.firstname+ " "+option.lastname}
+                  {option.patient_id + " " + option.firstname + " " + option.lastname}
                 </Typography>
               </Grid>
             </Grid>

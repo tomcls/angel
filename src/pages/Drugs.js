@@ -69,7 +69,7 @@ export default function DrugsPage() {
             </Grid>
             <Grid item xs={12} md={6} xl={6} textAlign={'end'}  >
               <Button variant="outlined" onClick={t.onOpenTabClick} ref={newBtn} justifyContent="flex-end" id="newButton">
-                <PeopleIcon /> Add treatment</Button>
+                <PeopleIcon /> Add a treatment</Button>
             </Grid>
           </Grid>
           <Box sx={{ width: '100%' }}>

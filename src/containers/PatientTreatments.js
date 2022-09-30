@@ -31,8 +31,10 @@ import Modal from '@mui/material/Modal';
 
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
+import AlarmAddIcon from '@mui/icons-material/AlarmAdd';
 import AngelDrug from '../api/angel/drugs';
+import PosologyComponent from '../components/Posology';
+import AngelPatient from '../api/angel/patient';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -253,6 +255,18 @@ export default function PatientTreatments(props) {
   const [searchFilter, setSearchFilter] = React.useState('');
   const [codeFilter, setCodeFilter] = React.useState(true);
   const [nameFilter, setNameFilter] = React.useState(true);
+
+  const [openAssignPatientModal, setOpenAssignPatientModal] = React.useState(false);
+  const [repetition, setRepetition] = React.useState(props.repetition);
+  const [note, setNote] = React.useState(props.note);
+  const [days, setWeek] = React.useState(props.days);
+  const [hours, setHours] = React.useState([12]);
+  const [startDate, setStartDate] = React.useState(props.startDate);
+  const [endDate, setEndDate] = React.useState(props.endDate);
+  const [patientId, setPatientId] = React.useState(props.patientId);
+  const [patient, setPatient] = React.useState(null);
+  const [drugId, setDrugId] = React.useState(props.drugId);
+
   const stg = JSON.parse(window.appStorage.getItem('user'));
 
   React.useEffect(() => {
@@ -264,7 +278,24 @@ export default function PatientTreatments(props) {
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
-  const createData = (id, name, code, created, posology, start_date, end_date, firstname, lastname, avatar, patient_id, drug_id) => {
+  const createData = (id,
+     name, 
+     code, 
+     created, 
+     posology, 
+     start_date, 
+     end_date, 
+     firstname, 
+     lastname, 
+     avatar, 
+     patient_id, 
+     drug_id,
+     days,
+     hours,
+     note,
+     repetition
+     ) => {
+
     return {
       id,
       name,
@@ -277,7 +308,11 @@ export default function PatientTreatments(props) {
       lastname,
       avatar,
       patient_id,
-      drug_id
+      drug_id,
+      days,
+      hours,
+      note,
+      repetition
     }
   }
   const fetchData = async () => {
@@ -308,7 +343,24 @@ export default function PatientTreatments(props) {
     if (r.treatments && r.treatments.length) {
       for (let i = 0; i < r.treatments.length; i++) {
         //createData('Cupcake', 305, 3.7, 67, 4.3, <BeachAccessIcon color='primary' style={{ marginInline: '10px' }} />, <GridViewIcon color='primary' style={{ marginInline: '10px' }} />, <TrendingUpIcon color='primary' style={{ marginInline: '10px' }} />, 'ahmed')
-        u.push(createData(r.treatments[i].id, r.treatments[i].name, r.treatments[i].code, r.treatments[i].date_created, r.treatments[i].posology, r.treatments[i].start_date, r.treatments[i].end_date, r.treatments[i].firstname, r.treatments[i].lastname, r.treatments[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.treatments[i].avatar : defaultAvatar, r.treatments[i].patient_id, r.treatments[i].drug_id));
+        u.push(createData(
+          r.treatments[i].id, 
+          r.treatments[i].name, 
+          r.treatments[i].code, 
+          r.treatments[i].date_created, 
+          r.treatments[i].posology_id, 
+          r.treatments[i].start_date, 
+          r.treatments[i].end_date, 
+          r.treatments[i].firstname, 
+          r.treatments[i].lastname, 
+          r.treatments[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.treatments[i].avatar : defaultAvatar, 
+          r.treatments[i].patient_id, 
+          r.treatments[i].drug_id,
+          r.treatments[i].days,
+          r.treatments[i].hours,
+          r.treatments[i].note,
+          r.treatments[i].repetition
+          ));
       }
       setRows(u);
       setTreatments(r.treatments);
@@ -378,28 +430,83 @@ export default function PatientTreatments(props) {
     // variant could be success, error, warning, info, or default
     enqueueSnackbar(text, { variant });
   };
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+  const handleAssignPatientModal =  (row) => {
+    console.log(row);
+    setHours(JSON.parse(row.hours));
+    setWeek(JSON.parse(row.days));
+    setDrugId(row.drug_id);
+    setPatientId(row.patient_id);
+    setStartDate(row.start_date);
+    setEndDate(row.end_date);
+    setRepetition(row.repetition);
+    setNote(row.note);
+    AngelPatient().find({ patient_id: row.patient_id }).then(function (p) {
+      setPatient(p);
+      setOpenAssignPatientModal(true);
+    });
 
+    
+  } 
+  const handleCloseAssignPatientModal = () => setOpenAssignPatientModal(false);
+  const onAssignPatient = async e => {
+    if (!e.patient_id || !e.drug_id || !e.startDate || !e.hours || !e.days) {
+      try {
+        const u = {
+          patient_id: e.patient_id,
+          drug_id: e.drug_id,
+          start_date: formatDate(e.start_date),
+          end_date: e.end_date ? formatDate(e.end_date) : null,
+          days: JSON.stringify(e.days),
+          hours: JSON.stringify(e.hours),
+          repetition: e.repetition,
+          type: e.type ? e.type : null,
+          note: e.note ? e.note : null
+        };
+        const a = await AngelDrug().updatePatient(u);
+        if (a && a.code) {
+          handleClickVariant('error', a.code);
+        } else {
+          handleClickVariant('success', 'Patient well assigned');
+          handleCloseAssignPatientModal();
+        }
+      } catch (e) {
+        handleClickVariant('error', JSON.stringify(e));
+      }
+    } else {
+      handleClickVariant('error', 'Patient, hours and frequency are required');
+    }
+  }
+
+  const formatDate = (v) => {
+    let d = new Date(v);
+    var datestring = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":00";
+    return datestring;
+  }
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <div>
-        <Modal
-          open={openFilterModal}
-          onClose={handleCloseFilterModal}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description">
-          <Box sx={styleModal}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-              Filters
-            </Typography>
-            <FormGroup>
-              <FormControlLabel control={<Checkbox checked={codeFilter} onChange={handleCodeFilter} />} label="Code" />
-              <FormControlLabel control={<Checkbox checked={nameFilter} onChange={handleNameFilter} />} label="Name" />
-            </FormGroup>
-          </Box>
-        </Modal>
-      </div>
+      <Modal
+        open={openAssignPatientModal}
+        onClose={handleCloseAssignPatientModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description">
+        <PosologyComponent onSave={onAssignPatient} days={days} repetition={repetition} hours={hours} note={note} patientId={patientId} drugId={drugId} week={days} startDate={startDate} endDate={endDate} patient={patient}/>
+      </Modal>
+      <Modal
+        open={openFilterModal}
+        onClose={handleCloseFilterModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description">
+        <Box sx={styleModal}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Filters
+          </Typography>
+          <FormGroup>
+            <FormControlLabel control={<Checkbox checked={codeFilter} onChange={handleCodeFilter} />} label="Code" />
+            <FormControlLabel control={<Checkbox checked={nameFilter} onChange={handleNameFilter} />} label="Name" />
+          </FormGroup>
+        </Box>
+      </Modal>
       <Box sx={{ width: '100%' }}>
         <Paper sx={{ width: '100%', mb: 0 }}>
           <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
@@ -407,8 +514,7 @@ export default function PatientTreatments(props) {
             <Table
               sx={{ minWidth: 750 }}
               aria-labelledby='tableTitle'
-              size={dense ? 'small' : 'medium'}
-            >
+              size={dense ? 'small' : 'medium'}>
               <EnhancedTableHead
                 numSelected={selected.length}
                 order={order}
@@ -476,10 +582,11 @@ export default function PatientTreatments(props) {
                         <TableCell
                           component='th'
                           id={labelId}
-                          style={{ textAlign: 'center' }}
+                          style={{ textAlign: 'center', cursor: 'pointer' }}
                           scope='row'
-                          padding='none'>
-                          {row.posology}
+                          padding='none'
+                          onClick={() => handleAssignPatientModal(row)}>
+                          <AlarmAddIcon />
                         </TableCell>
                         <TableCell
                           component='th'
