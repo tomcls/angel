@@ -44,6 +44,7 @@ import Transfer from '../components/Transfer';
 import ComboNurses from '../components/ComboNurses';
 import Filter from '../utils/filters';
 import Translation from '../utils/translation';
+import { useStore } from '../utils/store';
 
 
 function descendingComparator(a, b, orderBy) {
@@ -64,7 +65,7 @@ function getComparator(order, orderBy) {
 // This method is created for cross-browser compatibility, if you don't
 // need to support IE11, you can use Array.prototype.sort() directly
 function stableSort(array, comparator) {
-  
+
   const stabilizedThis = array.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -226,7 +227,7 @@ EnhancedTableHead.propTypes = {
   onRequestSort: PropTypes.func.isRequired,
   onSelectAllClick: PropTypes.func.isRequired,
   order: PropTypes.oneOf(['asc', 'desc']).isRequired,
-  orderBy: PropTypes.string.isRequired,
+  orderBy: PropTypes.string,
   rowCount: PropTypes.number.isRequired,
 };
 const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp0LF2WgeDkn_sQ1VuMnlnVGjkDvCN4jo2nLMt3b84ry328rg46eohB_JT3WTqOGJovY&usqp=CAU';//process.env.SENDGRID_APIKEY
@@ -299,10 +300,16 @@ EnhancedTableToolbar.propTypes = {
   onOpenFilterModal: PropTypes.func,
   setSearch: PropTypes.func,
 };
-const fltr = new Filter('patients');
+
 
 export default function Patients(props) {
   const { enqueueSnackbar } = useSnackbar();
+
+  const { session, dispatch } = useStore();
+  const [userStg, ] = React.useState(session.user ? session.user:null);
+  const fltr = new Filter('patients', dispatch, session);
+  const lg = new Translation(userStg ? userStg.lang: 'en');
+
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
   const [limit, setLimit] = React.useState(5);
@@ -318,16 +325,15 @@ export default function Patients(props) {
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
   const [openTransferModal, setOpenTransferModal] = React.useState(false);
 
-  const [searchFilter, setSearchFilter] = React.useState(fltr.get('search', props));
+  const [searchFilter, setSearchFilter] = React.useState(fltr.get('search', props));//React.useState(fltr.det('search', props));
   const [firstnameFilter, setFirstnameFilter] = React.useState(true);
   const [lastnameFilter, setLastnameFilter] = React.useState(true);
   const [emailFilter, setEmailFilter] = React.useState(true);
   const [phoneFilter, setPhoneFilter] = React.useState(false);
   const [transferNurseId, setTransferNurseId] = React.useState();
 
-  const stg = JSON.parse(window.appStorage.getItem('user'));
-  const lg = new Translation(stg.lang);
-
+  
+ 
   const fetchData = useCallback(async () => {
 
     const u = [];
@@ -356,11 +362,11 @@ export default function Patients(props) {
     } else {
       o.phone = null;
     }
-    if (stg.nurse_id) {
-      o.nurse_id = stg.nurse_id;
+    if (userStg && userStg.nurse_id) {
+      o.nurse_id = userStg.nurse_id;
       r = await AngelNurse().patients(o);
-    } else if (stg.doctor_id) {
-      o.doctor_id = stg.doctor_id;
+    } else if (userStg && userStg.doctor_id) {
+      o.doctor_id = userStg.doctor_id;
       r = await AngelDoctor().patients(o);
     } else if (props.nurseId) {
       o.nurse_id = props.nurseId;
@@ -386,7 +392,7 @@ export default function Patients(props) {
       setPatients([]);
       setTotal(0);
     }
-  }, [emailFilter, firstnameFilter, lastnameFilter, limit, page, phoneFilter, props.doctorId, props.drugId, props.nurseId, searchFilter]);
+  }, [emailFilter, firstnameFilter, lastnameFilter, limit, page, phoneFilter, props.doctorId, props.drugId, props.nurseId, searchFilter,userStg]);
 
   useEffect(() => {
 
@@ -400,7 +406,7 @@ export default function Patients(props) {
   };
 
 
-  const createData = (user_id, id, firstname, lastname, email, phone, lang, role, active, avatar, patient_id,close_monitoring) => {
+  const createData = (user_id, id, firstname, lastname, email, phone, lang, role, active, avatar, patient_id, close_monitoring) => {
     return {
       user_id,
       id,
@@ -548,7 +554,7 @@ export default function Patients(props) {
             <Typography id="modal-modal-title" variant="h6" component="h2">
               {lg.get('Transfer')}
             </Typography>
-            <ComboNurses onSelect={onNurseSelect} lg={lg}/>
+            <ComboNurses onSelect={onNurseSelect} lg={lg} />
             <Button id="transfer" onClick={transferPatients} variant="outlined" style={{ width: '100%' }}> {lg.get('Validate')} {selected.length} {lg.get('Patients')}</Button>
             <Transfer nurseId={props.nurseId} onPatientRecovered={onPatientRecovered} />
           </Box>
@@ -556,7 +562,18 @@ export default function Patients(props) {
       </div>
       <Box sx={{ width: '100%' }}>
         <Paper sx={{ width: '100%', mb: 0 }}>
-          <EnhancedTableToolbar lg={lg} nurseId={props.nurseId} nurse_id={(stg && stg.nurse_id)?stg.nurse_id:null} doctor_id={(stg && stg.doctor_id)?stg.doctor_id:null} numSelected={selected.length} onDeleteItems={onDeleteItems} onTransferItems={handleTransferModal} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} onOpenTransferModal={handleTransferModal} searchText={searchFilter} />
+          <EnhancedTableToolbar
+            lg={lg}
+            nurseId={props.nurseId}
+            nurse_id={(userStg && userStg.nurse_id) ? userStg.nurse_id : null}
+            doctor_id={(userStg && userStg.doctor_id) ? userStg.doctor_id : null}
+            numSelected={selected.length} onDeleteItems={onDeleteItems}
+            onTransferItems={handleTransferModal}
+            onOpenFilterModal={handleFiltersModal}
+            onSearch={search}
+            setSearch={handleSearchText}
+            onOpenTransferModal={handleTransferModal}
+            searchText={searchFilter} />
           <TableContainer>
             <Table
               sx={{ minWidth: 750 }}
@@ -570,7 +587,7 @@ export default function Patients(props) {
                 onSelectAllClick={handleSelectAllClick}
                 onRequestSort={handleRequestSort}
                 rowCount={rows.length}
-                user={stg}
+                user={userStg}
                 lg={lg}
               />
               <TableBody>
@@ -588,7 +605,7 @@ export default function Patients(props) {
                         tabIndex={-1}
                         key={row.patient_id}
                         selected={isItemSelected}
-                        style={{ backgroundColor: row.close_monitoring==='Y' ?'rgba(0,27,138,0.4)':'#fff'}}
+                        style={{ backgroundColor: row.close_monitoring === 'Y' ? 'rgba(0,27,138,0.4)' : '#fff' }}
                       >
                         <TableCell padding="checkbox">
                           <Checkbox
@@ -649,7 +666,7 @@ export default function Patients(props) {
                           style={{ textAlign: 'center' }}
                           padding='none' >
                           {
-                            (stg && (stg.nurse_id || stg.doctor_id)) ?
+                            (userStg && (userStg.nurse_id || userStg.doctor_id)) ?
                               <SickIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient_surveys', 'panel1')} /> :
                               <EmojiPeopleIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient_nurses')} />
                           }
@@ -661,7 +678,7 @@ export default function Patients(props) {
                           style={{ textAlign: 'center' }}
                           padding='none' >
                           {
-                            (stg && stg.doctor_id) ?
+                            (userStg && userStg.doctor_id) ?
                               <EmojiPeopleIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient_nurses')} /> :
                               <HailIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname, 'patient_doctors')} />
                           }

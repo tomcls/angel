@@ -16,6 +16,7 @@ import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import Tabs from '../components/Tabs';
 import MainBar from "../templates/MainBar";
 import Translation from '../utils/translation';
+import { useStore } from "../utils/store";
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -44,9 +45,10 @@ export default function PatientsPage() {
   const [tabs, setTabs] = React.useState([]);
   const [tabIndex, setTabIndex] = React.useState(2);
   const newBtn = useRef(null);
-  const stg = JSON.parse(window.appStorage.getItem('user'));
-  const lg = new Translation(stg.lang);
-
+  const { session,s } = useStore();
+  console.log("bbbbbbb",s)
+  const [userStg, ] = React.useState(session && session.user ? session.user:null);
+  const lg = new Translation(userStg ? userStg.lang: 'en');
   const t = useMemo(() => {
     return new Tabs('patient', tabIndex, tabs, setTabs, setSelectedTab, setTabIndex, newBtn)
   }, [tabIndex, tabs]);

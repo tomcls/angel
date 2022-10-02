@@ -7,6 +7,7 @@ import LoginComponent from '../containers/Login';
 import AngelUser from '../api/angel/user';
 import TeaserComponent from '../templates/Teaser';
 import Header from '../templates/Header';
+import { useStore } from '../utils/store';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ export default function Login() {
   const [openProfile, ] = React.useState(false);
   const anchorRef = React.useRef(null);
   const prevOpen = React.useRef(openProfile);
-
+  const {  dispatch } = useStore();
   React.useEffect(() => {
     if (prevOpen.current === true && openProfile === false) {
       anchorRef.current.focus();
@@ -29,9 +30,8 @@ export default function Login() {
     e.preventDefault();
     AngelUser().login({ email: username, password: password , active: 'Y'}).then(function (result) {
       if (result && result.user) {
-        console.log(result.user)
-        window.appStorage.setItem('user', JSON.stringify(result.user), 1200000);
         window.appStorage.setItem('token', JSON.stringify(result.accessToken), 1200000);
+        dispatch({ type: "user", payload: JSON.stringify(result.user) });
         navigate('/patients', {replace: true});return;
       } else {
         setHasLoginError(true);

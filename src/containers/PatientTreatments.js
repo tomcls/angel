@@ -442,6 +442,7 @@ export default function PatientTreatments(props) {
     setRepetition(row.repetition);
     setNote(row.note);
     AngelPatient().find({ patient_id: row.patient_id }).then(function (p) {
+      console.log('p',p)
       setPatient(p);
       setOpenAssignPatientModal(true);
     });

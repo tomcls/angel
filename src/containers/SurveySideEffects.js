@@ -30,6 +30,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import AngelSurvey from '../api/angel/survey';
 import { MobileDatePicker } from '@mui/lab';
 import Filter from '../utils/filters';
+import { useStore } from '../utils/store';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -201,11 +202,12 @@ EnhancedTableToolbar.propTypes = {
 };
 const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp0LF2WgeDkn_sQ1VuMnlnVGjkDvCN4jo2nLMt3b84ry328rg46eohB_JT3WTqOGJovY&usqp=CAU';//process.env.SENDGRID_APIKEY
 
-const fltr = new Filter('surveySideEffects');
 
 export default function SurveySideEffects(props) {
 
   const { enqueueSnackbar } = useSnackbar();
+  const { session, dispatch } = useStore();
+  const fltr = new Filter('surveyMoods', dispatch, session);
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
   const [limit, setLimit] = React.useState(30);

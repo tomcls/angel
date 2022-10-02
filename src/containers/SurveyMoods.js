@@ -41,6 +41,7 @@ import SentimentSatisfiedIcon from '@mui/icons-material/SentimentSatisfied';
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
 import MoodIcon from '@mui/icons-material/Mood';
 import Filter from '../utils/filters';
+import { useStore } from '../utils/store';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -216,10 +217,13 @@ EnhancedTableToolbar.propTypes = {
   setSearch: PropTypes.func,
 };
 const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp0LF2WgeDkn_sQ1VuMnlnVGjkDvCN4jo2nLMt3b84ry328rg46eohB_JT3WTqOGJovY&usqp=CAU';//process.env.SENDGRID_APIKEY
-const fltr = new Filter('surveyMoods');
 export default function SurveyMoods(props) {
 
   const { enqueueSnackbar } = useSnackbar();
+
+  const { session, dispatch } = useStore();
+  const fltr = new Filter('surveyMoods', dispatch, session);
+
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
   const [limit, setLimit] = React.useState(30);
@@ -555,10 +559,7 @@ export default function SurveyMoods(props) {
                         />
                       </TableCell>
                       <TableCell component="th" id={labelId} scope="row" padding="none" align='left'>
-                        <Grid container spacing={2}>
-                          <Grid item xs={1} textAlign={'start'} style={{ marginTop: '10px', fontWeight: 'bold' }}>
-                            {row.id}
-                          </Grid>
+                        <Grid container spacing={2}>  
                           <Grid item xs={1} style={{ cursor: 'pointer' }}>
                             <Avatar src={row.avatar} textAlign={'start'} onClick={() => document.getElementById("newButton").clk(row.id, row.firstname + ' ' + row.lastname, 'patient_surveys', 'panel2')} />
                           </Grid>
@@ -567,7 +568,7 @@ export default function SurveyMoods(props) {
                           </Grid>
                         </Grid>
                       </TableCell>
-                      <TableCell component="th" id={labelId} scope="row" padding="none" align='left'>
+                      <TableCell component="th" id={labelId} scope="row" padding="none" align='left' style={{width: '50px'}}>
                         <b>{row.totalEffect}</b>
                       </TableCell>
                       <TableCell
@@ -587,7 +588,7 @@ export default function SurveyMoods(props) {
                                     </Grid>
                                     <Grid item pl={2} >
                                       {getIcon(e.score)}
-                                      <Badge badgeContent={e.score} color={getColor(e.score)} style={{ position: 'absolute' }} ></Badge>
+                                      <Badge badgeContent={e.score} color={getColor(e.score)} style={{ position: 'absolute' }} ></Badge> |
                                     </Grid></>)
                                 }
                               )
