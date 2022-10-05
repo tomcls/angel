@@ -27,6 +27,7 @@ import { Button, Grid } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
+import {  Save } from '@mui/icons-material';
 
 import Modal from '@mui/material/Modal';
 
@@ -35,6 +36,9 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 
 import AngelSurvey from '../api/angel/survey';
 import { MobileDatePicker } from '@mui/lab';
+import Translation from '../utils/translation';
+import Filter from '../utils/filters';
+import { useStore } from '../utils/store';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -219,6 +223,12 @@ const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp
 export default function PatientSurveyMoods(props) {
 
   const { enqueueSnackbar } = useSnackbar();
+
+  const { session, dispatch } = useStore();
+  const [userSession,] = React.useState(session.user ? session.user : null);
+  const fltr = new Filter('SurveyMoods', dispatch, session);
+  const lg = new Translation(userSession ? userSession.lang : 'en');
+
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
   const [limit, setLimit] = React.useState(30);
@@ -238,7 +248,7 @@ export default function PatientSurveyMoods(props) {
   const [lastnameFilter, setLastnameFilter] = React.useState(true);
   const [nameFilter, setNameFilter] = React.useState(true);
   const [scoreFilter, ] = React.useState(true);
-  const [fromDateFilter, setFromDateFilter] = React.useState(null);
+  const [fromDateFilter, setFromDateFilter] = React.useState(fltr.get('date_created', props)?fltr.get('date_created', props):fltr.get('from_date', props));
   const [toDateFilter, setToDateFilter] = React.useState(null);
 
   React.useEffect(() => {
@@ -375,6 +385,7 @@ export default function PatientSurveyMoods(props) {
   const search = (variant, text) => {
     // variant could be success, error, warning, info, or default
     fetchDataEffects();
+    handleCloseFilterModal();
   };
   const handleFirstnameFilter = (event) => {
     setFirstnameFilter(event.target.checked);
@@ -402,6 +413,7 @@ export default function PatientSurveyMoods(props) {
     return datestring;
   }
   const setFromDate = (newValue) => {
+    fltr.set('from_date', props, newValue);
     setFromDateFilter(newValue);
   };
   const setToDate = (newValue) => {
@@ -442,24 +454,30 @@ export default function PatientSurveyMoods(props) {
               id="fromdate"
               label="From date"
               inputFormat="MM/dd/yyyy"
-              value={fromDateFilter ? fromDateFilter : ''}
+              value={fromDateFilter ? fromDateFilter : null}
               onChange={(newValue) => {setFromDate(newValue);}}
-              renderInput={(params) => <TextField {...params} />}
+              renderInput={(params) => <TextField {...params} size={'small'} style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '0px', marginRight: '0px', marginLeft: '0px' }}/>}
             />
             <MobileDatePicker
               key="todate"
               id="todate"
               label="To date"
               inputFormat="MM/dd/yyyy"
-              value={toDateFilter ? toDateFilter : ''}
+              value={toDateFilter ? toDateFilter : null}
               onChange={(newValue) => {setToDate(newValue);}}
-              renderInput={(params) => <TextField {...params} />}
+              renderInput={(params) => <TextField {...params} size={'small'} style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '0px', marginRight: '0px', marginLeft: '0px' }}/>}
             />
             <FormControlLabel control={<Checkbox checked={firstnameFilter} onChange={handleFirstnameFilter} />} label="Firstname" />
             <FormControlLabel control={<Checkbox checked={lastnameFilter} onChange={handleLastnameFilter} />} label="Lastname" />
             <FormControlLabel control={<Checkbox checked={nameFilter} onChange={handleNameFilter} />} label="Name" />
             <FormControlLabel control={<Checkbox checked={scoreFilter} onChange={handleEmailFilter} />} label="Score" />
           </FormGroup>
+            <Button
+                style={{ borderRadius: '10px', marginTop: '20px', width: '100%' }}
+                variant="outlined" startIcon={<Save />}
+                onClick={search}>
+                Search
+            </Button>
         </Box>
       </Modal>
     </div>

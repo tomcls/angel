@@ -265,8 +265,8 @@ export default function PatientTreatments(props) {
   const [endDate, setEndDate] = React.useState(props.endDate);
   const [patientId, setPatientId] = React.useState(props.patientId);
   const [patient, setPatient] = React.useState(null);
+  const [drug, setDrug] = React.useState(null);
   const [drugId, setDrugId] = React.useState(props.drugId);
-
   const stg = JSON.parse(window.appStorage.getItem('user'));
 
   React.useEffect(() => {
@@ -279,22 +279,22 @@ export default function PatientTreatments(props) {
     setOrderBy(property);
   };
   const createData = (id,
-     name, 
-     code, 
-     created, 
-     posology, 
-     start_date, 
-     end_date, 
-     firstname, 
-     lastname, 
-     avatar, 
-     patient_id, 
-     drug_id,
-     days,
-     hours,
-     note,
-     repetition
-     ) => {
+    name,
+    code,
+    created,
+    posology,
+    start_date,
+    end_date,
+    firstname,
+    lastname,
+    avatar,
+    patient_id,
+    drug_id,
+    days,
+    hours,
+    note,
+    repetition
+  ) => {
 
     return {
       id,
@@ -344,23 +344,23 @@ export default function PatientTreatments(props) {
       for (let i = 0; i < r.treatments.length; i++) {
         //createData('Cupcake', 305, 3.7, 67, 4.3, <BeachAccessIcon color='primary' style={{ marginInline: '10px' }} />, <GridViewIcon color='primary' style={{ marginInline: '10px' }} />, <TrendingUpIcon color='primary' style={{ marginInline: '10px' }} />, 'ahmed')
         u.push(createData(
-          r.treatments[i].id, 
-          r.treatments[i].name, 
-          r.treatments[i].code, 
-          r.treatments[i].date_created, 
-          r.treatments[i].posology_id, 
-          r.treatments[i].start_date, 
-          r.treatments[i].end_date, 
-          r.treatments[i].firstname, 
-          r.treatments[i].lastname, 
-          r.treatments[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.treatments[i].avatar : defaultAvatar, 
-          r.treatments[i].patient_id, 
+          r.treatments[i].id,
+          r.treatments[i].name,
+          r.treatments[i].code,
+          r.treatments[i].date_created,
+          r.treatments[i].posology_id,
+          r.treatments[i].start_date,
+          r.treatments[i].end_date,
+          r.treatments[i].firstname,
+          r.treatments[i].lastname,
+          r.treatments[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.treatments[i].avatar : defaultAvatar,
+          r.treatments[i].patient_id,
           r.treatments[i].drug_id,
           r.treatments[i].days,
           r.treatments[i].hours,
           r.treatments[i].note,
           r.treatments[i].repetition
-          ));
+        ));
       }
       setRows(u);
       setTreatments(r.treatments);
@@ -431,8 +431,7 @@ export default function PatientTreatments(props) {
     enqueueSnackbar(text, { variant });
   };
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
-  const handleAssignPatientModal =  (row) => {
-    console.log(row);
+  const handleAssignPatientModal = async (row) => {
     setHours(JSON.parse(row.hours));
     setWeek(JSON.parse(row.days));
     setDrugId(row.drug_id);
@@ -441,14 +440,12 @@ export default function PatientTreatments(props) {
     setEndDate(row.end_date);
     setRepetition(row.repetition);
     setNote(row.note);
-    AngelPatient().find({ patient_id: row.patient_id }).then(function (p) {
-      console.log('p',p)
-      setPatient(p);
-      setOpenAssignPatientModal(true);
-    });
-
-    
-  } 
+    const p = await AngelPatient().find({ patient_id: row.patient_id })
+    const d = await AngelDrug().find({ drug_id: row.drug_id })
+    setDrug(d);
+    setPatient(p);
+    setOpenAssignPatientModal(true);
+  }
   const handleCloseAssignPatientModal = () => setOpenAssignPatientModal(false);
   const onAssignPatient = async e => {
     if (!e.patient_id || !e.drug_id || !e.startDate || !e.hours || !e.days) {
@@ -491,7 +488,18 @@ export default function PatientTreatments(props) {
         onClose={handleCloseAssignPatientModal}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description">
-        <PosologyComponent onSave={onAssignPatient} days={days} repetition={repetition} hours={hours} note={note} patientId={patientId} drugId={drugId} week={days} startDate={startDate} endDate={endDate} patient={patient}/>
+        <PosologyComponent onSave={onAssignPatient}
+          days={days}
+          repetition={repetition}
+          hours={hours}
+          note={note}
+          patientId={patientId}
+          drugId={drugId}
+          week={days}
+          startDate={startDate}
+          endDate={endDate}
+          patient={patient}
+          drug={drug} />
       </Modal>
       <Modal
         open={openFilterModal}

@@ -49,7 +49,6 @@ export default function NursesPage() {
     let d = document.getElementById('newButton'); 
     if(d) {
       d.clk = function (id, text, type, panel) { 
-        console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",id, text, type, panel)
         t.openTab(id, text, type,panel); };
     } 
   }, []);

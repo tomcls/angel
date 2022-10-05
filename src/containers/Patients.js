@@ -306,9 +306,9 @@ export default function Patients(props) {
   const { enqueueSnackbar } = useSnackbar();
 
   const { session, dispatch } = useStore();
-  const [userStg, ] = React.useState(session.user ? session.user:null);
+  const [userSession, ] = React.useState(session.user ? session.user:null);
   const fltr = new Filter('patients', dispatch, session);
-  const lg = new Translation(userStg ? userStg.lang: 'en');
+  const lg = new Translation(userSession ? userSession.lang: 'en');
 
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
@@ -362,11 +362,11 @@ export default function Patients(props) {
     } else {
       o.phone = null;
     }
-    if (userStg && userStg.nurse_id) {
-      o.nurse_id = userStg.nurse_id;
+    if (userSession && userSession.nurse_id) {
+      o.nurse_id = userSession.nurse_id;
       r = await AngelNurse().patients(o);
-    } else if (userStg && userStg.doctor_id) {
-      o.doctor_id = userStg.doctor_id;
+    } else if (userSession && userSession.doctor_id) {
+      o.doctor_id = userSession.doctor_id;
       r = await AngelDoctor().patients(o);
     } else if (props.nurseId) {
       o.nurse_id = props.nurseId;
@@ -392,7 +392,7 @@ export default function Patients(props) {
       setPatients([]);
       setTotal(0);
     }
-  }, [emailFilter, firstnameFilter, lastnameFilter, limit, page, phoneFilter, props.doctorId, props.drugId, props.nurseId, searchFilter,userStg]);
+  }, [emailFilter, firstnameFilter, lastnameFilter, limit, page, phoneFilter, props.doctorId, props.drugId, props.nurseId, searchFilter,userSession]);
 
   useEffect(() => {
 
@@ -565,8 +565,8 @@ export default function Patients(props) {
           <EnhancedTableToolbar
             lg={lg}
             nurseId={props.nurseId}
-            nurse_id={(userStg && userStg.nurse_id) ? userStg.nurse_id : null}
-            doctor_id={(userStg && userStg.doctor_id) ? userStg.doctor_id : null}
+            nurse_id={(userSession && userSession.nurse_id) ? userSession.nurse_id : null}
+            doctor_id={(userSession && userSession.doctor_id) ? userSession.doctor_id : null}
             numSelected={selected.length} onDeleteItems={onDeleteItems}
             onTransferItems={handleTransferModal}
             onOpenFilterModal={handleFiltersModal}
@@ -587,7 +587,7 @@ export default function Patients(props) {
                 onSelectAllClick={handleSelectAllClick}
                 onRequestSort={handleRequestSort}
                 rowCount={rows.length}
-                user={userStg}
+                user={userSession}
                 lg={lg}
               />
               <TableBody>
@@ -666,7 +666,7 @@ export default function Patients(props) {
                           style={{ textAlign: 'center' }}
                           padding='none' >
                           {
-                            (userStg && (userStg.nurse_id || userStg.doctor_id)) ?
+                            (userSession && (userSession.nurse_id || userSession.doctor_id)) ?
                               <SickIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient_surveys', 'panel1')} /> :
                               <EmojiPeopleIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient_nurses')} />
                           }
@@ -678,7 +678,7 @@ export default function Patients(props) {
                           style={{ textAlign: 'center' }}
                           padding='none' >
                           {
-                            (userStg && userStg.doctor_id) ?
+                            (userSession && userSession.doctor_id) ?
                               <EmojiPeopleIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient_nurses')} /> :
                               <HailIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname, 'patient_doctors')} />
                           }

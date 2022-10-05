@@ -22,6 +22,7 @@ export default function DrugContainer(props) {
 
     const [id, setId] = React.useState(null);
     const [drugId, setDrugId] = React.useState(null);
+    const [drug, setDrug] = React.useState(null);
     const [descriptionId, setDescriptionId] = React.useState(null);
     const [name, setName] = React.useState('');
     const [code, setCode] = React.useState('');
@@ -58,6 +59,7 @@ export default function DrugContainer(props) {
                 setLaboratoryName(drug.laboratory_name);
                 setImage(drug.image ? process.env.REACT_APP_API_URL + '/public/drugs/images/' + drug.image : defaultAvatar);
                 setNotice(drug.notice);
+                setDrug({id:drug.drug_id,drug_id:drug.drug_id,name:drug.name,code:drug.code})
             }
             fetchData();
         }
@@ -129,7 +131,9 @@ export default function DrugContainer(props) {
         setLaboratoryId(o.id);
         setLaboratoryName(o.name);
     }
-    const handleAssignPatientModal = () => setOpenAssignPatientModal(true);
+    const handleAssignPatientModal = async () => {
+        setOpenAssignPatientModal(true);
+    }
     const handleCloseAssignPatientModal = () => setOpenAssignPatientModal(false);
     const onAssignPatient = async e => {
         if (!e.patient_id || !e.drug_id || !e.startDate || !e.hours || !e.days) {
@@ -183,7 +187,15 @@ export default function DrugContainer(props) {
                 onClose={handleCloseAssignPatientModal}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description">
-                <PosologyComponent onSave={onAssignPatient} days={days} repetition={repetition} hours={hours} note={note} patientId={patientId} drugId={drugId} />
+                <PosologyComponent 
+                onSave={onAssignPatient} 
+                days={days} 
+                repetition={repetition} 
+                hours={hours} 
+                note={note} 
+                patientId={patientId} 
+                drugId={drugId}
+                drug={drug} />
             </Modal>
             <Box sx={{ width: '100%' }}>
                 <Typography variant="h6" gutterBottom component="div">

@@ -46,7 +46,6 @@ export default function PatientsPage() {
   const [tabIndex, setTabIndex] = React.useState(2);
   const newBtn = useRef(null);
   const { session,s } = useStore();
-  console.log("bbbbbbb",s)
   const [userStg, ] = React.useState(session && session.user ? session.user:null);
   const lg = new Translation(userStg ? userStg.lang: 'en');
   const t = useMemo(() => {

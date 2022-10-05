@@ -42,6 +42,7 @@ import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt
 import MoodIcon from '@mui/icons-material/Mood';
 import Filter from '../utils/filters';
 import { useStore } from '../utils/store';
+import Translation from '../utils/translation';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -222,7 +223,9 @@ export default function SurveyMoods(props) {
   const { enqueueSnackbar } = useSnackbar();
 
   const { session, dispatch } = useStore();
-  const fltr = new Filter('surveyMoods', dispatch, session);
+  const [userSession,] = React.useState(session.user ? session.user : null);
+  const fltr = new Filter('SurveyMoods', dispatch, session);
+  const lg = new Translation(userSession ? userSession.lang : 'en');
 
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);

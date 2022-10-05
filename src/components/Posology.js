@@ -3,6 +3,8 @@ import { MobileDatePicker, TimePicker } from '@mui/lab';
 import { Box, Button, Divider, Fab, FormControl, Grid, InputLabel, MenuItem, Select, TextareaAutosize, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import React from 'react';
 import ComboUsers from './ComboUsers';
+import ComboDrugs from '../components/ComboDrugs';
+
 import dayjs from 'dayjs';
 const style = {
     position: 'absolute',
@@ -24,7 +26,7 @@ export default function PosologyComponent(props) {
     const [week, setWeek] = React.useState(props.week);
     const [startDate, setStartDate] = React.useState(props.startDate?props.startDate:new Date());
     const [endDate, setEndDate] = React.useState(props.endDate);
-    const [arrayUpdated, updateArray] = React.useState(props.hours);
+    const [arrayUpdated, updateArray] = React.useState(props.refresh);
     React.useEffect(() => {
         console.log("PosologyComponent",week)
     });
@@ -64,12 +66,16 @@ export default function PosologyComponent(props) {
     const handleEndDateChange = (newValue) => {
         setEndDate(newValue);
     };
+    const onDrugSelect = (drugId) => {
+        setDrugId(drugId);
+    }
     return (
         <Box sx={style} data={arrayUpdated} style={{paddingTop: '5px'}} >
             <Typography id="modal-modal-title" variant="h6" component="h2" style={{ paddingTop: '0px', marginTop: '0px',textAlign: 'center',marginBottom: '15px' }}>
                 Assign treatment to a patient
             </Typography>
             <ComboUsers type="patient" onSelect={onPatientSelect} patientId={patientId} patient={props.patient} />
+            <ComboDrugs onSelect={onDrugSelect} drugId={drugId} drug={props.drug} />
             <Grid item xs={12} style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '5px', marginRight: '0px', marginLeft: '0px' }}>
                 <Typography variant="caption"  >When to start</Typography>
             </Grid>

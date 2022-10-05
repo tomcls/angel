@@ -35,6 +35,9 @@ import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import '../utils/localStorage';
+import { useStore } from '../utils/store';
+import Filter from '../utils/filters';
+import Translation from '../utils/translation';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -77,61 +80,61 @@ const styleModal = {
   p: 4,
 };
 
-const stg = window.appStorage ? JSON.parse(window.appStorage.getItem('user')):null;
+const stg = window.appStorage ? JSON.parse(window.appStorage.getItem('user')) : null;
 
-const headCells = [
-  {
-    id: 'id',
-    numeric: true,
-    disablePadding: true,
-    label: 'Id',
-  },
-  {
-    id: 'firstname',
-    numeric: false,
-    disablePadding: false,
-    label: 'Prénom',
-  },
-  {
-    id: 'lastname',
-    numeric: false,
-    disablePadding: false,
-    label: 'Nom',
-  },
-  {
-    id: 'email',
-    numeric: false,
-    disablePadding: false,
-    label: 'Email',
-  },
-  {
-    id: 'phone',
-    numeric: false,
-    disablePadding: false,
-    label: 'Téléphone',
-  }, {
-    id: 'hospital',
-    numeric: false,
-    disablePadding: false,
-    label: 'Hospital',
-  }, {
-    id: 'patients',
-    numeric: false,
-    disablePadding: false,
-    label: (stg && (stg.nurse_id || stg.doctor_id)) ? 'Surveys' : 'Patients',
-  }, {
-    id: 'active',
-    numeric: false,
-    disablePadding: false,
-    label: 'Actif',
-  },
-];
+
 function EnhancedTableHead(props) {
   const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
-
+  let headCells = [
+    {
+      id: 'id',
+      numeric: true,
+      disablePadding: true,
+      label: 'Id',
+    },
+    {
+      id: 'firstname',
+      numeric: false,
+      disablePadding: false,
+      label: 'Prénom',
+    },
+    {
+      id: 'lastname',
+      numeric: false,
+      disablePadding: false,
+      label: 'Nom',
+    },
+    {
+      id: 'email',
+      numeric: false,
+      disablePadding: false,
+      label: 'Email',
+    },
+    {
+      id: 'phone',
+      numeric: false,
+      disablePadding: false,
+      label: 'Téléphone',
+    }, {
+      id: 'hospital',
+      numeric: false,
+      disablePadding: false,
+      label: 'Hospital',
+    }, {
+      id: 'patients',
+      numeric: false,
+      disablePadding: false,
+      label: (props.user && (props.user.nurse_id || props.user.doctor_id)) ? 'Surveys' : 'Patients',
+    }, {
+      id: 'active',
+      numeric: false,
+      disablePadding: false,
+      label: 'Actif',
+    },
+  ];
   return (
     <TableHead>
       <TableRow>
@@ -212,6 +215,7 @@ const EnhancedTableToolbar = (props) => {
           <TextField
             id="input-with-icon-textfield"
             onChange={(e) => props.setSearch(e.target.value)}
+            value={props.searchText}
             label="Search"
             InputProps={{
               endAdornment: (
@@ -242,6 +246,12 @@ EnhancedTableToolbar.propTypes = {
 export default function Nurses(props) {
 
   const { enqueueSnackbar } = useSnackbar();
+
+  const { session, dispatch } = useStore();
+  const [userSession,] = React.useState(session.user ? session.user : null);
+  const fltr = new Filter('nurses', dispatch, session);
+  const lg = new Translation(userSession ? userSession.lang : 'en');
+
   const [, setNurses] = React.useState(null);
 
   const [total, setTotal] = React.useState(null);
@@ -257,7 +267,7 @@ export default function Nurses(props) {
 
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
 
-  const [searchFilter, setSearchFilter] = React.useState('');
+  const [searchFilter, setSearchFilter] = React.useState(fltr.get('search', props));
   const [firstnameFilter, setFirstnameFilter] = React.useState(true);
   const [lastnameFilter, setLastnameFilter] = React.useState(true);
   const [emailFilter, setEmailFilter] = React.useState(true);
@@ -396,6 +406,7 @@ export default function Nurses(props) {
   };
   const handleSearchText = (txt) => {
     setSearchFilter(txt);
+    fltr.set('search', props, txt);
   };
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -420,7 +431,13 @@ export default function Nurses(props) {
       </div>
       <Box sx={{ width: '100%' }}>
         <Paper sx={{ width: '100%', mb: 0 }}>
-          <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
+          <EnhancedTableToolbar 
+          numSelected={selected.length} 
+          onDeleteItems={onDeleteItems} 
+          onOpenFilterModal={handleFiltersModal} 
+          onSearch={search} 
+          setSearch={handleSearchText}
+          searchText={searchFilter}  />
           <TableContainer>
             <Table
               sx={{ minWidth: 750 }}
@@ -434,6 +451,8 @@ export default function Nurses(props) {
                 onSelectAllClick={handleSelectAllClick}
                 onRequestSort={handleRequestSort}
                 rowCount={rows.length}
+                user={userSession}
+                lg={lg}
               />
               <TableBody>
                 {stableSort(rows, getComparator(order, orderBy))

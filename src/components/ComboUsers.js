@@ -9,7 +9,7 @@ import throttle from 'lodash/throttle';
 import AngelPatient from '../api/angel/patient';
 
 export default function ComboUsers(props) {
-  const [value, setValue] = React.useState(props.patient?props.patient:null);
+  const [value, setValue] = React.useState(props.patient ? props.patient : null);
   const [inputValue, setInputValue] = React.useState('');
   const [options, setOptions] = React.useState([]);
   const fetch = React.useMemo(
@@ -25,8 +25,8 @@ export default function ComboUsers(props) {
   React.useEffect(() => {
     let active = true;
 
-    console.log('ComboUsers',props.patient)
-    
+    console.log('ComboUsers', props.patient)
+
     if (inputValue === '') {
       setOptions(value ? [value] : []);
       return undefined;
@@ -50,7 +50,7 @@ export default function ComboUsers(props) {
     return () => {
       active = false;
     };
-  }, [value, inputValue, fetch,props.patient]);
+  }, [value, inputValue, fetch, props.patient]);
 
   return (
     <Autocomplete
@@ -69,7 +69,6 @@ export default function ComboUsers(props) {
       value={value}
       onChange={(event, newValue) => {
         setOptions(newValue ? [newValue, ...options] : options);
-        console.log("aaaaa", newValue)
         setValue(newValue);
         if (newValue && newValue.patient_id) {
           props.onSelect(newValue.patient_id);

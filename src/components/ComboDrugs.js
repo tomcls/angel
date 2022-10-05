@@ -9,15 +9,15 @@ import throttle from 'lodash/throttle';
 import AngelDrugs from '../api/angel/drugs';
 
 export default function ComboDrugs(props) {
-  const [value, setValue] = React.useState(null);
+  const [value, setValue] = React.useState(props.drug ? props.drug : null);
   const [inputValue, setInputValue] = React.useState('');
   const [options, setOptions] = React.useState([]);
 
   const fetch = React.useMemo(
     () =>
       throttle((request, callback) => {
-            AngelDrugs().search({ name: request.input, code: request.input }).then((results) => {
-            callback(results);
+        AngelDrugs().search({ name: request.input, code: request.input }).then((results) => {
+          callback(results);
         });
       }, 200),
     [],
@@ -50,15 +50,16 @@ export default function ComboDrugs(props) {
     return () => {
       active = false;
     };
-  }, [value, inputValue, fetch]);
+  }, [value, inputValue, fetch, props.drug]);
 
   return (
     <Autocomplete
+      size='small'
       id="users-combo"
-      sx={{ width: 300 }}
+      sx={{ width: '100%' }}
       getOptionLabel={(option) => {
-            return typeof option === 'string' ? option : option.drug_id+ " "+option.name+ " "+option.code
-        }
+        return typeof option === 'string' ? option : option.drug_id + " " + option.name + " " + option.code
+      }
       }
       filterOptions={(x) => x}
       options={options}
@@ -69,15 +70,15 @@ export default function ComboDrugs(props) {
       onChange={(event, newValue) => {
         setOptions(newValue ? [newValue, ...options] : options);
         setValue(newValue);
-        if(newValue && newValue.drug_id) {
-            props.onSelect(newValue.drug_id);
+        if (newValue && newValue.drug_id) {
+          props.onSelect(newValue.drug_id);
         }
       }}
       onInputChange={(event, newInputValue) => {
         setInputValue(newInputValue);
       }}
       renderInput={(params) => (
-        <TextField {...params} label="Find drugs" fullWidth />
+        <TextField {...params} label="Find drugs" fullWidth sx={{ mt: 0 }} />
       )}
       renderOption={(props, option) => {
 
@@ -92,7 +93,7 @@ export default function ComboDrugs(props) {
               </Grid>
               <Grid item xs>
                 <Typography variant="body2" color="text.secondary">
-                  {option.drug_id+ " "+option.name+ " "+option.code}
+                  {option.drug_id + " " + option.name + " " + option.code}
                 </Typography>
               </Grid>
             </Grid>

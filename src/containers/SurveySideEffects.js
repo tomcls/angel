@@ -207,7 +207,7 @@ export default function SurveySideEffects(props) {
 
   const { enqueueSnackbar } = useSnackbar();
   const { session, dispatch } = useStore();
-  const fltr = new Filter('surveyMoods', dispatch, session);
+  const fltr = new Filter('surveySideEffects', dispatch, session);
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
   const [limit, setLimit] = React.useState(30);
