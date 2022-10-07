@@ -40,6 +40,8 @@ import { ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import LocalPoliceIcon from '@mui/icons-material/LocalPolice';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import ScienceIcon from '@mui/icons-material/Science';
+import Translation from "../utils/translation";
+import { useStore } from "../utils/store";
 
 const drawerWidth = 240;
 
@@ -73,6 +75,11 @@ const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp
 
 export default function Bar(props) {
   const theme = useTheme();
+
+  const { session, } = useStore();
+  const [userSession, ] = React.useState(session.user ? session.user:null);
+  const lg = new Translation(userSession ? userSession.lang: 'en');
+
   const [open, setOpen] = React.useState(true);
   const [openProfile, setopenProfile] = React.useState(false);
   const anchorRef = React.useRef(null);
@@ -246,36 +253,36 @@ export default function Bar(props) {
               <ListItemIcon>
                 <LocalPoliceIcon />
               </ListItemIcon>
-              <ListItemText primary="Administrators" />
+              <ListItemText primary={lg.get('Administrators')} />
             </ListItemButton>
             <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/patients">
               <ListItemIcon>
                 <FamilyRestroomIcon />
               </ListItemIcon>
-              <ListItemText primary="Patients" />
+              <ListItemText primary={lg.get('Patients')} />
             </ListItemButton>
             <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/doctors">
               <ListItemIcon>
                 <HailIcon />
               </ListItemIcon>
-              <ListItemText primary={"Doctors"} />
+              <ListItemText primary={lg.get('Doctors')}/>
             </ListItemButton>
             <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/nurses">
               <ListItemIcon>
                 <EmojiPeopleIcon />
               </ListItemIcon>
-              <ListItemText primary={"Nurses"} />
+              <ListItemText primary={lg.get('Nurses')} />
             </ListItemButton>
             <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/scientists">
               <ListItemIcon>
                 <ScienceIcon />
               </ListItemIcon>
-              <ListItemText primary={"Scientists"} />
+              <ListItemText primary={lg.get('Scientists')} />
             </ListItemButton>
           </List>
         </Collapse>
         <ListItemButton onClick={handleTreatmentClick}>
-          <ListItemText primary={"Treatments"} />
+          <ListItemText primary={lg.get('Treatments')} />
           {openTreatmentDown ? <ExpandLess /> : <ExpandMore />}
         </ListItemButton>
         <Collapse in={openTreatmentDown} timeout="auto" unmountOnExit>
@@ -283,18 +290,18 @@ export default function Bar(props) {
             <ListItemIcon>
               <VaccinesIcon />
             </ListItemIcon>
-            <ListItemText primary={"Treatements"} />
+            <ListItemText primary={lg.get('Treatments')} />
           </ListItemButton>
           <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/treatments">
             <ListItemIcon>
               <HealingIcon />
             </ListItemIcon>
-            <ListItemText primary={"Patients"} />
+            <ListItemText primary={lg.get('Patients')} />
           </ListItemButton>
         </Collapse>
 
         <ListItemButton onClick={handleEffectClick}>
-          <ListItemText primary={"Effects and moods"} />
+          <ListItemText primary={lg.get('Effects and moods')} />
           {openEffectDown ? <ExpandLess /> : <ExpandMore />}
         </ListItemButton>
         <Collapse in={openEffectDown} timeout="auto" unmountOnExit>
@@ -302,30 +309,30 @@ export default function Bar(props) {
             <ListItemIcon>
               <FormatListBulletedIcon />
             </ListItemIcon>
-            <ListItemText primary={"Side Effects"} />
+            <ListItemText primary={lg.get('Side effects')} />
           </ListItemButton>
           <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/moods">
             <ListItemIcon>
               <FormatListBulletedIcon />
             </ListItemIcon>
-            <ListItemText primary={"Moods"} />
+            <ListItemText primary={lg.get('Moods')}/>
           </ListItemButton>
           <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/survey-moods">
             <ListItemIcon>
               <MoodIcon />
             </ListItemIcon>
-            <ListItemText primary={"Survey Moods"} />
+            <ListItemText primary={lg.get('Survey moods')} />
           </ListItemButton>
           <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/survey-effects">
             <ListItemIcon>
               <SickIcon />
             </ListItemIcon>
-            <ListItemText primary={"Survey Side effects"} />
+            <ListItemText primary={lg.get('Survey side effects')} />
           </ListItemButton>
         </Collapse>
 
         <ListItemButton onClick={handleFactoriesClick}>
-          <ListItemText primary={"Factories"} />
+          <ListItemText primary={lg.get('Factories')} />
           {openFactoriesDown ? <ExpandLess /> : <ExpandMore />}
         </ListItemButton>
         <Collapse in={openFactoriesDown} timeout="auto" unmountOnExit>
@@ -333,13 +340,13 @@ export default function Bar(props) {
             <ListItemIcon>
               <LocalHospitalIcon />
             </ListItemIcon>
-            <ListItemText primary={"Hospitals"} />
+            <ListItemText primary={lg.get('Hospitals')} />
           </ListItemButton>
           <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/laboratories">
             <ListItemIcon>
               <BiotechIcon />
             </ListItemIcon>
-            <ListItemText primary={"Laboratories"} />
+            <ListItemText primary={lg.get('Laboratories')} />
           </ListItemButton>
         </Collapse>
 
@@ -347,7 +354,7 @@ export default function Bar(props) {
           <ListItemIcon>
             <SettingsIcon />
           </ListItemIcon>
-          <ListItemText primary={"My settings"} />
+          <ListItemText primary={lg.get('Settings')} />
         </ListItemButton>
 
       </List>

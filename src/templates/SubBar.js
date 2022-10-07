@@ -34,6 +34,8 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Divider, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import { useStore } from "../utils/store";
+import Translation from "../utils/translation";
 
 const drawerWidth = 240;
 
@@ -68,6 +70,11 @@ const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp
 
 export default function SubBar(props) {
   const theme = useTheme();
+
+  const { session, } = useStore();
+  const [userSession, ] = React.useState(session.user ? session.user:null);
+  const lg = new Translation(userSession ? userSession.lang: 'en');
+
   const [open, setOpen] = React.useState(true);
   const [openProfile, setopenProfile] = React.useState(false);
   const anchorRef = React.useRef(null);
@@ -223,7 +230,7 @@ export default function SubBar(props) {
           <ListItemText primary={"Notifications"} />
         </ListItemButton>
         <ListItemButton onClick={handleUserClick}>
-          <ListItemText primary={"My patients"} />
+          <ListItemText primary={lg.get('My patients')} />
           {openUserDown ? <ExpandLess /> : <ExpandMore />}
         </ListItemButton>
         <Collapse in={openUserDown} timeout="auto" unmountOnExit>
@@ -232,31 +239,31 @@ export default function SubBar(props) {
               <ListItemIcon>
                 <FamilyRestroomIcon />
               </ListItemIcon>
-              <ListItemText primary="List" />
+              <ListItemText primary={lg.get('List')} />
             </ListItemButton>
             <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/survey-moods">
               <ListItemIcon>
                 <MoodIcon />
               </ListItemIcon>
-              <ListItemText primary={"Survey Moods"} />
+              <ListItemText primary={lg.get('Survey moods')} />
             </ListItemButton>
             <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/survey-effects">
               <ListItemIcon>
                 <SickIcon />
               </ListItemIcon>
-              <ListItemText primary={"Survey Side effects"} />
+              <ListItemText primary={lg.get('Survey side effects')} />
             </ListItemButton>
           <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/treatments">
             <ListItemIcon>
               <HealingIcon />
             </ListItemIcon>
-            <ListItemText primary={"Treatments"} />
+            <ListItemText primary={lg.get('Treatments')} />
           </ListItemButton>
           </List>
         </Collapse>
 
         <ListItemButton onClick={handleEffectClick}>
-          <ListItemText primary={"Manage list of"} />
+          <ListItemText primary={lg.get("Manage list of")} />
           {openEffectDown ? <ExpandLess /> : <ExpandMore />}
         </ListItemButton>
         <Collapse in={openEffectDown} timeout="auto" unmountOnExit>
@@ -264,19 +271,19 @@ export default function SubBar(props) {
             <ListItemIcon>
               <FormatListBulletedIcon />
             </ListItemIcon>
-            <ListItemText primary={"Side Effects"} />
+            <ListItemText primary={lg.get('Side effects')} />
           </ListItemButton>
           <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/moods">
             <ListItemIcon>
               <FormatListBulletedIcon />
             </ListItemIcon>
-            <ListItemText primary={"Moods"} />
+            <ListItemText primary={lg.get('Moods')} />
           </ListItemButton>
           <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/drugs">
             <ListItemIcon>
               <VaccinesIcon />
             </ListItemIcon>
-            <ListItemText primary={"Treatements"} />
+            <ListItemText primary={lg.get('Treatments')} />
           </ListItemButton>
         </Collapse>
 
@@ -284,7 +291,7 @@ export default function SubBar(props) {
           <ListItemIcon>
             <SettingsIcon />
           </ListItemIcon>
-          <ListItemText primary={"My settings"} />
+          <ListItemText primary={lg.get('Settings')} />
         </ListItemButton>
 
       </List>
