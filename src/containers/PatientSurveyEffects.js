@@ -34,6 +34,9 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import AngelSurvey from '../api/angel/survey';
 import { MobileDatePicker } from '@mui/lab';
+import { useStore } from '../utils/store';
+import Translation from '../utils/translation';
+import Filter from '../utils/filters';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -216,18 +219,22 @@ EnhancedTableToolbar.propTypes = {
 const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp0LF2WgeDkn_sQ1VuMnlnVGjkDvCN4jo2nLMt3b84ry328rg46eohB_JT3WTqOGJovY&usqp=CAU';//process.env.SENDGRID_APIKEY
 
 export default function PatientSurveyEffects(props) {
+  const { session, dispatch } = useStore();
+  const [userSession,] = React.useState(session.user ? session.user : null);
+  const fltr = new Filter('surveySideEffects', dispatch, session);
+  const lg = new Translation(userSession ? userSession.lang : 'en');
 
   const { enqueueSnackbar } = useSnackbar();
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
   const [limit, setLimit] = React.useState(30);
-  const [sideEffects, setSideEffects] = React.useState([]);
+  const [, setSideEffects] = React.useState([]);
 
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('');
   const [selected, setSelected] = React.useState([]);
-  const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(30);
+  const [dense, ] = React.useState(false);
+  const [rowsPerPage, ] = React.useState(30);
   const [rows, setRows] = React.useState([]);
 
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
@@ -236,9 +243,9 @@ export default function PatientSurveyEffects(props) {
   const [firstnameFilter, setFirstnameFilter] = React.useState(true);
   const [lastnameFilter, setLastnameFilter] = React.useState(true);
   const [nameFilter, setNameFilter] = React.useState(true);
-  const [scoreFilter, setScoreFilter] = React.useState(true);
-  const [fromDateFilter, setFromDateFilter] = React.useState(null);
-  const [toDateFilter, setToDateFilter] = React.useState(null);
+  const [scoreFilter, ] = React.useState(true);
+  const [fromDateFilter, setFromDateFilter] = React.useState(fltr.get('date_created', props)?fltr.get('date_created', props):fltr.get('from_date', props));
+  const [toDateFilter, setToDateFilter] = React.useState(fltr.get('date_created', props)?fltr.get('date_created', props):fltr.get('to_date', props));
 
   React.useEffect(() => {
     const sideEffects = props.sideEffects;
@@ -404,6 +411,7 @@ export default function PatientSurveyEffects(props) {
     return datestring;
   }
   const setFromDate = (newValue) => {
+    fltr.set('from_date', props, newValue);
     setFromDateFilter(newValue);
   };
   const setToDate = (newValue) => {
@@ -444,18 +452,18 @@ export default function PatientSurveyEffects(props) {
               id="fromdate"
               label="From date"
               inputFormat="MM/dd/yyyy"
-              value={fromDateFilter ? fromDateFilter : ''}
+              value={fromDateFilter ? fromDateFilter : null}
               onChange={(newValue) => {setFromDate(newValue);}}
-              renderInput={(params) => <TextField {...params} />}
+              renderInput={(params) => <TextField {...params} size={'small'} style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '0px', marginRight: '0px', marginLeft: '0px' }}/>}
             />
             <MobileDatePicker
               key="todate"
               id="todate"
               label="To date"
               inputFormat="MM/dd/yyyy"
-              value={toDateFilter ? toDateFilter : ''}
+              value={toDateFilter ? toDateFilter : null}
               onChange={(newValue) => {setToDate(newValue);}}
-              renderInput={(params) => <TextField {...params} />}
+              renderInput={(params) => <TextField {...params} size={'small'} style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '0px', marginRight: '0px', marginLeft: '0px' }}/>}
             />
             <FormControlLabel control={<Checkbox checked={firstnameFilter} onChange={handleFirstnameFilter} />} label="Firstname" />
             <FormControlLabel control={<Checkbox checked={lastnameFilter} onChange={handleLastnameFilter} />} label="Lastname" />

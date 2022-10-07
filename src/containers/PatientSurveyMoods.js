@@ -249,7 +249,7 @@ export default function PatientSurveyMoods(props) {
   const [nameFilter, setNameFilter] = React.useState(true);
   const [scoreFilter, ] = React.useState(true);
   const [fromDateFilter, setFromDateFilter] = React.useState(fltr.get('date_created', props)?fltr.get('date_created', props):fltr.get('from_date', props));
-  const [toDateFilter, setToDateFilter] = React.useState(null);
+  const [toDateFilter, setToDateFilter] = React.useState(fltr.get('date_created', props)?fltr.get('date_created', props):fltr.get('to_date', props));
 
   React.useEffect(() => {
     fetchDataEffects();
