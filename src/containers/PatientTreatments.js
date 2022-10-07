@@ -267,6 +267,10 @@ export default function PatientTreatments(props) {
   const [patient, setPatient] = React.useState(null);
   const [drug, setDrug] = React.useState(null);
   const [drugId, setDrugId] = React.useState(props.drugId);
+
+  const [id, setId] = React.useState(null);
+  const [posologyId, setPosologyId] = React.useState(null);
+
   const stg = JSON.parse(window.appStorage.getItem('user'));
 
   React.useEffect(() => {
@@ -432,6 +436,9 @@ export default function PatientTreatments(props) {
   };
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
   const handleAssignPatientModal = async (row) => {
+    console.log(row)
+    setId(row.id)
+    setPosologyId(row.posology)
     setHours(JSON.parse(row.hours));
     setWeek(JSON.parse(row.days));
     setDrugId(row.drug_id);
@@ -447,10 +454,13 @@ export default function PatientTreatments(props) {
     setOpenAssignPatientModal(true);
   }
   const handleCloseAssignPatientModal = () => setOpenAssignPatientModal(false);
+  
   const onAssignPatient = async e => {
-    if (!e.patient_id || !e.drug_id || !e.startDate || !e.hours || !e.days) {
+    if (!e.id || !e.posology_id || !e.patient_id || !e.drug_id || !e.startDate || !e.hours || !e.days) {
       try {
         const u = {
+          id: e.id,
+          posology_id: e.posology_id,
           patient_id: e.patient_id,
           drug_id: e.drug_id,
           start_date: formatDate(e.start_date),
@@ -462,6 +472,7 @@ export default function PatientTreatments(props) {
           note: e.note ? e.note : null
         };
         const a = await AngelDrug().updatePatient(u);
+        fetchData();
         if (a && a.code) {
           handleClickVariant('error', a.code);
         } else {
@@ -489,6 +500,8 @@ export default function PatientTreatments(props) {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description">
         <PosologyComponent onSave={onAssignPatient}
+          id={id}
+          posologyId={posologyId}
           days={days}
           repetition={repetition}
           hours={hours}

@@ -43,6 +43,9 @@ import MoodIcon from '@mui/icons-material/Mood';
 import Filter from '../utils/filters';
 import { useStore } from '../utils/store';
 import Translation from '../utils/translation';
+import { yellow } from '@mui/material/colors';
+
+const middle = yellow[500]; // #f44336
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -247,6 +250,7 @@ export default function SurveyMoods(props) {
   const [nameFilter, setNameFilter] = React.useState(true);
   const [scoreFilter,] = React.useState(true);
   const [dateCreatedFilter, setDateCreatedFilter] = React.useState(fltr.get('date_created', props) ? fltr.get('date_created', props) : new Date());
+
   React.useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -257,10 +261,10 @@ export default function SurveyMoods(props) {
     setOrderBy(property);
   };
   const compare = (a, b) => {
-    if (a.total < b.total) {
+    if (a.score < b.score) {
       return 1;
     }
-    if (a.total > b.total) {
+    if (a.score > b.score) {
       return -1;
     }
     return 0;
@@ -398,12 +402,10 @@ export default function SurveyMoods(props) {
       fetchData();
     }
   }
-
   const handleClickVariant = (variant, text) => {
     // variant could be success, error, warning, info, or default
     enqueueSnackbar(text, { variant });
   };
-
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
@@ -465,7 +467,7 @@ export default function SurveyMoods(props) {
     } else if (score === '' + 4) {
       return "warning";
     } else if (score === '' + 3) {
-      return "primary";
+      return "middle";
     } else if (score === '' + 2) {
       return "secondary";
     } else if (score === '' + 1) {
@@ -478,7 +480,7 @@ export default function SurveyMoods(props) {
     } else if (score === '' + 4) {
       return (<SentimentVeryDissatisfiedIcon color="warning" />);
     } else if (score === '' + 3) {
-      return (<SentimentSatisfiedIcon color="primary" />);
+      return (<SentimentSatisfiedIcon  style={{color:'#faa31b'}}/>);
     } else if (score === '' + 2) {
       return (<SentimentSatisfiedAltIcon color="success" />);
     } else if (score === '' + 1) {
@@ -591,7 +593,7 @@ export default function SurveyMoods(props) {
                                     </Grid>
                                     <Grid item pl={2} >
                                       {getIcon(e.score)}
-                                      <Badge badgeContent={e.score} color={getColor(e.score)} style={{ position: 'absolute' }} ></Badge> |
+                                      <Badge badgeContent={e.score} color={getColor(e.score)} style={{ position: 'absolute' }} ></Badge> <span style={{bottom: '4px',position:'relative'}}>|</span>
                                     </Grid></>)
                                 }
                               )

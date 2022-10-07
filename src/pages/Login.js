@@ -32,7 +32,11 @@ export default function Login() {
       if (result && result.user) {
         window.appStorage.setItem('token', JSON.stringify(result.accessToken), 1200000);
         dispatch({ type: "user", payload: JSON.stringify(result.user) });
-        navigate('/patients', {replace: true});return;
+        if(result.user && (result.user.nurse_id || result.user.doctor_id)) {
+          navigate('/survey-moods', {replace: true});return;
+        } else {
+          navigate('/patients', {replace: true});return;
+        }
       } else {
         setHasLoginError(true);
       }

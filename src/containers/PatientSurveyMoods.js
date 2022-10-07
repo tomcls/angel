@@ -427,7 +427,7 @@ export default function PatientSurveyMoods(props) {
       return (<Badge badgeContent={score} color="warning">
       </Badge>)
     } else if (score === 3) {
-      return (<Badge badgeContent={score} color="primary">
+      return (<Badge badgeContent={score} color="middle">
       </Badge>)
     } else if (score === 2) {
       return (<Badge badgeContent={score} color="secondary">

@@ -76,6 +76,14 @@ export default  function AngelDrug(config) {
                 throw new error(error);
             }
         },
+        updatePatient: async (params) => {
+            try {
+                const res = await axios.post(process.env.REACT_APP_API_URL+'/drugs/update-patient', params, {headers: {'Authorization':accessToken}});
+                return res.data;
+            } catch (error) {
+                throw new error(error);
+            }
+        },
         patients: async (params) => {
             try {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/drugs/patients', params, {headers: {'Authorization':accessToken}});

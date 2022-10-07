@@ -33,6 +33,12 @@ export default function AppStyle() {
                 dark: 'rgb(11, 129, 90)',
                 contrastText: '#fff',
             },
+            middle: {
+                light: 'rgb(250,163,27)',
+                main: '#faa31b',
+                dark: 'rgb(250,163,27)',
+                contrastText: '#fff',
+            },
             light: {
                 main: '#fff',
                 contrastText: '#fff',

@@ -18,17 +18,19 @@ const style = {
     p: 4,
 };
 export default function PosologyComponent(props) {
+    const [id,] = React.useState(props.id);
+    const [posologyId,] = React.useState(props.posologyId);
     const [drugId, setDrugId] = React.useState(props.drugId);
     const [patientId, setPatientId] = React.useState(props.patientId);
     const [hours, setHours] = React.useState(props.hours);
-    const [repetition, setRepetition] = React.useState(props.repetition?props.repetition:'week');
+    const [repetition, setRepetition] = React.useState(props.repetition ? props.repetition : 'week');
     const [note, setNote] = React.useState(props.note);
     const [week, setWeek] = React.useState(props.week);
-    const [startDate, setStartDate] = React.useState(props.startDate?props.startDate:new Date());
+    const [startDate, setStartDate] = React.useState(props.startDate ? props.startDate : new Date());
     const [endDate, setEndDate] = React.useState(props.endDate);
     const [arrayUpdated, updateArray] = React.useState(props.refresh);
     React.useEffect(() => {
-        console.log("PosologyComponent",week)
+        console.log("PosologyComponent", week)
     });
     const onAddHour = () => {
         setHours([...hours, 12]);
@@ -40,19 +42,21 @@ export default function PosologyComponent(props) {
         updateArray(new Date().getMilliseconds());
     }
     const onWeekDayClick = (event, newFormats) => {
-        console.log('newFormats',newFormats)
+        console.log('newFormats', newFormats)
         setWeek(newFormats);
     }
     const onAssignPatient = () => {
         props.onSave({
+            id: id,
+            posology_id: posologyId,
             start_date: startDate,
             patient_id: patientId,
             drug_id: drugId,
             days: week,
             hours: hours,
             repetition: repetition,
-            note: note?note:null,
-            end_date: endDate?endDate:null,
+            note: note ? note : null,
+            end_date: endDate ? endDate : null,
         });
     }
 
@@ -70,8 +74,8 @@ export default function PosologyComponent(props) {
         setDrugId(drugId);
     }
     return (
-        <Box sx={style} data={arrayUpdated} style={{paddingTop: '5px'}} >
-            <Typography id="modal-modal-title" variant="h6" component="h2" style={{ paddingTop: '0px', marginTop: '0px',textAlign: 'center',marginBottom: '15px' }}>
+        <Box sx={style} data={arrayUpdated} style={{ paddingTop: '5px' }} >
+            <Typography id="modal-modal-title" variant="h6" component="h2" style={{ paddingTop: '0px', marginTop: '0px', textAlign: 'center', marginBottom: '15px' }}>
                 Assign treatment to a patient
             </Typography>
             <ComboUsers type="patient" onSelect={onPatientSelect} patientId={patientId} patient={props.patient} />
@@ -79,7 +83,7 @@ export default function PosologyComponent(props) {
             <Grid item xs={12} style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '5px', marginRight: '0px', marginLeft: '0px' }}>
                 <Typography variant="caption"  >When to start</Typography>
             </Grid>
-            <Grid item xs={12} style={{ paddingTop: '5px',marginBottom: '0px',paddingBottom: '0px' }}>
+            <Grid item xs={12} style={{ paddingTop: '5px', marginBottom: '0px', paddingBottom: '0px' }}>
                 <MobileDatePicker
                     key="datestart"
                     id="datestart"
@@ -188,7 +192,7 @@ export default function PosologyComponent(props) {
                 <Grid item xs={12} style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '0px', marginRight: '0px', marginLeft: '0px' }}>
                     <Typography variant="caption"  >When to end (optional)</Typography>
                 </Grid>
-                <Grid item xs={12}style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '0px', marginRight: '0px', marginLeft: '0px' }}>
+                <Grid item xs={12} style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '0px', marginRight: '0px', marginLeft: '0px' }}>
                     <MobileDatePicker
                         key="dateend"
                         id="dateend"
@@ -196,7 +200,7 @@ export default function PosologyComponent(props) {
                         inputFormat="dd/MM/yyyy"
                         value={endDate ? endDate : null}
                         onChange={handleEndDateChange}
-                        renderInput={(params) => <TextField  size="small" {...params} style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '0px', marginRight: '0px', marginLeft: '0px' }} />}
+                        renderInput={(params) => <TextField size="small" {...params} style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '0px', marginRight: '0px', marginLeft: '0px' }} />}
                     />
                 </Grid>
             </Grid>
