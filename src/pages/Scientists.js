@@ -15,6 +15,8 @@ import { Grid, Typography } from "@mui/material";
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import Tabs from "../components/Tabs";
 import MainBar from "../templates/MainBar";
+import { useStore } from "../utils/store";
+import Translation from "../utils/translation";
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -38,6 +40,10 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
 
 export default function ScientistsPage() {
 
+  const { session, } = useStore();
+  const [userSession,] = React.useState(session.user ? session.user : null);
+  const lg = new Translation(userSession ? userSession.lang : 'en');
+
   const [open, setOpen] = React.useState(true);
   const [selectedTab, setSelectedTab] = React.useState("Main");
   const [tabs, setTabs] = React.useState([]);
@@ -46,7 +52,6 @@ export default function ScientistsPage() {
   const t = new Tabs('scientist', tabIndex, tabs, setTabs, setSelectedTab, setTabIndex, newBtn);
 
   React.useEffect(() => {
-    console.log('useEffect Scientists page tabs length=', tabs.length, 'tabIndex', tabIndex);
     let d = document.getElementById('newButton');
     if (d) {
       d.clk = function (id, text, type) { t.openTab(id, text, type); };
@@ -55,7 +60,7 @@ export default function ScientistsPage() {
   const createTabScientist = (userId, text) => {
     const value = text;
     const newTab = {
-      label: text ? text : 'New Scientist',
+      label: text ? text : lg.get('New scientist'),
       value: value ? value : tabIndex,
       idx: tabIndex,
       child: () => <Scientist userId={userId} showScientistPatients={openScientistPatientTab} />
@@ -75,22 +80,22 @@ export default function ScientistsPage() {
       <Box sx={{ display: 'flex' }}>
         <MainBar open={setOpen} />
         <Main open={open}>
-          <Grid container spacing={2} mb={'0px'} mt={5} >
+          <Grid container mb={'0px'} mt={6} >
             <Grid item xs={12} md={6} xl={6} >
               <Typography variant="h6" component="div" >
-                Scientists
+                {lg.get('Scientists')}
               </Typography>
             </Grid>
             <Grid item xs={12} md={6} xl={6} textAlign={'end'}  >
               <Button variant="outlined" onClick={t.onOpenTabClick} justifyContent="flex-end" ref={newBtn} id="newButton">
-                <PeopleIcon /> Add scientist</Button>
+                <PeopleIcon />{lg.get('Add scientist')}</Button>
             </Grid>
           </Grid>
           <Box sx={{ width: '100%' }}>
             <TabContext value={selectedTab ? selectedTab : '1'}>
               <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <TabList onChange={t.handleChange} aria-label="" variant="scrollable" scrollButtons="auto" >
-                  <Tab label="List" value="Main" icon={<FormatListBulletedIcon />} iconPosition="start" />
+                  <Tab label={lg.get('List')} value="Main" icon={<FormatListBulletedIcon />} iconPosition="start" />
                   {tabs.map(tab => (
                     <Tab key={tab.idx} label={tab.label} value={tab.value} icon={<Cancel onClick={(e) => t.handleCloseTab(e, tab.idx)} />} iconPosition="end" />
                   ))}

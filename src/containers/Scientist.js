@@ -26,9 +26,15 @@ import EmailIcon from '@mui/icons-material/Email';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import FaceIcon from '@mui/icons-material/Face';
 import { MobileDatePicker } from '@mui/lab';
+import Translation from '../utils/translation';
+import { useStore } from '../utils/store';
 export default function ScientistContainer(props) {
 
     const { enqueueSnackbar } = useSnackbar();
+
+    const { session, } = useStore();
+    const [userSession,] = React.useState(session.user ? session.user : null);
+    const lg = new Translation(userSession ? userSession.lang : 'en');
 
     const [id, setId] = React.useState(null);
     const [scientistId, setScientistId] = React.useState(null);
@@ -215,14 +221,14 @@ export default function ScientistContainer(props) {
                                 style={{ width: '200px', height: '200px', textAlign: "center", borderColor: 'gray', margin: 'auto' }}
                             />
                             <Grid item xs={12} style={{ width: '100%', textAlign: "center" }}>
-                                <Button id="avatarLabel" onClick={() => uploadFileButton.current.click()}>Upload photo</Button>
+                                <Button id="avatarLabel" onClick={() => uploadFileButton.current.click()}>{lg.get('Upload photo')}</Button>
                                 <input type="file" name="avatar" onChange={onFileChange} ref={uploadFileButton} style={{display: 'none'}}/>
                             </Grid>
                         </Grid>
                     </Grid>
                     <Grid item xs={12} sm={6} md={4} xl={4} >
                         <TextField
-                            label="Firstname"
+                            label={lg.get('Firstname')}
                             id="firstname"
                             value={firstname ? firstname : ''}
                             onChange={onInputChange(setFirstname)}
@@ -231,7 +237,7 @@ export default function ScientistContainer(props) {
                             }}
                         />
                         <TextField
-                            label="Lastname"
+                            label={lg.get('Lastname')}
                             id="lastname"
                             value={lastname ? lastname : ''}
                             onChange={onInputChange(setLastname)}
@@ -243,7 +249,7 @@ export default function ScientistContainer(props) {
                             <MobileDatePicker
                                 key="birthday"
                                 id="birthday"
-                                label="Date of birth"
+                                label={lg.get('Birthday')}
                                 inputFormat="MM/dd/yyyy"
                                 value={dateOfBirth ? dateOfBirth : ''}
                                 onChange={handleDateOfBirthChange}
@@ -253,7 +259,7 @@ export default function ScientistContainer(props) {
                     </Grid>
                     <Grid item xs={12} sm={6} md={4} xl={4}>
                         <TextField
-                            label="Phone number"
+                            label={lg.get('Phone')}
                             id="phone"
                             value={phone ? phone : ''}
                             onChange={onInputChange(setPhone)}
@@ -274,7 +280,7 @@ export default function ScientistContainer(props) {
                         <Grid container spacing={1}>
                             <Grid item xs={8}>
                                 <FormControl >
-                                    <InputLabel id="langLabel">Mother tong</InputLabel>
+                                    <InputLabel id="langLabel">{lg.get('Lang')}</InputLabel>
                                     <Select
                                         style={{ display: 'flex', width: '100%' }}
                                         labelId="langLabel"
@@ -295,7 +301,7 @@ export default function ScientistContainer(props) {
                             </Grid>
                             <Grid item xs={4}>
                                 <FormControl fullWidth>
-                                    <InputLabel id="sexLabel">Sex</InputLabel>
+                                    <InputLabel id="sexLabel">{lg.get('Sex')}</InputLabel>
                                     <Select
                                         style={{ display: 'flex', width: '100%' }}
                                         labelId="sexLabel"
@@ -303,9 +309,9 @@ export default function ScientistContainer(props) {
                                         value={sex ? sex : ''}
                                         onChange={onInputChange(setSex)}
                                         label="Sex" >
-                                        <MenuItem value={'M'}>Male</MenuItem>
-                                        <MenuItem value={'F'}>Femal</MenuItem>
-                                        <MenuItem value={'B'}>Both</MenuItem>
+                                        <MenuItem value={'M'}>{lg.get("Male")}</MenuItem>
+                                        <MenuItem value={'F'}>{lg.get("Femal")}</MenuItem>
+                                        <MenuItem value={'B'}>{lg.get("Both")}</MenuItem>
                                     </Select>
                                 </FormControl>
                             </Grid>
@@ -313,13 +319,13 @@ export default function ScientistContainer(props) {
                     </Grid>
                     <Grid item xs={12} sm={6} md={4} xl={4}  >
                         <Typography variant="h6" gutterBottom component="div">
-                            Address
+                        {lg.get("Address")}
                         </Typography>
 
                         <Grid container spacing={1}>
                             <Grid item xs={8}>
                                 <TextField
-                                    label=" Address"
+                                    label={lg.get("Address")}
                                     id="address"
 
                                     value={address ? address : ''}
@@ -331,7 +337,7 @@ export default function ScientistContainer(props) {
                             </Grid>
                             <Grid item xs={4}>
                                 <TextField
-                                    label="Number"
+                                    label={lg.get("Number")}
                                     id="number"
 
                                     value={streetNumber ? streetNumber : ''}
@@ -343,7 +349,7 @@ export default function ScientistContainer(props) {
                         <Grid container spacing={1}>
                             <Grid item xs={7}>
                                 <TextField
-                                    label="City"
+                                    label={lg.get("City")}
                                     id="city"
 
                                     value={city ? city : ''}
@@ -354,7 +360,7 @@ export default function ScientistContainer(props) {
                             </Grid>
                             <Grid item xs={5}>
                                 <TextField
-                                    label="Code postal"
+                                    label={lg.get("Zip")}
                                     id="zip"
 
                                     value={zip ? zip : ''}
@@ -363,7 +369,7 @@ export default function ScientistContainer(props) {
                             </Grid>
                         </Grid>
                         <FormControl fullWidth >
-                            <InputLabel id="langLabel">Pays</InputLabel>
+                            <InputLabel id="langLabel">{lg.get("Country")}</InputLabel>
                             <Select
                                 style={{ display: 'flex', width: '100%' }}
                                 labelId="countryLabel"
@@ -382,17 +388,17 @@ export default function ScientistContainer(props) {
                     </Grid>
                     <Grid item xs={12} sm={6} md={4} xl={4}>
                         <Typography variant="h6" gutterBottom component="div">
-                            laboratory
+                        {lg.get("Laboratory")}
                         </Typography>
-                        <ComboLaboratories onSelect={onLaboratorySelect} laboratory={{ id: laboratoryId, name: laboratoryName }} />
+                        <ComboLaboratories lg={lg}  onSelect={onLaboratorySelect} laboratory={{ id: laboratoryId, name: laboratoryName }} />
                         <Typography variant="h6" mt={'10px'}>
-                            Password and activation
+                        {lg.get("Password and activation")}
                         </Typography>
                         <FormControlLabel control={<Switch checked={switchState} onChange={setActif} value={active} />} label="Actif" size="large" />
                         <Grid container spacing={1}>
                             <Grid item xs={8}>
                                 <FormControl fullWidth variant="outlined" style={{ marginTop: '0px' }}>
-                                    <InputLabel htmlFor="outlined-adornment-password">Change password</InputLabel>
+                                    <InputLabel htmlFor="outlined-adornment-password">{lg.get("Change password")}</InputLabel>
                                     <OutlinedInput
                                         id="outlined-adornment-password"
                                         type={showPassword ? 'text' : 'password'}
@@ -409,7 +415,7 @@ export default function ScientistContainer(props) {
                                                 </IconButton>
                                             </InputAdornment>
                                         }
-                                        label="Change password"
+                                        label={lg.get("Change password")}
                                     />
                                 </FormControl>
                             </Grid>
@@ -419,7 +425,7 @@ export default function ScientistContainer(props) {
                                     style={{ borderRadius: '10px', marginLeft: '10px' }}
                                     variant="outlined" startIcon={<Save />}
                                     onClick={savePassword}>
-                                    Save
+                                    {lg.get("Save")}
                                 </Button>
                             </Grid>
                         </Grid>
@@ -435,7 +441,7 @@ export default function ScientistContainer(props) {
                         style={{ borderRadius: '10px', marginTop: '10px' }}
                         variant="outlined" startIcon={<Save />}
                         onClick={onSubmit}>
-                        Save
+                        {lg.get("Save")}
                     </Button>
                 </Grid>
             </Grid>

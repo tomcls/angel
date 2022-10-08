@@ -7,19 +7,22 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import PatientSurveyEffects from './PatientSurveyEffects';
 import PatientSurveyMoods from './PatientSurveyMoods';
 import PatientTreatments from './PatientTreatments';
+import { useStore } from '../utils/store';
+import Translation from '../utils/translation';
 
 export default function PatientSurveys(props) {
+
+  const { session, } = useStore();
+  const [userSession,] = React.useState(session.user ? session.user : null);
+  const lg = new Translation(userSession ? userSession.lang : 'en');
+
   const [expanded, setExpanded] = React.useState(null);
-  const [expanded1, setExpanded1] = React.useState(null);
-  const [expanded2, setExpanded2] = React.useState(null);
-  const [expanded3, setExpanded3] = React.useState(null);
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
   React.useEffect(() => {
     setExpanded(props.panel);
-    console.log('aaaaaaa',props.panel)
   },[props.panel]);
   return (
     <div>
@@ -31,7 +34,7 @@ export default function PatientSurveys(props) {
           id="panel1bh-header"
         >
           <Typography sx={{ width: '33%', flexShrink: 0 }}>
-            Side effects
+            {lg.get('Side effects')}
           </Typography>
           <Typography sx={{ color: 'text.secondary' }}></Typography>
         </AccordionSummary>
@@ -45,7 +48,7 @@ export default function PatientSurveys(props) {
           aria-controls="panel2bh-content"
           id="panel2bh-header"
         >
-          <Typography sx={{ width: '33%', flexShrink: 0 }}>Moods</Typography>
+          <Typography sx={{ width: '33%', flexShrink: 0 }}>{lg.get('Moods')}</Typography>
           <Typography sx={{ color: 'text.secondary' }}>
             
           </Typography>
@@ -61,7 +64,7 @@ export default function PatientSurveys(props) {
           id="panel3bh-header"
         >
           <Typography sx={{ width: '33%', flexShrink: 0 }}>
-            Treatments
+          {lg.get('Treatments')}
           </Typography>
           <Typography sx={{ color: 'text.secondary' }}>
            

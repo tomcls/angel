@@ -32,6 +32,8 @@ import Modal from '@mui/material/Modal';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
+import Translation from '../utils/translation';
+import { useStore } from '../utils/store';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -72,32 +74,6 @@ const styleModal = {
   p: 4,
 };
 
-const headCells = [
-  {
-    id: 'id',
-    numeric: true,
-    disablePadding: true,
-    label: 'Id',
-  },
-  {
-    id: 'name',
-    numeric: false,
-    disablePadding: false,
-    label: 'Name',
-  },
-  {
-    id: 'lang',
-    numeric: false,
-    disablePadding: false,
-    label: 'Lang',
-  },
-  {
-    id: 'created',
-    numeric: false,
-    disablePadding: false,
-    label: 'Created',
-  }
-];
 
 function EnhancedTableHead(props) {
   const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
@@ -105,6 +81,32 @@ function EnhancedTableHead(props) {
     onRequestSort(event, property);
   };
 
+  const headCells = [
+    {
+      id: 'id',
+      numeric: true,
+      disablePadding: true,
+      label: 'Id',
+    },
+    {
+      id: 'name',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Name'),
+    },
+    {
+      id: 'lang',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Lang'),
+    },
+    {
+      id: 'created',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Created'),
+    }
+  ];
   return (
     <TableHead>
       <TableRow>
@@ -113,7 +115,7 @@ function EnhancedTableHead(props) {
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
-            inputProps={{ 'aria-label': 'select all Moods' }}
+            inputProps={{ 'aria-label': props.lg.get('Select all moods') }}
           />
         </TableCell>
         {headCells.map((headCell) => (
@@ -185,7 +187,7 @@ const EnhancedTableToolbar = (props) => {
           <TextField
             id="input-with-icon-textfield"
             onChange={(e) => props.setSearch(e.target.value)}
-            label="Search"
+            label={props.lg.get('Search')}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -213,7 +215,12 @@ EnhancedTableToolbar.propTypes = {
 export default function Moods(props) {
 
   const { enqueueSnackbar } = useSnackbar();
-  const [moods, setMoods] = React.useState(null);
+
+  const { session, } = useStore();
+  const [userSession,] = React.useState(session.user ? session.user : null);
+  const lg = new Translation(userSession ? userSession.lang : 'en');
+
+  const [, setMoods] = React.useState(null);
 
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
@@ -222,8 +229,8 @@ export default function Moods(props) {
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('id');
   const [selected, setSelected] = React.useState([]);
-  const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [dense, ] = React.useState(false);
+  const [rowsPerPage, ] = React.useState(5);
   const [rows, setRows] = React.useState([]);
 
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
@@ -355,7 +362,7 @@ export default function Moods(props) {
       </div>
       <Box sx={{ width: '100%' }}>
         <Paper sx={{ width: '100%', mb: 0 }}>
-        <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
+        <EnhancedTableToolbar lg={lg} numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
           <TableContainer>
             <Table
               sx={{ minWidth: 750 }}
@@ -363,6 +370,7 @@ export default function Moods(props) {
               size={dense ? 'small' : 'medium'}
             >
               <EnhancedTableHead
+              lg={lg}
                 numSelected={selected.length}
                 order={order}
                 orderBy={orderBy}

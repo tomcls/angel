@@ -16,6 +16,8 @@ import { Grid, Typography } from "@mui/material";
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import PatientContainer from "../containers/Patient";
 import MainBar from "../templates/MainBar";
+import { useStore } from "../utils/store";
+import Translation from "../utils/translation";
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -45,9 +47,9 @@ export default function CoordinatorsPage() {
   const [tabIndex, setTabIndex] = React.useState(2);
   const newCoordinatorBtn = useRef(null);
 
-  React.useEffect(() => {
-    console.log('useEffect Coordinators page tabs length=', tabs.length, 'tabIndex', tabIndex);
-  }, []);
+  const { session, } = useStore();
+  const [userSession,] = React.useState(session.user ? session.user : null);
+  const lg = new Translation(userSession ? userSession.lang : 'en');
 
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);
@@ -58,11 +60,10 @@ export default function CoordinatorsPage() {
   }
   const createTab = () => {
     if (window.angel && window.angel.coordinatorId) {
-      createTabPatients(window.angel.coordinatorId, 'list of patients');
+      createTabPatients(window.angel.coordinatorId, lg.get('List of patients'));
       window.angel.coordinatorId = null;
-    } else if (window.angel && window.angel.userId ) {
-      console.log("zzzzzzz",window.angel.userId, window.angel.tabName)
-      createTabPatient( window.angel.userId, window.angel.tabName);
+    } else if (window.angel && window.angel.userId) {
+      createTabPatient(window.angel.userId, window.angel.tabName);
       window.angel.treatmentId = null;
     } else {
       createTabCoordinator();
@@ -71,7 +72,7 @@ export default function CoordinatorsPage() {
   const createTabCoordinator = (userId, text) => {
     const value = text;
     const newTab = {
-      label: text ? text : 'New Coordinator',
+      label: text ? text : lg.get('New administrator'),
       value: value ? value : tabIndex,
       idx: tabIndex,
       child: () => <Coordinator userId={userId} showCoordinatorPatients={openCoordinatorPatientTab} />
@@ -90,7 +91,7 @@ export default function CoordinatorsPage() {
     setTabs([...tabs, newTab])
     handleTabOptions(value ? value : tabIndex);
   }
-  const createTabPatient = ( userId, text) => {
+  const createTabPatient = (userId, text) => {
     const value = text;
     const newTab = {
       label: text ? text : 'New patient',
@@ -115,7 +116,6 @@ export default function CoordinatorsPage() {
     newCoordinatorBtn.current.click();
   }
   const openPatientTab = (userId, text) => {
-    console.log('openPatientTab',userId,text)
     if (!window.angel) {
       window.angel = {};
     }
@@ -128,15 +128,15 @@ export default function CoordinatorsPage() {
       <Box sx={{ display: 'flex' }}>
         <MainBar open={setOpen} />
         <Main open={open} >
-          <Grid container spacing={2} mb={'0px'} mt={5} >
+          <Grid container mb={'0px'} mt={6} >
             <Grid item xs={12} md={6} xl={6} >
-              <Typography variant="h6"  component="div" >
-                Administrators
+              <Typography variant="h6" component="div" >
+                {lg.get('Administrators')}
               </Typography>
             </Grid>
             <Grid item xs={12} md={6} xl={6} textAlign={'end'}  >
-              <Button variant="outlined"  onClick={createTab} ref={newCoordinatorBtn} justifyContent="flex-end">
-                <PeopleIcon /> Add Administrator</Button>
+              <Button variant="outlined" onClick={createTab} ref={newCoordinatorBtn} justifyContent="flex-end">
+                <PeopleIcon />{lg.get('Add administrator')}</Button>
             </Grid>
           </Grid>
           <Box sx={{ width: '100%' }}>

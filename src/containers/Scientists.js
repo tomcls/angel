@@ -33,6 +33,8 @@ import Modal from '@mui/material/Modal';
 
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import Translation from '../utils/translation';
+import { useStore } from '../utils/store';
 
 
 function descendingComparator(a, b, orderBy) {
@@ -76,59 +78,59 @@ const styleModal = {
   p: 4,
 };
 
-const headCells = [
-  {
-    id: 'id',
-    numeric: true,
-    disablePadding: true,
-    label: 'Id',
-  },
-  {
-    id: 'firstname',
-    numeric: false,
-    disablePadding: false,
-    label: 'Prénom',
-  },
-  {
-    id: 'lastname',
-    numeric: false,
-    disablePadding: false,
-    label: 'Nom',
-  },
-  {
-    id: 'email',
-    numeric: false,
-    disablePadding: false,
-    label: 'Email',
-  },
-  {
-    id: 'phone',
-    numeric: false,
-    disablePadding: false,
-    label: 'Téléphone',
-  }, {
-    id: 'lang',
-    numeric: false,
-    disablePadding: false,
-    label: 'Langue',
-  }, {
-    id: 'role',
-    numeric: false,
-    disablePadding: false,
-    label: 'Role',
-  }, {
-    id: 'active',
-    numeric: false,
-    disablePadding: false,
-    label: 'Actif',
-  },
-];
 function EnhancedTableHead(props) {
   const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
 
+  const headCells = [
+    {
+      id: 'id',
+      numeric: true,
+      disablePadding: true,
+      label: 'Id',
+    },
+    {
+      id: 'firstname',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Firstname'),
+    },
+    {
+      id: 'lastname',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Lastname'),
+    },
+    {
+      id: 'email',
+      numeric: false,
+      disablePadding: false,
+      label: 'Email',
+    },
+    {
+      id: 'phone',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Phone'),
+    }, {
+      id: 'lang',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Lang'),
+    }, {
+      id: 'role',
+      numeric: false,
+      disablePadding: false,
+      label: 'Role',
+    }, {
+      id: 'active',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Actif'),
+    },
+  ];
   return (
     <TableHead>
       <TableRow>
@@ -237,7 +239,12 @@ EnhancedTableToolbar.propTypes = {
 export default function Scientists(props) {
 
   const { enqueueSnackbar } = useSnackbar();
-  const [scientists, setScientists] = React.useState(null);
+
+  const { session, } = useStore();
+  const [userSession,] = React.useState(session.user ? session.user : null);
+  const lg = new Translation(userSession ? userSession.lang : 'en');
+
+  const [, setScientists] = React.useState(null);
 
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
@@ -246,8 +253,8 @@ export default function Scientists(props) {
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('id');
   const [selected, setSelected] = React.useState([]);
-  const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [dense,] = React.useState(false);
+  const [rowsPerPage,] = React.useState(5);
   const [rows, setRows] = React.useState([]);
 
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
@@ -259,8 +266,6 @@ export default function Scientists(props) {
   const [phoneFilter, setPhoneFilter] = React.useState(false);
 
   React.useEffect(() => {
-    console.log('useEffect Scientists list container')
-
     fetchData();
   }, []);
   const handleRequestSort = (event, property) => {
@@ -401,20 +406,20 @@ export default function Scientists(props) {
           aria-describedby="modal-modal-description">
           <Box sx={styleModal}>
             <Typography id="modal-modal-title" variant="h6" component="h2">
-              Filters
+              {lg.get('Filters')}
             </Typography>
             <FormGroup>
-              <FormControlLabel control={<Checkbox checked={firstnameFilter} onChange={handleFirstnameFilter} />} label="Firstname" />
-              <FormControlLabel control={<Checkbox checked={lastnameFilter} onChange={handleLastnameFilter} />} label="Lastname" />
+              <FormControlLabel control={<Checkbox checked={firstnameFilter} onChange={handleFirstnameFilter} />} label={lg.get('Firstname')} />
+              <FormControlLabel control={<Checkbox checked={lastnameFilter} onChange={handleLastnameFilter} />} label={lg.get('Lastname')} />
               <FormControlLabel control={<Checkbox checked={emailFilter} onChange={handleEmailFilter} />} label="Email" />
-              <FormControlLabel control={<Checkbox checked={phoneFilter} onChange={handlePhoneFilter} />} label="Phone" />
+              <FormControlLabel control={<Checkbox checked={phoneFilter} onChange={handlePhoneFilter} />} label={lg.get('Phone')} />
             </FormGroup>
           </Box>
         </Modal>
       </div>
       <Box sx={{ width: '100%' }}>
         <Paper sx={{ width: '100%', mb: 0 }}>
-        <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
+          <EnhancedTableToolbar lg={lg} numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
           <TableContainer>
             <Table
               sx={{ minWidth: 750 }}
@@ -422,6 +427,7 @@ export default function Scientists(props) {
               size={dense ? 'small' : 'medium'}
             >
               <EnhancedTableHead
+                lg={lg}
                 numSelected={selected.length}
                 order={order}
                 orderBy={orderBy}
@@ -464,11 +470,11 @@ export default function Scientists(props) {
                           component='th'
                           id={labelId}
                           scope='row'
-                          style={{ textAlign: 'center',cursor: 'pointer' }}
+                          style={{ textAlign: 'center', cursor: 'pointer' }}
                           padding='none'
                           onClick={() => props.openUser(row.user_id, row.firstname + ' ' + row.lastname)}
                         >
-                         <b> {row.firstname}</b>
+                          <b> {row.firstname}</b>
                         </TableCell>
                         <TableCell
                           component='th'

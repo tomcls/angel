@@ -20,6 +20,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import AngelSideEffect from "../api/angel/sideEffect";
 import { useSnackbar } from 'notistack';
+import { useStore } from '../utils/store';
+import Translation from '../utils/translation';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -49,39 +51,39 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-const headCells = [
-  {
-    id: 'id',
-    numeric: true,
-    disablePadding: true,
-    label: 'Id',
-  },
-  {
-    id: 'name',
-    numeric: false,
-    disablePadding: false,
-    label: 'Name',
-  },
-  {
-    id: 'lang',
-    numeric: false,
-    disablePadding: false,
-    label: 'Lang',
-  },
-  {
-    id: 'created',
-    numeric: false,
-    disablePadding: false,
-    label: 'Created',
-  }
-];
 
 function EnhancedTableHead(props) {
-  const {  onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
 
+  const headCells = [
+    {
+      id: 'id',
+      numeric: true,
+      disablePadding: true,
+      label: 'Id',
+    },
+    {
+      id: 'name',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Name'),
+    },
+    {
+      id: 'lang',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Lang'),
+    },
+    {
+      id: 'created',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Created'),
+    }
+  ];
   return (
     <TableHead>
       <TableRow>
@@ -90,7 +92,7 @@ function EnhancedTableHead(props) {
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
-            inputProps={{ 'aria-label': 'select all SideEffects' }}
+            inputProps={{ 'aria-label': props.lg.get('Select all effects') }}
           />
         </TableCell>
         {headCells.map((headCell) => (
@@ -169,7 +171,7 @@ const EnhancedTableToolbar = (props) => {
           </IconButton>
         </Tooltip>
       ) : (
-        <Tooltip title='Filter list'>
+        <Tooltip title={props.lg.get('Filters')}>
           <IconButton>
             <FilterListIcon />
           </IconButton>
@@ -186,6 +188,11 @@ EnhancedTableToolbar.propTypes = {
 export default function SideEffects(props) {
 
   const { enqueueSnackbar } = useSnackbar();
+
+  const { session, } = useStore();
+  const [userSession,] = React.useState(session.user ? session.user : null);
+  const lg = new Translation(userSession ? userSession.lang : 'en');
+
   const [, setSideEffects] = React.useState(null);
 
   const [total, setTotal] = React.useState(null);
@@ -195,12 +202,11 @@ export default function SideEffects(props) {
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('id');
   const [selected, setSelected] = React.useState([]);
-  const [dense, ] = React.useState(false);
-  const [rowsPerPage, ] = React.useState(5);
+  const [dense,] = React.useState(false);
+  const [rowsPerPage,] = React.useState(5);
   const [rows, setRows] = React.useState([]);
 
   React.useEffect(() => {
-    console.log('useEffect SideEffects list container')
     fetchData();
   }, []);
   const fetchData = async () => {
@@ -262,8 +268,8 @@ export default function SideEffects(props) {
   const isSelected = (id) => selected.indexOf(id) !== -1;
 
   const onDeleteItems = async () => {
-    if(selected.length) {
-      await AngelSideEffect().delete({ids:selected.join(',')});
+    if (selected.length) {
+      await AngelSideEffect().delete({ ids: selected.join(',') });
       handleClickVariant('success', 'side effect(s) well deleted');
       fetchData();
     }
@@ -280,7 +286,7 @@ export default function SideEffects(props) {
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 0 }}>
-        <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems}/>
+        <EnhancedTableToolbar lg={lg} numSelected={selected.length} onDeleteItems={onDeleteItems} />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
@@ -288,6 +294,7 @@ export default function SideEffects(props) {
             size={dense ? 'small' : 'medium'}
           >
             <EnhancedTableHead
+              lg={lg}
               numSelected={selected.length}
               order={order}
               orderBy={orderBy}
@@ -325,7 +332,7 @@ export default function SideEffects(props) {
                         component='th'
                         id={labelId}
                         scope='row'
-                        style={{ textAlign: 'center', cursor: 'pointer'}}
+                        style={{ textAlign: 'center', cursor: 'pointer' }}
                         padding='none'
                         onClick={() => props.openSideEffect(row.id, row.name)}
                       >

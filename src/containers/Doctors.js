@@ -34,7 +34,8 @@ import Modal from '@mui/material/Modal';
 import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
+import { useStore } from '../utils/store';
+import Translation from '../utils/translation';
 
 
 function descendingComparator(a, b, orderBy) {
@@ -78,53 +79,6 @@ const styleModal = {
   p: 4,
 };
 
-const headCells = [
-  {
-    id: 'id',
-    numeric: true,
-    disablePadding: true,
-    label: 'Id',
-  },
-  {
-    id: 'firstname',
-    numeric: false,
-    disablePadding: false,
-    label: 'Prénom',
-  },
-  {
-    id: 'lastname',
-    numeric: false,
-    disablePadding: false,
-    label: 'Nom',
-  },
-  {
-    id: 'email',
-    numeric: false,
-    disablePadding: false,
-    label: 'Email',
-  },
-  {
-    id: 'phone',
-    numeric: false,
-    disablePadding: false,
-    label: 'Téléphone',
-  }, {
-    id: 'hospital',
-    numeric: false,
-    disablePadding: false,
-    label: 'Hospital',
-  }, {
-    id: 'patients',
-    numeric: false,
-    disablePadding: false,
-    label: 'Patients',
-  }, {
-    id: 'active',
-    numeric: false,
-    disablePadding: false,
-    label: 'Actif',
-  },
-];
 
 function EnhancedTableHead(props) {
   const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
@@ -132,6 +86,53 @@ function EnhancedTableHead(props) {
     onRequestSort(event, property);
   };
 
+  const headCells = [
+    {
+      id: 'id',
+      numeric: true,
+      disablePadding: true,
+      label: 'Id',
+    },
+    {
+      id: 'firstname',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Firstname'),
+    },
+    {
+      id: 'lastname',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Lastname'),
+    },
+    {
+      id: 'email',
+      numeric: false,
+      disablePadding: false,
+      label: 'Email',
+    },
+    {
+      id: 'phone',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Phone'),
+    }, {
+      id: 'hospital',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Hospital'),
+    }, {
+      id: 'patients',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Patients'),
+    }, {
+      id: 'active',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Actif'),
+    },
+  ];
   return (
     <TableHead>
       <TableRow>
@@ -140,7 +141,7 @@ function EnhancedTableHead(props) {
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
-            inputProps={{ 'aria-label': 'select all Doctors' }}
+            inputProps={{ 'aria-label': props.lg.get('Select all doctors') }}
           />
         </TableCell>
         {headCells.map((headCell) => (
@@ -212,7 +213,7 @@ const EnhancedTableToolbar = (props) => {
           <TextField
             id="input-with-icon-textfield"
             onChange={(e) => props.setSearch(e.target.value)}
-            label="Search"
+            label={props.lg.get('Search')}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -240,7 +241,12 @@ EnhancedTableToolbar.propTypes = {
 export default function Doctors(props) {
 
   const { enqueueSnackbar } = useSnackbar();
-  const [doctors, setDoctors] = React.useState(null);
+
+  const { session, } = useStore();
+  const [userSession,] = React.useState(session.user ? session.user : null);
+  const lg = new Translation(userSession ? userSession.lang : 'en');
+
+  const [, setDoctors] = React.useState(null);
 
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
@@ -249,8 +255,8 @@ export default function Doctors(props) {
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('id');
   const [selected, setSelected] = React.useState([]);
-  const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [dense,] = React.useState(false);
+  const [rowsPerPage,] = React.useState(5);
   const [rows, setRows] = React.useState([]);
 
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
@@ -262,8 +268,6 @@ export default function Doctors(props) {
   const [phoneFilter, setPhoneFilter] = React.useState(false);
 
   React.useEffect(() => {
-    console.log('useEffect Doctors list container')
-
     fetchData();
   }, []);
   const handleRequestSort = (event, property) => {
@@ -401,20 +405,20 @@ export default function Doctors(props) {
           aria-describedby="modal-modal-description">
           <Box sx={styleModal}>
             <Typography id="modal-modal-title" variant="h6" component="h2">
-              Filters
+            {lg.get('Filters')}
             </Typography>
             <FormGroup>
-              <FormControlLabel control={<Checkbox checked={firstnameFilter} onChange={handleFirstnameFilter} />} label="Firstname" />
-              <FormControlLabel control={<Checkbox checked={lastnameFilter} onChange={handleLastnameFilter} />} label="Lastname" />
+              <FormControlLabel control={<Checkbox checked={firstnameFilter} onChange={handleFirstnameFilter} />} label={lg.get('Firstname')} />
+              <FormControlLabel control={<Checkbox checked={lastnameFilter} onChange={handleLastnameFilter} />} label={lg.get('Lastname')} />
               <FormControlLabel control={<Checkbox checked={emailFilter} onChange={handleEmailFilter} />} label="Email" />
-              <FormControlLabel control={<Checkbox checked={phoneFilter} onChange={handlePhoneFilter} />} label="Phone" />
+              <FormControlLabel control={<Checkbox checked={phoneFilter} onChange={handlePhoneFilter} />} label={lg.get('Phone')} />
             </FormGroup>
           </Box>
         </Modal>
       </div>
       <Box sx={{ width: '100%' }}>
         <Paper sx={{ width: '100%', mb: 0 }}>
-        <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
+          <EnhancedTableToolbar lg={lg} numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
           <TableContainer>
             <Table
               sx={{ minWidth: 750 }}
@@ -422,6 +426,7 @@ export default function Doctors(props) {
               size={dense ? 'small' : 'medium'}
             >
               <EnhancedTableHead
+                lg={lg}
                 numSelected={selected.length}
                 order={order}
                 orderBy={orderBy}
@@ -457,7 +462,7 @@ export default function Doctors(props) {
                               {row.id}
                             </Grid>
                             <Grid item xs={1} style={{ cursor: 'pointer' }}>
-                              <Avatar src={row.avatar} textAlign={'start'} onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname,'doctor')} />
+                              <Avatar src={row.avatar} textAlign={'start'} onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname, 'doctor')} />
                             </Grid>
                           </Grid>
                         </TableCell>
@@ -467,7 +472,7 @@ export default function Doctors(props) {
                           scope='row'
                           style={{ textAlign: 'center', cursor: 'pointer' }}
                           padding='none'
-                          onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname,'doctor')}
+                          onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname, 'doctor')}
                         >
                           <b>{row.firstname}</b>
                         </TableCell>
@@ -512,7 +517,7 @@ export default function Doctors(props) {
                           scope='row'
                           style={{ textAlign: 'center' }}
                           padding='none' >
-                          <FamilyRestroomIcon style={{ cursor: 'pointer' }} onClick={() => props.openPatients(row.id, row.firstname + ' ' + row.lastname,'doc_patients')} />
+                          <FamilyRestroomIcon style={{ cursor: 'pointer' }} onClick={() => props.openPatients(row.id, row.firstname + ' ' + row.lastname, 'doc_patients')} />
                         </TableCell>
                         <TableCell
                           component='th'

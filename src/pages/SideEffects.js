@@ -14,6 +14,8 @@ import { Cancel } from "@mui/icons-material";
 import { SnackbarProvider } from 'notistack';
 import { Grid, Typography } from "@mui/material";
 import MainBar from "../templates/MainBar";
+import { useStore } from "../utils/store";
+import Translation from "../utils/translation";
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -37,15 +39,15 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
 
 export default function SideEffectsPage() {
 
+  const { session, } = useStore();
+  const [userSession,] = React.useState(session.user ? session.user : null);
+  const lg = new Translation(userSession ? userSession.lang : 'en');
+
   const [open, setOpen] = React.useState(true);
   const [selectedTab, setSelectedTab] = React.useState("Main");
   const [tabs, setTabs] = React.useState([]);
   const [tabIndex, setTabIndex] = React.useState(2);
   const newBtn = useRef(null);
-
-  React.useEffect(() => {
-    console.log('useEffect SideEffects page tabs length=', tabs.length, 'tabIndex', tabIndex);
-  }, []);
 
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);
@@ -64,7 +66,7 @@ export default function SideEffectsPage() {
   const createTabSideEffect = (sideEffectId, text) => {
     const value = text;
     const newTab = {
-      label: text ? text : 'New SideEffect',
+      label: text ? text : lg.get('New side effect'),
       value: value ? value : tabIndex,
       idx: tabIndex,
       child: () => <SideEffect sideEffectId={sideEffectId} langId={'en'} />
@@ -77,22 +79,22 @@ export default function SideEffectsPage() {
       <Box sx={{ display: 'flex' }}>
         <MainBar open={setOpen} />
         <Main open={open}>
-          <Grid container spacing={2} mb={'0px'} mt={5} >
+          <Grid container mb={'0px'} mt={6} >
             <Grid item xs={12} md={6} xl={6} >
               <Typography variant="h6" component="div" >
-                Side effects
+                {lg.get('Side effects')}
               </Typography>
             </Grid>
             <Grid item xs={12} md={6} xl={6} textAlign={'end'}  >
               <Button variant="outlined" onClick={createTabSideEffect} ref={newBtn} justifyContent="flex-end" id="newButton">
-                <PeopleIcon /> Add side effect</Button>
+                <PeopleIcon />{lg.get('Add side effect')}</Button>
             </Grid>
           </Grid>
           <Box sx={{ width: '100%' }}>
             <TabContext value={selectedTab ? selectedTab : '1'}>
               <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <TabList onChange={handleChange} aria-label="" variant="scrollable" scrollButtons="auto" >
-                  <Tab label="SideEffects" value="Main" icon={<FormatListBulletedIcon />} iconPosition="start" />
+                  <Tab label={lg.get('List')} value="Main" icon={<FormatListBulletedIcon />} iconPosition="start" />
                   {tabs.map(tab => (
                     <Tab key={tab.idx} label={tab.label} value={tab.value} icon={<Cancel onClick={(e) => handleCloseTab(e, tab.idx)} />} iconPosition="end" />
                   ))}

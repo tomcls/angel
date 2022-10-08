@@ -29,9 +29,7 @@ export default function PosologyComponent(props) {
     const [startDate, setStartDate] = React.useState(props.startDate ? props.startDate : new Date());
     const [endDate, setEndDate] = React.useState(props.endDate);
     const [arrayUpdated, updateArray] = React.useState(props.refresh);
-    React.useEffect(() => {
-        console.log("PosologyComponent", week)
-    });
+    
     const onAddHour = () => {
         setHours([...hours, 12]);
     };
@@ -76,18 +74,18 @@ export default function PosologyComponent(props) {
     return (
         <Box sx={style} data={arrayUpdated} style={{ paddingTop: '5px' }} >
             <Typography id="modal-modal-title" variant="h6" component="h2" style={{ paddingTop: '0px', marginTop: '0px', textAlign: 'center', marginBottom: '15px' }}>
-                Assign treatment to a patient
+                {props.lg.get('Assign treatment to a patient')}
             </Typography>
-            <ComboUsers type="patient" onSelect={onPatientSelect} patientId={patientId} patient={props.patient} />
-            <ComboDrugs onSelect={onDrugSelect} drugId={drugId} drug={props.drug} />
+            <ComboUsers lg={props.lg} type="patient" onSelect={onPatientSelect} patientId={patientId} patient={props.patient} />
+            <ComboDrugs lg={props.lg} onSelect={onDrugSelect} drugId={drugId} drug={props.drug} />
             <Grid item xs={12} style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '5px', marginRight: '0px', marginLeft: '0px' }}>
-                <Typography variant="caption"  >When to start</Typography>
+                <Typography variant="caption"  >{props.lg.get('When to start')}?</Typography>
             </Grid>
             <Grid item xs={12} style={{ paddingTop: '5px', marginBottom: '0px', paddingBottom: '0px' }}>
                 <MobileDatePicker
                     key="datestart"
                     id="datestart"
-                    label="Start date"
+                    label={props.lg.get('Start date')}
                     inputFormat="dd/MM/yyyy"
                     defaultValue={new Date()}
                     value={startDate ? startDate : new Date()}
@@ -96,57 +94,57 @@ export default function PosologyComponent(props) {
                 />
             </Grid>
             <Grid item xs={12} style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '10px', marginRight: '0px', marginLeft: '0px' }}>
-                <Typography variant="caption"  >Frequency</Typography>
+                <Typography variant="caption"  >{props.lg.get('Frequency')}</Typography>
             </Grid>
             <Grid container spacing={2}>
                 <Grid item xs={12} style={{ paddingTop: '10px', textAlign: 'center' }}>
                     <ToggleButtonGroup
                         value={week}
                         onChange={onWeekDayClick}
-                        aria-label="Days in"
+                        aria-label={props.lg.get('Days in')}
                         size="small"
                         color="primary">
                         <ToggleButton value="mon" key={1} aria-label="mon" sx={{ pl: '11px', pr: '11px' }}>
-                            Mon
+                            {props.lg.get('Mon')}
                         </ToggleButton>
                         <ToggleButton value="tue" key={2} aria-label="tue" sx={{ pl: '10px', pr: '10px' }}>
-                            Tue
+                            {props.lg.get('Tue')}
                         </ToggleButton>
                         <ToggleButton value="wed" key={3} aria-label="wed" sx={{ pl: '10px', pr: '10px' }}>
-                            Wed
+                            {props.lg.get('Wed')}
                         </ToggleButton>
                         <ToggleButton value="thu" key={4} aria-label="thu" sx={{ pl: '10px', pr: '10px' }}>
-                            Thu
+                            {props.lg.get('Thu')}
                         </ToggleButton>
                         <ToggleButton value="fri" key={5} aria-label="fri" sx={{ pl: '10px', pr: '10px' }}>
-                            Fri
+                            {props.lg.get('Fri')}
                         </ToggleButton>
                         <ToggleButton value="sat" key={6} aria-label="sat" sx={{ pl: '10px', pr: '10px' }}>
-                            Sat
+                            {props.lg.get('Sat')}
                         </ToggleButton>
                         <ToggleButton value="sun" key={7} aria-label="sun" sx={{ pl: '11px', pr: '10px' }}>
-                            Sun
+                            {props.lg.get('Sun')}
                         </ToggleButton>
                     </ToggleButtonGroup>
                 </Grid>
                 <Grid item xs={12} style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '22px' }}>
                     <FormControl fullWidth>
-                        <InputLabel id="repetition">Repeat</InputLabel>
+                        <InputLabel id="repetition">{props.lg.get('Repeat')}</InputLabel>
                         <Select
                             labelId="repetition"
                             id="repetition"
                             value={repetition ? repetition : 'week'}
-                            label="Repeat"
+                            label={props.lg.get('Repeat')}
                             size="small"
                             defaultValue={'week'}
                             onChange={(v) => setRepetition(v.target.value)} >
-                            <MenuItem key={1} value={'week'}>Weekly</MenuItem>
-                            <MenuItem key={2} value={'month'}>Monthly</MenuItem>
+                            <MenuItem key={1} value={'week'}>{props.lg.get('Weekly')}</MenuItem>
+                            <MenuItem key={2} value={'month'}>{props.lg.get('Monthly')}</MenuItem>
                         </Select>
                     </FormControl>
                 </Grid>
                 <Grid item xs={12} style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '10px', marginRight: '0px', marginLeft: '0px' }}>
-                    <Typography variant="caption"  >Hours of taking medication</Typography>
+                    <Typography variant="caption"  >{props.lg.get('Hours of taking medication')}</Typography>
                 </Grid>
                 <Grid item xs={12} style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '0px', marginRight: '0px', marginLeft: '0px' }}>
                     <Grid container style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '0px', marginRight: '0px', marginLeft: '0px' }}>
@@ -160,7 +158,7 @@ export default function PosologyComponent(props) {
                                         views={['hours']}
                                         inputFormat="HH"
                                         mask="__"
-                                        label="Hour"
+                                        label={props.lg.get('Hour')}
                                         value={dayjs().set('hour', v)}
                                         onChange={(newValue) => {
                                             onSetHour(new Date(newValue).getHours(), key);
@@ -172,11 +170,11 @@ export default function PosologyComponent(props) {
                         }
                     </Grid>
                     <Fab color="primary" aria-label="add" size="small" variant="extended" sx={{ mt: '5px', width: '100%' }} onClick={onAddHour}>
-                        <Add sx={{ mr: 1 }} /> Add an hour
+                        <Add sx={{ mr: 1 }} /> {props.lg.get('Add an hour')}
                     </Fab>
                 </Grid>
                 <Grid item xs={12} style={{ paddingTop: '0px', marginTop: '15px', marginBottom: '0px', marginRight: '0px', marginLeft: '0px' }}>
-                    <Typography variant="caption" gutterBottom >Practical informations</Typography>
+                    <Typography variant="caption" gutterBottom >{props.lg.get('Practical informations')}</Typography>
                 </Grid>
                 <Grid item xs={12} style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '2px' }}>
                     <TextareaAutosize
@@ -190,13 +188,13 @@ export default function PosologyComponent(props) {
                     />
                 </Grid>
                 <Grid item xs={12} style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '0px', marginRight: '0px', marginLeft: '0px' }}>
-                    <Typography variant="caption"  >When to end (optional)</Typography>
+                    <Typography variant="caption"  >{props.lg.get('When to end (optional)')}</Typography>
                 </Grid>
                 <Grid item xs={12} style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '0px', marginRight: '0px', marginLeft: '0px' }}>
                     <MobileDatePicker
                         key="dateend"
                         id="dateend"
-                        label="End date"
+                        label={props.lg.get('End date')}
                         inputFormat="dd/MM/yyyy"
                         value={endDate ? endDate : null}
                         onChange={handleEndDateChange}
@@ -208,7 +206,7 @@ export default function PosologyComponent(props) {
                 style={{ borderRadius: '10px', marginTop: '20px', width: '100%' }}
                 variant="outlined" startIcon={<Save />}
                 onClick={onAssignPatient}>
-                Assign
+                {props.lg.get('Assign')}
             </Button>
         </Box >
     )

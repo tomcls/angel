@@ -43,9 +43,6 @@ import MoodIcon from '@mui/icons-material/Mood';
 import Filter from '../utils/filters';
 import { useStore } from '../utils/store';
 import Translation from '../utils/translation';
-import { yellow } from '@mui/material/colors';
-
-const middle = yellow[500]; // #f44336
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -88,33 +85,31 @@ const styleModal = {
   p: 4,
 };
 
-const headCells = [
-  {
-    id: 'id',
-    numeric: true,
-    disablePadding: true,
-    label: 'Patient Id',
-  },
-  {
-    id: 'effects',
-    numeric: true,
-    disablePadding: true,
-    label: 'Total effects',
-  },
-  {
-    id: 'moods',
-    numeric: false,
-    disablePadding: false,
-    label: 'Moods',
-  }
-];
-
 function EnhancedTableHead(props) {
   const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
-
+  const headCells = [
+    {
+      id: 'id',
+      numeric: true,
+      disablePadding: true,
+      label: props.lg.get('Patient Id'),
+    },
+    {
+      id: 'effects',
+      numeric: true,
+      disablePadding: true,
+      label: props.lg.get('Total effects'),
+    },
+    {
+      id: 'moods',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Moods'),
+    }
+  ];
   return (
     <TableHead>
       <TableRow>
@@ -480,7 +475,7 @@ export default function SurveyMoods(props) {
     } else if (score === '' + 4) {
       return (<SentimentVeryDissatisfiedIcon color="warning" />);
     } else if (score === '' + 3) {
-      return (<SentimentSatisfiedIcon  style={{color:'#faa31b'}}/>);
+      return (<SentimentSatisfiedIcon style={{ color: '#faa31b' }} />);
     } else if (score === '' + 2) {
       return (<SentimentSatisfiedAltIcon color="success" />);
     } else if (score === '' + 1) {
@@ -523,7 +518,7 @@ export default function SurveyMoods(props) {
     </div>
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 0 }}>
-        <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} searchText={searchFilter} />
+        <EnhancedTableToolbar lg={lg} numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} searchText={searchFilter} />
         <Grid container>
           <Grid item pl={2}><Typography>Search for:</Typography></Grid>
           <Grid item pl={2}><Typography>{dateCreatedFilter ? renderDateCreated(dateCreatedFilter) : ''}</Typography></Grid>
@@ -535,6 +530,7 @@ export default function SurveyMoods(props) {
             size={dense ? 'small' : 'medium'}
           >
             <EnhancedTableHead
+              lg={lg}
               numSelected={selected.length}
               order={order}
               orderBy={orderBy}
@@ -564,7 +560,7 @@ export default function SurveyMoods(props) {
                         />
                       </TableCell>
                       <TableCell component="th" id={labelId} scope="row" padding="none" align='left'>
-                        <Grid container spacing={2}>  
+                        <Grid container spacing={2}>
                           <Grid item xs={1} style={{ cursor: 'pointer' }}>
                             <Avatar src={row.avatar} textAlign={'start'} onClick={() => document.getElementById("newButton").clk(row.id, row.firstname + ' ' + row.lastname, 'patient_surveys', 'panel2')} />
                           </Grid>
@@ -573,7 +569,7 @@ export default function SurveyMoods(props) {
                           </Grid>
                         </Grid>
                       </TableCell>
-                      <TableCell component="th" id={labelId} scope="row" padding="none" align='left' style={{width: '50px'}}>
+                      <TableCell component="th" id={labelId} scope="row" padding="none" align='left' style={{ width: '50px' }}>
                         <b>{row.totalEffect}</b>
                       </TableCell>
                       <TableCell
@@ -593,7 +589,7 @@ export default function SurveyMoods(props) {
                                     </Grid>
                                     <Grid item pl={2} >
                                       {getIcon(e.score)}
-                                      <Badge badgeContent={e.score} color={getColor(e.score)} style={{ position: 'absolute' }} ></Badge> <span style={{bottom: '4px',position:'relative'}}>|</span>
+                                      <Badge badgeContent={e.score} color={getColor(e.score)} style={{ position: 'absolute' }} ></Badge> <span style={{ bottom: '4px', position: 'relative' }}>|</span>
                                     </Grid></>)
                                 }
                               )

@@ -14,6 +14,8 @@ import { Cancel } from "@mui/icons-material";
 import { SnackbarProvider } from 'notistack';
 import Tabs from "../components/Tabs";
 import MainBar from "../templates/MainBar";
+import { useStore } from "../utils/store";
+import Translation from "../utils/translation";
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -37,46 +39,47 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
 
 export default function DrugsPage() {
 
+  const { session, } = useStore();
+  const [userSession,] = React.useState(session.user ? session.user : null);
+  const lg = new Translation(userSession ? userSession.lang : 'en');
+
   const [open, setOpen] = React.useState(true);
   const [selectedTab, setSelectedTab] = React.useState("Main");
   const [tabs, setTabs] = React.useState([]);
   const [tabIndex, setTabIndex] = React.useState(2);
   const newBtn = useRef(null);
-  const t = new Tabs('drug',tabIndex,tabs,setTabs,setSelectedTab,setTabIndex,newBtn);
+  const t = new Tabs('drug', tabIndex, tabs, setTabs, setSelectedTab, setTabIndex, newBtn);
 
   React.useEffect(() => {
-    console.log('useEffect Drugs page tabs length=', tabs.length, 'tabIndex', tabIndex);
     let d = document.getElementById('newButton');
     if (d) {
       d.clk = function (id, text, type) { t.openTab(id, text, type); };
     }
   }, []);
-
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
-
   return (
     <SnackbarProvider maxSnack={3}>
       <Box sx={{ display: 'flex' }}>
         <MainBar open={setOpen} />
         <Main open={open}>
-          <Grid container spacing={2} mb={'0px'} mt={5} >
+          <Grid container mb={'0px'} mt={6} >
             <Grid item xs={12} md={6} xl={6} >
               <Typography variant="h6" component="div" >
-                Treatments
+                {lg.get('Treatments')}
               </Typography>
             </Grid>
             <Grid item xs={12} md={6} xl={6} textAlign={'end'}  >
               <Button variant="outlined" onClick={t.onOpenTabClick} ref={newBtn} justifyContent="flex-end" id="newButton">
-                <PeopleIcon /> Add a treatment</Button>
+                <PeopleIcon />{lg.get('Add treatment')}</Button>
             </Grid>
           </Grid>
           <Box sx={{ width: '100%' }}>
             <TabContext value={selectedTab ? selectedTab : '1'}>
               <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <TabList onChange={handleChange} aria-label="" variant="scrollable" scrollButtons="auto" >
-                  <Tab label="List" value="Main" icon={<FormatListBulletedIcon />} iconPosition="end" />
+                  <Tab label={lg.get('List')} value="Main" icon={<FormatListBulletedIcon />} iconPosition="end" />
                   {tabs.map(tab => (
                     <Tab key={tab.idx} label={tab.label} value={tab.value} icon={<Cancel onClick={(e) => t.handleCloseTab(e, tab.idx)} />} iconPosition="end" />
                   ))}

@@ -32,9 +32,15 @@ import EmailIcon from '@mui/icons-material/Email';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import FaceIcon from '@mui/icons-material/Face';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
+import { useStore } from '../utils/store';
+import Translation from '../utils/translation';
 export default function NurseContainer(props) {
 
     const { enqueueSnackbar } = useSnackbar();
+
+    const { session, } = useStore();
+    const [userSession,] = React.useState(session.user ? session.user : null);
+    const lg = new Translation(userSession ? userSession.lang : 'en');
 
     const [id, setId] = React.useState(null);
     const [nurseId, setNurseId] = React.useState(null);
@@ -272,20 +278,20 @@ export default function NurseContainer(props) {
                     aria-describedby="modal-modal-description">
                     <Box sx={styleModal}>
                         <Typography id="modal-modal-title" variant="h6" component="h2">
-                            Assign a patient
+                            {lg.get('Assign a patient')}
                         </Typography>
-                        <ComboUsers type="patient" onSelect={onPatientSelect} />
+                        <ComboUsers lg={lg} type="patient" onSelect={onPatientSelect} />
                         <Button
                             style={{ borderRadius: '10px', marginTop: '20px' }}
                             variant="outlined" startIcon={<Save />}
                             onClick={onAssign}>
-                            Assign
+                            {lg.get('Assign')}
                         </Button>
                     </Box>
                 </Modal>
             </div>
-            <Button onClick={handleAssignPatientModal} variant="outlined" style={{ marginRight: '5px' }}>Assign patient</Button>
-            <Button onClick={() => document.getElementById("newButton").clk(nurseId, firstname + " " + lastname, 'nurse_patients')} variant="outlined" >List of patients</Button>
+            <Button onClick={handleAssignPatientModal} variant="outlined" style={{ marginRight: '5px' }}>{lg.get('Assign a patient')}</Button>
+            <Button onClick={() => document.getElementById("newButton").clk(nurseId, firstname + " " + lastname, 'nurse_patients')} variant="outlined" >{lg.get('List of patients')}</Button>
             <Box sx={{ width: '100%' }} mt={2}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} sm={6} md={4} xl={2} style={{ paddingTop: '15px' }}>
@@ -296,14 +302,14 @@ export default function NurseContainer(props) {
                                 style={{ width: '200px', height: '200px', textAlign: "center", borderColor: 'gray', margin: 'auto' }}
                             />
                             <Grid item xs={12} style={{ width: '100%', textAlign: "center" }}>
-                                <Button id="avatarLabel" onClick={() => uploadFileButton.current.click()}>Upload photo</Button>
+                                <Button id="avatarLabel" onClick={() => uploadFileButton.current.click()}>{lg.get('Upload photo')}</Button>
                                 <input type="file" name="avatar" onChange={onFileChange} ref={uploadFileButton} style={{ display: 'none' }} />
                             </Grid>
                         </Grid>
                     </Grid>
                     <Grid item xs={12} sm={6} md={4} xl={4} >
                         <TextField
-                            label="Firstname"
+                            label={lg.get("Firstname")}
                             id="firstname"
                             value={firstname ? firstname : ''}
                             onChange={onInputChange(setFirstname)}
@@ -312,7 +318,7 @@ export default function NurseContainer(props) {
                             }}
                         />
                         <TextField
-                            label="Lastname"
+                            label={lg.get("Lastname")}
                             id="lastname"
                             value={lastname ? lastname : ''}
                             onChange={onInputChange(setLastname)}
@@ -324,7 +330,7 @@ export default function NurseContainer(props) {
                             <MobileDatePicker
                                 key="birthday"
                                 id="birthday"
-                                label="Date of birth"
+                                label={lg.get("Birthday")}
                                 inputFormat="MM/dd/yyyy"
                                 value={dateOfBirth ? dateOfBirth : ''}
                                 onChange={handleDateOfBirthChange}
@@ -334,7 +340,7 @@ export default function NurseContainer(props) {
                     </Grid>
                     <Grid item xs={12} sm={6} md={4} xl={4}>
                         <TextField
-                            label="Phone number"
+                            label={lg.get("Phone")}
                             id="phone"
                             value={phone ? phone : ''}
                             onChange={onInputChange(setPhone)}
@@ -355,7 +361,7 @@ export default function NurseContainer(props) {
                         <Grid container spacing={1}>
                             <Grid item xs={8}>
                                 <FormControl >
-                                    <InputLabel id="langLabel">Mother tong</InputLabel>
+                                    <InputLabel id="langLabel">{lg.get("Lang")}</InputLabel>
                                     <Select
                                         style={{ display: 'flex', width: '100%' }}
                                         labelId="langLabel"
@@ -376,7 +382,7 @@ export default function NurseContainer(props) {
                             </Grid>
                             <Grid item xs={4}>
                                 <FormControl fullWidth>
-                                    <InputLabel id="sexLabel">Sex</InputLabel>
+                                    <InputLabel id="sexLabel">{lg.get("Sex")}</InputLabel>
                                     <Select
                                         style={{ display: 'flex', width: '100%' }}
                                         labelId="sexLabel"
@@ -384,9 +390,9 @@ export default function NurseContainer(props) {
                                         value={sex ? sex : ''}
                                         onChange={onInputChange(setSex)}
                                         label="Sex" >
-                                        <MenuItem value={'M'}>Male</MenuItem>
-                                        <MenuItem value={'F'}>Femal</MenuItem>
-                                        <MenuItem value={'B'}>Both</MenuItem>
+                                        <MenuItem value={'M'}>{lg.get("Male")}</MenuItem>
+                                        <MenuItem value={'F'}>{lg.get("Femal")}</MenuItem>
+                                        <MenuItem value={'B'}>{lg.get("Both")}</MenuItem>
                                     </Select>
                                 </FormControl>
                             </Grid>
@@ -394,13 +400,13 @@ export default function NurseContainer(props) {
                     </Grid>
                     <Grid item xs={12} sm={6} md={4} xl={4}  >
                         <Typography variant="h6" gutterBottom component="div">
-                            Address
+                            {lg.get("Address")}
                         </Typography>
 
                         <Grid container spacing={1}>
                             <Grid item xs={8}>
                                 <TextField
-                                    label=" Address"
+                                    label={lg.get("Address")}
                                     id="address"
 
                                     value={address ? address : ''}
@@ -412,7 +418,7 @@ export default function NurseContainer(props) {
                             </Grid>
                             <Grid item xs={4}>
                                 <TextField
-                                    label="Number"
+                                    label={lg.get("Number")}
                                     id="number"
 
                                     value={streetNumber ? streetNumber : ''}
@@ -424,7 +430,7 @@ export default function NurseContainer(props) {
                         <Grid container spacing={1}>
                             <Grid item xs={7}>
                                 <TextField
-                                    label="City"
+                                    label={lg.get("City")}
                                     id="city"
 
                                     value={city ? city : ''}
@@ -435,7 +441,7 @@ export default function NurseContainer(props) {
                             </Grid>
                             <Grid item xs={5}>
                                 <TextField
-                                    label="Code postal"
+                                    label={lg.get("Zip")}
                                     id="zip"
 
                                     value={zip ? zip : ''}
@@ -444,14 +450,14 @@ export default function NurseContainer(props) {
                             </Grid>
                         </Grid>
                         <FormControl fullWidth >
-                            <InputLabel id="langLabel">Pays</InputLabel>
+                            <InputLabel id="langLabel">{lg.get("Country")}</InputLabel>
                             <Select
                                 style={{ display: 'flex', width: '100%' }}
                                 labelId="countryLabel"
                                 id="country"
                                 value={country ? country : ''}
                                 onChange={onInputChange(setCountry)}
-                                label="Country">
+                                label={lg.get("Country")}>
                                 <MenuItem value={'belgium'}>Belgium</MenuItem>
                                 <MenuItem value={'luxembourg'}>Luxembourg</MenuItem>
                                 <MenuItem value={'espagne'}>Espagne</MenuItem>
@@ -463,17 +469,17 @@ export default function NurseContainer(props) {
                     </Grid>
                     <Grid item xs={12} sm={6} md={4} xl={4}>
                         <Typography variant="h6" gutterBottom component="div">
-                            Hospital
+                            {lg.get("Hospital")}
                         </Typography>
-                        <ComboHospitals onSelect={onHospitalSelect} hospital={{ id: hospitalId, name: hospitalName }} />
+                        <ComboHospitals lg={lg} onSelect={onHospitalSelect} hospital={{ id: hospitalId, name: hospitalName }} />
                         <Typography variant="h6" mt={'0px'}>
-                            Password and activation
+                            {lg.get("Password and activation")}
                         </Typography>
                         <FormControlLabel control={<Switch checked={switchState} onChange={setActif} value={active} />} label="Actif" size="large" />
                         <Grid container spacing={1}>
                             <Grid item xs={8}>
                                 <FormControl fullWidth variant="outlined" style={{ marginTop: '12px' }}>
-                                    <InputLabel htmlFor="outlined-adornment-password">Change password</InputLabel>
+                                    <InputLabel htmlFor="outlined-adornment-password">{lg.get("Change password")}</InputLabel>
                                     <OutlinedInput
                                         id="outlined-adornment-password"
                                         type={showPassword ? 'text' : 'password'}
@@ -490,7 +496,7 @@ export default function NurseContainer(props) {
                                                 </IconButton>
                                             </InputAdornment>
                                         }
-                                        label="Change password"
+                                        label={lg.get("Change password")}
                                     />
                                 </FormControl>
                             </Grid>
@@ -500,7 +506,7 @@ export default function NurseContainer(props) {
                                     style={{ borderRadius: '10px', marginLeft: '10px' }}
                                     variant="outlined" startIcon={<Save />}
                                     onClick={savePassword}>
-                                    Save
+                                    {lg.get("Save")}
                                 </Button>
                             </Grid>
                         </Grid>
@@ -510,7 +516,7 @@ export default function NurseContainer(props) {
                 <Grid container spacing={2}>
                     <Grid item xs={12} style={{ paddingTop: '40px' }}>
                         <Typography variant="h6" gutterBottom component="div">
-                            Days in.
+                            {lg.get("Days in")}
                         </Typography>
                         <ToggleButtonGroup
                             value={week}
@@ -520,25 +526,25 @@ export default function NurseContainer(props) {
                             color="info"
                         >
                             <ToggleButton value="mon" aria-label="mon" color="info">
-                                Mon
+                                {lg.get("Mon")}
                             </ToggleButton>
                             <ToggleButton value="tue" aria-label="tue">
-                                Tue
+                                {lg.get("Tue")}
                             </ToggleButton>
                             <ToggleButton value="wed" aria-label="wed">
-                                Wed
+                                {lg.get("Wed")}
                             </ToggleButton>
                             <ToggleButton value="thu" aria-label="thu" >
-                                Thu
+                                {lg.get("Thu")}
                             </ToggleButton>
                             <ToggleButton value="fri" aria-label="fri" >
-                                Fri
+                                {lg.get("Fri")}
                             </ToggleButton>
                             <ToggleButton value="sat" aria-label="sat" >
-                                Sat
+                                {lg.get("Sat")}
                             </ToggleButton>
                             <ToggleButton value="sun" aria-label="sun" >
-                                Sun
+                                {lg.get("Sun")}
                             </ToggleButton>
                         </ToggleButtonGroup>
                     </Grid>
@@ -550,7 +556,7 @@ export default function NurseContainer(props) {
                             style={{ borderRadius: '10px', marginTop: '10px' }}
                             variant="outlined" startIcon={<Save />}
                             onClick={onSubmit}>
-                            Save
+                            {lg.get("Save")}
                         </Button>
                     </Grid>
                 </Grid>

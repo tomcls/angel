@@ -66,7 +66,7 @@ export default function ComboLaboratories(props) {
       renderInput={(params) => (
         <TextField
           {...params}
-          label="Laboratories"
+          label={props.lg.get('Laboratories')}
           InputProps={{
             ...params.InputProps,
             endAdornment: (

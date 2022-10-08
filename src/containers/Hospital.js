@@ -20,10 +20,16 @@ import IconButton from '@mui/material/IconButton';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useSnackbar } from 'notistack';
 import AngelHospital from '../api/angel/hospital';
+import { useStore } from '../utils/store';
+import Translation from '../utils/translation';
 
 export default function HospitalContainer(props) {
 
     const { enqueueSnackbar } = useSnackbar();
+
+    const { session, } = useStore();
+    const [userSession,] = React.useState(session.user ? session.user : null);
+    const lg = new Translation(userSession ? userSession.lang : 'en');
 
     const [id, setId] = React.useState(null);
     const [hospitalId, setHospitalId] = React.useState(null);
@@ -105,11 +111,11 @@ export default function HospitalContainer(props) {
                 <Grid container spacing={2}>
                     <Grid item xs={4}>
                         <Typography variant="h6" gutterBottom component="div">
-                            Informations
+                        {lg.get('Informations')}
                         </Typography>
                         <TextField
                             style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
-                            label="Name"
+                            label={lg.get('Name')}
                             id="name"
                             sx={{ '& > :not(style)': { mt: 1 } }}
                             value={name ? name : ''}
@@ -136,7 +142,7 @@ export default function HospitalContainer(props) {
                         />
                         <TextField
                             style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
-                            label="Phone number"
+                            label={lg.get('Phone')}
                             id="phone"
                             sx={{ '& > :not(style)': { mt: 1 } }}
                             value={phone ? phone : ''}
@@ -151,13 +157,13 @@ export default function HospitalContainer(props) {
                 <Grid container spacing={2}>
                     <Grid item xs={4}>
                         <Typography variant="h6" gutterBottom component="div">
-                            Address
+                        {lg.get('Address')}
                         </Typography>
                         <Grid container spacing={1}>
                             <Grid item xs={8}>
                                 <TextField
                                     style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
-                                    label=" Address"
+                                    label={lg.get('Address')}
                                     id="address"
                                     sx={{ '& > :not(style)': { mt: 1 } }}
                                     value={address ? address : ''}
@@ -170,7 +176,7 @@ export default function HospitalContainer(props) {
                             <Grid item xs={4}>
                                 <TextField
                                     style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
-                                    label="Number"
+                                    label={lg.get('Number')}
                                     id="number"
                                     sx={{ '& > :not(style)': { mt: 1 } }}
                                     value={streetNumber ? streetNumber : ''}
@@ -185,7 +191,7 @@ export default function HospitalContainer(props) {
                             <Grid item xs={7}>
                                 <TextField
                                     style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
-                                    label="City"
+                                    label={lg.get('City')}
                                     id="city"
                                     sx={{ '& > :not(style)': { mt: 1 } }}
                                     value={city ? city : ''}
@@ -198,7 +204,7 @@ export default function HospitalContainer(props) {
                             <Grid item xs={5}>
                                 <TextField
                                     style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
-                                    label="Code postal"
+                                    label={lg.get('Zip')}
                                     id="zip"
                                     sx={{ '& > :not(style)': { mt: 1 } }}
                                     value={zip ? zip : ''}
@@ -216,7 +222,7 @@ export default function HospitalContainer(props) {
                                     id="country"
                                     value={country ? country : ''}
                                     onChange={onInputChange(setCountry)}
-                                    label="Country"
+                                    label={lg.get('Country')}
                                 >
                                     <MenuItem value={'belgium'}>Belgium</MenuItem>
                                     <MenuItem value={'luxembourg'}>Luxembourg</MenuItem>
@@ -234,7 +240,7 @@ export default function HospitalContainer(props) {
                         style={{ borderRadius: '10px', marginTop: '20px' }}
                         variant="outlined" startIcon={<Save />}
                         onClick={onSubmit}>
-                        Save
+                        {lg.get('Save')}
                     </Button>
                 </Grid>
             </Box>

@@ -9,8 +9,6 @@ import Patients from "../containers/Patients";
 import PatientSurveys from "../containers/PatientSurveys";
 import PatientTreatments from "../containers/PatientTreatments";
 import ScientistContainer from "../containers/Scientist";
-import TreatmentContainer from "../containers/Treatment";
-import Treatments from "../containers/Treatments";
 
 export default class Tabs {
     constructor(tabName, tabIndex, tabs, setTabs, setSelectedTab, setTabIndex, newBtn) {
@@ -69,20 +67,14 @@ export default class Tabs {
                             return <DoctorContainer userId={id} showDoctorPatients={this.openTab} />
                         case 'nurses':
                             return <Nurses patientId={id} openPatients={this.openTab} text={text}/>
-                        case 'treatments':
-                            return <Treatments patientId={id} />
                         case 'patient_treatments':
                             return <PatientTreatments patientId={id} />
                         case 'drug_laboratories':
                             return <Laboratories drugId={id} />
                         case 'drug':
                             return <DrugContainer drugId={id} />
-                        case 'drug_treatments':
-                            return <Treatments drugId={id} />
                         case 'scientist':
                                 return <ScientistContainer scientistId={id} />
-                        case 'treatment':
-                            return <TreatmentContainer treatmentId={id} />
                         case 'patient_surveys':
                             return <PatientSurveys patientId={id} panel={panel} />
                         default:

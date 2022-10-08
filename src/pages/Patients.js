@@ -40,20 +40,20 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
 
 export default function PatientsPage() {
 
+  const { session } = useStore();
+  const [userStg, ] = React.useState(session && session.user ? session.user:null);
+  const lg = new Translation(userStg ? userStg.lang: 'en');
+
   const [open, setOpen] = React.useState(true);
   const [selectedTab, setSelectedTab] = React.useState('Main');
   const [tabs, setTabs] = React.useState([]);
   const [tabIndex, setTabIndex] = React.useState(2);
   const newBtn = useRef(null);
-  const { session,s } = useStore();
-  const [userStg, ] = React.useState(session && session.user ? session.user:null);
-  const lg = new Translation(userStg ? userStg.lang: 'en');
   const t = useMemo(() => {
     return new Tabs('patient', tabIndex, tabs, setTabs, setSelectedTab, setTabIndex, newBtn)
   }, [tabIndex, tabs]);
 
   React.useEffect(() => {
-    console.log('useEffect patients page');
     let d = document.getElementById('newButton');
     if (d) {
       d.clk = function (id, text, type, panel) { t.openTab(id, text, type, panel); };

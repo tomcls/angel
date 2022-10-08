@@ -18,9 +18,7 @@ import Patients from "../containers/Patients";
 import Drugs from "../containers/Drugs";
 import Doctors from "../containers/Doctors";
 import Nurses from "../containers/Nurses";
-import Treatments from "../containers/Treatments";
 import PatientContainer from "../containers/Patient";
-import TreatmentContainer from "../containers/Treatment";
 import MainBar from "../templates/MainBar";
 const drawerWidth = 240;
 
@@ -73,7 +71,7 @@ export default function MoodsPage() {
     setTabs([...tabs, newTab])
     handleTabOptions(value ? value : tabIndex);
   }
-  
+
   const onOpenTabClick = () => {
     if (window.angel && window.angel.userId && window.angel.tabType === 'nurses') {
       createTab('nurses', window.angel.tabName, window.angel.userId);
@@ -172,17 +170,13 @@ export default function MoodsPage() {
             case 'treatment_drugs':
               return <Drugs treatmentId={id} />
             case 'nurse_patients':
-              return <Patients  nurseId={id} openNurses={() => setSelectedTab('Main')} openDoctors={() => setSelectedTab('Main')} openTreatments={() => setSelectedTab('Main')} />
+              return <Patients nurseId={id} openNurses={() => setSelectedTab('Main')} openDoctors={() => setSelectedTab('Main')} openTreatments={() => setSelectedTab('Main')} />
             case 'doc_patients':
-              return <Patients  doctorId={id} openDoctors={() => setSelectedTab('Main')} openNurses={() => setSelectedTab('Main')} openTreatments={() => setSelectedTab('Main')} />
+              return <Patients doctorId={id} openDoctors={() => setSelectedTab('Main')} openNurses={() => setSelectedTab('Main')} openTreatments={() => setSelectedTab('Main')} />
             case 'doctors':
               return <Doctors patientId={id} openPatients={openTab} />
             case 'nurses':
               return <Nurses patientId={id} openPatients={openTab} />
-            case 'treatments':
-              return <Treatments patientId={id} />
-            case 'treatment':
-              return <TreatmentContainer treatmentId={id} />
             default:
               return;
           }
@@ -257,7 +251,7 @@ export default function MoodsPage() {
         window.angel.tabName = 'Treatment ' + text;
         break;
       default:
-          return;
+        return;
     }
     newBtn.current.click();
   }
@@ -267,7 +261,7 @@ export default function MoodsPage() {
       <Box sx={{ display: 'flex' }}>
         <MainBar open={setOpen} />
         <Main open={open}>
-        <Grid container spacing={2} mb={'0px'} mt={5} >
+          <Grid container mb={'0px'} mt={6} >
             <Grid item xs={12} md={6} xl={6} >
               <Typography variant="h6" component="div" >
                 Treatments

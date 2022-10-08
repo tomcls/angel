@@ -19,9 +19,9 @@ import Patients from "../containers/Patients";
 import Drugs from "../containers/Drugs";
 import Doctors from "../containers/Doctors";
 import Nurses from "../containers/Nurses";
-import Treatments from "../containers/Treatments";
-import TreatmentContainer from "../containers/Treatment";
 import MainBar from "../templates/MainBar";
+import { useStore } from "../utils/store";
+import Translation from "../utils/translation";
 
 const drawerWidth = 240;
 
@@ -46,14 +46,16 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
 
 export default function HospitalsPage() {
 
+  const { session, } = useStore();
+  const [userSession,] = React.useState(session.user ? session.user : null);
+  const lg = new Translation(userSession ? userSession.lang : 'en');
+
   const [open, setOpen] = React.useState(true);
   const [selectedTab, setSelectedTab] = React.useState('Main');
   const [tabs, setTabs] = React.useState([]);
   const [tabIndex, setTabIndex] = React.useState(2);
   const newBtn = useRef(null);
-  React.useEffect(() => {
-    console.log('useEffect hospitals page');
-  });
+
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
@@ -64,7 +66,7 @@ export default function HospitalsPage() {
   const createTabHospital = (hospitalId, text) => {
     const value = text;
     const newTab = {
-      label: text ? text : 'New hospital',
+      label: text ? text : lg.get('New hospital'),
       value: value ? value : tabIndex,
       idx: tabIndex,
       child: () => <Hospital hospitalId={hospitalId} />
@@ -72,9 +74,7 @@ export default function HospitalsPage() {
     setTabs([...tabs, newTab])
     handleTabOptions(value ? value : tabIndex);
   }
-
   const onOpenTabClick = () => {
-    console.log('onOpenTabClick')
     if (window.angel && window.angel.userId && window.angel.tabType === 'nurses') {
       createTab('nurses', window.angel.tabName, window.angel.userId);
       window.angel.userId = null;
@@ -148,7 +148,6 @@ export default function HospitalsPage() {
     setTabs(tabArr)
     setSelectedTab('Main');
   }
-
   const createTab = (type, text, id) => {
     const value = text;
     let tab = getTab(value);
@@ -178,10 +177,6 @@ export default function HospitalsPage() {
               return <Doctors patientId={id} openPatients={openTab} />
             case 'nurses':
               return <Nurses patientId={id} openPatients={openTab} />
-            case 'treatments':
-              return <Treatments patientId={id} />
-            case 'treatment':
-              return <TreatmentContainer treatmentId={id} />
             default:
               return;
           }
@@ -192,7 +187,6 @@ export default function HospitalsPage() {
     }
   }
   const openTab = (id, text, type) => {
-    console.log('openTab', type, text, id)
     if (!window.angel) {
       window.angel = {};
     }
@@ -260,28 +254,27 @@ export default function HospitalsPage() {
     }
     newBtn.current.click();
   }
-
   return (
     <SnackbarProvider maxSnack={3}>
       <Box sx={{ display: 'flex' }}>
         <MainBar open={setOpen} />
         <Main open={open}>
-          <Grid container spacing={2} mb={'0px'} mt={5} >
+          <Grid container mb={'0px'} mt={6} >
             <Grid item xs={12} md={6} xl={6} >
               <Typography variant="h6" component="div" >
-                Hospitals
+                {lg.get('Hospitals')}
               </Typography>
             </Grid>
             <Grid item xs={12} md={6} xl={6} textAlign={'end'}  >
               <Button variant="outlined" onClick={onOpenTabClick} ref={newBtn} justifyContent="flex-end" id="newButton">
-                <PeopleIcon /> Add hospital</Button>
+                <PeopleIcon />{lg.get('Add hospital')}</Button>
             </Grid>
           </Grid>
           <Box sx={{ width: '100%' }}>
             <TabContext value={selectedTab ? selectedTab : '1'}>
               <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <TabList onChange={handleChange} aria-label="" variant="scrollable" scrollButtons="auto" >
-                  <Tab label="Hospitals" value="Main" icon={<RefreshIcon />} iconPosition="end" />
+                  <Tab label={lg.get('List')} value="Main" icon={<RefreshIcon />} iconPosition="end" />
                   {tabs.map(tab => (
                     <Tab key={tab.idx} label={tab.label} value={tab.value} icon={<Cancel onClick={(e) => handleCloseTab(e, tab.idx)} />} iconPosition="end" />
                   ))}

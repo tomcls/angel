@@ -12,22 +12,16 @@ export default function ComboHospitals(props) {
   const [value, setValue] = React.useState(null);
 
   React.useEffect(() => {
-      
     let active = true;
     if(props.hospital) {
         console.log(props.hospital, active)
         setValue(props.hospital);
     }
-        
     if (!loading) {
       return undefined;
     }
-
     (async () => {
-     // await sleep(1e2); 
-
       if (active) {
-       // setOptions([...topFilms]);
         AngelHospital().list().then((results) => {
             console.log(results);
             setOptions(results.hospitals)
@@ -41,7 +35,6 @@ export default function ComboHospitals(props) {
   }, [loading,props.hospital]);
 
   React.useEffect(() => {
-
     if (!open) {
       setOptions([]);
     }
@@ -74,7 +67,7 @@ export default function ComboHospitals(props) {
       renderInput={(params) => (
         <TextField
           {...params}
-          label="Hospitals"
+          label={props.lg.get('Hospitals')}
           InputProps={{
             ...params.InputProps,
             endAdornment: (

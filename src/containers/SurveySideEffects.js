@@ -31,6 +31,7 @@ import AngelSurvey from '../api/angel/survey';
 import { MobileDatePicker } from '@mui/lab';
 import Filter from '../utils/filters';
 import { useStore } from '../utils/store';
+import Translation from '../utils/translation';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -74,20 +75,6 @@ const styleModal = {
   p: 4,
 };
 
-const headCells = [
-  {
-    id: 'id',
-    numeric: true,
-    disablePadding: true,
-    label: 'Patient Id',
-  },
-  {
-    id: 'All effects of the day',
-    numeric: false,
-    disablePadding: false,
-    label: 'Total effects',
-  }
-];
 
 function EnhancedTableHead(props) {
   const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
@@ -95,6 +82,20 @@ function EnhancedTableHead(props) {
     onRequestSort(event, property);
   };
 
+  const headCells = [
+    {
+      id: 'id',
+      numeric: true,
+      disablePadding: true,
+      label: props.lg.get('Patient Id'),
+    },
+    {
+      id: 'All effects of the day',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Total effects'),
+    }
+  ];
   return (
     <TableHead>
       <TableRow>
@@ -103,7 +104,7 @@ function EnhancedTableHead(props) {
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
-            inputProps={{ 'aria-label': 'select all Drugs' }}
+            inputProps={{ 'aria-label': props.lg.get('Select all effects') }}
           />
         </TableCell>
         {headCells.map((headCell) => (
@@ -174,7 +175,7 @@ const EnhancedTableToolbar = (props) => {
           <TextField
             id="input-with-icon-textfield"
             onChange={(e) => props.setSearch(e.target.value)}
-            label="Search"
+            label={props.lg.get('Search')}
             value={props.searchText}
             InputProps={{
               endAdornment: (
@@ -206,8 +207,12 @@ const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp
 export default function SurveySideEffects(props) {
 
   const { enqueueSnackbar } = useSnackbar();
+
   const { session, dispatch } = useStore();
+  const [userSession,] = React.useState(session.user ? session.user : null);
   const fltr = new Filter('surveySideEffects', dispatch, session);
+  const lg = new Translation(userSession ? userSession.lang : 'en');
+
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
   const [limit, setLimit] = React.useState(30);
@@ -434,13 +439,13 @@ export default function SurveySideEffects(props) {
         aria-describedby="modal-modal-description">
         <Box sx={styleModal}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Filters
+          {lg.get('Filters')}
           </Typography>
           <FormGroup>
             <MobileDatePicker
               key="fromdate"
               id="fromdate"
-              label="Select a day"
+              label={lg.get('Select a day')}
               inputFormat="MM/dd/yyyy"
               value={dateCreatedFilter ? dateCreatedFilter : ''}
               onChange={onDateCreateChanged}
@@ -457,9 +462,9 @@ export default function SurveySideEffects(props) {
     </div>
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 0 }}>
-        <EnhancedTableToolbar searchText={searchFilter} numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
+        <EnhancedTableToolbar lg={lg} searchText={searchFilter} numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
         <Grid container>
-          <Grid item pl={2}><Typography>Search for:</Typography></Grid>
+          <Grid item pl={2}><Typography>{lg.get('Search for:')}</Typography></Grid>
           <Grid item pl={2}><Typography>{dateCreatedFilter ? renderDateCreated(dateCreatedFilter) : ''}</Typography></Grid>
         </Grid>
         <TableContainer>
@@ -469,6 +474,7 @@ export default function SurveySideEffects(props) {
             size={dense ? 'small' : 'medium'}
           >
             <EnhancedTableHead
+              lg={lg}
               numSelected={selected.length}
               order={order}
               orderBy={orderBy}

@@ -1,4 +1,4 @@
-import  React , { useRef } from 'react';
+import React, { useRef } from 'react';
 import AngelUser from '../api/angel/user';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -32,9 +32,15 @@ import EmailIcon from '@mui/icons-material/Email';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import FaceIcon from '@mui/icons-material/Face';
 import { MobileDatePicker } from '@mui/lab';
+import { useStore } from '../utils/store';
+import Translation from '../utils/translation';
 export default function DoctorContainer(props) {
 
     const { enqueueSnackbar } = useSnackbar();
+
+    const { session, } = useStore();
+    const [userSession,] = React.useState(session.user ? session.user : null);
+    const lg = new Translation(userSession ? userSession.lang : 'en');
 
     const [id, setId] = React.useState(null);
     const [doctorId, setDoctorId] = React.useState(null);
@@ -90,8 +96,8 @@ export default function DoctorContainer(props) {
                 setCity(user.city);
                 setCountry(user.country);
                 setDateOfBirth(user.birthday);
-                setAvatar(user.avatar?process.env.REACT_APP_API_URL+'/public/uploads/'+user.avatar:defaultAvatar);
-                console.log(user.avatar?process.env.REACT_APP_API_URL+'/public/uploads/'+user.avatar:defaultAvatar)
+                setAvatar(user.avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + user.avatar : defaultAvatar);
+                console.log(user.avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + user.avatar : defaultAvatar)
                 setHospitalId(user.hospital_id);
                 setHospitalName(user.hospital_name);
                 if (user.daysin) {
@@ -132,7 +138,7 @@ export default function DoctorContainer(props) {
                 zip: zip,
                 city: city,
                 country: country,
-                birthday: dateOfBirth?formatDate(dateOfBirth):null,
+                birthday: dateOfBirth ? formatDate(dateOfBirth) : null,
                 active: active
             };
             if (id) {
@@ -255,9 +261,9 @@ export default function DoctorContainer(props) {
         }
     };
     const onFileChange = async (e) => {
-        setFile({file:e.target.files[0]});
-        const u = await AngelUser().upload(e.target.files[0], 'avatar',id);
-        console.log(setAvatar(process.env.REACT_APP_API_URL+'/public/uploads/'+u.filename));
+        setFile({ file: e.target.files[0] });
+        const u = await AngelUser().upload(e.target.files[0], 'avatar', id);
+        console.log(setAvatar(process.env.REACT_APP_API_URL + '/public/uploads/' + u.filename));
         handleClickVariant('success', 'Image well uploaded');
     };
 
@@ -271,20 +277,20 @@ export default function DoctorContainer(props) {
                     aria-describedby="modal-modal-description">
                     <Box sx={styleModal}>
                         <Typography id="modal-modal-title" variant="h6" component="h2">
-                            Assign a patient
+                            {lg.get('Assign a patient')}
                         </Typography>
-                        <ComboUsers type="patient" onSelect={onPatientSelect} />
+                        <ComboUsers lg={lg}  type="patient" onSelect={onPatientSelect} />
                         <Button
                             style={{ borderRadius: '10px', marginTop: '20px' }}
                             variant="outlined" startIcon={<Save />}
                             onClick={onAssign}>
-                            Assign
+                            {lg.get('Assign')}
                         </Button>
                     </Box>
                 </Modal>
             </div>
-            <Button onClick={handleAssignPatientModal} variant="outlined"style={{ marginRight: '5px' }}>Assign patient</Button>
-            <Button onClick={() => document.getElementById("newButton").clk(doctorId, firstname + " "+lastname,'doc_patients')} variant="outlined" >List of patients</Button>
+            <Button onClick={handleAssignPatientModal} variant="outlined" style={{ marginRight: '5px' }}>{lg.get('Assign a patient')}</Button>
+            <Button onClick={() => document.getElementById("newButton").clk(doctorId, firstname + " " + lastname, 'doc_patients')} variant="outlined" >{lg.get('List of patients')}</Button>
             <Box sx={{ width: '100%' }}>
                 <Grid container spacing={2} mt={2}>
                     <Grid item xs={12} sm={6} md={4} xl={2} style={{ paddingTop: '15px' }}>
@@ -294,14 +300,14 @@ export default function DoctorContainer(props) {
                                 style={{ width: '200px', height: '200px', textAlign: "center", borderColor: 'gray', margin: 'auto' }}
                             />
                             <Grid item xs={12} style={{ width: '100%', textAlign: "center" }}>
-                                <Button id="avatarLabel" onClick={() => uploadFileButton.current.click()}>Upload photo</Button>
-                                <input type="file" name="avatar" onChange={onFileChange} ref={uploadFileButton} style={{display: 'none'}}/>
+                                <Button id="avatarLabel" onClick={() => uploadFileButton.current.click()}>{lg.get('Upload photo')}</Button>
+                                <input type="file" name="avatar" onChange={onFileChange} ref={uploadFileButton} style={{ display: 'none' }} />
                             </Grid>
                         </Grid>
                     </Grid>
                     <Grid item xs={12} sm={6} md={4} xl={4} >
                         <TextField
-                            label="Firstname"
+                            label={lg.get("Firstname")}
                             id="firstname"
                             value={firstname ? firstname : ''}
                             onChange={onInputChange(setFirstname)}
@@ -310,7 +316,7 @@ export default function DoctorContainer(props) {
                             }}
                         />
                         <TextField
-                            label="Lastname"
+                            label={lg.get("Lastname")}
                             id="lastname"
                             value={lastname ? lastname : ''}
                             onChange={onInputChange(setLastname)}
@@ -322,7 +328,7 @@ export default function DoctorContainer(props) {
                             <MobileDatePicker
                                 key="birthday"
                                 id="birthday"
-                                label="Date of birth"
+                                label={lg.get("Birthday")}
                                 inputFormat="MM/dd/yyyy"
                                 value={dateOfBirth ? dateOfBirth : ''}
                                 onChange={handleDateOfBirthChange}
@@ -332,7 +338,7 @@ export default function DoctorContainer(props) {
                     </Grid>
                     <Grid item xs={12} sm={6} md={4} xl={4}>
                         <TextField
-                            label="Phone number"
+                            label={lg.get("Phone")}
                             id="phone"
                             value={phone ? phone : ''}
                             onChange={onInputChange(setPhone)}
@@ -353,7 +359,7 @@ export default function DoctorContainer(props) {
                         <Grid container spacing={1}>
                             <Grid item xs={8}>
                                 <FormControl >
-                                    <InputLabel id="langLabel">Mother tong</InputLabel>
+                                    <InputLabel id="langLabel">{lg.get("Lang")}</InputLabel>
                                     <Select
                                         style={{ display: 'flex', width: '100%' }}
                                         labelId="langLabel"
@@ -374,7 +380,7 @@ export default function DoctorContainer(props) {
                             </Grid>
                             <Grid item xs={4}>
                                 <FormControl fullWidth>
-                                    <InputLabel id="sexLabel">Sex</InputLabel>
+                                    <InputLabel id="sexLabel">{lg.get("Sex")}</InputLabel>
                                     <Select
                                         style={{ display: 'flex', width: '100%' }}
                                         labelId="sexLabel"
@@ -382,9 +388,9 @@ export default function DoctorContainer(props) {
                                         value={sex ? sex : ''}
                                         onChange={onInputChange(setSex)}
                                         label="Sex" >
-                                        <MenuItem value={'M'}>Male</MenuItem>
-                                        <MenuItem value={'F'}>Femal</MenuItem>
-                                        <MenuItem value={'B'}>Both</MenuItem>
+                                        <MenuItem value={'M'}>{lg.get("Male")}</MenuItem>
+                                        <MenuItem value={'F'}>{lg.get("Femal")}</MenuItem>
+                                        <MenuItem value={'B'}>{lg.get("Both")}</MenuItem>
                                     </Select>
                                 </FormControl>
                             </Grid>
@@ -392,13 +398,13 @@ export default function DoctorContainer(props) {
                     </Grid>
                     <Grid item xs={12} sm={6} md={4} xl={4}  >
                         <Typography variant="h6" gutterBottom component="div">
-                            Address
+                            {lg.get("Address")}
                         </Typography>
 
                         <Grid container spacing={1}>
                             <Grid item xs={8}>
                                 <TextField
-                                    label=" Address"
+                                    label={lg.get("Address")}
                                     id="address"
 
                                     value={address ? address : ''}
@@ -410,19 +416,19 @@ export default function DoctorContainer(props) {
                             </Grid>
                             <Grid item xs={4}>
                                 <TextField
-                                    label="Number"
+                                    label={lg.get("Number")}
                                     id="number"
 
                                     value={streetNumber ? streetNumber : ''}
                                     onChange={onInputChange(setStreetNumber)}
-                                   
+
                                 />
                             </Grid>
                         </Grid>
                         <Grid container spacing={1}>
                             <Grid item xs={7}>
                                 <TextField
-                                    label="City"
+                                    label={lg.get("City")}
                                     id="city"
 
                                     value={city ? city : ''}
@@ -433,7 +439,7 @@ export default function DoctorContainer(props) {
                             </Grid>
                             <Grid item xs={5}>
                                 <TextField
-                                    label="Code postal"
+                                    label={lg.get("Zip")}
                                     id="zip"
 
                                     value={zip ? zip : ''}
@@ -442,7 +448,7 @@ export default function DoctorContainer(props) {
                             </Grid>
                         </Grid>
                         <FormControl fullWidth >
-                            <InputLabel id="langLabel">Pays</InputLabel>
+                            <InputLabel id="langLabel">{lg.get("Country")}</InputLabel>
                             <Select
                                 style={{ display: 'flex', width: '100%' }}
                                 labelId="countryLabel"
@@ -461,17 +467,17 @@ export default function DoctorContainer(props) {
                     </Grid>
                     <Grid item xs={12} sm={6} md={4} xl={4}>
                         <Typography variant="h6" gutterBottom component="div">
-                            Hospital
+                            {lg.get("Hospital")}
                         </Typography>
-                        <ComboHospitals onSelect={onHospitalSelect} hospital={{ id: hospitalId, name: hospitalName }} />
+                        <ComboHospitals lg={lg} onSelect={onHospitalSelect} hospital={{ id: hospitalId, name: hospitalName }} />
                         <Typography variant="h6" mt={'10px'}>
-                            Password and activation
+                            {lg.get("Password and activation")}
                         </Typography>
                         <FormControlLabel control={<Switch checked={switchState} onChange={setActif} value={active} />} label="Actif" size="large" />
                         <Grid container spacing={1}>
                             <Grid item xs={8}>
                                 <FormControl fullWidth variant="outlined" style={{ marginTop: '0px' }}>
-                                    <InputLabel htmlFor="outlined-adornment-password">Change password</InputLabel>
+                                    <InputLabel htmlFor="outlined-adornment-password">{lg.get("Change password")}</InputLabel>
                                     <OutlinedInput
                                         id="outlined-adornment-password"
                                         type={showPassword ? 'text' : 'password'}
@@ -488,7 +494,7 @@ export default function DoctorContainer(props) {
                                                 </IconButton>
                                             </InputAdornment>
                                         }
-                                        label="Change password"
+                                        label={lg.get("Change password")}
                                     />
                                 </FormControl>
                             </Grid>
@@ -498,60 +504,60 @@ export default function DoctorContainer(props) {
                                     style={{ borderRadius: '10px', marginLeft: '10px' }}
                                     variant="outlined" startIcon={<Save />}
                                     onClick={savePassword}>
-                                    Save
+                                    {lg.get("Save")}
                                 </Button>
                             </Grid>
                         </Grid>
                     </Grid>
                 </Grid>
 
-            <Grid container spacing={2}>
-                <Grid item xs={12} style={{ paddingTop: '40px' }}>
-                    <Typography variant="h6" gutterBottom component="div">
-                        Days in.
-                    </Typography>
-                    <ToggleButtonGroup
-                        value={week}
-                        onChange={onWeekDayClick}
-                        aria-label="Days in"
-                        size="small"
-                        color="info"
-                    >
-                        <ToggleButton value="mon" aria-label="mon" color="info">
-                            Mon
-                        </ToggleButton>
-                        <ToggleButton value="tue" aria-label="tue">
-                            Tue
-                        </ToggleButton>
-                        <ToggleButton value="wed" aria-label="wed">
-                            Wed
-                        </ToggleButton>
-                        <ToggleButton value="thu" aria-label="thu" >
-                            Thu
-                        </ToggleButton>
-                        <ToggleButton value="fri" aria-label="fri" >
-                            Fri
-                        </ToggleButton>
-                        <ToggleButton value="sat" aria-label="sat" >
-                            Sat
-                        </ToggleButton>
-                        <ToggleButton value="sun" aria-label="sun" >
-                            Sun
-                        </ToggleButton>
-                    </ToggleButtonGroup>
+                <Grid container spacing={2}>
+                    <Grid item xs={12} style={{ paddingTop: '40px' }}>
+                        <Typography variant="h6" gutterBottom component="div">
+                            {lg.get("Days in")}
+                        </Typography>
+                        <ToggleButtonGroup
+                            value={week}
+                            onChange={onWeekDayClick}
+                            aria-label="Days in"
+                            size="small"
+                            color="info"
+                        >
+                            <ToggleButton value="mon" aria-label="mon" color="info">
+                                {lg.get("Mon")}
+                            </ToggleButton>
+                            <ToggleButton value="tue" aria-label="tue">
+                                {lg.get("Tue")}
+                            </ToggleButton>
+                            <ToggleButton value="wed" aria-label="wed">
+                                {lg.get("Wed")}
+                            </ToggleButton>
+                            <ToggleButton value="thu" aria-label="thu" >
+                                {lg.get("Thu")}
+                            </ToggleButton>
+                            <ToggleButton value="fri" aria-label="fri" >
+                                {lg.get("Fri")}
+                            </ToggleButton>
+                            <ToggleButton value="sat" aria-label="sat" >
+                                {lg.get("Sat")}
+                            </ToggleButton>
+                            <ToggleButton value="sun" aria-label="sun" >
+                                {lg.get("Sun")}
+                            </ToggleButton>
+                        </ToggleButtonGroup>
+                    </Grid>
+                    <Grid container>
+                        <Typography variant="h6" gutterBottom component="div">
+                            &nbsp;
+                        </Typography>
+                        <Button
+                            style={{ borderRadius: '10px', marginTop: '10px' }}
+                            variant="outlined" startIcon={<Save />}
+                            onClick={onSubmit}>
+                             {lg.get("Save")}
+                        </Button>
+                    </Grid>
                 </Grid>
-                <Grid container>
-                    <Typography variant="h6" gutterBottom component="div">
-                        &nbsp;
-                    </Typography>
-                    <Button
-                        style={{ borderRadius: '10px', marginTop: '10px' }}
-                        variant="outlined" startIcon={<Save />}
-                        onClick={onSubmit}>
-                        Save
-                    </Button>
-                </Grid>
-            </Grid>
             </Box>
         </>
     );

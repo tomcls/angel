@@ -17,10 +17,16 @@ import { Save } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import AngelMood from '../api/angel/mood';
+import Translation from '../utils/translation';
+import { useStore } from '../utils/store';
 
 export default function MoodContainer(props) {
 
     const { enqueueSnackbar } = useSnackbar();
+
+    const { session, } = useStore();
+    const [userSession,] = React.useState(session.user ? session.user : null);
+    const lg = new Translation(userSession ? userSession.lang : 'en');
 
     const [id, setId] = React.useState(null);
     const [moodDescriptionId, setMoodDescriptionId] = React.useState(null);
@@ -117,7 +123,7 @@ export default function MoodContainer(props) {
                     <Grid item xs={11}>
                         <TextField
                             style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
-                            label="Name"
+                            label={lg.get('Name')}
                             id="name"
                             sx={{ '& > :not(style)': { mt: 1 } }}
                             value={name ? name : ''}
@@ -129,14 +135,14 @@ export default function MoodContainer(props) {
                     </Grid>
                     <Grid item>
                         <FormControl sx={{ m: 1, minWidth: 80 }}>
-                            <InputLabel id="demo-simple-select-autowidth-label">Lang</InputLabel>
+                            <InputLabel id="demo-simple-select-autowidth-label">{lg.get('Lang')}</InputLabel>
                             <Select
                                 labelId="demo-simple-select-autowidth-label"
                                 id="demo-simple-select-autowidth"
                                 value={langId}
                                 onChange={handleLangChange}
                                 autoWidth
-                                label="Lang"
+                                label={lg.get('Lang')}
                             >
                                 <MenuItem value="">
                                     <em>None</em>
@@ -153,7 +159,7 @@ export default function MoodContainer(props) {
                     style={{ borderRadius: '10px', marginTop: '20px' }}
                     variant="outlined" startIcon={<Save />}
                     onClick={onSubmit}>
-                    Save
+                    {lg.get('Save')}
                 </Button>
             </Box>
         </LocalizationProvider>

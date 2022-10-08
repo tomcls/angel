@@ -78,7 +78,7 @@ export default function ComboDrugs(props) {
         setInputValue(newInputValue);
       }}
       renderInput={(params) => (
-        <TextField {...params} label="Find drugs" fullWidth sx={{ mt: 0 }} />
+        <TextField {...params} label={props.lg.get('Find treatment')} fullWidth sx={{ mt: 0 }} />
       )}
       renderOption={(props, option) => {
 

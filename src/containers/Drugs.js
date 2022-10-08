@@ -34,6 +34,8 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
 import LinkIcon from '@mui/icons-material/Link';
+import { useStore } from '../utils/store';
+import Translation from '../utils/translation';
 const defaultAvatar = 'https://dreamguys.co.in/preadmin/html/school/dark/assets/img/placeholder.jpg';
 
 function descendingComparator(a, b, orderBy) {
@@ -75,56 +77,56 @@ const styleModal = {
   p: 4,
 };
 
-const headCells = [
-  {
-    id: 'id',
-    numeric: true,
-    disablePadding: true,
-    label: 'Id',
-  },
-  {
-    id: 'name',
-    numeric: false,
-    disablePadding: false,
-    label: 'Name',
-  },
-  {
-    id: 'code',
-    numeric: false,
-    disablePadding: false,
-    label: 'Code',
-  },
-  {
-    id: 'created',
-    numeric: false,
-    disablePadding: false,
-    label: 'Created',
-  }, {
-    id: 'patients',
-    numeric: false,
-    disablePadding: false,
-    label: 'Patients',
-  },
-  {
-    id: 'laboratory',
-    numeric: false,
-    disablePadding: false,
-    label: 'Laboratory',
-  },
-  {
-    id: 'notice',
-    numeric: false,
-    disablePadding: false,
-    label: 'Notice',
-  }
-];
 
 function EnhancedTableHead(props) {
-  const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
 
+  const headCells = [
+    {
+      id: 'id',
+      numeric: true,
+      disablePadding: true,
+      label: 'Id',
+    },
+    {
+      id: 'name',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Name'),
+    },
+    {
+      id: 'code',
+      numeric: false,
+      disablePadding: false,
+      label: 'Code',
+    },
+    {
+      id: 'created',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Created'),
+    }, {
+      id: 'patients',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Patients'),
+    },
+    {
+      id: 'laboratory',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Laboratory'),
+    },
+    {
+      id: 'notice',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Notice'),
+    }
+  ];
   return (
     <TableHead>
       <TableRow>
@@ -133,7 +135,7 @@ function EnhancedTableHead(props) {
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
-            inputProps={{ 'aria-label': 'select all Drugs' }}
+            inputProps={{ 'aria-label': props.lg.get('Select all drugs')}}
           />
         </TableCell>
         {headCells.map((headCell) => (
@@ -205,7 +207,7 @@ const EnhancedTableToolbar = (props) => {
           <TextField
             id="input-with-icon-textfield"
             onChange={(e) => props.setSearch(e.target.value)}
-            label="Search"
+            label={props.lg.get('Search')}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -232,7 +234,11 @@ EnhancedTableToolbar.propTypes = {
 };
 export default function Drugs(props) {
 
-  const [drugs, setDrugs] = React.useState(null);
+  const { session, } = useStore();
+  const [userSession,] = React.useState(session.user ? session.user : null);
+  const lg = new Translation(userSession ? userSession.lang : 'en');
+
+  const [, setDrugs] = React.useState(null);
 
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
@@ -241,8 +247,8 @@ export default function Drugs(props) {
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('id');
   const [selected, setSelected] = React.useState([]);
-  const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [dense, ] = React.useState(false);
+  const [rowsPerPage, ] = React.useState(5);
   const [rows, setRows] = React.useState([]);
   const { enqueueSnackbar } = useSnackbar();
 
@@ -253,8 +259,6 @@ export default function Drugs(props) {
   const [nameFilter, setNameFilter] = React.useState(true);
 
   React.useEffect(() => {
-    console.log('useEffect Drugs list container')
-
     fetchData();
   }, []);
   const handleRequestSort = (event, property) => {
@@ -263,7 +267,7 @@ export default function Drugs(props) {
     setOrderBy(property);
   };
 
-  const createData = (id, name, code, created,image,notice) => {
+  const createData = (id, name, code, created, image, notice) => {
     return {
       id,
       name,
@@ -298,13 +302,13 @@ export default function Drugs(props) {
     if (r.drugs && r.drugs.length) {
       for (let i = 0; i < r.drugs.length; i++) {
         u.push(createData(
-          r.drugs[i].drug_id, 
-          r.drugs[i].drug_name, 
-          r.drugs[i].drug_code, 
-          r.drugs[i].date_created, 
+          r.drugs[i].drug_id,
+          r.drugs[i].drug_name,
+          r.drugs[i].drug_code,
+          r.drugs[i].date_created,
           r.drugs[i].image ? process.env.REACT_APP_API_URL + '/public/drugs/images/' + r.drugs[i].image : defaultAvatar,
           r.drugs[i].notice ? process.env.REACT_APP_API_URL + '/public/drugs/documents/' + r.drugs[i].notice : null)
-          );
+        );
       }
       setRows(u);
       setDrugs(r.drugs);
@@ -387,18 +391,18 @@ export default function Drugs(props) {
           aria-describedby="modal-modal-description">
           <Box sx={styleModal}>
             <Typography id="modal-modal-title" variant="h6" component="h2">
-              Filters
+              {lg.get('Filters')}
             </Typography>
             <FormGroup>
               <FormControlLabel control={<Checkbox checked={codeFilter} onChange={handleCodeFilter} />} label="Code" />
-              <FormControlLabel control={<Checkbox checked={nameFilter} onChange={handleNameFilter} />} label="Name" />
+              <FormControlLabel control={<Checkbox checked={nameFilter} onChange={handleNameFilter} />} label={lg.get('Name')} />
             </FormGroup>
           </Box>
         </Modal>
       </div>
       <Box sx={{ width: '100%' }}>
         <Paper sx={{ width: '100%', mb: 0 }}>
-          <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
+          <EnhancedTableToolbar lg={lg} numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
           <TableContainer>
             <Table
               sx={{ minWidth: 750 }}
@@ -406,6 +410,7 @@ export default function Drugs(props) {
               size={dense ? 'small' : 'medium'}
             >
               <EnhancedTableHead
+                lg={lg}
                 numSelected={selected.length}
                 order={order}
                 orderBy={orderBy}
@@ -495,7 +500,7 @@ export default function Drugs(props) {
                           style={{ textAlign: 'center' }}
                           scope='row'
                           padding='none'>
-                            {row.notice?<a href={row.notice} target="blank"> <LinkIcon style={{ cursor: 'pointer' }}  /></a>: ' - '}
+                          {row.notice ? <a href={row.notice} target="blank"> <LinkIcon style={{ cursor: 'pointer' }} /></a> : ' - '}
                         </TableCell>
                       </TableRow>
                     );

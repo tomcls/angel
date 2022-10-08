@@ -99,13 +99,13 @@ function EnhancedTableHead(props) {
       id: 'firstname',
       numeric: false,
       disablePadding: false,
-      label: 'Prénom',
+      label: props.lg.get('Firstname'),
     },
     {
       id: 'lastname',
       numeric: false,
       disablePadding: false,
-      label: 'Nom',
+      label: props.lg.get('Lastname'),
     },
     {
       id: 'email',
@@ -117,22 +117,22 @@ function EnhancedTableHead(props) {
       id: 'phone',
       numeric: false,
       disablePadding: false,
-      label: 'Téléphone',
+      label: props.lg.get('Phone'),
     }, {
       id: 'hospital',
       numeric: false,
       disablePadding: false,
-      label: 'Hospital',
+      label: props.lg.get('Hospitals'),
     }, {
       id: 'patients',
       numeric: false,
       disablePadding: false,
-      label: (props.user && (props.user.nurse_id || props.user.doctor_id)) ? 'Surveys' : 'Patients',
+      label: (props.user && (props.user.nurse_id || props.user.doctor_id)) ? props.lg.get('Surveys') : props.lg.get('Patients'),
     }, {
       id: 'active',
       numeric: false,
       disablePadding: false,
-      label: 'Actif',
+      label: props.lg.get('Actif'),
     },
   ];
   return (
@@ -143,7 +143,7 @@ function EnhancedTableHead(props) {
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
-            inputProps={{ 'aria-label': 'select all Nurses' }}
+            inputProps={{ 'aria-label': props.lg.get('Select all nurses') }}
           />
         </TableCell>
         {headCells.map((headCell) => (
@@ -200,7 +200,7 @@ const EnhancedTableToolbar = (props) => {
           color='inherit'
           variant='subtitle1'
           component='div' >
-          {numSelected} selected
+          {numSelected} {props.lg.get('selected')}
         </Typography>
       ) : (<></>
       )}
@@ -216,7 +216,7 @@ const EnhancedTableToolbar = (props) => {
             id="input-with-icon-textfield"
             onChange={(e) => props.setSearch(e.target.value)}
             value={props.searchText}
-            label="Search"
+            label={props.lg.get('Search')}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -432,6 +432,7 @@ export default function Nurses(props) {
       <Box sx={{ width: '100%' }}>
         <Paper sx={{ width: '100%', mb: 0 }}>
           <EnhancedTableToolbar 
+            lg={lg}
           numSelected={selected.length} 
           onDeleteItems={onDeleteItems} 
           onOpenFilterModal={handleFiltersModal} 

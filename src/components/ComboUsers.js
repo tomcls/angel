@@ -24,9 +24,6 @@ export default function ComboUsers(props) {
 
   React.useEffect(() => {
     let active = true;
-
-    console.log('ComboUsers', props.patient)
-
     if (inputValue === '') {
       setOptions(value ? [value] : []);
       return undefined;
@@ -78,7 +75,7 @@ export default function ComboUsers(props) {
         setInputValue(newInputValue);
       }}
       renderInput={(params) => (
-        <TextField {...params} label="Find patient" fullWidth sx={{ mt: 0 }} />
+        <TextField {...params} label={props.lg.get('Find patient')} fullWidth sx={{ mt: 0 }} />
       )}
       renderOption={(props, option) => {
 

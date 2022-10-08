@@ -35,6 +35,8 @@ import AlarmAddIcon from '@mui/icons-material/AlarmAdd';
 import AngelDrug from '../api/angel/drugs';
 import PosologyComponent from '../components/Posology';
 import AngelPatient from '../api/angel/patient';
+import { useStore } from '../utils/store';
+import Translation from '../utils/translation';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -76,50 +78,6 @@ const styleModal = {
   p: 4,
 };
 
-const headCells = [
-  {
-    id: 'id',
-    numeric: true,
-    disablePadding: true,
-    label: 'Id',
-  },
-  {
-    id: 'name',
-    numeric: false,
-    disablePadding: false,
-    label: 'Name',
-  },
-  {
-    id: 'code',
-    numeric: false,
-    disablePadding: false,
-    label: 'Code',
-  },
-  {
-    id: 'posology',
-    numeric: false,
-    disablePadding: false,
-    label: 'Posology',
-  },
-  {
-    id: 'start_date',
-    numeric: false,
-    disablePadding: false,
-    label: 'Start date',
-  },
-  {
-    id: 'end_date',
-    numeric: false,
-    disablePadding: false,
-    label: 'End date',
-  },
-  {
-    id: 'created',
-    numeric: false,
-    disablePadding: false,
-    label: 'Created',
-  }
-];
 
 function EnhancedTableHead(props) {
   const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
@@ -127,6 +85,50 @@ function EnhancedTableHead(props) {
     onRequestSort(event, property);
   };
 
+  const headCells = [
+    {
+      id: 'id',
+      numeric: true,
+      disablePadding: true,
+      label: 'Id',
+    },
+    {
+      id: 'name',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Name'),
+    },
+    {
+      id: 'code',
+      numeric: false,
+      disablePadding: false,
+      label: 'Code',
+    },
+    {
+      id: 'posology',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Posology'),
+    },
+    {
+      id: 'start_date',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Start date'),
+    },
+    {
+      id: 'end_date',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('End date'),
+    },
+    {
+      id: 'created',
+      numeric: false,
+      disablePadding: false,
+      label: props.lg.get('Created'),
+    }
+  ];
   return (
     <TableHead>
       <TableRow>
@@ -207,7 +209,7 @@ const EnhancedTableToolbar = (props) => {
           <TextField
             id="input-with-icon-textfield"
             onChange={(e) => props.setSearch(e.target.value)}
-            label="Search"
+            label={props.lg.get('Search')}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -237,7 +239,12 @@ const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp
 export default function PatientTreatments(props) {
 
   const { enqueueSnackbar } = useSnackbar();
-  const [treatments, setTreatments] = React.useState(null);
+
+  const { session, } = useStore();
+  const [userSession,] = React.useState(session.user ? session.user : null);
+  const lg = new Translation(userSession ? userSession.lang : 'en');
+
+  const [, setTreatments] = React.useState(null);
 
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
@@ -246,8 +253,8 @@ export default function PatientTreatments(props) {
   const [order, setOrder] = React.useState(null);
   const [orderBy, setOrderBy] = React.useState(null);
   const [selected, setSelected] = React.useState([]);
-  const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [dense,] = React.useState(false);
+  const [rowsPerPage,] = React.useState(5);
   const [rows, setRows] = React.useState([]);
 
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
@@ -454,7 +461,7 @@ export default function PatientTreatments(props) {
     setOpenAssignPatientModal(true);
   }
   const handleCloseAssignPatientModal = () => setOpenAssignPatientModal(false);
-  
+
   const onAssignPatient = async e => {
     if (!e.id || !e.posology_id || !e.patient_id || !e.drug_id || !e.startDate || !e.hours || !e.days) {
       try {
@@ -500,6 +507,7 @@ export default function PatientTreatments(props) {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description">
         <PosologyComponent onSave={onAssignPatient}
+          lg={lg}
           id={id}
           posologyId={posologyId}
           days={days}
@@ -521,7 +529,7 @@ export default function PatientTreatments(props) {
         aria-describedby="modal-modal-description">
         <Box sx={styleModal}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Filters
+            {lg.get('Filters')}
           </Typography>
           <FormGroup>
             <FormControlLabel control={<Checkbox checked={codeFilter} onChange={handleCodeFilter} />} label="Code" />
@@ -531,13 +539,14 @@ export default function PatientTreatments(props) {
       </Modal>
       <Box sx={{ width: '100%' }}>
         <Paper sx={{ width: '100%', mb: 0 }}>
-          <EnhancedTableToolbar numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
+          <EnhancedTableToolbar lg={lg} numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
           <TableContainer>
             <Table
               sx={{ minWidth: 750 }}
               aria-labelledby='tableTitle'
               size={dense ? 'small' : 'medium'}>
               <EnhancedTableHead
+                lg={lg}
                 numSelected={selected.length}
                 order={order}
                 orderBy={orderBy}
@@ -555,7 +564,7 @@ export default function PatientTreatments(props) {
                       <TableRow
                         hover
                         onClick={(event) => handleClick(event, row.id)}
-                        onDoubleClick={() => document.getElementById("newButton").clk(row.id, row.name, 'treatment')}
+                        onDoubleClick={() => document.getElementById("newButton").clk(row.id, row.name, 'drug')}
                         role="checkbox"
                         aria-checked={isItemSelected}
                         tabIndex={-1}
@@ -588,7 +597,7 @@ export default function PatientTreatments(props) {
                           scope='row'
                           style={{ textAlign: 'center' }}
                           padding='none'
-                          onClick={() => document.getElementById("newButton").clk(row.drug_id, row.name, 'treatment')}
+                          onClick={() => document.getElementById("newButton").clk(row.drug_id, row.name, 'drug')}
                         >
                           {row.name}
                         </TableCell>
