@@ -339,6 +339,11 @@ export const il8n = {
         "fr":"Ajouter un docteur",
         "nl":"Add doctor"
     },
+    "New mood": {
+        "en":"New mood",
+        "fr":"Nouvel humeur",
+        "nl":"New mood"
+    },
     "Add mood": {
         "en":"Add mood",
         "fr":"Ajouter une humeur",

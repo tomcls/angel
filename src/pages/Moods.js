@@ -68,7 +68,7 @@ export default function MoodsPage() {
   const createTabMood = (moodId, text) => {
     const value = text;
     const newTab = {
-      label: text ? text : 'New Mood',
+      label: text ? text : lg.get('New mood'),
       value: value ? value : tabIndex,
       idx: tabIndex,
       child: () => <Mood moodId={moodId} langId={'en'} />
@@ -77,66 +77,6 @@ export default function MoodsPage() {
     handleTabOptions(value ? value : tabIndex);
   }
 
-  const onOpenTabClick = () => {
-    if (window.angel && window.angel.userId && window.angel.tabType === 'nurses') {
-      createTab('nurses', window.angel.tabName, window.angel.userId);
-      window.angel.userId = null;
-      window.angel.tabType = null;
-      window.angel.tabName = null;
-    } else if (window.angel && window.angel.userId && window.angel.tabType === 'doctors') {
-      createTab('doctors', window.angel.tabName, window.angel.userId);
-      window.angel.userId = null;
-      window.angel.tabType = null;
-      window.angel.tabName = null;
-    } else if (window.angel && window.angel.userId && window.angel.tabType === 'treatments') {
-      createTab('treatments', window.angel.tabName, window.angel.userId);
-      window.angel.userId = null;
-      window.angel.tabType = null;
-      window.angel.tabName = null;
-    } else if (window.angel && window.angel.treatmentId && window.angel.tabType === 'treatment') {
-      createTab('treatment', window.angel.tabName, window.angel.treatmentId);
-      window.angel.treatmentId = null;
-      window.angel.tabType = null;
-      window.angel.tabName = null;
-    } else if (window.angel && window.angel.nurseId) {
-      createTab('nurse_patients', window.angel.tabName, window.angel.nurseId);
-      window.angel.nurseId = null;
-      window.angel.tabType = null;
-      window.angel.tabName = null;
-    } else if (window.angel && window.angel.treatmentId && window.angel.tabType === 'treatment_drugs') {
-      createTab('treatment_drugs', window.angel.tabName, window.angel.treatmentId);
-      window.angel.treatmentId = null;
-      window.angel.tabType = null;
-      window.angel.tabName = null;
-    } else if (window.angel && window.angel.treatmentId && window.angel.tabType === 'treatments') {
-      createTab('treatment_patients', window.angel.tabName, window.angel.treatmentId);
-      window.angel.treatmentId = null;
-      window.angel.tabType = null;
-      window.angel.tabName = null;
-    } else if (window.angel && window.angel.doctorId) {
-      createTab('doc_patients', window.angel.tabName, window.angel.doctorId);
-      window.angel.doctorId = null;
-      window.angel.tabType = null;
-      window.angel.tabName = null;
-    } else if (window.angel && window.angel.userId && window.angel.tabType === 'doctor') {
-      createTab('doctor', window.angel.tabName, window.angel.userId);
-      window.angel.userId = null;
-      window.angel.tabType = null;
-      window.angel.tabName = null;
-    } else if (window.angel && window.angel.userId && window.angel.tabType === 'patient') {
-      createTab('patient', window.angel.tabName, window.angel.userId);
-      window.angel.userId = null;
-      window.angel.tabType = null;
-      window.angel.tabName = null;
-    } else if (window.angel && window.angel.userId && window.angel.tabType === 'nurse') {
-      createTab('nurse', window.angel.tabName, window.angel.userId);
-      window.angel.userId = null;
-      window.angel.tabType = null;
-      window.angel.tabName = null;
-    } else {
-      createTab('treatment', 'New treatment');
-    }
-  }
   const getTab = (v) => {
     for (let i = 0; i < tabs.length; i++) {
       if (tabs[i].value === v) {
@@ -273,7 +213,7 @@ export default function MoodsPage() {
               </Typography>
             </Grid>
             <Grid item xs={12} md={6} xl={6} textAlign={'end'}  >
-              <Button variant="outlined" onClick={onOpenTabClick} ref={newBtn} justifyContent="flex-end" id="newButton">
+              <Button variant="outlined" onClick={createTabMood} ref={newBtn} justifyContent="flex-end" id="newButton">
                 <PeopleIcon />  {lg.get('Add mood')}</Button>
             </Grid>
           </Grid>
