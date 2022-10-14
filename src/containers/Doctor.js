@@ -74,11 +74,10 @@ export default function DoctorContainer(props) {
     const [active, setActive] = React.useState('N');
     const [switchState, setSwitchState] = React.useState(false);
 
-    const [file, setFile] = React.useState(null);
+    const [, setFile] = React.useState(null);
     const uploadFileButton = useRef(null);
 
     React.useEffect(() => {
-        console.log("Doctor container effect")
         if (props.userId) {
             async function fetchData() {
                 const user = await AngelDoctor().find({ user_id: props.userId });
@@ -97,7 +96,6 @@ export default function DoctorContainer(props) {
                 setCountry(user.country);
                 setDateOfBirth(user.birthday);
                 setAvatar(user.avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + user.avatar : defaultAvatar);
-                console.log(user.avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + user.avatar : defaultAvatar)
                 setHospitalId(user.hospital_id);
                 setHospitalName(user.hospital_name);
                 if (user.daysin) {
@@ -124,7 +122,7 @@ export default function DoctorContainer(props) {
     const onSubmit = async e => {
         e.preventDefault();
         if (!firstname || !lastname || !email || !phone || !sex) {
-            handleClickVariant('error', 'The firstname, lastname, email, phone and sex are required');
+            handleClickVariant('error', lg.get('The firstname, lastname, email, phone and sex are required'));
         } else {
             const u = {
                 firstname: firstname,
@@ -144,9 +142,9 @@ export default function DoctorContainer(props) {
             if (id) {
                 u.id = id;
                 try {
-                    const user = await AngelUser().update(u);
+                    await AngelUser().update(u);
                     await setDoctor();
-                    handleClickVariant('success', 'User well updated');
+                    handleClickVariant('success', lg.get('User well updated!'));
                 } catch (e) {
                     handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
                 }
@@ -155,7 +153,7 @@ export default function DoctorContainer(props) {
                     const user = await AngelUser().add(u);
                     setId(user.inserted_id)
                     await setDoctor(user.inserted_id);
-                    handleClickVariant('success', 'User well added');
+                    handleClickVariant('success', lg.get('User well added!'));
                 } catch (e) {
                     handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
                 }
@@ -191,7 +189,6 @@ export default function DoctorContainer(props) {
         return datestring;
     }
     const handleDateOfBirthChange = (newValue) => {
-        console.log(newValue)
         setDateOfBirth(newValue);
     };
 
@@ -201,18 +198,12 @@ export default function DoctorContainer(props) {
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
     };
-    const changePassword = () => {
-
-    }
     const onWeekDayClick = (event, newFormats) => {
         setWeek(newFormats);
     }
-
     const handleAssignPatientModal = () => setOpenAssignModal(true);
     const handleCloseAssignPatientModal = () => setOpenAssignModal(false);
-
     const onAssign = async e => {
-        console.log(e);
         const u = {
             patient_id: assignPatientId,
             doctor_id: doctorId,
@@ -220,7 +211,7 @@ export default function DoctorContainer(props) {
         if (assignPatientId && doctorId) {
             try {
                 await AngelDoctor().addPatient(u);
-                handleClickVariant('success', 'Patient well assigned');
+                handleClickVariant('success', lg.get('Patient well assigned!'));
             } catch (e) {
                 handleClickVariant('error', JSON.stringify(e));
             }
@@ -248,8 +239,8 @@ export default function DoctorContainer(props) {
     };
     const savePassword = async () => {
         if (password !== null) {
-            const r = await AngelUser().resetPwd({ password: password, email: email });
-            handleClickVariant('success', 'Password well updated!');
+            await AngelUser().resetPwd({ password: password, email: email });
+            handleClickVariant('success', lg.get('Password well updated!'));
         }
     }
     const setActif = (e) => {
@@ -263,10 +254,9 @@ export default function DoctorContainer(props) {
     const onFileChange = async (e) => {
         setFile({ file: e.target.files[0] });
         const u = await AngelUser().upload(e.target.files[0], 'avatar', id);
-        console.log(setAvatar(process.env.REACT_APP_API_URL + '/public/uploads/' + u.filename));
-        handleClickVariant('success', 'Image well uploaded');
+        setAvatar(process.env.REACT_APP_API_URL + '/public/uploads/' + u.filename);
+        handleClickVariant('success', lg.get('Image well uploaded'));
     };
-
     return (
         <>
             <div>
@@ -279,7 +269,7 @@ export default function DoctorContainer(props) {
                         <Typography id="modal-modal-title" variant="h6" component="h2">
                             {lg.get('Assign a patient')}
                         </Typography>
-                        <ComboUsers lg={lg}  type="patient" onSelect={onPatientSelect} />
+                        <ComboUsers lg={lg} type="patient" onSelect={onPatientSelect} />
                         <Button
                             style={{ borderRadius: '10px', marginTop: '20px' }}
                             variant="outlined" startIcon={<Save />}
@@ -324,7 +314,7 @@ export default function DoctorContainer(props) {
                                 startAdornment: <FaceIcon position="start"><Visibility /></FaceIcon>,
                             }}
                         />
-                        <Box >
+                        <Box>
                             <MobileDatePicker
                                 key="birthday"
                                 id="birthday"
@@ -554,7 +544,7 @@ export default function DoctorContainer(props) {
                             style={{ borderRadius: '10px', marginTop: '10px' }}
                             variant="outlined" startIcon={<Save />}
                             onClick={onSubmit}>
-                             {lg.get("Save")}
+                            {lg.get("Save")}
                         </Button>
                     </Grid>
                 </Grid>

@@ -50,7 +50,7 @@ export default function PatientsPage() {
   const [tabIndex, setTabIndex] = React.useState(2);
   const newBtn = useRef(null);
   const t = useMemo(() => {
-    return new Tabs('patient', tabIndex, tabs, setTabs, setSelectedTab, setTabIndex, newBtn)
+    return new Tabs('patient', tabIndex, tabs, setTabs, setSelectedTab, setTabIndex, newBtn, lg)
   }, [tabIndex, tabs]);
 
   React.useEffect(() => {

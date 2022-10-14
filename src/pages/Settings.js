@@ -119,7 +119,7 @@ export default function Settings(props) {
   const onSubmit = async e => {
     e.preventDefault();
     if (!firstname || !lastname || !email || !phone || !sex) {
-      handleClickVariant('error', 'The firstname, lastname, email, phone and sex are required');
+      handleClickVariant('error', lg.get('The firstname, lastname, email, phone and sex are required'));
     } else {
       const u = {
         firstname: firstname,
@@ -155,7 +155,7 @@ export default function Settings(props) {
           ucooky.birthday = formatDate(dateOfBirth);
           ucooky.active = active;
           window.appStorage.setItem('user', JSON.stringify(ucooky), 1200000);
-          handleClickVariant('success', 'User well updated');
+          handleClickVariant('success', lg.get('User well updated!'));
         } catch (e) {
           handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
         }
@@ -180,7 +180,7 @@ export default function Settings(props) {
   const savePassword = async () => {
     if (password !== null) {
       await AngelUser().resetPwd({ password: password, email: email });
-      handleClickVariant('success', 'Password well updated!');
+      handleClickVariant('success', lg.get('Password well updated!'));
     }
   }
   const setActif = (e) => {
@@ -194,7 +194,7 @@ export default function Settings(props) {
   const onFileChange = async (e) => {
     setFile({ file: e.target.files[0] });
     const u = await AngelUser().upload(e.target.files[0], 'avatar', id);
-    handleClickVariant('success', 'Image well uploaded');
+    handleClickVariant('success', lg.get('Image well uploaded'));
     setAvatar(process.env.REACT_APP_API_URL + '/public/uploads/' + u.filename);
     const user = JSON.parse(window.appStorage.getItem('user'));
     user.avatar = u.filename;
@@ -220,7 +220,7 @@ export default function Settings(props) {
                   style={{ width: '200px', height: '200px', textAlign: "center", borderColor: 'gray', margin: 'auto' }}
                 />
                 <Grid item xs={12} style={{ width: '100%', textAlign: "center" }}>
-                  <Button id="avatarLabel" onClick={() => uploadFileButton.current.click()}>Upload photo</Button>
+                  <Button id="avatarLabel" onClick={() => uploadFileButton.current.click()}>{lg.get('Upload photo')}</Button>
                   <input type="file" name="avatar" onChange={onFileChange} ref={uploadFileButton} style={{ display: 'none' }} />
                 </Grid>
               </Grid>

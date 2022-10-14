@@ -49,7 +49,7 @@ export default function SurveyMoodsPage() {
   const [tabs, setTabs] = React.useState([]);
   const [tabIndex, setTabIndex] = React.useState(2);
   const newBtn = useRef(null);
-  const t = new Tabs('patient_surveys', tabIndex, tabs, setTabs, setSelectedTab, setTabIndex, newBtn);
+  const t = new Tabs('patient_surveys', tabIndex, tabs, setTabs, setSelectedTab, setTabIndex, newBtn, lg);
 
   React.useEffect(() => {
     let d = document.getElementById('newButton');

@@ -18,8 +18,6 @@ import IconButton from '@mui/material/IconButton';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-
-
 import { useSnackbar } from 'notistack';
 import PlaceIcon from '@mui/icons-material/Place';
 import EmailIcon from '@mui/icons-material/Email';
@@ -28,6 +26,7 @@ import FaceIcon from '@mui/icons-material/Face';
 import { MobileDatePicker } from '@mui/lab';
 import { useStore } from '../utils/store';
 import Translation from '../utils/translation';
+
 export default function CoordinatorContainer(props) {
 
     const { enqueueSnackbar } = useSnackbar();
@@ -58,7 +57,7 @@ export default function CoordinatorContainer(props) {
     const [showPassword, setShowPassword] = React.useState(false);
 
     const [laboratoryId, setLaboratoryId] = React.useState(() => '');
-    const [laboratoryName, setLaboratoryName] = React.useState(() => '');
+    const [, setLaboratoryName] = React.useState(() => '');
 
 
     const [active, setActive] = React.useState('N');
@@ -66,12 +65,11 @@ export default function CoordinatorContainer(props) {
     const [switchState, setSwitchState] = React.useState(false);
     const [switchAdmin, setSwitchAdmin] = React.useState(false);
     
-    const [file, setFile] = React.useState(null);
+    const [, setFile] = React.useState(null);
     const uploadFileButton = useRef(null);
 
 
     React.useEffect(() => {
-        console.log("Coordinator container effect")
         if (props.userId) {
             async function fetchData() {
                 const user = await AngelUser().find({ user_id: props.userId });
@@ -120,7 +118,7 @@ export default function CoordinatorContainer(props) {
     const onSubmit = async e => {
         e.preventDefault();
         if (!firstname || !lastname || !email || !phone || !sex) {
-            handleClickVariant('error', 'The firstname, lastname, email, phone and sex are required');
+            handleClickVariant('error', lg.get('The firstname, lastname, email, phone and sex are required'));
         } else {
             const u = {
                 firstname: firstname,
@@ -141,9 +139,9 @@ export default function CoordinatorContainer(props) {
             if (id) {
                 u.id = id;
                 try {
-                    const user = await AngelUser().update(u);
+                    await AngelUser().update(u);
                     await setCoordinator();
-                    handleClickVariant('success', 'User well updated');
+                    handleClickVariant('success', lg.get('User well updated!'));
                 } catch (e) {
                     handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
                 }
@@ -152,7 +150,7 @@ export default function CoordinatorContainer(props) {
                     const user = await AngelUser().add(u);
                     setId(user.inserted_id)
                     await setCoordinator(user.inserted_id);
-                    handleClickVariant('success', 'User well added');
+                    handleClickVariant('success', lg.get('User well added!'));
                 } catch (e) {
                     handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
                 }
@@ -187,7 +185,6 @@ export default function CoordinatorContainer(props) {
         return datestring;
     }
     const handleDateOfBirthChange = (newValue) => {
-        console.log(newValue)
         setDateOfBirth(newValue);
     };
     const handleClickShowPassword = () => {
@@ -199,8 +196,8 @@ export default function CoordinatorContainer(props) {
 
     const savePassword = async () => {
         if (password !== null) {
-            const r = await AngelUser().resetPwd({ password: password, email: email });
-            handleClickVariant('success', 'Password well updated!');
+            await AngelUser().resetPwd({ password: password, email: email });
+            handleClickVariant('success', lg.get('Password well updated!'));
         }
     }
     const setAdministrator = (e) => {
@@ -224,7 +221,7 @@ export default function CoordinatorContainer(props) {
         setFile({file:e.target.files[0]});
         const u = await AngelUser().upload(e.target.files[0], 'avatar',id);
         setAvatar(process.env.REACT_APP_API_URL+'/public/uploads/'+u.filename);
-        handleClickVariant('success', 'Image well uploaded');
+        handleClickVariant('success', lg.get('Image well uploaded'));
     };
     return (
         <>

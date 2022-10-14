@@ -31,7 +31,6 @@ import Modal from '@mui/material/Modal';
 
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
 import Translation from '../utils/translation';
 import { useStore } from '../utils/store';
 
@@ -76,7 +75,7 @@ const styleModal = {
 
 
 function EnhancedTableHead(props) {
-  const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+  const {  onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };

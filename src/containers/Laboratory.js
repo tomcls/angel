@@ -27,11 +27,10 @@ export default function LaboratoryContainer(props) {
     const lg = new Translation(userSession ? userSession.lang : 'en');
 
     const [id, setId] = React.useState(null);
-    const [laboratoryId, setLaboratoryId] = React.useState(null);
+    const [, setLaboratoryId] = React.useState(null);
     const [name, setName] = React.useState('');
     const [email, setEmail] = React.useState('');
     const [phone, setPhone] = React.useState('');
-
     const [address, setAddress] = React.useState('');
     const [streetNumber, setStreetNumber] = React.useState('');
     const [city, setCity] = React.useState('');
@@ -68,7 +67,7 @@ export default function LaboratoryContainer(props) {
     const onSubmit = async e => {
         e.preventDefault();
         if (!name) {
-            handleClickVariant('error', 'The name are required');
+            handleClickVariant('error', lg.get('The name are required'));
         } else {
             const u = {
                 name: name,
@@ -83,8 +82,8 @@ export default function LaboratoryContainer(props) {
             if (id) {
                 u.id = id;
                 try {
-                    const laboratory = await AngelLaboratory().update(u);
-                    handleClickVariant('success', 'Laboratory well updated');
+                    await AngelLaboratory().update(u);
+                    handleClickVariant('success', lg.get('Laboratory well updated'));
                 } catch (e) {
                     handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
                 }
@@ -92,7 +91,7 @@ export default function LaboratoryContainer(props) {
                 try {
                     const laboratory = await AngelLaboratory().add(u);
                     setId(laboratory.inserted_id);
-                    handleClickVariant('success', 'Laboratory well added');
+                    handleClickVariant('success', lg.get('Laboratory well added'));
                 } catch (e) {
                     handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
                 }

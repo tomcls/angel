@@ -19,10 +19,8 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Modal from '@mui/material/Modal';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-
 import { useSnackbar } from 'notistack';
 import AngelNurse from '../api/angel/nurse';
 import ComboUsers from '../components/ComboUsers';
@@ -34,6 +32,7 @@ import FaceIcon from '@mui/icons-material/Face';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { useStore } from '../utils/store';
 import Translation from '../utils/translation';
+
 export default function NurseContainer(props) {
 
     const { enqueueSnackbar } = useSnackbar();
@@ -53,35 +52,26 @@ export default function NurseContainer(props) {
     const [phone, setPhone] = React.useState('');
     const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp0LF2WgeDkn_sQ1VuMnlnVGjkDvCN4jo2nLMt3b84ry328rg46eohB_JT3WTqOGJovY&usqp=CAU';//process.env.SENDGRID_APIKEY
     const [avatar, setAvatar] = React.useState(defaultAvatar);
-
     const [address, setAddress] = React.useState('');
     const [streetNumber, setStreetNumber] = React.useState('');
     const [city, setCity] = React.useState('');
     const [zip, setZip] = React.useState('');
     const [country, setCountry] = React.useState('');
-
     const [password, setPassword] = React.useState('');
     const [showPassword, setShowPassword] = React.useState(false);
-
     const [week, setWeek] = React.useState(() => []);
     const [hospitalId, setHospitalId] = React.useState(() => '');
     const [hospitalName, setHospitalName] = React.useState(() => '');
-
     const [openAssignPatientModal, setOpenAssignModal] = React.useState(false);
-
     const [assignPatientId, setAssignPatientId] = React.useState(null);
-
     const [active, setActive] = React.useState('N');
     const [switchState, setSwitchState] = React.useState(false);
-
-    const [file, setFile] = React.useState(null);
+    const [, setFile] = React.useState(null);
     const uploadFileButton = useRef(null);
 
 
     React.useEffect(() => {
-        console.log("Nurse container effect")
         if (props.userId) {
-
             fetchData();
         }
     }, []);
@@ -125,7 +115,7 @@ export default function NurseContainer(props) {
     const onSubmit = async e => {
         e.preventDefault();
         if (!firstname || !lastname || !email || !phone || !sex) {
-            handleClickVariant('error', 'The firstname, lastname, email, phone and sex are required');
+            handleClickVariant('error', lg.get('The firstname, lastname, email, phone and sex are required'));
         } else {
             const u = {
                 firstname: firstname,
@@ -145,9 +135,9 @@ export default function NurseContainer(props) {
             if (id) {
                 u.id = id;
                 try {
-                    const user = await AngelUser().update(u);
+                    await AngelUser().update(u);
                     await setNurse();
-                    handleClickVariant('success', 'User well updated');
+                    handleClickVariant('success', lg.get('User well updated!'));
                 } catch (e) {
                     handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
                 }
@@ -156,7 +146,7 @@ export default function NurseContainer(props) {
                     const user = await AngelUser().add(u);
                     setId(user.inserted_id)
                     await setNurse(user.inserted_id);
-                    handleClickVariant('success', 'User well added');
+                    handleClickVariant('success', lg.get('User well added!'));
                 } catch (e) {
                     handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
                 }
@@ -164,7 +154,6 @@ export default function NurseContainer(props) {
         }
     };
     const setNurse = async (userId) => {
-
         const u = {
             user_id: userId ? userId : id,
             hospital_id: hospitalId ? hospitalId : null,
@@ -195,20 +184,15 @@ export default function NurseContainer(props) {
         console.log(newValue)
         setDateOfBirth(newValue);
     };
-
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
     };
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
     };
-    const changePassword = () => {
-
-    }
     const onWeekDayClick = (event, newFormats) => {
         setWeek(newFormats);
     }
-
     const handleAssignPatientModal = () => setOpenAssignModal(true);
     const handleCloseAssignPatientModal = () => setOpenAssignModal(false);
 
@@ -221,7 +205,7 @@ export default function NurseContainer(props) {
         if (assignPatientId && nurseId) {
             try {
                 await AngelNurse().addPatient(u);
-                handleClickVariant('success', 'Patient well assigned');
+                handleClickVariant('success', lg.get('Patient well assigned!'));
             } catch (e) {
                 handleClickVariant('error', JSON.stringify(e));
             }
@@ -249,8 +233,8 @@ export default function NurseContainer(props) {
     };
     const savePassword = async () => {
         if (password !== null) {
-            const r = await AngelUser().resetPwd({ password: password, email: email });
-            handleClickVariant('success', 'Password well updated!');
+            await AngelUser().resetPwd({ password: password, email: email });
+            handleClickVariant('success', lg.get('Password well updated!'));
         }
     }
     const setActif = (e) => {
@@ -266,7 +250,7 @@ export default function NurseContainer(props) {
         setFile({ file: e.target.files[0] });
         const u = await AngelUser().upload(e.target.files[0], 'avatar', id);
         setAvatar(process.env.REACT_APP_API_URL + '/public/uploads/' + u.filename);
-        handleClickVariant('success', 'Image well uploaded');
+        handleClickVariant('success', lg.get('Image well uploaded'));
     };
     return (
         <>

@@ -47,7 +47,7 @@ export default function DoctorsPage() {
   const [tabs, setTabs] = React.useState([]);
   const [tabIndex, setTabIndex] = React.useState(2);
   const newBtn = useRef(null);
-  const t = new Tabs('doctor', tabIndex, tabs, setTabs, setSelectedTab, setTabIndex, newBtn);
+  const t = new Tabs('doctor', tabIndex, tabs, setTabs, setSelectedTab, setTabIndex, newBtn, lg);
 
   React.useEffect(() => {
     let d = document.getElementById('newButton');

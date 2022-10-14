@@ -1,6 +1,6 @@
 import { Add, Save } from '@mui/icons-material';
 import { MobileDatePicker, TimePicker } from '@mui/lab';
-import { Box, Button, Divider, Fab, FormControl, Grid, InputLabel, MenuItem, Select, TextareaAutosize, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
+import { Box, Button, Fab, FormControl, Grid, InputLabel, MenuItem, Select, TextareaAutosize, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import React from 'react';
 import ComboUsers from './ComboUsers';
 import ComboDrugs from '../components/ComboDrugs';
@@ -29,7 +29,7 @@ export default function PosologyComponent(props) {
     const [startDate, setStartDate] = React.useState(props.startDate ? props.startDate : new Date());
     const [endDate, setEndDate] = React.useState(props.endDate);
     const [arrayUpdated, updateArray] = React.useState(props.refresh);
-    
+
     const onAddHour = () => {
         setHours([...hours, 12]);
     };

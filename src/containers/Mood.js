@@ -1,6 +1,5 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
@@ -36,7 +35,6 @@ export default function MoodContainer(props) {
 
 
     React.useEffect(() => {
-        console.log("Mood container effect")
         if (props.moodId) {
             setId(props.moodId);
             fetchData(props.moodId, langId);
@@ -62,7 +60,7 @@ export default function MoodContainer(props) {
     const onSubmit = async e => {
         e.preventDefault();
         if (!name) {
-            handleClickVariant('error', 'The name is required');
+            handleClickVariant('error', lg.get('The name is required'));
         } else {
             const u = {};
             if (id) {
@@ -70,7 +68,7 @@ export default function MoodContainer(props) {
                 try {
                     await AngelMood().update(u);
                     await setMoodDescription();
-                    handleClickVariant('success', 'Mood well updated');
+                    handleClickVariant('success', lg.get('Mood well updated'));
                 } catch (e) {
                     handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
                 }
@@ -79,7 +77,7 @@ export default function MoodContainer(props) {
                     const mood = await AngelMood().add(u);
                     setId(mood.inserted_id)
                     await setMoodDescription(mood.inserted_id);
-                    handleClickVariant('success', 'Mood well added');
+                    handleClickVariant('success', lg.get('Mood well added'));
                 } catch (e) {
                     handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
                 }

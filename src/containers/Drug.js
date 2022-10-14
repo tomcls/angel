@@ -14,9 +14,7 @@ import ComboLaboratories from '../components/ComboLaboratories';
 import Avatar from '@mui/material/Avatar';
 import PosologyComponent from '../components/Posology';
 import AngelDrug from '../api/angel/drugs';
-import AngelPosology from '../api/angel/posologies';
 import ComboEffects from '../components/ComboEffects';
-import AngelSideEffect from '../api/angel/sideEffect';
 import SideEffects from '../components/SideEffects';
 import { useStore } from '../utils/store';
 import Translation from '../utils/translation';
@@ -45,7 +43,7 @@ export default function DrugContainer(props) {
     const [image, setImage] = React.useState(defaultAvatar);
     const [notice, setNotice] = React.useState('');
     const [, setFile] = React.useState(null);
-    const [doc, setDocument] = React.useState(null);
+    const [, setDocument] = React.useState(null);
     const [effectId, setEffectId] = React.useState(null);
     const uploadFileButton = useRef(null);
     const uploadNoticeButton = useRef(null);
@@ -87,7 +85,7 @@ export default function DrugContainer(props) {
     const onSubmit = async e => {
         e.preventDefault();
         if (!name || !code) {
-            handleClickVariant('error', 'The name and code are required');
+            handleClickVariant('error', lg.get('The name and code are required'));
         } else {
             const u = {
                 name: name,
@@ -100,7 +98,7 @@ export default function DrugContainer(props) {
                 try {
                     await AngelDrug().update(u);
                     await setDrugDescription();
-                    handleClickVariant('success', 'Drug well updated');
+                    handleClickVariant('success', lg.get('Drug well updated!'));
                 } catch (e) {
                     handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
                 }
@@ -109,7 +107,7 @@ export default function DrugContainer(props) {
                     const drug = await AngelDrug().add(u);
                     setId(drug.inserted_id)
                     await setDrugDescription(drug.inserted_id);
-                    handleClickVariant('success', 'Drug well added');
+                    handleClickVariant('success', lg.get('Drug well added!'));
                 } catch (e) {
                     handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
                 }
@@ -169,14 +167,14 @@ export default function DrugContainer(props) {
                 if(a && a.code ) {
                     handleClickVariant('error', a.code);
                 } else {
-                    handleClickVariant('success', 'Patient well assigned');
+                    handleClickVariant('success', lg.get('Patient well assigned!'));
                     handleCloseAssignPatientModal();
                 }
             } catch (e) {
                 handleClickVariant('error', JSON.stringify(e));
             }
         } else {
-            handleClickVariant('error', 'Patient, hours and frequency are required');
+            handleClickVariant('error', lg.get('Patient, hours and frequency are required'));
         }
     }
     const onAssignEffect = async e => {
@@ -188,12 +186,12 @@ export default function DrugContainer(props) {
         if (drugId && effectId) {
             try {
                 await AngelDrug().addEffect(u);
-                handleClickVariant('success', 'Side effect well assigned');
+                handleClickVariant('success', lg.get('Side effect well assigned'));
             } catch (e) {
                 handleClickVariant('error', JSON.stringify(e));
             }
         } else {
-            handleClickVariant('error', 'Side effect and drug are required');
+            handleClickVariant('error', lg.get('Side effect and drug are required'));
         }
     }
     const onEffectSelect = async id => {

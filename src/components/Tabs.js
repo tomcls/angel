@@ -11,7 +11,7 @@ import PatientTreatments from "../containers/PatientTreatments";
 import ScientistContainer from "../containers/Scientist";
 
 export default class Tabs {
-    constructor(tabName, tabIndex, tabs, setTabs, setSelectedTab, setTabIndex, newBtn) {
+    constructor(tabName, tabIndex, tabs, setTabs, setSelectedTab, setTabIndex, newBtn, lg) {
         this.tabs = tabs;
         this.setTabs = setTabs;
         this.setSelectedTab = setSelectedTab;
@@ -19,6 +19,7 @@ export default class Tabs {
         this.newBtn = newBtn;
         this.setTabIndex = setTabIndex;
         this.tabName = tabName;
+        this.lg = lg;
     }
     openPatientTab = (userId, text) => {
         this.createTab(this.tabName, text, userId)
@@ -95,7 +96,7 @@ export default class Tabs {
             case 'scientist':
                 window.angel.userId = id;
                 window.angel.tabType = 'scientist';
-                window.angel.tabName = 'Scientist ' + text;
+                window.angel.tabName = this.lg.get('Scientist')+' ' + text;
                 break;
             case 'doctor':
                 window.angel.userId = id;
@@ -105,70 +106,70 @@ export default class Tabs {
             case 'patient':
                 window.angel.userId = id;
                 window.angel.tabType = 'patient';
-                window.angel.tabName = 'patient ' + text;
+                window.angel.tabName = this.lg.get('Patient')+' ' + text;
                 break;
             case 'nurse':
                 window.angel.userId = id;
                 window.angel.tabType = 'nurse';
-                window.angel.tabName = 'Nurse ' + text;
+                window.angel.tabName = this.lg.get('Nurse')+' ' + text;
                 break;
             case 'patient_doctors':
                 window.angel.userId = id;
                 window.angel.tabType = 'doctors';
-                window.angel.tabName = 'Doctors of ' + text;
+                window.angel.tabName =  this.lg.get('Doctors of')+' ' + text;
                 break;
             case 'patient_nurses':
                 window.angel.userId = id;
                 window.angel.tabType = 'nurses';
-                window.angel.tabName = 'Nurses of ' + text;
+                window.angel.tabName = this.lg.get('Nurses of')+' ' + text;
                 break;
             case 'nurse_patients':
                 window.angel.nurseId = id;
-                window.angel.tabName = 'Patients of ' + text;
+                window.angel.tabName = this.lg.get('Patients of')+' ' + text;
                 break;
             case 'doc_patients':
                 window.angel.doctorId = id;
-                window.angel.tabName = 'Patients of Doc ' + text;
+                window.angel.tabName =  this.lg.get('Patients of')+' Doc ' + text;
                 break;
             case 'drug_patients':
                 window.angel.tabType = 'drug_patients';
                 window.angel.drugId = id;
-                window.angel.tabName = 'Patients of ' + text;
+                window.angel.tabName =  this.lg.get('Patients of')+' ' + text;
                 break;
             case 'doctors':
                 window.angel.userId = id;
                 window.angel.tabType = 'doctors';
-                window.angel.tabName = 'Doctors of ' + text;
+                window.angel.tabName = this.lg.get('Doctors of')+' '+ text;
                 break;
             case 'patient_treatments':
                 window.angel.userId = id;
                 window.angel.tabType = 'patient_treatments';
-                window.angel.tabName = 'Treatments of ' + text;
+                window.angel.tabName = this.lg.get('Treatments of')+' '+ text;
                 break;
             case 'drug_laboratories':
                 window.angel.drugId = id;
                 window.angel.tabType = 'drug_laboratories';
-                window.angel.tabName = 'Laboratory of ' + text;
+                window.angel.tabName = this.lg.get('Laboratory of')+' ' + text;
                 break;
             case 'drug_treatments':
                 window.angel.tabType = 'drug_treatments';
                 window.angel.drugId = id;
-                window.angel.tabName = 'Treatments assigned to ' + text;
+                window.angel.tabName = this.lg.get('Treatments assigned to')+' ' + text;
                 break;
             case 'drug':
                 window.angel.drugId = id;
                 window.angel.tabType = 'drug';
-                window.angel.tabName = 'Treatment ' + text;
+                window.angel.tabName = this.lg.get('Treatment')+' ' + text;
                 break;
             case 'treatment':
                 window.angel.treatmentId = id;
                 window.angel.tabType = 'treatment';
-                window.angel.tabName = 'Treatment ' + text;
+                window.angel.tabName = this.lg.get('Treatment')+' '+ text;
                 break;
             case 'patient_surveys':
                 window.angel.patientId = id;
                 window.angel.tabType = 'patient_surveys';
-                window.angel.tabName = 'Survey of ' + text;
+                window.angel.tabName = this.lg.get('Survey of')+' ' + text;
                 window.angel.panelName = panel;
                 break;
             default: 
@@ -250,7 +251,7 @@ export default class Tabs {
             window.angel.tabName = null;
             window.angel.panelName = null;
         } else {
-            this.createTab(this.tabName, 'New ' + this.tabName);
+            this.createTab(this.tabName, this.lg.get('New')+' ' + this.tabName);
         }
     }
     handleTabOptions = (value) => {

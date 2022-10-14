@@ -80,7 +80,7 @@ const styleModal = {
 
 
 function EnhancedTableHead(props) {
-  const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+  const {  onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -226,7 +226,6 @@ const EnhancedTableToolbar = (props) => {
     </Toolbar>
   );
 };
-
 EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
   onDeleteItems: PropTypes.func,
@@ -245,24 +244,19 @@ export default function PatientTreatments(props) {
   const lg = new Translation(userSession ? userSession.lang : 'en');
 
   const [, setTreatments] = React.useState(null);
-
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
   const [limit, setLimit] = React.useState(5);
-
   const [order, setOrder] = React.useState(null);
   const [orderBy, setOrderBy] = React.useState(null);
   const [selected, setSelected] = React.useState([]);
   const [dense,] = React.useState(false);
   const [rowsPerPage,] = React.useState(5);
   const [rows, setRows] = React.useState([]);
-
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
-
   const [searchFilter, setSearchFilter] = React.useState('');
   const [codeFilter, setCodeFilter] = React.useState(true);
   const [nameFilter, setNameFilter] = React.useState(true);
-
   const [openAssignPatientModal, setOpenAssignPatientModal] = React.useState(false);
   const [repetition, setRepetition] = React.useState(props.repetition);
   const [note, setNote] = React.useState(props.note);
@@ -274,14 +268,12 @@ export default function PatientTreatments(props) {
   const [patient, setPatient] = React.useState(null);
   const [drug, setDrug] = React.useState(null);
   const [drugId, setDrugId] = React.useState(props.drugId);
-
   const [id, setId] = React.useState(null);
   const [posologyId, setPosologyId] = React.useState(null);
 
   const stg = JSON.parse(window.appStorage.getItem('user'));
 
   React.useEffect(() => {
-    console.log('useEffect Treatments list container')
     fetchData();
   }, []);
   const handleRequestSort = (event, property) => {
@@ -443,7 +435,6 @@ export default function PatientTreatments(props) {
   };
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
   const handleAssignPatientModal = async (row) => {
-    console.log(row)
     setId(row.id)
     setPosologyId(row.posology)
     setHours(JSON.parse(row.hours));
@@ -483,14 +474,14 @@ export default function PatientTreatments(props) {
         if (a && a.code) {
           handleClickVariant('error', a.code);
         } else {
-          handleClickVariant('success', 'Patient well assigned');
+          handleClickVariant('success', lg.get('Patient well assigned!'));
           handleCloseAssignPatientModal();
         }
       } catch (e) {
         handleClickVariant('error', JSON.stringify(e));
       }
     } else {
-      handleClickVariant('error', 'Patient, hours and frequency are required');
+      handleClickVariant('error', lg.get('Patient, hours and frequency are required'));
     }
   }
 

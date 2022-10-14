@@ -31,7 +31,6 @@ import Modal from '@mui/material/Modal';
 
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
 
 import AngelHospital from '../api/angel/hospital';
 import { useStore } from '../utils/store';
@@ -79,7 +78,7 @@ const styleModal = {
 
 
 function EnhancedTableHead(props) {
-  const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+  const {  onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -242,9 +241,6 @@ export default function Hospitals(props) {
   const [phoneFilter, setPhoneFilter] = React.useState(false);
 
   React.useEffect(() => {
-    console.log('useEffect Hospitals list', props.hospitals)
-    const hospitals = props.hospitals;
-
     fetchData();
   }, [props.hospitals]);
 

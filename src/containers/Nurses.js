@@ -176,8 +176,8 @@ EnhancedTableHead.propTypes = {
   numSelected: PropTypes.number.isRequired,
   onRequestSort: PropTypes.func.isRequired,
   onSelectAllClick: PropTypes.func.isRequired,
-  order: PropTypes.oneOf(['asc', 'desc']).isRequired,
-  orderBy: PropTypes.string.isRequired,
+  order: PropTypes.oneOf(['asc', 'desc']),
+  orderBy: PropTypes.string,
   rowCount: PropTypes.number.isRequired,
 };
 
@@ -274,8 +274,6 @@ export default function Nurses(props) {
   const [phoneFilter, setPhoneFilter] = React.useState(false);
 
   React.useEffect(() => {
-    console.log('useEffect Nurses list container', props.userId)
-
     fetchData(props.userId);
   }, []);
   const handleRequestSort = (event, property) => {

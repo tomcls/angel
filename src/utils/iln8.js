@@ -1,4 +1,109 @@
 export const il8n = {
+    "Side effect well assigned": {
+        "en":"Side effect well assigned",
+        "fr":"L'effet secondaire a bien été assigné",
+        "nl":"Side effect well assigned"
+    },
+    "Side effect and drug are required": {
+        "en":"Side effect and drug are required",
+        "fr":"L'effet secondaire et le traitement sont requis",
+        "nl":"Side effect and drug are required"
+    },
+    "Hospital well added": {
+        "en":"Hospital well added",
+        "fr":"Hopital bien ajouté",
+        "nl":"Hospital well added"
+    },
+    "Hospital well updated": {
+        "en":"Hospital well updated",
+        "fr":"Hopital bien mis à jour",
+        "nl":"Hospital well updated"
+    },
+    "Laboratory well added": {
+        "en":"Laboratory well added",
+        "fr":"Laboratoire bien ajouté",
+        "nl":"Laboratory well added"
+    },
+    "Laboratory well updated": {
+        "en":"Laboratory well updated",
+        "fr":"Laboratoire bien mis à jour",
+        "nl":"Laboratory well updated"
+    },
+    "Mood well added": {
+        "en":"Mood well added",
+        "fr":"Humeur well updated bien ajoutée",
+        "nl":"Mood well added"
+    },
+    "Mood well updated": {
+        "en":"Mood well updated",
+        "fr":"Humeur well updated bien mise à jour",
+        "nl":"Mood well updated"
+    },
+    "SideEffect well added": {
+        "en":"SideEffect well added",
+        "fr":"Effet secondaire bien ajouté",
+        "nl":"SideEffect well added"
+    },
+    "SideEffect well updated": {
+        "en":"SideEffect well updated",
+        "fr":"Effet secondaire bien mis à jour",
+        "nl":"SideEffect well updated"
+    },
+    "The name is required": {
+        "en":"The name is required",
+        "fr":"Le nom est requis",
+        "nl":"The name is required"
+    },
+    "Patient, hours and frequency are required": {
+        "en":"Patient, hours and frequency are required",
+        "fr":"Le patient, les heures de prise et la fréquence sont requis",
+        "nl":"Patient, hours and frequency are required"
+    },
+    "The firstname, lastname, email, phone and sex are required": {
+        "en":"The firstname, lastname, email, phone and sex are required",
+        "fr":"Le prénom, le nom, l'email, le téléphone et sexe sont requis",
+        "nl":"The firstname, lastname, email, phone and sex are required"
+    },
+    "The name and code are required": {
+        "en":"The name and code are required",
+        "fr":"Le nom et code sont requis",
+        "nl":"The name and code are required"
+    },
+    "Image well uploaded": {
+        "en":"Image well uploaded",
+        "fr":"Votre image est bien téléversée",
+        "nl":"Image well uploaded"
+    },
+    "Patient well assigned!": {
+        "en":"Patient well assigned!",
+        "fr":"Le patient a bien été assigné",
+        "nl":"Patient well assigned!"
+    },
+    "User well updated!": {
+        "en":"User well updated!",
+        "fr":"Le user a bien été mis à jour",
+        "nl":"User well updated!"
+    },
+    "Drug well updated!": {
+        "en":"Treatment well updated!",
+        "fr":"Le traitement a bien été mis à jour",
+        "nl":"Treatment well updated!"
+    },
+    "Drug well added!": {
+        "en":"Treatment well added!",
+        "fr":"Le traitement a bien été ajouté",
+        "nl":"Treatment well added!"
+    },
+    "User well added!": {
+        "en":"User well added!",
+        "fr":"Le user a bien été ajouté",
+        "nl":"User well added!"
+    },
+    "Password well updated!": {
+        "en":"Password well updated!",
+        "fr":"Votre mot de passe a bien été mis à jour",
+        "nl":"Password well updated!"
+    },
     "Is administrator ?": {
         "en":"Is administrator ?",
         "fr":"Administrateur ?",
@@ -234,6 +339,11 @@ export const il8n = {
         "fr":"Ajouter un docteur",
         "nl":"Add doctor"
     },
+    "Add mood": {
+        "en":"Add mood",
+        "fr":"Ajouter une humeur",
+        "nl":"Add mood"
+    },
     "New side effect": {
         "en":"New side effect",
         "fr":"Nouvel effet secondaire",
@@ -283,11 +393,6 @@ export const il8n = {
         "en":"Find side effects",
         "fr":"Rechercher un effet secondaire",
         "nl":"Find side effects"
-    },
-    "Find treatment": {
-        "en":"Find treatment",
-        "fr":"Rechercher un traitement",
-        "nl":"Find treatment"
     },
     "Find treatment": {
         "en":"Find treatment",
@@ -368,6 +473,11 @@ export const il8n = {
         "en":"Effects and moods",
         "fr":"Effets et humeurs",
         "nl":"Effects and moods"
+    },
+    "Scientist": {
+        "en":"Scientist",
+        "fr":"Laborantin",
+        "nl":"Scientist"
     },
     "Scientists": {
         "en":"Scientists",
@@ -534,6 +644,11 @@ export const il8n = {
         "fr":"Selectionné tous les patients",
         "nl":"Select all patients"
     },
+    "Patient": {
+        "en":"Patient",
+        "fr":"Patient",
+        "nl":"Patient"
+    },
     "Patients": {
         "en":"Patients",
         "fr":"Patients",
@@ -589,19 +704,69 @@ export const il8n = {
         "fr":"Sondage",
         "nl":"Survey"
     },
+    "Doctors of": {
+        "en":"Doctors of",
+        "fr":"Docteurs de",
+        "nl":"Doctors of"
+    },
     "Doctors": {
         "en":"Doctors",
         "fr":"Docteurs",
         "nl":"Doctors"
+    },
+    "Patients of": {
+        "en":"Patients of",
+        "fr":"Patients de",
+        "nl":"Patients of"
+    },
+    "Nurses of": {
+        "en":"Nurses of",
+        "fr":"Infirmi(ères,ers) de",
+        "nl":"Nurses of"
+    },
+    "Nurse": {
+        "en":"Nurse",
+        "fr":"Infirmi(ère,er)",
+        "nl":"Nurse"
     },
     "Nurses": {
         "en":"Nurses",
         "fr":"Infirmi(ères,ers)",
         "nl":"Nurses"
     },
+    "Treatment": {
+        "en":"Treatment",
+        "fr":"Traitement",
+        "nl":"Treatment"
+    },
+    "Treatments of": {
+        "en":"Treatments of",
+        "fr":"Traitements de",
+        "nl":"Treatments of"
+    },
     "Treatments": {
         "en":"Treatments",
         "fr":"Traitements",
         "nl":"Treatments"
+    },
+    "Laboratory of": {
+        "en":"Laboratory of",
+        "fr":"Laboratoire de",
+        "nl":"Laboratory of"
+    },
+    "Treatments assigned to": {
+        "en":"Treatments assigned to",
+        "fr":"Traitements assigné à",
+        "nl":"Treatments assigned to"
+    },
+    "Survey of": {
+        "en":"Survey of",
+        "fr":"Sondage de",
+        "nl":"Survey of"
+    },
+    "New": {
+        "en":"New",
+        "fr":"Nouveau",
+        "nl":"New"
     }
 }

@@ -57,7 +57,6 @@ function descendingComparator(a, b, orderBy) {
   return 0;
 }
 function getComparator(order, orderBy) {
-  console.log(order, orderBy)
   return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
@@ -455,7 +454,6 @@ export default function Patients(props) {
       );
     }
     setSelected(newSelected);
-    console.log('selected', selected);
   };
   const onDeleteItems = async () => {
     if (selected.length) {
@@ -494,9 +492,7 @@ export default function Patients(props) {
     setSearchFilter(txt);
     fltr.set('search', props, txt);
   };
-
   const onNurseSelect = (nurseId) => {
-    console.log(nurseId)
     setTransferNurseId(nurseId);
   }
   const transferPatients = async () => {

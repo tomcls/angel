@@ -2,7 +2,6 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-import Avatar from '@mui/material/Avatar';
 import InputLabel from '@mui/material/InputLabel';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
@@ -10,14 +9,10 @@ import TextField from '@mui/material/TextField';
 import Visibility from '@mui/icons-material/Visibility';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { Save } from '@mui/icons-material';
 import { Button } from '@mui/material';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import IconButton from '@mui/material/IconButton';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useSnackbar } from 'notistack';
 import AngelHospital from '../api/angel/hospital';
 import { useStore } from '../utils/store';
@@ -32,7 +27,7 @@ export default function HospitalContainer(props) {
     const lg = new Translation(userSession ? userSession.lang : 'en');
 
     const [id, setId] = React.useState(null);
-    const [hospitalId, setHospitalId] = React.useState(null);
+    const [, setHospitalId] = React.useState(null);
     const [name, setName] = React.useState('');
     const [email, setEmail] = React.useState('');
     const [phone, setPhone] = React.useState('');
@@ -42,7 +37,6 @@ export default function HospitalContainer(props) {
     const [city, setCity] = React.useState('');
     const [zip, setZip] = React.useState('');
     const [country, setCountry] = React.useState('');
-
 
     React.useEffect(() => {
         if (props.hospitalId) {
@@ -67,7 +61,6 @@ export default function HospitalContainer(props) {
         setter(e.target.value);
     };
     const handleClickVariant = (variant, text) => {
-        // Variant could be success, error, warning, info, or default
         enqueueSnackbar(text, { variant });
     };
     const onSubmit = async e => {
@@ -88,8 +81,8 @@ export default function HospitalContainer(props) {
             if (id) {
                 u.id = id;
                 try {
-                    const hospital = await AngelHospital().update(u);
-                    handleClickVariant('success', 'Hospital well updated');
+                     await AngelHospital().update(u);
+                    handleClickVariant('success', lg.get('Hospital well updated'));
                 } catch (e) {
                     handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
                 }
@@ -97,7 +90,7 @@ export default function HospitalContainer(props) {
                 try {
                     const hospital = await AngelHospital().add(u);
                     setId(hospital.inserted_id);
-                    handleClickVariant('success', 'Hospital well added');
+                    handleClickVariant('success', lg.get('Hospital well added'));
                 } catch (e) {
                     handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
                 }

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
@@ -34,16 +33,13 @@ export default function SideEffectContainer(props) {
     const [description, setDescription] = React.useState('');
     const [langId, setLangId] = React.useState(props.langId);
 
-
     React.useEffect(() => {
-        console.log("SideEffect container effect")
         if (props.sideEffectId) {
             setId(props.sideEffectId);
             fetchData(props.sideEffectId, langId);
         }
     }, []);
     async function fetchData(id, lang_id) {
-
         const sideEffect = await AngelSideEffect().find({ side_effect_id: id, lang_id: lang_id });
         if (sideEffect && sideEffect.side_effect_id != null) {
             setId(sideEffect.side_effect_id);
@@ -62,7 +58,7 @@ export default function SideEffectContainer(props) {
     const onSubmit = async e => {
         e.preventDefault();
         if (!name) {
-            handleClickVariant('error', 'The name is required');
+            handleClickVariant('error', lg.get('The name is required'));
         } else {
             const u = {};
             if (id) {
@@ -70,7 +66,7 @@ export default function SideEffectContainer(props) {
                 try {
                     await AngelSideEffect().update(u);
                     await setSideEffectDescription();
-                    handleClickVariant('success', 'SideEffect well updated');
+                    handleClickVariant('success', lg.get('SideEffect well updated'));
                 } catch (e) {
                     handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
                 }
@@ -79,7 +75,7 @@ export default function SideEffectContainer(props) {
                     const sideEffect = await AngelSideEffect().add(u);
                     setId(sideEffect.inserted_id)
                     await setSideEffectDescription(sideEffect.inserted_id);
-                    handleClickVariant('success', 'SideEffect well added');
+                    handleClickVariant('success', lg.get('SideEffect well added'));
                 } catch (e) {
                     handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
                 }
@@ -95,7 +91,6 @@ export default function SideEffectContainer(props) {
             description: description,
             lang_id: langId
         };
-        console.log(u)
         if (sideEffectDescriptionId) {
             try {
                 await AngelSideEffect().updateDescription(u);

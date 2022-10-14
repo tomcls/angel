@@ -112,7 +112,7 @@ export default function ScientistContainer(props) {
     const onSubmit = async e => {
         e.preventDefault();
         if (!firstname || !lastname || !email || !phone || !sex) {
-            handleClickVariant('error', 'The firstname, lastname, email, phone and sex are required');
+            handleClickVariant('error', lg.get('The firstname, lastname, email, phone and sex are required'));
         } else {
             const u = {
                 firstname: firstname,
@@ -134,7 +134,7 @@ export default function ScientistContainer(props) {
                 try {
                     await AngelUser().update(u);
                     await setScientist();
-                    handleClickVariant('success', 'User well updated');
+                    handleClickVariant('success', lg.get('User well updated'));
                 } catch (e) {
                     handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
                 }
@@ -143,7 +143,7 @@ export default function ScientistContainer(props) {
                     const user = await AngelUser().add(u);
                     setId(user.inserted_id)
                     await setScientist(user.inserted_id);
-                    handleClickVariant('success', 'User well added');
+                    handleClickVariant('success', lg.get('User well added!'));
                 } catch (e) {
                     handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
                 }
@@ -193,7 +193,7 @@ export default function ScientistContainer(props) {
     const savePassword = async () => {
         if (password !== null) {
             await AngelUser().resetPwd({ password: password, email: email });
-            handleClickVariant('success', 'Password well updated!');
+            handleClickVariant('success', lg.get('Password well updated!'));
         }
     }
     const setActif = (e) => {
@@ -207,7 +207,7 @@ export default function ScientistContainer(props) {
     const onFileChange = async (e) => {
         setFile({file:e.target.files[0]});
         await AngelUser().upload(e.target.files[0], 'avatar',id);
-        handleClickVariant('success', 'Image well uploaded');
+        handleClickVariant('success', lg.get('Image well uploaded'));
     };
     return (
         <>

@@ -107,7 +107,7 @@ const headCells = [
 ];
 
 function EnhancedTableHead(props) {
-  const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -248,7 +248,6 @@ export default function PatientSurveyEffects(props) {
   const [toDateFilter, setToDateFilter] = React.useState(fltr.get('date_created', props)?fltr.get('date_created', props):fltr.get('to_date', props));
 
   React.useEffect(() => {
-    const sideEffects = props.sideEffects;
     fetchDataEffects();
   }, [props.sideEffects]);
 
@@ -393,9 +392,6 @@ export default function PatientSurveyEffects(props) {
   };
   const handleEmailFilter = (event) => {
     //setEmailFilter(event.target.checked);
-  };
-  const handlePhoneFilter = (event) => {
-    //setPhoneFilter(event.target.checked);
   };
   const handleSearchText = (txt) => {
     setSearchFilter(txt);

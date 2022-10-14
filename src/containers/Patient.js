@@ -30,9 +30,9 @@ export default function PatientContainer(props) {
 
     const { enqueueSnackbar } = useSnackbar();
 
-    const { session,  } = useStore();
-    const [userSession, ] = React.useState(session.user ? session.user:null);
-    const lg = new Translation(userSession ? userSession.lang: 'en');
+    const { session, } = useStore();
+    const [userSession,] = React.useState(session.user ? session.user : null);
+    const lg = new Translation(userSession ? userSession.lang : 'en');
 
     const [id, setId] = React.useState(null);
     const [patientId, setPatientId] = React.useState(null);
@@ -107,7 +107,7 @@ export default function PatientContainer(props) {
     const onSubmit = async e => {
         e.preventDefault();
         if (!firstname || !lastname || !email || !phone || !sex) {
-            handleClickVariant('error', 'The firstname, lastname, email, phone and sex are required');
+            handleClickVariant('error', lg.get('The firstname, lastname, email, phone and sex are required'));
         } else {
             const u = {
                 firstname: firstname,
@@ -131,9 +131,9 @@ export default function PatientContainer(props) {
             if (id) {
                 u.id = id;
                 try {
-                    const user = await AngelUser().update(u);
+                    await AngelUser().update(u);
                     await setPatient();
-                    handleClickVariant('success', 'User well updated');
+                    handleClickVariant('success', lg.get('User well updated!'));
                 } catch (e) {
                     handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
                 }
@@ -142,7 +142,7 @@ export default function PatientContainer(props) {
                     const user = await AngelUser().add(u);
                     setId(user.inserted_id)
                     await setPatient(user.inserted_id);
-                    handleClickVariant('success', 'User well added');
+                    handleClickVariant('success', lg.get('User well added!'));
                 } catch (e) {
                     handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
                 }
@@ -192,8 +192,8 @@ export default function PatientContainer(props) {
     };
     const savePassword = async () => {
         if (password !== null) {
-            const r = await AngelUser().resetPwd({ password: password, email: email });
-            handleClickVariant('success', 'Password well updated!');
+            await AngelUser().resetPwd({ password: password, email: email });
+            handleClickVariant('success', lg.get('Password well updated!'));
         }
     }
     const setActif = (e) => {
@@ -208,7 +208,7 @@ export default function PatientContainer(props) {
         setFile({ file: e.target.files[0] });
         const u = await AngelUser().upload(e.target.files[0], 'avatar', id);
         setAvatar(process.env.REACT_APP_API_URL + '/public/uploads/' + u.filename);
-        handleClickVariant('success', 'Image well uploaded');
+        handleClickVariant('success', lg.get('Image well uploaded'));
     };
     return (
         <>
@@ -325,7 +325,7 @@ export default function PatientContainer(props) {
                     </Grid>
                     <Grid item xs={12} sm={6} md={4} xl={4}  >
                         <Typography variant="h6" gutterBottom component="div">
-                        {lg.get('Address')}
+                            {lg.get('Address')}
                         </Typography>
 
                         <Grid container spacing={1}>
@@ -399,7 +399,7 @@ export default function PatientContainer(props) {
 
                     <Grid item xs={12} sm={6} md={4} xl={4}>
                         <Typography variant="h6" gutterBottom component="div">
-                        {lg.get('Emergency info')}
+                            {lg.get('Emergency info')}
                         </Typography>
 
                         <TextField
@@ -435,7 +435,7 @@ export default function PatientContainer(props) {
                     </Grid>
                     <Grid item xs={12} sm={6} md={4} xl={4}>
                         <Typography variant="h6" gutterBottom component="div">
-                        {lg.get('Close monitoring')}
+                            {lg.get('Close monitoring')}
                         </Typography>
                         <FormControl fullWidth>
                             <InputLabel id="moniLabel">{lg.get('Close monitoring')}?</InputLabel>
@@ -452,7 +452,7 @@ export default function PatientContainer(props) {
                             </Select>
                         </FormControl>
                         <Typography variant="h6" mt={'4px'}>
-                        {lg.get('Password and activation')}
+                            {lg.get('Password and activation')}
                         </Typography>
                         <FormControlLabel control={<Switch checked={switchState} onChange={setActif} value={active} />} label="Actif" size="large" />
                         <Grid container spacing={1}>
@@ -498,7 +498,7 @@ export default function PatientContainer(props) {
                             style={{ borderRadius: '10px', marginTop: '10px' }}
                             variant="outlined" startIcon={<Save />}
                             onClick={onSubmit}>
-                             {lg.get('Save')}
+                            {lg.get('Save')}
                         </Button>
                     </Grid>
                 </Grid>
