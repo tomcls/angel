@@ -63,7 +63,7 @@ export default function DrugsPage() {
     <SnackbarProvider maxSnack={3}>
       <Box sx={{ display: 'flex' }}>
         <MainBar open={setOpen} />
-        <Main open={open}>
+        <Main open={open} >
           <Grid container mb={'0px'} mt={6} >
             <Grid item xs={12} md={6} xl={6} >
               <Typography variant="h6" component="div" >
@@ -75,8 +75,8 @@ export default function DrugsPage() {
                 <PeopleIcon />{lg.get('Add treatment')}</Button>
             </Grid>
           </Grid>
-          <Box sx={{ width: '100%' }}>
-            <TabContext value={selectedTab ? selectedTab : '1'}>
+          <Box sx={{ width: '100%', }} >
+            <TabContext value={selectedTab ? selectedTab : '1'} >
               <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <TabList onChange={handleChange} aria-label="" variant="scrollable" scrollButtons="auto" >
                   <Tab label={lg.get('List')} value="Main" icon={<FormatListBulletedIcon />} iconPosition="end" />
@@ -89,7 +89,7 @@ export default function DrugsPage() {
                 <Drugs openDrug={t.openTab} />
               </TabPanel>
               {tabs.map(panel => (
-                <TabPanel key={panel.idx} label={panel.label} value={panel.value} >
+                <TabPanel key={panel.idx} label={panel.label} value={panel.value} style={{backgroundColor:'#f2f2f2'}} >
                   {panel.child()}
                 </TabPanel>
               ))}

@@ -26,7 +26,6 @@ import { Avatar } from '@mui/material';
 import { Grid } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
 import SickIcon from '@mui/icons-material/Sick';
-
 import { Button } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
@@ -233,7 +232,6 @@ const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp
 
 const EnhancedTableToolbar = (props) => {
   const { numSelected } = props;
-
   return (
     <Toolbar
       sx={{
@@ -257,13 +255,13 @@ const EnhancedTableToolbar = (props) => {
       )}
       {numSelected > 0 ? (<>
         <Tooltip title='Delete'>
-          <IconButton onClick={props.onDeleteItems}>
-            <DeleteIcon />
+          <IconButton onClick={props.onDeleteItems} >
+            <DeleteIcon color={'error'}/>
           </IconButton>
         </Tooltip>
-        <Tooltip title='transfer' style={{ display: props.nurseId ? 'inline-flex' : 'none' }}>
+        <Tooltip title='transfer' style={{ display: (props.nurseId || props.nurse_id || props.doctor_id) ? 'inline-flex' : 'none' }}>
           <IconButton onClick={props.onTransferItems}>
-            <TransferWithinAStationIcon />
+            <TransferWithinAStationIcon color={'primary'} />
           </IconButton>
         </Tooltip>
       </>) : (<Grid container >
@@ -663,8 +661,8 @@ export default function Patients(props) {
                           padding='none' >
                           {
                             (userSession && (userSession.nurse_id || userSession.doctor_id)) ?
-                              <SickIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient_surveys', 'panel1')} /> :
-                              <EmojiPeopleIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient_nurses')} />
+                              <SickIcon color={'primary'} style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient_surveys', 'panel1')} /> :
+                              <EmojiPeopleIcon color={'primary'} style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient_nurses')} />
                           }
                         </TableCell>
                         <TableCell
@@ -675,8 +673,8 @@ export default function Patients(props) {
                           padding='none' >
                           {
                             (userSession && userSession.doctor_id) ?
-                              <EmojiPeopleIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient_nurses')} /> :
-                              <HailIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname, 'patient_doctors')} />
+                              <EmojiPeopleIcon color={'primary'} style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient_nurses')} /> :
+                              <HailIcon color={'primary'} style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname, 'patient_doctors')} />
                           }
                         </TableCell>
                         <TableCell
@@ -685,7 +683,7 @@ export default function Patients(props) {
                           scope='row'
                           style={{ textAlign: 'center' }}
                           padding='none' >
-                          <HealingIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient_treatments')} />
+                          <HealingIcon color={'primary'} style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient_treatments')} />
                         </TableCell>
                       </TableRow>
                     );

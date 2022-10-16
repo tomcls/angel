@@ -12,6 +12,7 @@ export default  function AngelMood(config) {
             }
         },
         update: async (params) => {
+            console.log('aaaaa',params)
             try {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/moods/update', params, {headers: {'Authorization':accessToken}});
                 return res.data;
@@ -45,6 +46,7 @@ export default  function AngelMood(config) {
             }
         },
         add: async (params) => {
+            console.log('aaaaa',params)
             try {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/moods/add', params, {headers: {'Authorization':accessToken}});
                 return res.data;

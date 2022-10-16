@@ -517,7 +517,7 @@ export default function Doctors(props) {
                           scope='row'
                           style={{ textAlign: 'center' }}
                           padding='none' >
-                          <FamilyRestroomIcon style={{ cursor: 'pointer' }} onClick={() => props.openPatients(row.id, row.firstname + ' ' + row.lastname, 'doc_patients')} />
+                          <FamilyRestroomIcon color={'primary'} style={{ cursor: 'pointer' }} onClick={() => props.openPatients(row.id, row.firstname + ' ' + row.lastname, 'doc_patients')} />
                         </TableCell>
                         <TableCell
                           component='th'

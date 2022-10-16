@@ -31,11 +31,12 @@ export default function MoodContainer(props) {
     const [moodDescriptionId, setMoodDescriptionId] = React.useState(null);
     const [name, setName] = React.useState('');
     const [description, setDescription] = React.useState('');
-    const [langId, setLangId] = React.useState(props.langId);
+    const [langId, setLangId] = React.useState(userSession ? userSession.lang : 'en');
 
 
     React.useEffect(() => {
         if (props.moodId) {
+            console.log("setId",props.moodId)
             setId(props.moodId);
             fetchData(props.moodId, langId);
         }
@@ -57,8 +58,8 @@ export default function MoodContainer(props) {
         // variant could be success, error, warning, info, or default
         enqueueSnackbar(text, { variant });
     };
-    const onSubmit = async e => {
-        e.preventDefault();
+    const onSubmit = async event => {
+        event.preventDefault();
         if (!name) {
             handleClickVariant('error', lg.get('The name is required'));
         } else {
@@ -70,7 +71,7 @@ export default function MoodContainer(props) {
                     await setMoodDescription();
                     handleClickVariant('success', lg.get('Mood well updated'));
                 } catch (e) {
-                    handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
+                    handleClickVariant('error', JSON.stringify(e));
                 }
             } else {
                 try {
@@ -131,8 +132,8 @@ export default function MoodContainer(props) {
                             }}
                         />
                     </Grid>
-                    <Grid item>
-                        <FormControl sx={{ m: 1, minWidth: 80 }}>
+                    <Grid item >
+                        <FormControl sx={{ mt:'33px', minWidth: 100 }}>
                             <InputLabel id="demo-simple-select-autowidth-label">{lg.get('Lang')}</InputLabel>
                             <Select
                                 labelId="demo-simple-select-autowidth-label"
@@ -140,11 +141,7 @@ export default function MoodContainer(props) {
                                 value={langId}
                                 onChange={handleLangChange}
                                 autoWidth
-                                label={lg.get('Lang')}
-                            >
-                                <MenuItem value="">
-                                    <em>None</em>
-                                </MenuItem>
+                                label={lg.get('Lang')}>
                                 <MenuItem value={'fr'}>FR</MenuItem>
                                 <MenuItem value={'nl'}>NL</MenuItem>
                                 <MenuItem value={'en'}>EN</MenuItem>

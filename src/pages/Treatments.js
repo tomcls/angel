@@ -90,7 +90,7 @@ export default function TreatmentsPage() {
                 <PatientTreatments openTreatment={t.openTab} />
               </TabPanel>
               {tabs.map(panel => (
-                <TabPanel key={panel.idx} label={panel.label} value={panel.value} >
+                <TabPanel key={panel.idx} label={panel.label} value={panel.value} style={{ backgroundColor:'#f2f2f2', borderBottomRightRadius:'10px',borderBottomLeftRadius:'10px'}} >
                   {panel.child()}
                 </TabPanel>
               ))}

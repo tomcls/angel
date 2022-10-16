@@ -537,8 +537,8 @@ export default function Nurses(props) {
                           padding='none' >
                           {
                             (stg.nurse_id || stg.doctor_id) ?
-                              <SickIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(props.patientId, props.text, 'patient_surveys', 'panel1')} /> :
-                              <FamilyRestroomIcon style={{ cursor: 'pointer' }} onClick={() => props.openPatients(row.nurse_id, row.firstname + ' ' + row.lastname, 'nurse_patients')} />
+                              <SickIcon color={'primary'} style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(props.patientId, props.text, 'patient_surveys', 'panel1')} /> :
+                              <FamilyRestroomIcon color={'primary'} style={{ cursor: 'pointer' }} onClick={() => props.openPatients(row.nurse_id, row.firstname + ' ' + row.lastname, 'nurse_patients')} />
                           }
 
                         </TableCell>

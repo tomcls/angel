@@ -42,8 +42,8 @@ export default function ComboLaboratories(props) {
 
   return (
     <Autocomplete
+      fullWidth
       id="laboratories-combo"
-      sx={{ width: 300 }}
       open={open}
       onOpen={() => {
         setOpen(true);
@@ -65,6 +65,8 @@ export default function ComboLaboratories(props) {
       loading={loading}
       renderInput={(params) => (
         <TextField
+          sx={{width: '100%'}}
+          fullWidth
           {...params}
           label={props.lg.get('Laboratories')}
           InputProps={{

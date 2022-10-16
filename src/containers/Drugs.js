@@ -135,7 +135,7 @@ function EnhancedTableHead(props) {
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
-            inputProps={{ 'aria-label': props.lg.get('Select all drugs')}}
+            inputProps={{ 'aria-label': props.lg.get('Select all drugs') }}
           />
         </TableCell>
         {headCells.map((headCell) => (
@@ -247,8 +247,8 @@ export default function Drugs(props) {
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('id');
   const [selected, setSelected] = React.useState([]);
-  const [dense, ] = React.useState(false);
-  const [rowsPerPage, ] = React.useState(5);
+  const [dense,] = React.useState(false);
+  const [rowsPerPage,] = React.useState(5);
   const [rows, setRows] = React.useState([]);
   const { enqueueSnackbar } = useSnackbar();
 
@@ -305,7 +305,7 @@ export default function Drugs(props) {
           r.drugs[i].drug_id,
           r.drugs[i].drug_name,
           r.drugs[i].drug_code,
-          r.drugs[i].date_created,
+          formatDate(r.drugs[i].date_created),
           r.drugs[i].image ? process.env.REACT_APP_API_URL + '/public/drugs/images/' + r.drugs[i].image : defaultAvatar,
           r.drugs[i].notice ? process.env.REACT_APP_API_URL + '/public/drugs/documents/' + r.drugs[i].notice : null)
         );
@@ -322,6 +322,11 @@ export default function Drugs(props) {
   const handleFiltersModal = () => setOpenFilterModal(true);
   const handleCloseFilterModal = () => setOpenFilterModal(false);
 
+  const formatDate = (v) => {
+    let d = new Date(v);
+    var datestring = d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+    return datestring;
+  }
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
       const newSelecteds = rows.map((n) => n.id);
@@ -484,7 +489,7 @@ export default function Drugs(props) {
                           style={{ textAlign: 'center' }}
                           scope='row'
                           padding='none'>
-                          <FamilyRestroomIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.id, row.code + ' ' + row.name, 'drug_patients')} />
+                          <FamilyRestroomIcon color={'primary'} style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.id, row.code + ' ' + row.name, 'drug_patients')} />
                         </TableCell>
                         <TableCell
                           component='th'
@@ -492,7 +497,7 @@ export default function Drugs(props) {
                           style={{ textAlign: 'center' }}
                           scope='row'
                           padding='none'>
-                          <BiotechIcon style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.id, row.code + ' ' + row.name, 'drug_laboratories')} />
+                          <BiotechIcon color={'primary'} style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.id, row.code + ' ' + row.name, 'drug_laboratories')} />
                         </TableCell>
                         <TableCell
                           component='th'
@@ -500,7 +505,7 @@ export default function Drugs(props) {
                           style={{ textAlign: 'center' }}
                           scope='row'
                           padding='none'>
-                          {row.notice ? <a href={row.notice} target="blank"> <LinkIcon style={{ cursor: 'pointer' }} /></a> : ' - '}
+                          {row.notice ? <a href={row.notice} target="blank"> <LinkIcon color={'primary'}  style={{ cursor: 'pointer' }} /></a> : ' - '}
                         </TableCell>
                       </TableRow>
                     );

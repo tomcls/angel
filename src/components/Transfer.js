@@ -2,7 +2,7 @@ import * as React from 'react';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import ListItemText from '@mui/material/ListItemText';
 import IconButton from '@mui/material/IconButton';
 import { Typography } from '@mui/material';
@@ -12,16 +12,14 @@ export default function Transfer(props) {
     const [checked, setChecked] = React.useState([0]);
     const [transfers, setTransfers] = React.useState([]);
 
+    React.useEffect(() => {
+        fetchData();
+    },[]); // Note the curly braces around myFunction!
     const fetchData = async () => {
         // run asynchronous tasks here
         const tr = await AngelNurse().transfers({ nurse_id: props.nurseId })
         setTransfers(tr)
     };
-    
-    React.useEffect(() => {
-        fetchData();
-    },[transfers]); // Note the curly braces around myFunction!
-
     const handleToggle = (value) => () => {
         const currentIndex = checked.indexOf(value);
         const newChecked = [...checked];
@@ -47,7 +45,7 @@ export default function Transfer(props) {
                         key={transfer.id}
                         secondaryAction={
                             <IconButton edge="end" aria-label="Get Back" onClick={() => getBack(transfer.id)}>
-                                <RestartAltIcon />
+                                <TaskAltIcon color={'success'} />
                             </IconButton>
                         }
                         disablePadding

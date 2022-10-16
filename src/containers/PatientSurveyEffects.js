@@ -315,7 +315,15 @@ export default function PatientSurveyEffects(props) {
     r = await AngelSurvey().sideEffects(o);
     if (r.surveys && r.surveys.length) {
       for (let i = 0; i < r.surveys.length; i++) {
-        u.push(createDataEffects(r.surveys[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.surveys[i].avatar : defaultAvatar, r.surveys[i].survey_side_effect_id, r.surveys[i].id, r.surveys[i].name, r.surveys[i].firstname, r.surveys[i].lastname, r.surveys[i].score, r.surveys[i].date));
+        u.push(createDataEffects(
+          r.surveys[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.surveys[i].avatar : defaultAvatar, 
+          r.surveys[i].survey_side_effect_id, 
+          r.surveys[i].id, 
+          r.surveys[i].name, 
+          r.surveys[i].firstname, 
+          r.surveys[i].lastname, 
+          r.surveys[i].score, 
+          displayDate(r.surveys[i].date)));
       }
       setRows(u);
       setSideEffects(r.surveys);
@@ -327,6 +335,11 @@ export default function PatientSurveyEffects(props) {
     }
   }
 
+  const displayDate = (v) => {
+    let d = new Date(v);
+    var datestring = d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+    return datestring;
+  }
   const handleFiltersModal = () => setOpenFilterModal(true);
   const handleCloseFilterModal = () => setOpenFilterModal(false);
 

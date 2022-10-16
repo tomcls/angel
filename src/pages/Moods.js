@@ -22,6 +22,7 @@ import PatientContainer from "../containers/Patient";
 import MainBar from "../templates/MainBar";
 import { useStore } from "../utils/store";
 import Translation from "../utils/translation";
+import Tabs from "../components/Tabs";
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -53,153 +54,20 @@ export default function MoodsPage() {
   const [tabs, setTabs] = React.useState([]);
   const [tabIndex, setTabIndex] = React.useState(2);
   const newBtn = useRef(null);
+  const t = new Tabs('mood', tabIndex, tabs, setTabs, setSelectedTab, setTabIndex, newBtn, lg);
 
   React.useEffect(() => {
     console.log('useEffect Moods page');
+    let d = document.getElementById('newButton');
+    if (d) {
+      d.clk = function (id, text, type) { t.openTab(id, text, type); };
+    }
   }, []);
 
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
-  const handleTabOptions = (value) => {
-    setSelectedTab(value)
-    setTabIndex(tabIndex + 1)
-  }
-  const createTabMood = (moodId, text) => {
-    const value = text;
-    const newTab = {
-      label: text ? text : lg.get('New mood'),
-      value: value ? value : tabIndex,
-      idx: tabIndex,
-      child: () => <Mood moodId={moodId} langId={'en'} />
-    }
-    setTabs([...tabs, newTab])
-    handleTabOptions(value ? value : tabIndex);
-  }
 
-  const getTab = (v) => {
-    for (let i = 0; i < tabs.length; i++) {
-      if (tabs[i].value === v) {
-        return tabs[i];
-      }
-    }
-    return null;
-  }
-  const handleCloseTab = (event, idx) => {
-    event.stopPropagation();
-    const tabArr = tabs.filter(x => x.idx !== idx)
-    setTabs(tabArr)
-    setSelectedTab('Main');
-  }
-
-  const createTab = (type, text, id) => {
-    console.log('createTab', type, text, id)
-    const value = text;
-    let tab = getTab(value);
-    let newTab = null;
-    if (tab) {
-      setSelectedTab(tab.value);
-    } else {
-      newTab = {
-        label: text,
-        value: value ? value : tabIndex,
-        idx: tabIndex,
-        child: () => {
-          switch (type) {
-            case 'nurse':
-              return <NurseContainer userId={id} />
-            case 'patient':
-              return <PatientContainer userId={id} />
-            case 'treatment_patients':
-              return <Patients treatmentId={id} />
-            case 'treatment_drugs':
-              return <Drugs treatmentId={id} />
-            case 'nurse_patients':
-              return <Patients nurseId={id} openNurses={() => setSelectedTab('Main')} openDoctors={() => setSelectedTab('Main')} openTreatments={() => setSelectedTab('Main')} />
-            case 'doc_patients':
-              return <Patients doctorId={id} openDoctors={() => setSelectedTab('Main')} openNurses={() => setSelectedTab('Main')} openTreatments={() => setSelectedTab('Main')} />
-            case 'doctors':
-              return <Doctors patientId={id} openPatients={openTab} />
-            case 'nurses':
-              return <Nurses patientId={id} openPatients={openTab} />
-            default:
-              return;
-          }
-        }
-      }
-      setTabs([...tabs, newTab])
-      handleTabOptions(value ? value : tabIndex);
-    }
-  }
-  const openTab = (id, text, type) => {
-    console.log('openTab', type, text, id)
-    if (!window.angel) {
-      window.angel = {};
-    }
-    switch (type) {
-      case 'doctor':
-        window.angel.userId = id;
-        window.angel.tabType = 'doctor';
-        window.angel.tabName = 'Doc ' + text;
-        break;
-      case 'patient':
-        window.angel.userId = id;
-        window.angel.tabType = 'patient';
-        window.angel.tabName = 'patient ' + text;
-        break;
-      case 'nurse':
-        window.angel.userId = id;
-        window.angel.tabType = 'nurse';
-        window.angel.tabName = 'Nurse ' + text;
-        break;
-      case 'patient_doctors':
-        window.angel.userId = id;
-        window.angel.tabType = 'doctors';
-        window.angel.tabName = 'Doctors of ' + text;
-        break;
-      case 'patient_nurses':
-        window.angel.userId = id;
-        window.angel.tabType = 'nurses';
-        window.angel.tabName = 'Nurses of ' + text;
-        break;
-      case 'nurse_patients':
-        window.angel.nurseId = id;
-        window.angel.tabName = 'Patients of ' + text;
-        break;
-      case 'doc_patients':
-        window.angel.doctorId = id;
-        window.angel.tabName = 'Patients of Doc ' + text;
-        break;
-      case 'treatment_patients':
-        window.angel.tabType = 'treatments';
-        window.angel.treatmentId = id;
-        window.angel.tabName = 'Patients of ' + text;
-        break;
-      case 'treatment_drugs':
-        window.angel.tabType = 'treatment_drugs';
-        window.angel.treatmentId = id;
-        window.angel.tabName = 'Drugs of treatment ' + text;
-        break;
-      case 'doctors':
-        window.angel.userId = id;
-        window.angel.tabType = 'doctors';
-        window.angel.tabName = 'Doctors of ' + text;
-        break;
-      case 'treatments':
-        window.angel.userId = id;
-        window.angel.tabType = 'treatments';
-        window.angel.tabName = 'Treatments of ' + text;
-        break;
-      case 'treatment':
-        window.angel.treatmentId = id;
-        window.angel.tabType = 'treatment';
-        window.angel.tabName = 'Treatment ' + text;
-        break;
-      default:
-        return;
-    }
-    newBtn.current.click();
-  }
 
   return (
     <SnackbarProvider maxSnack={3}>
@@ -213,7 +81,7 @@ export default function MoodsPage() {
               </Typography>
             </Grid>
             <Grid item xs={12} md={6} xl={6} textAlign={'end'}  >
-              <Button variant="outlined" onClick={createTabMood} ref={newBtn} justifyContent="flex-end" id="newButton">
+              <Button variant="outlined" onClick={t.onOpenTabClick} ref={newBtn} justifyContent="flex-end" id="newButton">
                 <PeopleIcon />  {lg.get('Add mood')}</Button>
             </Grid>
           </Grid>
@@ -223,12 +91,12 @@ export default function MoodsPage() {
                 <TabList onChange={handleChange} aria-label="" variant="scrollable" scrollButtons="auto" >
                   <Tab label={lg.get('List')} value="Main" icon={<RefreshIcon />} iconPosition="end" />
                   {tabs.map(tab => (
-                    <Tab key={tab.idx} label={tab.label} value={tab.value} icon={<Cancel onClick={(e) => handleCloseTab(e, tab.idx)} />} iconPosition="end" />
+                    <Tab key={tab.idx} label={tab.label} value={tab.value} icon={<Cancel onClick={(e) => t.handleCloseTab(e, tab.idx)} />} iconPosition="end" />
                   ))}
                 </TabList>
               </Box>
               <TabPanel value="Main" style={{ padding: "1px" }}>
-                <Moods openMood={createTabMood} />
+                <Moods openMood={t.openTab} />
               </TabPanel>
               {tabs.map(panel => (
                 <TabPanel key={panel.idx} label={panel.label} value={panel.value} >

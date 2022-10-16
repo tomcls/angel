@@ -12,11 +12,13 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { Save } from '@mui/icons-material';
-import { Button } from '@mui/material';
+import { Button, Card, CardContent, CardHeader, IconButton } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import AngelLaboratory from '../api/angel/laboratory';
 import Translation from '../utils/translation';
 import { useStore } from '../utils/store';
+import BiotechIcon from '@mui/icons-material/Biotech';
+import FmdGoodIcon from '@mui/icons-material/FmdGood';
 
 export default function LaboratoryContainer(props) {
 
@@ -100,61 +102,89 @@ export default function LaboratoryContainer(props) {
     };
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <Box >
+                <Card >
+                    <CardHeader
+                        avatar={
+                            <BiotechIcon color={'primary'} />
+                        }
+                        sx={{ borderBottom: '1px solid #cecece' }}
+                        title={name ? name : lg.get('Informations')}
+                        subheader={email + ', ' + phone }
+                        action={<>
+                            <IconButton aria-label="assign patient">
+                                <Button
+                                    size={'small'}
+                                    style={{ borderRadius: '10px', marginTop: '20px' }}
+                                    variant="outlined" startIcon={<Save />}
+                                    onClick={onSubmit}>
+                                    {lg.get('Save')}
+                                </Button>
+                            </IconButton></>
+                        }
+                    />
+                    <CardContent>
+                        <Grid container spacing={2}>
+                            <Grid item xs={6} md={4}>
+                                <TextField
+                                    style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
+                                    label={lg.get('Name')}
+                                    id="name"
+                                    sx={{ '& > :not(style)': { mt: 1 } }}
+                                    value={name ? name : ''}
+                                    onChange={onInputChange(setName)}
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={6} md={4}>
+                                <TextField
+                                    style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
+                                    label="Email"
+                                    id="outlined-start-adornment"
+                                    sx={{ '& > :not(style)': { mt: 1 } }}
+                                    value={email ? email : ''}
+                                    onChange={onInputChange(setEmail)}
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                                    }}
+                                />
 
-            <Box sx={{ width: '100%' }}>
-                <Grid container spacing={2}>
-                    <Grid item xs={4}>
-                        <Typography variant="h6" gutterBottom component="div">
-                            {lg.get('Informations')}
-                        </Typography>
-                        <TextField
-                            style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
-                            label={lg.get('Name')}
-                            id="name"
-                            sx={{ '& > :not(style)': { mt: 1 } }}
-                            value={name ? name : ''}
-                            onChange={onInputChange(setName)}
-                            InputProps={{
-                                startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
-                            }}
-                        />
-                    </Grid>
-                    <Grid item xs={4}>
-                        <Typography variant="h6" gutterBottom component="div">
-                            &nbsp;
-                        </Typography>
-                        <TextField
-                            style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
-                            label="Email"
-                            id="outlined-start-adornment"
-                            sx={{ '& > :not(style)': { mt: 1 } }}
-                            value={email ? email : ''}
-                            onChange={onInputChange(setEmail)}
-                            InputProps={{
-                                startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
-                            }}
-                        />
-                        <TextField
-                            style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
-                            label={lg.get('Phone')}
-                            id="phone"
-                            sx={{ '& > :not(style)': { mt: 1 } }}
-                            value={phone ? phone : ''}
-                            onChange={onInputChange(setPhone)}
-                            InputProps={{
-                                startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
-                            }}
-                        />
-
-                    </Grid>
-                </Grid>
-                <Grid container spacing={2}>
-                    <Grid item xs={4}>
-                        <Typography variant="h6" gutterBottom component="div">
-                        {lg.get('Address')}
-                        </Typography>
-                        <Grid container spacing={1}>
-                            <Grid item xs={8}>
+                            </Grid>
+                            <Grid item xs={6} md={4}>
+                                <TextField
+                                    style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
+                                    label={lg.get('Phone')}
+                                    id="phone"
+                                    sx={{ '& > :not(style)': { mt: 1 } }}
+                                    value={phone ? phone : ''}
+                                    onChange={onInputChange(setPhone)}
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                                    }}
+                                />
+                            </Grid>
+                        </Grid>
+                    </CardContent>
+                </Card>
+                <Card sx={{mt: '20px'}}>
+                    <CardHeader
+                        avatar={
+                            <FmdGoodIcon color={'primary'} />
+                        }
+                        sx={{ borderBottom: '1px solid #cecece' }}
+                        title={address ? address + ' ' + streetNumber : lg.get('Address')}
+                        subheader={zip + ', ' + city}
+                        action={<>
+                            <IconButton aria-label="assign patient">
+                               
+                            </IconButton></>
+                        }
+                    />
+                    <CardContent>
+                        <Grid container spacing={2}>
+                            <Grid item xs={6}>
                                 <TextField
                                     style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
                                     label={lg.get('Address')}
@@ -167,7 +197,7 @@ export default function LaboratoryContainer(props) {
                                     }}
                                 />
                             </Grid>
-                            <Grid item xs={4}>
+                            <Grid item xs={2}>
                                 <TextField
                                     style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
                                     label={lg.get('Number')}
@@ -180,9 +210,7 @@ export default function LaboratoryContainer(props) {
                                     }}
                                 />
                             </Grid>
-                        </Grid>
-                        <Grid container spacing={1}>
-                            <Grid item xs={7}>
+                            <Grid item xs={4}>
                                 <TextField
                                     style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
                                     label={lg.get('City')}
@@ -195,7 +223,7 @@ export default function LaboratoryContainer(props) {
                                     }}
                                 />
                             </Grid>
-                            <Grid item xs={5}>
+                            <Grid item xs={3}>
                                 <TextField
                                     style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
                                     label={lg.get('Zip')}
@@ -208,35 +236,28 @@ export default function LaboratoryContainer(props) {
                                     }}
                                 />
                             </Grid>
-                            <FormControl fullWidth style={{ display: 'flex', width: '100%', marginTop: '16px', marginLeft: '7px' }} >
-                                <InputLabel id="langLabel">{lg.get('Country')}</InputLabel>
-                                <Select
-                                    style={{ display: 'flex', width: '100%' }}
-                                    labelId="countryLabel"
-                                    id="country"
-                                    value={country ? country : ''}
-                                    onChange={onInputChange(setCountry)}
-                                    label={lg.get('Country')}
-                                >
-                                    <MenuItem value={'belgium'}>Belgium</MenuItem>
-                                    <MenuItem value={'luxembourg'}>Luxembourg</MenuItem>
-                                    <MenuItem value={'espagne'}>Espagne</MenuItem>
-                                    <MenuItem value={'hollande'}>Hollande</MenuItem>
-                                    <MenuItem value={'italie'}>Italie</MenuItem>
-                                    <MenuItem value={'france'}>France</MenuItem>
-                                </Select>
-                            </FormControl>
+                            <Grid item xs={4} style={{paddingTop:'23px'}}>
+                                <FormControl fullWidth style={{ display: 'flex', width: '100%', marginLeft: '7px' }} >
+                                    <InputLabel id="langLabel">Pays</InputLabel>
+                                    <Select
+                                        style={{ display: 'flex', width: '100%' }}
+                                        labelId="countryLabel"
+                                        id="country"
+                                        value={country ? country : ''}
+                                        onChange={onInputChange(setCountry)}
+                                        label={lg.get('Country')} >
+                                        <MenuItem value={'belgium'}>Belgium</MenuItem>
+                                        <MenuItem value={'luxembourg'}>Luxembourg</MenuItem>
+                                        <MenuItem value={'espagne'}>Espagne</MenuItem>
+                                        <MenuItem value={'hollande'}>Hollande</MenuItem>
+                                        <MenuItem value={'italie'}>Italie</MenuItem>
+                                        <MenuItem value={'france'}>France</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Grid>
                         </Grid>
-                    </Grid>
-                </Grid>
-                <Grid item xs={4}>
-                    <Button
-                        style={{ borderRadius: '10px', marginTop: '20px' }}
-                        variant="outlined" startIcon={<Save />}
-                        onClick={onSubmit}>
-                        {lg.get('Save')}
-                    </Button>
-                </Grid>
+                    </CardContent>
+                </Card>
             </Box>
         </LocalizationProvider>
     );

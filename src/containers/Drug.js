@@ -8,7 +8,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { Save } from '@mui/icons-material';
-import { Button, Modal } from '@mui/material';
+import { Button, Card, CardContent, CardHeader, FormControl, IconButton, InputLabel, MenuItem, Modal, Select } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import ComboLaboratories from '../components/ComboLaboratories';
 import Avatar from '@mui/material/Avatar';
@@ -18,7 +18,10 @@ import ComboEffects from '../components/ComboEffects';
 import SideEffects from '../components/SideEffects';
 import { useStore } from '../utils/store';
 import Translation from '../utils/translation';
-
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import VaccinesIcon from '@mui/icons-material/Vaccines';
+import SickIcon from '@mui/icons-material/Sick';
+import DescriptionIcon from '@mui/icons-material/Description';
 export default function DrugContainer(props) {
 
     const { enqueueSnackbar } = useSnackbar();
@@ -30,11 +33,11 @@ export default function DrugContainer(props) {
     const [id, setId] = React.useState(null);
     const [drugId, setDrugId] = React.useState(null);
     const [drug, setDrug] = React.useState(null);
+    const [langId, setLangId] = React.useState(userSession ? userSession.lang : 'en');
     const [descriptionId, setDescriptionId] = React.useState(null);
     const [name, setName] = React.useState('');
     const [code, setCode] = React.useState('');
     const [description, setDescription] = React.useState('');
-    const [langId, ] = React.useState('en');
     const [laboratoryId, setLaboratoryId] = React.useState(() => '');
     const [laboratoryName, setLaboratoryName] = React.useState(() => '');
     const [openAssignEffectModal, setOpenAssignEffectModal] = React.useState(false);
@@ -48,33 +51,34 @@ export default function DrugContainer(props) {
     const uploadFileButton = useRef(null);
     const uploadNoticeButton = useRef(null);
     const [moleculeName, setMoleculeName] = React.useState(null);
-    const [repetition, ] = React.useState(props.repetition);
-    const [note, ] = React.useState(props.note);
-    const [days, ] = React.useState(props.days);
-    const [hours, ] = React.useState([12]);
-    const [patientId, ] = React.useState(props.patientId);
+    const [repetition,] = React.useState(props.repetition);
+    const [note,] = React.useState(props.note);
+    const [days,] = React.useState(props.days);
+    const [hours,] = React.useState([12]);
+    const [sideEffectUpdated,setSideEffectUpdated] = React.useState(null);
+    const [patientId,] = React.useState(props.patientId);
 
     React.useEffect(() => {
         if (props.drugId) {
-            async function fetchData() {
-                const drug = await AngelDrug().find({ id: props.drugId });
-                setId(drug.drug_id);
-                setDrugId(drug.drug_id);
-                setDescriptionId(drug.drug_description_id);
-                setDescription(drug.description);
-                setName(drug.name);
-                setCode(drug.code);
-                setLaboratoryId(drug.laboratory_id);
-                setLaboratoryName(drug.laboratory_name);
-                setImage(drug.image ? process.env.REACT_APP_API_URL + '/public/drugs/images/' + drug.image : defaultAvatar);
-                setNotice(drug.notice);
-                setDrug({id:drug.drug_id,drug_id:drug.drug_id,name:drug.name,code:drug.code});
-                setMoleculeName(drug.molecule_name)
-            }
             fetchData();
         }
     }, []);
-
+    const fetchData = async (lang) => {
+        const drug = await AngelDrug().find({ id: props.drugId, lang_id: lang ? lang : langId });
+        console.log(drug, langId)
+        setId(drug.drug_id);
+        setDrugId(drug.drug_id);
+        setDescriptionId(drug.drug_description_id);
+        setDescription(drug.description);
+        setName(drug.name);
+        setCode(drug.code);
+        setLaboratoryId(drug.laboratory_id);
+        setLaboratoryName(drug.laboratory_name);
+        setImage(drug.image ? process.env.REACT_APP_API_URL + '/public/drugs/images/' + drug.image : defaultAvatar);
+        setNotice(drug.notice);
+        setDrug({ id: drug.drug_id, drug_id: drug.drug_id, name: drug.name, code: drug.code });
+        setMoleculeName(drug.molecule_name)
+    }
     const onInputChange = setter => e => {
         setter(e.target.value);
     };
@@ -164,7 +168,7 @@ export default function DrugContainer(props) {
                     note: e.note ? e.note : null
                 };
                 const a = await AngelDrug().addPatient(u);
-                if(a && a.code ) {
+                if (a && a.code) {
                     handleClickVariant('error', a.code);
                 } else {
                     handleClickVariant('success', lg.get('Patient well assigned!'));
@@ -178,7 +182,7 @@ export default function DrugContainer(props) {
         }
     }
     const onAssignEffect = async e => {
-        
+
         const u = {
             side_effect_id: effectId,
             drug_id: drugId,
@@ -186,6 +190,7 @@ export default function DrugContainer(props) {
         if (drugId && effectId) {
             try {
                 await AngelDrug().addEffect(u);
+                setSideEffectUpdated(new Date().getTime())
                 handleClickVariant('success', lg.get('Side effect well assigned'));
             } catch (e) {
                 handleClickVariant('error', JSON.stringify(e));
@@ -227,6 +232,16 @@ export default function DrugContainer(props) {
         boxShadow: 24,
         p: 4,
     };
+    const handleLangChange = (event) => {
+        setLangId(event.target.value);
+        if (id && id != null) {
+            fetchData(event.target.value);
+        }
+    };
+    const onDeleteSideEffect = (id) => {
+        handleClickVariant('success', 'Side effect well removed');
+        setSideEffectUpdated(new Date().getTime())
+    }
     return (
         <>
             <Modal
@@ -234,110 +249,174 @@ export default function DrugContainer(props) {
                 onClose={handleCloseAssignPatientModal}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description">
-                <PosologyComponent 
-                onSave={onAssignPatient} 
-                days={days} 
-                repetition={repetition} 
-                hours={hours} 
-                note={note} 
-                patientId={patientId} 
-                drugId={drugId}
-                drug={drug}
-                lg={lg} />
+                <PosologyComponent
+                    onSave={onAssignPatient}
+                    days={days}
+                    repetition={repetition}
+                    hours={hours}
+                    note={note}
+                    patientId={patientId}
+                    drugId={drugId}
+                    drug={drug}
+                    lg={lg} />
             </Modal>
             <Modal
-                    open={openAssignEffectModal}
-                    onClose={handleCloseAssignEffectModal}
-                    aria-labelledby="modal-modal-title"
-                    aria-describedby="modal-modal-description">
-                    <Box sx={styleModal}>
-                        <Typography id="modal-modal-title" variant="h6" component="h2">
-                            {lg.get('Assign a side effect')}
-                        </Typography>
-                        <ComboEffects lg={lg} onSelect={onEffectSelect} />
-                        <Button
-                            style={{ borderRadius: '10px', marginTop: '20px' }}
-                            variant="outlined" startIcon={<Save />}
-                            onClick={onAssignEffect}>
-                            {lg.get('Assign')}
-                        </Button>
-                    </Box>
-                </Modal>
+                open={openAssignEffectModal}
+                onClose={handleCloseAssignEffectModal}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description">
+                <Box sx={styleModal}>
+                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                        {lg.get('Assign a side effect')}
+                    </Typography>
+                    <ComboEffects lg={lg} onSelect={onEffectSelect} />
+                    <Button
+                        style={{ borderRadius: '10px', marginTop: '20px' }}
+                        variant="outlined" startIcon={<Save />}
+                        onClick={onAssignEffect}>
+                        {lg.get('Assign')}
+                    </Button>
+                </Box>
+            </Modal>
             <Box sx={{ width: '100%' }}>
-                <Typography variant="h6" gutterBottom component="div">
-                {lg.get('Treatment details')}
-                </Typography>
-                <Button variant="outlined" style={{ marginRight: '5px' }} onClick={handleAssignEffectModal}>{lg.get('Assign a side effect')}</Button>
-                <Button variant="outlined" style={{ marginRight: '5px' }} onClick={handleAssignPatientModal}>{lg.get('Assign a patient')}</Button>
-                <Button variant="outlined" onClick={() => document.getElementById("newButton").clk(drugId, name, 'drug_patients')}>{lg.get('List of patients')}</Button>
-                <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6} md={4} xl={2} style={{ paddingTop: '40px' }}>
-                        <Grid item xs={12} style={{ width: '205px', height: '205px', textAlign: "center", border: '3px solid #ddd', borderRadius: '5px', margin: 'auto' }} >
-                            <Avatar variant="rounded"
-                                src={image}
-                                style={{ width: '200px', height: '200px', textAlign: "center", borderColor: 'gray', margin: 'auto' }}
+                
+                <Grid container spacing={1}>
+                    <Grid item xs={12} lg={9} >
+                        <Card >
+                            <CardHeader
+                                avatar={
+                                    <VaccinesIcon color={'primary'} />
+                                }
+                                sx={{ borderBottom: '1px solid #cecece' }}
+                                title={lg.get('Treatment details')}
+                                subheader={name}
+                                action={<>
+                                    <IconButton aria-label="assign patient">
+                                        <Button variant="outlined" style={{ marginRight: '5px' }} onClick={handleAssignPatientModal}>{lg.get('Assign a patient')}</Button>
+                                    </IconButton>
+                                    <IconButton aria-label="assign patient">
+                                        <Button variant="outlined" onClick={() => document.getElementById("newButton").clk(drugId, name, 'drug_patients')}>{lg.get('List of patients')}</Button>
+                                    </IconButton></>
+                                }
                             />
-                            <Grid item xs={12} style={{ width: '100%', textAlign: "center" }}>
-                                <Button id="avatarLabel" onClick={() => uploadFileButton.current.click()}>{lg.get('Upload photo')}</Button>
-                                <input type="file" name="avatar" onChange={onFileChange} ref={uploadFileButton} style={{ display: 'none' }} />
-                            </Grid>
+                            <CardContent>
+                                <Grid container spacing={1} sx={{ pt: '30px' }}>
+                                    <Grid item style={{ width: '205px', height: '205px', textAlign: "center", border: '3px solid #ddd', borderRadius: '5px', margin: 'auto', paddingLeft: '0px', paddingTop: '0px' }}>
+                                        <Avatar variant="rounded"
+                                            src={image}
+                                            style={{ width: '200px', height: '200px', textAlign: "center", borderColor: 'gray', margin: 'auto' }}
+                                        />
+                                        <Grid item xs={12} style={{ width: '100%', textAlign: "center" }}>
+                                            <Button id="avatarLabel" onClick={() => uploadFileButton.current.click()}>{lg.get('Upload photo')}</Button>
+                                            <input type="file" name="avatar" onChange={onFileChange} ref={uploadFileButton} style={{ display: 'none' }} />
+                                        </Grid>
+                                    </Grid>
+                                    <Grid item xs={9} >
+                                        <Grid container spacing={1}>
+                                            <Grid item xs={6}>
+                                                <TextField
+                                                    style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
+                                                    label={lg.get('Name')}
+                                                    id="name"
+
+                                                    value={name ? name : ''}
+                                                    onChange={onInputChange(setName)}
+                                                    InputProps={{
+                                                        startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                                                    }}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={6} >
+                                                <TextField
+                                                    style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
+                                                    label={lg.get('Molecule name')}
+                                                    id="code"
+                                                    value={moleculeName ? moleculeName : ''}
+                                                    onChange={onInputChange(setMoleculeName)}
+                                                    InputProps={{
+                                                        startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>
+                                                    }}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={6} >
+                                                <TextField
+                                                    style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
+                                                    label="code"
+                                                    id="code"
+
+                                                    value={code ? code : ''}
+                                                    onChange={onInputChange(setCode)}
+                                                    InputProps={{
+                                                        startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>
+                                                    }}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={6} >
+                                                <ComboLaboratories lg={lg} onSelect={onLaboratorySelect} laboratory={{ id: laboratoryId, name: laboratoryName }} />
+                                            </Grid>
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                            </CardContent>
+                        </Card>
+
+                        <Grid item xs={12} sx={{ mt: '30px' }} >
+                            <Card >
+                                <CardHeader
+                                    sx={{ borderBottom: '1px solid #cecece' }}
+                                    avatar={
+                                        <DescriptionIcon color={'primary'}/>
+                                    }
+                                    action={
+                                        <FormControl sx={{ mt: '3px' }}>
+                                            <InputLabel id="demo-simple-select-autowidth-label">{lg.get('Lang')}</InputLabel>
+                                            <Select
+                                                labelId="demo-simple-select-autowidth-label"
+                                                id="demo-simple-select-autowidth"
+                                                value={langId}
+                                                onChange={handleLangChange}
+                                                autoWidth
+                                                label={lg.get('Lang')}
+                                                size={'small'}>
+                                                <MenuItem value="">
+                                                    <em>None</em>
+                                                </MenuItem>
+                                                <MenuItem value={'fr'}>FR</MenuItem>
+                                                <MenuItem value={'nl'}>NL</MenuItem>
+                                                <MenuItem value={'en'}>EN</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    }
+                                    title={lg.get('Description')}
+                                    subheader={lg.get('Add your description or upload a doc with the link here under')}
+                                />
+                                <CardContent>
+                                    <ReactQuill theme="snow" value={description} onChange={setDescription} />
+                                </CardContent>
+                            </Card>
                         </Grid>
                     </Grid>
-                    <Grid item >
-                        <TextField
-                            style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
-                            label={lg.get('Name')}
-                            id="name"
-
-                            value={name ? name : ''}
-                            onChange={onInputChange(setName)}
-                            InputProps={{
-                                startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
-                            }}
-                        />
-                        <TextField
-                            style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
-                            label="code"
-                            id="code"
-
-                            value={code ? code : ''}
-                            onChange={onInputChange(setCode)}
-                            InputProps={{
-                                startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>
-                            }}
-                        />
-                    </Grid>
-                    <Grid item >
-                    </Grid>
-                    <Grid item >
-                        <ComboLaboratories lg={lg} onSelect={onLaboratorySelect} laboratory={{ id: laboratoryId, name: laboratoryName }} />
-                        <TextField
-                            style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px',marginTop:'6px' }}
-                            label={lg.get('Molecule name')}
-                            id="code"
-                            value={moleculeName ? moleculeName : ''}
-                            onChange={onInputChange(setMoleculeName)}
-                            InputProps={{
-                                startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>
-                            }}
-                        />
+                    <Grid item xs={12} lg={3} style={{ paddingLeft: '20px' }}>
+                        <Card >
+                            <CardHeader
+                                avatar={
+                                    <SickIcon color={'error'} />
+                                }
+                                sx={{ borderBottom: '1px solid #cecece' }}
+                                title={lg.get('Side effects')}
+                                subheader={lg.get('Due to')+' '+name}
+                                action={
+                                    <IconButton aria-label="assign patient">
+                                        <AddCircleOutlineIcon onClick={handleAssignEffectModal} color={'success'} />
+                                    </IconButton>
+                                }
+                            />
+                            <CardContent>
+                                <SideEffects drugId={drugId} lg={lg} update={sideEffectUpdated} onDeleted={onDeleteSideEffect}/>
+                            </CardContent>
+                        </Card>
                     </Grid>
                 </Grid>
-                <Grid container spacing={2} direction="row" >
-                    <Grid item style={{ marginTop: '6px' }} md={6} xs={12}>
-                        <Typography variant="h6" gutterBottom component="div" style={{ marginTop: '40px' }}>
-                        {lg.get('Description')}
-                        </Typography>
-                        <ReactQuill theme="snow" value={description} onChange={setDescription} />
-                    </Grid>
-                    <Grid item style={{ marginTop: '6px' }} md={6} xs={12}>
-                        <Typography variant="h6" gutterBottom component="div" style={{ marginTop: '40px' }}>
-                        {lg.get('Side effects')}
-                        </Typography>
-                        <SideEffects drugId={drugId} />
-                    </Grid>
-                </Grid>
-                
                 <Grid container spacing={2} direction="row" style={{ textalign: 'center' }}>
                     <Grid item style={{ marginTop: '6px' }} >
                         <a href={process.env.REACT_APP_API_URL + '/public/drugs/documents/' + notice} target="_blank" style={{ color: '#0d99ff' }}>{notice}</a>

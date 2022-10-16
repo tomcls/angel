@@ -1,4 +1,24 @@
 export const il8n = {
+    "Add your description or upload a doc with the link here under": {
+        "en":"Add your description or upload a doc with the link here under",
+        "fr":"Ajouter votre propre description ou televerser un document avec le lien ci-dessous",
+        "nl":"Add your description or upload a doc with the link here under"
+    },
+    "Due to": {
+        "en":"Due to",
+        "fr":"provoqué par le",
+        "nl":"Due to"
+    },
+    "No side effect": {
+        "en":"No side effect",
+        "fr":"Aucun effet secondaire",
+        "nl":"No side effect"
+    },
+    "Side effects well deleted": {
+        "en":"Side effect well deleted",
+        "fr":"Les effets secondaires ont bien été supprimés",
+        "nl":"Side effect well deleted"
+    },
     "Side effect well assigned": {
         "en":"Side effect well assigned",
         "fr":"L'effet secondaire a bien été assigné",
@@ -416,12 +436,12 @@ export const il8n = {
     },
     "Survey side effects": {
         "en":"Survey side effects",
-        "fr":"Sondage effets secondaires",
+        "fr":"Evaluation effets secondaires",
         "nl":"Survey side effects"
     },
     "Survey moods": {
         "en":"Survey moods",
-        "fr":"Sondages humeurs",
+        "fr":"Evaluations humeurs",
         "nl":"Survey moods"
     },
     "Factories": {
@@ -464,10 +484,20 @@ export const il8n = {
         "fr":"Laboratoire",
         "nl":"Laboratory"
     },
+    "Mood": {
+        "en":"Mood",
+        "fr":"Humeur",
+        "nl":"Mood"
+    },
     "Moods": {
         "en":"Moods",
         "fr":"Humeurs",
         "nl":"Moods"
+    },
+    "Side effect": {
+        "en":"Side effect",
+        "fr":"Effet secondaire",
+        "nl":"Side effect"
     },
     "Side effects": {
         "en":"Side effects",
@@ -706,7 +736,7 @@ export const il8n = {
     },
     "Survey": {
         "en":"Survey",
-        "fr":"Sondage",
+        "fr":"Evaluation",
         "nl":"Survey"
     },
     "Doctors of": {
@@ -766,7 +796,7 @@ export const il8n = {
     },
     "Survey of": {
         "en":"Survey of",
-        "fr":"Sondage de",
+        "fr":"Evaluation de",
         "nl":"Survey of"
     },
     "New": {

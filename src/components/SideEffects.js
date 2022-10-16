@@ -6,31 +6,34 @@ import ListItemText from '@mui/material/ListItemText';
 import IconButton from '@mui/material/IconButton';
 import AngelDrug from '../api/angel/drugs';
 import { Delete } from '@mui/icons-material';
+import { useStore } from '../utils/store';
 
 export default function SideEffects(props) {
     const [sideEffects, setSideEffects] = React.useState([]);
-
+    const { session, } = useStore();
+    const [userSession,] = React.useState(session.user ? session.user : null);
     const fetchData = async () => {
-        const tr = await AngelDrug().getEffects({ drug_id: props.drugId,lang_id:'en' })
+        const tr = await AngelDrug().getEffects({ drug_id: props.drugId,lang_id:userSession ? userSession.lang : 'en' })
         setSideEffects(tr)
     };
     
     React.useEffect(() => {
         fetchData();
-    },[props.drugId]); // Note the curly braces around myFunction!
+    },[props.update,props.drugId]); 
 
     const onDelete = async (id) => {
-        await AngelDrug().deleteEffect({id: id});
+        await AngelDrug().deleteEffect({ids: id});
+        props.onDeleted(id);
     }
     return (
-        <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+        <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }} update={props.update}>
             {sideEffects && sideEffects.length ? sideEffects.map((sideEffect) => {
                 return (
                     <ListItem
                         key={sideEffect.id}
                         secondaryAction={
                             <IconButton edge="end" aria-label="Get Back" onClick={() => onDelete(sideEffect.id)}>
-                                <Delete />
+                                <Delete color={'error'}/>
                             </IconButton>
                         }
                         disablePadding
@@ -45,7 +48,7 @@ export default function SideEffects(props) {
                         </ListItemButton>
                     </ListItem>
                 );
-            }):null}
+            }):props.lg.get('No side effect')}
         </List>
     );
 }

@@ -350,10 +350,10 @@ export default function PatientTreatments(props) {
           r.treatments[i].id,
           r.treatments[i].name,
           r.treatments[i].code,
-          r.treatments[i].date_created,
+          displayDate(r.treatments[i].date_created),
           r.treatments[i].posology_id,
-          r.treatments[i].start_date,
-          r.treatments[i].end_date,
+          displayDate(r.treatments[i].start_date),
+          displayDate(r.treatments[i].end_date),
           r.treatments[i].firstname,
           r.treatments[i].lastname,
           r.treatments[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.treatments[i].avatar : defaultAvatar,
@@ -373,6 +373,11 @@ export default function PatientTreatments(props) {
       setTreatments([]);
       setTotal(0);
     }
+  }
+  const displayDate = (v) => {
+    let d = new Date(v);
+    var datestring = d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+    return datestring;
   }
   const handleFiltersModal = () => setOpenFilterModal(true);
   const handleCloseFilterModal = () => setOpenFilterModal(false);
@@ -608,7 +613,7 @@ export default function PatientTreatments(props) {
                           scope='row'
                           padding='none'
                           onClick={() => handleAssignPatientModal(row)}>
-                          <AlarmAddIcon />
+                          <AlarmAddIcon color={'primary'}/>
                         </TableCell>
                         <TableCell
                           component='th'

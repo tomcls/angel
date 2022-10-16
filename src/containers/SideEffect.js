@@ -31,7 +31,7 @@ export default function SideEffectContainer(props) {
     const [sideEffectDescriptionId, setSideEffectDescriptionId] = React.useState(null);
     const [name, setName] = React.useState('');
     const [description, setDescription] = React.useState('');
-    const [langId, setLangId] = React.useState(props.langId);
+    const [langId, setLangId] = React.useState(userSession ? userSession.lang : 'en');
 
     React.useEffect(() => {
         if (props.sideEffectId) {
@@ -130,7 +130,7 @@ export default function SideEffectContainer(props) {
                         />
                     </Grid>
                     <Grid item>
-                        <FormControl sx={{ m: 1, minWidth: 80 }}>
+                    <FormControl sx={{ mt:'33px', minWidth: 100 }}>
                             <InputLabel id="demo-simple-select-autowidth-label">{lg.get('Lang')}</InputLabel>
                             <Select
                                 labelId="demo-simple-select-autowidth-label"
@@ -138,8 +138,7 @@ export default function SideEffectContainer(props) {
                                 value={langId}
                                 onChange={handleLangChange}
                                 autoWidth
-                                label={lg.get('Lang')}
-                            >
+                                label={lg.get('Lang')} >
                                 <MenuItem value="">
                                     <em>{lg.get('None')}</em>
                                 </MenuItem>

@@ -211,13 +211,13 @@ export default function SideEffects(props) {
   }, []);
   const fetchData = async () => {
     const u = [];
-    const f = { limit: limit, page: page, lang_id: 'en' };
+    const f = { limit: limit, page: page, lang_id: userSession ? userSession.lang : 'en' };
     let r = await AngelSideEffect().list(f);
 
     if (r.sideEffects && r.sideEffects.length) {
       for (let i = 0; i < r.sideEffects.length; i++) {
         //createData('Cupcake', 305, 3.7, 67, 4.3, <BeachAccessIcon color='primary' style={{ marginInline: '10px' }} />, <GridViewIcon color='primary' style={{ marginInline: '10px' }} />, <TrendingUpIcon color='primary' style={{ marginInline: '10px' }} />, 'ahmed')
-        u.push(createData(r.sideEffects[i].side_effect_id, r.sideEffects[i].name, r.sideEffects[i].lang_id, r.sideEffects[i].date_created));
+        u.push(createData(r.sideEffects[i].side_effect_id, r.sideEffects[i].name, r.sideEffects[i].lang_id, displayDate(r.sideEffects[i].date_created)));
       }
       setRows(u);
       setSideEffects(r.sideEffects);
@@ -246,6 +246,11 @@ export default function SideEffects(props) {
     setSelected([]);
   };
 
+  const displayDate = (v) => {
+    let d = new Date(v);
+    var datestring = d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+    return datestring;
+  }
   const handleClick = (event, id) => {
     const selectedIndex = selected.indexOf(id);
     let newSelected = [];
@@ -312,7 +317,6 @@ export default function SideEffects(props) {
                     <TableRow
                       hover
                       onClick={(event) => handleClick(event, row.id)}
-                      onDoubleClick={() => props.openSideEffect(row.id, row.name)}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
@@ -334,7 +338,7 @@ export default function SideEffects(props) {
                         scope='row'
                         style={{ textAlign: 'center', cursor: 'pointer' }}
                         padding='none'
-                        onClick={() => props.openSideEffect(row.id, row.name)}
+                        onClick={() => document.getElementById("newButton").clk(row.id, row.name, 'side_effect')}
                       >
                         <b>{row.name}</b>
                       </TableCell>

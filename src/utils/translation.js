@@ -1,6 +1,9 @@
 import { il8n } from './iln8';
 export default class Translation {
     constructor(lang) {
+        if(['en','fr','nl'].indexOf(lang)<0) {
+            lang='en'
+        }
         this.lang = lang;
     }
     get = (key) => {

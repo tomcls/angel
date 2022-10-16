@@ -75,7 +75,7 @@ const styleModal = {
 
 
 function EnhancedTableHead(props) {
-  const {  onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -228,8 +228,8 @@ export default function Moods(props) {
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('id');
   const [selected, setSelected] = React.useState([]);
-  const [dense, ] = React.useState(false);
-  const [rowsPerPage, ] = React.useState(5);
+  const [dense,] = React.useState(false);
+  const [rowsPerPage,] = React.useState(5);
   const [rows, setRows] = React.useState([]);
 
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
@@ -257,7 +257,7 @@ export default function Moods(props) {
   const fetchData = async () => {
     const u = [];
     let r = null; //
-    let o = { limit: limit, page: page, lang_id: 'en' };
+    let o = { limit: limit, page: page, lang_id: userSession ? userSession.lang : 'en' };
 
     if (nameFilter) {
       o.name = searchFilter;
@@ -269,7 +269,7 @@ export default function Moods(props) {
     if (r.moods && r.moods.length) {
       for (let i = 0; i < r.moods.length; i++) {
         //createData('Cupcake', 305, 3.7, 67, 4.3, <BeachAccessIcon color='primary' style={{ marginInline: '10px' }} />, <GridViewIcon color='primary' style={{ marginInline: '10px' }} />, <TrendingUpIcon color='primary' style={{ marginInline: '10px' }} />, 'ahmed')
-        u.push(createData(r.moods[i].mood_id, r.moods[i].name, r.moods[i].lang_id, r.moods[i].date_created));
+        u.push(createData(r.moods[i].mood_id, r.moods[i].name, r.moods[i].lang_id, displayDate(r.moods[i].date_created)));
       }
       setRows(u);
       setMoods(r.moods);
@@ -317,7 +317,7 @@ export default function Moods(props) {
   const onDeleteItems = async () => {
     if (selected.length) {
       await AngelMood().delete({ ids: selected.join(',') });
-      handleClickVariant('success', 'Doctor(s) well deleted');
+      handleClickVariant('success', lg.get('Side effects well deleted'));
       fetchData();
     }
   }
@@ -341,6 +341,11 @@ export default function Moods(props) {
     setSearchFilter(txt);
   };
 
+  const displayDate = (v) => {
+    let d = new Date(v);
+    var datestring = d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+    return datestring;
+  }
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <div>
@@ -361,7 +366,7 @@ export default function Moods(props) {
       </div>
       <Box sx={{ width: '100%' }}>
         <Paper sx={{ width: '100%', mb: 0 }}>
-        <EnhancedTableToolbar lg={lg} numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
+          <EnhancedTableToolbar lg={lg} numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
           <TableContainer>
             <Table
               sx={{ minWidth: 750 }}
@@ -369,7 +374,7 @@ export default function Moods(props) {
               size={dense ? 'small' : 'medium'}
             >
               <EnhancedTableHead
-              lg={lg}
+                lg={lg}
                 numSelected={selected.length}
                 order={order}
                 orderBy={orderBy}
@@ -387,7 +392,6 @@ export default function Moods(props) {
                       <TableRow
                         hover
                         onClick={(event) => handleClick(event, row.id)}
-                        onDoubleClick={() => props.openMood(row.id, row.name)}
                         role="checkbox"
                         aria-checked={isItemSelected}
                         tabIndex={-1}
@@ -409,7 +413,7 @@ export default function Moods(props) {
                           scope='row'
                           style={{ textAlign: 'center', cursor: 'pointer' }}
                           padding='none'
-                          onClick={() => props.openMood(row.id, row.name)}
+                          onClick={() => document.getElementById("newButton").clk(row.id, row.name, 'mood')}
                         >
                           <b>{row.name}</b>
                         </TableCell>

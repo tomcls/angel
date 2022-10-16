@@ -409,7 +409,6 @@ export default function Hospitals(props) {
                     <TableRow
                       hover
                       onClick={(event) => handleClick(event, row.id)}
-                      onDoubleClick={() => props.openUser(row.hospital_id, row.name)}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
@@ -431,7 +430,7 @@ export default function Hospitals(props) {
                         scope='row'
                         style={{ textAlign: 'center', cursor: 'pointer' }}
                         padding='none'
-                        onClick={() => props.openUser(row.hospital_id, row.name)}
+                        onClick={() => document.getElementById("newButton").clk(row.hospital_id, row.name, 'hospital')}
                       >
                         <b>{row.name}</b>
                       </TableCell>
