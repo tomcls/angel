@@ -29,12 +29,14 @@ import Settings from './pages/Settings';
 import { SnackbarProvider } from 'notistack';
 import CoordinatorsPage from './pages/Coordinators';
 import SurveySideEffectsPage from './pages/SurveySideEffects';
+import NotificationsPage from './pages/Notifications';
 
 function App() {
   return (
     <div className="App" >
       <Routes>
       <Route path="/" element={<Patients />} />
+      <Route path="/notifications" element={<NotificationsPage />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/register" element={<Register />} />
       <Route path="/thank" element={<Thank />} />

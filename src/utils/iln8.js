@@ -189,6 +189,26 @@ export const il8n = {
         "fr":"Selectioné une journée",
         "nl":"Select a day"
     },
+    "Date": {
+        "en":"Date",
+        "fr":"Date",
+        "nl":"Datum"
+    },
+    "Object": {
+        "en":"Object",
+        "fr":"Objet",
+        "nl":"Object"
+    },
+    "Notifications": {
+        "en":"Notifications",
+        "fr":"Notifications",
+        "nl":"Notifications"
+    },
+    "Notification": {
+        "en":"Notification",
+        "fr":"Notification",
+        "nl":"Notification"
+    },
     "Notice": {
         "en":"Notice",
         "fr":"Note",
