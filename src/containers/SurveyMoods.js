@@ -189,7 +189,7 @@ const EnhancedTableToolbar = (props) => {
           <TextField
             id="input-with-icon-textfield"
             onChange={(e) => props.setSearch(e.target.value)}
-            label="Search"
+            label={props.lg.get('Search')}
             value={props.searchText}
             InputProps={{
               endAdornment: (
@@ -520,7 +520,7 @@ export default function SurveyMoods(props) {
       <Paper sx={{ width: '100%', mb: 0 }}>
         <EnhancedTableToolbar lg={lg} numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} searchText={searchFilter} />
         <Grid container>
-          <Grid item pl={2}><Typography>Search for:</Typography></Grid>
+          <Grid item pl={2}><Typography>{lg.get('Search for:')}</Typography></Grid>
           <Grid item pl={2}><Typography>{dateCreatedFilter ? renderDateCreated(dateCreatedFilter) : ''}</Typography></Grid>
         </Grid>
         <TableContainer>

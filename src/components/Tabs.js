@@ -42,6 +42,9 @@ export default class Tabs {
         this.setSelectedTab('Main');
     }
     createTab = (type, text, id, panel) => {
+        if(type === 'treatment') {
+            type = 'drug';
+        }
         const value = text;
         let tab = this.getTab(value);
         let newTab = null;
@@ -96,7 +99,6 @@ export default class Tabs {
         }
     }
     openTab = (id, text, type, panel) => {
-        console.log(this.tabName + '.openTab', id, text, type, panel)
         if (!window.angel) {
             window.angel = {};
         }
@@ -201,7 +203,6 @@ export default class Tabs {
         this.newBtn.current.click();
     }
     onOpenTabClick = () => {
-        console.log(this.tabName + '.onOpenTabClick', window.angel)
         if (window.angel && window.angel.userId && window.angel.tabType === 'nurses') {
             this.createTab('nurses', window.angel.tabName, window.angel.userId);
             window.angel.userId = null;

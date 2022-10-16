@@ -25,6 +25,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import Translation from '../utils/translation';
 import { useStore } from '../utils/store';
+import AngelNurse from '../api/angel/nurse';
 
 export default function PatientContainer(props) {
 
@@ -151,7 +152,7 @@ export default function PatientContainer(props) {
     };
     const setPatient = async (userId) => {
 
-        const u = {
+        const p = {
             user_id: userId ? userId : id,
             close_monitoring: closeMonitoring,
             emergency_contact_name: emergencyContactName,
@@ -159,16 +160,28 @@ export default function PatientContainer(props) {
             emergency_contact_relationship: emergencyContactRelationship
         };
         if (patientId) {
-            u.id = patientId;
+            p.id = patientId;
             try {
-                await AngelPatient().update(u);
+                await AngelPatient().update(p);
             } catch (e) {
                 handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
             }
         } else {
             try {
-                const p = await AngelPatient().add(u);
-                setPatientId(p.inserted_id);
+                const pa = await AngelPatient().add(p);
+                setPatientId(pa.inserted_id);
+                if(userSession.nurse_id) {
+                    try {
+                        const u = {
+                            patient_id: pa.inserted_id,
+                            nurse_id: userSession.nurse_id,
+                        };
+                        await AngelNurse().addPatient(u);
+                        handleClickVariant('success', lg.get('Patient well assigned!'));
+                    } catch (e) {
+                        handleClickVariant('error', JSON.stringify(e));
+                    }
+                }
             } catch (e) {
                 handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
             }
