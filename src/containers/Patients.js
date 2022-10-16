@@ -22,7 +22,7 @@ import TransferWithinAStationIcon from '@mui/icons-material/TransferWithinAStati
 import AngelUser from '../api/angel/user';
 import AngelPatient from '../api/angel/patient';
 import AngelDoctor from '../api/angel/doctor';
-import { Avatar } from '@mui/material';
+import { Avatar, Badge } from '@mui/material';
 import { Grid } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
 import SickIcon from '@mui/icons-material/Sick';
@@ -256,7 +256,7 @@ const EnhancedTableToolbar = (props) => {
       {numSelected > 0 ? (<>
         <Tooltip title='Delete'>
           <IconButton onClick={props.onDeleteItems} >
-            <DeleteIcon color={'error'}/>
+            <DeleteIcon color={'error'} />
           </IconButton>
         </Tooltip>
         <Tooltip title='transfer' style={{ display: (props.nurseId || props.nurse_id || props.doctor_id) ? 'inline-flex' : 'none' }}>
@@ -276,7 +276,11 @@ const EnhancedTableToolbar = (props) => {
                 <InputAdornment position="end">
                   <Button id="search" onClick={() => props.onSearch()} variant="outlined" style={{ marginBottom: '9px', marginRight: '5px' }}><SearchIcon /></Button>
                   <Button id="openfilterModal" onClick={() => props.onOpenFilterModal()} variant="outlined" style={{ marginBottom: '9px' }}><FilterListIcon /></Button>
-                  <Button id="opentransferModal" onClick={() => props.onOpenTransferModal()} variant="outlined" style={{ marginLeft: '5px', marginBottom: '9px', display: (props.nurseId || props.nurse_id || props.doctor_id) ? 'inline-flex' : 'none' }}><TransferWithinAStationIcon /></Button>
+                  <Button id="opentransferModal" onClick={() => props.onOpenTransferModal()} variant="outlined" style={{ marginLeft: '5px', marginBottom: '9px', display: (props.nurseId || props.nurse_id || props.doctor_id) ? 'inline-flex' : 'none' }}>
+                    <Badge badgeContent={props.totalTransfers} color="error">
+                      <TransferWithinAStationIcon />
+                    </Badge>
+                  </Button>
                 </InputAdornment>
               ),
             }}
@@ -303,9 +307,9 @@ export default function Patients(props) {
   const { enqueueSnackbar } = useSnackbar();
 
   const { session, dispatch } = useStore();
-  const [userSession, ] = React.useState(session.user ? session.user:null);
+  const [userSession,] = React.useState(session.user ? session.user : null);
   const fltr = new Filter('patients', dispatch, session);
-  const lg = new Translation(userSession ? userSession.lang: 'en');
+  const lg = new Translation(userSession ? userSession.lang : 'en');
 
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
@@ -328,9 +332,9 @@ export default function Patients(props) {
   const [emailFilter, setEmailFilter] = React.useState(true);
   const [phoneFilter, setPhoneFilter] = React.useState(false);
   const [transferNurseId, setTransferNurseId] = React.useState();
+  const [totalTransfers, setTotalTransfers] = React.useState();
 
-  
- 
+
   const fetchData = useCallback(async () => {
 
     const u = [];
@@ -389,13 +393,21 @@ export default function Patients(props) {
       setPatients([]);
       setTotal(0);
     }
-  }, [emailFilter, firstnameFilter, lastnameFilter, limit, page, phoneFilter, props.doctorId, props.drugId, props.nurseId, searchFilter,userSession]);
+  }, [emailFilter, firstnameFilter, lastnameFilter, limit, page, phoneFilter, props.doctorId, props.drugId, props.nurseId, searchFilter, userSession]);
 
   useEffect(() => {
+    if (userSession.nurse_id) {
+      countTransfers(userSession.nurse_id);
+    }
 
     fetchData();
   }, [fetchData]);
 
+  const countTransfers = (id) => {
+    AngelNurse().countTransfers({ nurse_id: id }).then(function (totalTransfers) {
+      setTotalTransfers(totalTransfers);
+    });
+  }
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -494,10 +506,14 @@ export default function Patients(props) {
     setTransferNurseId(nurseId);
   }
   const transferPatients = async () => {
-    if (selected.length && transferNurseId && props.nurseId) {
+    let nId = props.nurseId
+    if(!nId) {
+      nId = userSession.nurse_id;
+    }
+    if (selected.length && transferNurseId && nId) {
       let o = {
         patients: selected,
-        nurse_from: props.nurseId,
+        nurse_from: nId,
         nurse_to: transferNurseId
       }
       await AngelNurse().addTransfers(o);
@@ -505,16 +521,23 @@ export default function Patients(props) {
       handleClickVariant('success', 'Patient well transfered');
       setSelected([]);
       setTimeout(function () {
-        fetchData()
+        fetchData();
+        if (userSession.nurse_id) {
+          countTransfers(userSession.nurse_id);
+        }
       }, 500);
-    } else {
+    } else { //
+      
       handleClickVariant('error', 'Please select some patients');
     }
   }
   const onPatientRecovered = () => {
     handleClickVariant('success', 'Patient well recovered');
     setTimeout(function () {
-      fetchData()
+      fetchData();
+      if (userSession.nurse_id) {
+        countTransfers(userSession.nurse_id);
+      }
     }, 500);
   }
   return (
@@ -567,7 +590,8 @@ export default function Patients(props) {
             onSearch={search}
             setSearch={handleSearchText}
             onOpenTransferModal={handleTransferModal}
-            searchText={searchFilter} />
+            searchText={searchFilter}
+            totalTransfers={totalTransfers} />
           <TableContainer>
             <Table
               sx={{ minWidth: 750 }}

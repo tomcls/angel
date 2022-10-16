@@ -259,10 +259,10 @@ export default function PatientContainer(props) {
                 await AngelDoctor().addPatient(u);
                 handleClickVariant('success', lg.get('Patient well assigned!'));
             } catch (e) {
-                handleClickVariant('error', 'Une erreur est survenue lors de l\'assignation d\'un patient ');
+                handleClickVariant('error', "Une erreur est survenue lors de l'assignation d'un patient ");
             }
         } else {
-            handleClickVariant('error', "L'id d'une infirmatiere et du patient sont requis");
+            handleClickVariant('error', "Le docteur et patient sont requis");
         }
     }
     const onAssignNurse = async () => {
@@ -275,10 +275,10 @@ export default function PatientContainer(props) {
                 await AngelNurse().addPatient(u);
                 handleClickVariant('success', lg.get('Patient well assigned!'));
             } catch (e) {
-                handleClickVariant('error', 'Une erreur est survenue lors de l\'assignation d\'une infirmiere ');
+                handleClickVariant('error', "Une erreur est survenue lors de l'assignation d'une infirmiere ");
             }
         } else {
-            handleClickVariant('error', "L'id d'une infirmatiere et du patient sont requis");
+            handleClickVariant('error', "L'infirmatiere et patient sont requis");
         }
     }
     const styleModal = {
