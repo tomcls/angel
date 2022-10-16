@@ -7,15 +7,18 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import throttle from 'lodash/throttle';
 import AngelSideEffect from '../api/angel/sideEffect';
+import { useStore } from '../utils/store';
 
 export default function ComboEffects(props) {
+  const { session, } = useStore();
+  const [userSession,] = React.useState(session.user ? session.user : null);
   const [value, setValue] = React.useState(null);
   const [inputValue, setInputValue] = React.useState('');
   const [options, setOptions] = React.useState([]);
   const fetch = React.useMemo(
     () =>
       throttle((request, callback) => {
-        AngelSideEffect().search({ name: request.input,lang_id:'en' }).then((results) => {
+        AngelSideEffect().search({ name: request.input,lang_id:userSession ? userSession.lang : 'en' }).then((results) => {
           callback(results);
         });
       }, 200),
