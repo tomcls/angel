@@ -15,7 +15,7 @@ import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { Save } from '@mui/icons-material';
-import { Button } from '@mui/material';
+import { Button, Modal } from '@mui/material';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import IconButton from '@mui/material/IconButton';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
@@ -26,6 +26,17 @@ import Switch from '@mui/material/Switch';
 import Translation from '../utils/translation';
 import { useStore } from '../utils/store';
 import AngelNurse from '../api/angel/nurse';
+
+import FaceIcon from '@mui/icons-material/Face';
+import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
+import EmailIcon from '@mui/icons-material/Email';
+import LanguageIcon from '@mui/icons-material/Language';
+import FmdGoodIcon from '@mui/icons-material/FmdGood';
+import LocationCityIcon from '@mui/icons-material/LocationCity';
+import CelebrationIcon from '@mui/icons-material/Celebration';
+import ComboNurses from '../components/ComboNurses';
+import AngelDoctor from '../api/angel/doctor';
+import ComboDoctors from '../components/ComboDoctors';
 
 export default function PatientContainer(props) {
 
@@ -61,8 +72,12 @@ export default function PatientContainer(props) {
     const [showPassword, setShowPassword] = React.useState(false);
     const [active, setActive] = React.useState('N');
     const [switchState, setSwitchState] = React.useState(false);
+    const [openAssignNurseModal, setOpenAssignNurseModal] = React.useState(null);
     const [, setFile] = React.useState(null);
     const uploadFileButton = useRef(null);
+    const [assignNurseId, setAssignNurseId] = React.useState(null);
+    const [assignDoctorId, setAssignDoctorId] = React.useState(null);
+    const [openAssignDoctorModal, setOpenAssignDoctorModal] = React.useState(null);
 
     React.useEffect(() => {
         if (props.userId) {
@@ -170,7 +185,7 @@ export default function PatientContainer(props) {
             try {
                 const pa = await AngelPatient().add(p);
                 setPatientId(pa.inserted_id);
-                if(userSession.nurse_id) {
+                if (userSession.nurse_id) {
                     try {
                         const u = {
                             patient_id: pa.inserted_id,
@@ -223,12 +238,106 @@ export default function PatientContainer(props) {
         setAvatar(process.env.REACT_APP_API_URL + '/public/uploads/' + u.filename);
         handleClickVariant('success', lg.get('Image well uploaded'));
     };
+    const handleAssignNurseModal = () => setOpenAssignNurseModal(true);
+    const handleCloseAssignNurseModal = () => setOpenAssignNurseModal(false);
+    const handleAssignDoctorModal = () => setOpenAssignDoctorModal(true);
+    const handleCloseAssignDoctorModal = () => setOpenAssignDoctorModal(false);
+
+    const onNurseSelect = (id) => {
+        setAssignNurseId(id)
+    }
+    const onDoctorSelect = (id) => {
+        setAssignDoctorId(id)
+    }
+    const onAssignDoctor = async () => {
+        const u = {
+            patient_id: patientId,
+            doctor_id: assignDoctorId,
+        };
+        if (assignDoctorId && patientId) {
+            try {
+                await AngelDoctor().addPatient(u);
+                handleClickVariant('success', lg.get('Patient well assigned!'));
+            } catch (e) {
+                handleClickVariant('error', 'Une erreur est survenue lors de l\'assignation d\'un patient ');
+            }
+        } else {
+            handleClickVariant('error', "L'id d'une infirmatiere et du patient sont requis");
+        }
+    }
+    const onAssignNurse = async () => {
+        const u = {
+            patient_id: patientId,
+            nurse_id: assignNurseId,
+        };
+        if (assignNurseId && patientId) {
+            try {
+                await AngelNurse().addPatient(u);
+                handleClickVariant('success', lg.get('Patient well assigned!'));
+            } catch (e) {
+                handleClickVariant('error', 'Une erreur est survenue lors de l\'assignation d\'une infirmiere ');
+            }
+        } else {
+            handleClickVariant('error', "L'id d'une infirmatiere et du patient sont requis");
+        }
+    }
+    const styleModal = {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 400,
+        bgcolor: 'background.paper',
+        border: '2px solid #000',
+        boxShadow: 24,
+        p: 4,
+    };
     return (
         <>
+            <div>
+                <Modal
+                    open={openAssignDoctorModal}
+                    onClose={handleCloseAssignDoctorModal}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description">
+                    <Box sx={styleModal}>
+                        <Typography id="modal-modal-title" variant="h6" component="h2">
+                            {lg.get('Assign a doctor')}
+                        </Typography>
+                        <ComboDoctors lg={lg} onSelect={onDoctorSelect} />
+                        <Button
+                            style={{ borderRadius: '10px', marginTop: '20px' }}
+                            variant="outlined" startIcon={<Save />}
+                            onClick={onAssignDoctor}>
+                            {lg.get('Assign')}
+                        </Button>
+                    </Box>
+                </Modal>
+                <Modal
+                    open={openAssignNurseModal}
+                    onClose={handleCloseAssignNurseModal}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description">
+                    <Box sx={styleModal}>
+                        <Typography id="modal-modal-title" variant="h6" component="h2">
+                            {lg.get('Assign a nurse')}
+                        </Typography>
+                        <ComboNurses lg={lg} onSelect={onNurseSelect} />
+                        <Button
+                            style={{ borderRadius: '10px', marginTop: '20px' }}
+                            variant="outlined" startIcon={<Save />}
+                            onClick={onAssignNurse}>
+                            {lg.get('Assign')}
+                        </Button>
+                    </Box>
+                </Modal>
+            </div>
             <Box sx={{ width: '100%' }}>
                 <Typography variant="h6" gutterBottom component="div">
                     {lg.get('Personal informations')}
                 </Typography>
+                <Button onClick={handleAssignNurseModal} variant="outlined" style={{ marginRight: '5px' }}>{lg.get('Assign a nurse')}</Button>
+                <Button onClick={handleAssignDoctorModal} variant="outlined" style={{ marginRight: '5px' }}>{lg.get('Assign a doctor')}</Button>
                 <Grid container spacing={2}>
                     <Grid item xs={12} sm={6} md={4} xl={2} style={{ paddingTop: '40px' }}>
                         <Grid item xs={12} style={{ width: '205px', height: '205px', textAlign: "center", border: '3px solid #ddd', borderRadius: '5px', margin: 'auto' }} >
@@ -249,7 +358,7 @@ export default function PatientContainer(props) {
                             value={firstname ? firstname : ''}
                             onChange={onInputChange(setFirstname)}
                             InputProps={{
-                                startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                                startAdornment: <InputAdornment position="start"><FaceIcon /></InputAdornment>,
                             }}
                         />
 
@@ -259,7 +368,7 @@ export default function PatientContainer(props) {
                             value={lastname ? lastname : ''}
                             onChange={onInputChange(setLastname)}
                             InputProps={{
-                                startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                                startAdornment: <InputAdornment position="start"><FaceIcon /></InputAdornment>,
                             }}
 
                         />
@@ -282,7 +391,7 @@ export default function PatientContainer(props) {
                             value={phone ? phone : ''}
                             onChange={onInputChange(setPhone)}
                             InputProps={{
-                                startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                                startAdornment: <InputAdornment position="start"><PhoneIphoneIcon /></InputAdornment>,
                             }}
                         />
                         <TextField
@@ -292,7 +401,7 @@ export default function PatientContainer(props) {
                             value={email ? email : ''}
                             onChange={onInputChange(setEmail)}
                             InputProps={{
-                                startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                                startAdornment: <InputAdornment position="start"><EmailIcon /></InputAdornment>,
                             }}
                         />
                         <Grid container spacing={1}>
@@ -350,7 +459,7 @@ export default function PatientContainer(props) {
                                     value={address ? address : ''}
                                     onChange={onInputChange(setAddress)}
                                     InputProps={{
-                                        startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                                        startAdornment: <InputAdornment position="start"><FmdGoodIcon /></InputAdornment>,
                                     }}
                                 />
                             </Grid>
@@ -361,7 +470,7 @@ export default function PatientContainer(props) {
                                     value={streetNumber ? streetNumber : ''}
                                     onChange={onInputChange(setStreetNumber)}
                                     InputProps={{
-                                        startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                                        startAdornment: <InputAdornment position="start"><FmdGoodIcon /></InputAdornment>,
                                     }}
                                 />
                             </Grid>
@@ -375,7 +484,7 @@ export default function PatientContainer(props) {
                                     value={city ? city : ''}
                                     onChange={onInputChange(setCity)}
                                     InputProps={{
-                                        startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                                        startAdornment: <InputAdornment position="start"><LocationCityIcon /></InputAdornment>,
                                     }} />
                             </Grid>
                             <Grid item xs={5}>
@@ -386,7 +495,7 @@ export default function PatientContainer(props) {
                                     value={zip ? zip : ''}
                                     onChange={onInputChange(setZip)}
                                     InputProps={{
-                                        startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                                        startAdornment: <InputAdornment position="start"><LocationCityIcon /></InputAdornment>,
                                     }}
                                 />
                             </Grid>
@@ -422,7 +531,7 @@ export default function PatientContainer(props) {
                             value={emergencyContactPhone ? emergencyContactPhone : ''}
                             onChange={onInputChange(setEmergencyContactPhone)}
                             InputProps={{
-                                startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                                startAdornment: <InputAdornment position="start"><PhoneIphoneIcon /></InputAdornment>,
                             }}
                         />
                         <TextField
@@ -432,7 +541,7 @@ export default function PatientContainer(props) {
                             value={emergencyContactName ? emergencyContactName : ''}
                             onChange={onInputChange(setEmergencyContactName)}
                             InputProps={{
-                                startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                                startAdornment: <InputAdornment position="start"><FaceIcon /></InputAdornment>,
                             }}
                         />
                         <TextField
@@ -442,7 +551,7 @@ export default function PatientContainer(props) {
                             value={emergencyContactRelationship ? emergencyContactRelationship : ''}
                             onChange={onInputChange(setEmergencyContactRelationship)}
                             InputProps={{
-                                startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                                startAdornment: <InputAdornment position="start"><FaceIcon /></InputAdornment>,
                             }}
                         />
                     </Grid>

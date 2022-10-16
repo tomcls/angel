@@ -159,6 +159,16 @@ export const il8n = {
         "fr":"Mensuel",
         "nl":"Monthly"
     },
+    "Assign a doctor": {
+        "en":"Assign a doctor",
+        "fr":"Assigner un docteur",
+        "nl":"Assign a doctor"
+    },
+    "Assign a nurse": {
+        "en":"Assign a nurse",
+        "fr":"Assigner un infirmier",
+        "nl":"Assign a nurse"
+    },
     "Assign a treatment": {
         "en":"Assign a treatment",
         "fr":"Assigner un traitment",
@@ -523,6 +533,11 @@ export const il8n = {
         "en":"Administrators",
         "fr":"Administrateurs",
         "nl":"Administrators"
+    },
+    "Find a doctor": {
+        "en":"Find a doctor",
+        "fr":"Trouver un docteur",
+        "nl":"Find a doctor"
     },
     "Find a nurse": {
         "en":"Find a nurse",

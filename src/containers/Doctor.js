@@ -302,7 +302,7 @@ export default function DoctorContainer(props) {
                             value={firstname ? firstname : ''}
                             onChange={onInputChange(setFirstname)}
                             InputProps={{
-                                startAdornment: <FaceIcon position="start"><Visibility /></FaceIcon>,
+                                startAdornment: <FaceIcon position="start"/>,
                             }}
                         />
                         <TextField
@@ -311,7 +311,7 @@ export default function DoctorContainer(props) {
                             value={lastname ? lastname : ''}
                             onChange={onInputChange(setLastname)}
                             InputProps={{
-                                startAdornment: <FaceIcon position="start"><Visibility /></FaceIcon>,
+                                startAdornment: <FaceIcon position="start"/>,
                             }}
                         />
                         <Box>
@@ -333,7 +333,7 @@ export default function DoctorContainer(props) {
                             value={phone ? phone : ''}
                             onChange={onInputChange(setPhone)}
                             InputProps={{
-                                startAdornment: <LocalPhoneIcon position="start"><Visibility /></LocalPhoneIcon>,
+                                startAdornment: <LocalPhoneIcon position="start"/>,
                             }}
                         />
                         <TextField
@@ -343,7 +343,7 @@ export default function DoctorContainer(props) {
                             value={email ? email : ''}
                             onChange={onInputChange(setEmail)}
                             InputProps={{
-                                startAdornment: <EmailIcon position="start"><Visibility /></EmailIcon>,
+                                startAdornment: <EmailIcon position="start"/>,
                             }}
                         />
                         <Grid container spacing={1}>
@@ -400,7 +400,7 @@ export default function DoctorContainer(props) {
                                     value={address ? address : ''}
                                     onChange={onInputChange(setAddress)}
                                     InputProps={{
-                                        startAdornment: <PlaceIcon position="start"><Visibility /></PlaceIcon>,
+                                        startAdornment: <PlaceIcon position="start"/>,
                                     }}
                                 />
                             </Grid>
@@ -424,7 +424,7 @@ export default function DoctorContainer(props) {
                                     value={city ? city : ''}
                                     onChange={onInputChange(setCity)}
                                     InputProps={{
-                                        startAdornment: <PlaceIcon position="start"><Visibility /></PlaceIcon>,
+                                        startAdornment: <PlaceIcon position="start"/>,
                                     }} />
                             </Grid>
                             <Grid item xs={5}>

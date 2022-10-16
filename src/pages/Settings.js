@@ -25,6 +25,15 @@ import MainBar from "../templates/MainBar";
 import { useStore } from "../utils/store";
 import Translation from "../utils/translation";
 
+import FaceIcon from '@mui/icons-material/Face';
+import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
+import EmailIcon from '@mui/icons-material/Email';
+import LanguageIcon from '@mui/icons-material/Language';
+import FmdGoodIcon from '@mui/icons-material/FmdGood';
+import LocationCityIcon from '@mui/icons-material/LocationCity';
+import CelebrationIcon from '@mui/icons-material/Celebration';
+
+
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -232,7 +241,7 @@ export default function Settings(props) {
                 value={firstname ? firstname : ''}
                 onChange={onInputChange(setFirstname)}
                 InputProps={{
-                  startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                  startAdornment: <InputAdornment position="start"><FaceIcon /></InputAdornment>,
                 }}
               />
               <TextField
@@ -241,7 +250,7 @@ export default function Settings(props) {
                 value={lastname ? lastname : ''}
                 onChange={onInputChange(setLastname)}
                 InputProps={{
-                  startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                  startAdornment: <InputAdornment position="start"><FaceIcon /></InputAdornment>,
                 }}
               />
               <Box>
@@ -264,7 +273,7 @@ export default function Settings(props) {
                 value={phone ? phone : ''}
                 onChange={onInputChange(setPhone)}
                 InputProps={{
-                  startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                  startAdornment: <InputAdornment position="start"><PhoneIphoneIcon /></InputAdornment>,
                 }}
               />
               <TextField
@@ -274,7 +283,7 @@ export default function Settings(props) {
                 value={email ? email : ''}
                 onChange={onInputChange(setEmail)}
                 InputProps={{
-                  startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                  startAdornment: <InputAdornment position="start"><EmailIcon /></InputAdornment>,
                 }}
               />
               <Grid container spacing={1}>
@@ -331,7 +340,7 @@ export default function Settings(props) {
                     value={address ? address : ''}
                     onChange={onInputChange(setAddress)}
                     InputProps={{
-                      startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                      startAdornment: <InputAdornment position="start"><FmdGoodIcon /></InputAdornment>,
                     }}
                   />
                 </Grid>
@@ -342,7 +351,7 @@ export default function Settings(props) {
                     value={streetNumber ? streetNumber : ''}
                     onChange={onInputChange(setStreetNumber)}
                     InputProps={{
-                      startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                      startAdornment: <InputAdornment position="start"><FmdGoodIcon /></InputAdornment>,
                     }}
                   />
                 </Grid>
@@ -355,7 +364,7 @@ export default function Settings(props) {
                     value={city ? city : ''}
                     onChange={onInputChange(setCity)}
                     InputProps={{
-                      startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                      startAdornment: <InputAdornment position="start"><FmdGoodIcon /></InputAdornment>,
                     }} />
                 </Grid>
                 <Grid item xs={5}>
@@ -365,7 +374,7 @@ export default function Settings(props) {
                     value={zip ? zip : ''}
                     onChange={onInputChange(setZip)}
                     InputProps={{
-                      startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                      startAdornment: <InputAdornment position="start"><FmdGoodIcon /></InputAdornment>,
                     }}
                   />
                 </Grid>

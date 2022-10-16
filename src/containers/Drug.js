@@ -22,6 +22,10 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import VaccinesIcon from '@mui/icons-material/Vaccines';
 import SickIcon from '@mui/icons-material/Sick';
 import DescriptionIcon from '@mui/icons-material/Description';
+
+import QrCodeIcon from '@mui/icons-material/QrCode';
+import MedicationIcon from '@mui/icons-material/Medication';
+
 export default function DrugContainer(props) {
 
     const { enqueueSnackbar } = useSnackbar();
@@ -322,7 +326,7 @@ export default function DrugContainer(props) {
                                                     value={name ? name : ''}
                                                     onChange={onInputChange(setName)}
                                                     InputProps={{
-                                                        startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                                                        startAdornment: <InputAdornment position="start"><MedicationIcon /></InputAdornment>,
                                                     }}
                                                 />
                                             </Grid>
@@ -330,11 +334,11 @@ export default function DrugContainer(props) {
                                                 <TextField
                                                     style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
                                                     label={lg.get('Molecule name')}
-                                                    id="code"
+                                                    id="moleculeName"
                                                     value={moleculeName ? moleculeName : ''}
                                                     onChange={onInputChange(setMoleculeName)}
                                                     InputProps={{
-                                                        startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>
+                                                        startAdornment: <InputAdornment position="start"><MedicationIcon /></InputAdornment>
                                                     }}
                                                 />
                                             </Grid>
@@ -347,7 +351,7 @@ export default function DrugContainer(props) {
                                                     value={code ? code : ''}
                                                     onChange={onInputChange(setCode)}
                                                     InputProps={{
-                                                        startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>
+                                                        startAdornment: <InputAdornment position="start"><QrCodeIcon /></InputAdornment>
                                                     }}
                                                 />
                                             </Grid>
