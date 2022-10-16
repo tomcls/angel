@@ -363,7 +363,15 @@ export default function Patients(props) {
     } else {
       o.phone = null;
     }
-    if (userSession && userSession.nurse_id) {
+    if (props.drugId && userSession && userSession.doctor_id) {
+      o.drug_id = props.drugId;
+      o.doctor_id = userSession.doctor_id;
+      r = await AngelDoctor().patients(o);
+    } else if (props.drugId && userSession && userSession.nurse_id) {
+      o.drug_id = props.drugId;
+      o.nurse_id = userSession.nurse_id;
+      r = await AngelDrug().patients(o);
+    } else if (userSession && userSession.nurse_id) {
       o.nurse_id = userSession.nurse_id;
       r = await AngelNurse().patients(o);
     } else if (userSession && userSession.doctor_id) {
