@@ -469,6 +469,11 @@ export const il8n = {
         "fr":"Laboratoires",
         "nl":"Laboratories"
     },
+    "hospital": {
+        "en":"hospital",
+        "fr":"hôpital",
+        "nl":"hospital"
+    },
     "Hospital": {
         "en":"Hospital",
         "fr":"Hôpital",
@@ -494,6 +499,16 @@ export const il8n = {
         "fr":"Laboratoire",
         "nl":"Laboratory"
     },
+    "mood": {
+        "en":"mood",
+        "fr":"humeur",
+        "nl":"mood"
+    },
+    "drug": {
+        "en":"Treatment",
+        "fr":"Traitement",
+        "nl":"Treatment"
+    },
     "Mood": {
         "en":"Mood",
         "fr":"Humeur",
@@ -518,6 +533,11 @@ export const il8n = {
         "en":"Effects and moods",
         "fr":"Effets et humeurs",
         "nl":"Effects and moods"
+    },
+    "scientist": {
+        "en":"scientist",
+        "fr":"laborantin",
+        "nl":"scientist"
     },
     "Scientist": {
         "en":"Scientist",
@@ -694,6 +714,11 @@ export const il8n = {
         "fr":"Selectionné tous les patients",
         "nl":"Select all patients"
     },
+    "patient": {
+        "en":"patient",
+        "fr":"patient",
+        "nl":"patient"
+    },
     "Patient": {
         "en":"Patient",
         "fr":"Patient",
@@ -759,6 +784,11 @@ export const il8n = {
         "fr":"Docteurs de",
         "nl":"Doctors of"
     },
+    "doctor": {
+        "en":"doctor",
+        "fr":"docteur",
+        "nl":"doctor"
+    },
     "Doctors": {
         "en":"Doctors",
         "fr":"Docteurs",
@@ -774,6 +804,11 @@ export const il8n = {
         "fr":"Infirmi(ères,ers) de",
         "nl":"Nurses of"
     },
+    "nurse": {
+        "en":"nurse",
+        "fr":"infirmi(ère,er)",
+        "nl":"nurse"
+    },
     "Nurse": {
         "en":"Nurse",
         "fr":"Infirmi(ère,er)",
@@ -783,6 +818,16 @@ export const il8n = {
         "en":"Nurses",
         "fr":"Infirmi(ères,ers)",
         "nl":"Nurses"
+    },
+    "side_effect": {
+        "en":"side effect",
+        "fr":"effet secondaire",
+        "nl":"side effect"
+    },
+    "treatment": {
+        "en":"treatment",
+        "fr":"traitement",
+        "nl":"treatment"
     },
     "Treatment": {
         "en":"Treatment",

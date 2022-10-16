@@ -42,6 +42,7 @@ export default class Tabs {
         this.setSelectedTab('Main');
     }
     createTab = (type, text, id, panel) => {
+        console.log('createTab',type, text, id, panel)
         if(type === 'treatment') {
             type = 'drug';
         }
@@ -99,6 +100,7 @@ export default class Tabs {
         }
     }
     openTab = (id, text, type, panel) => {
+        console.log('openTab',type, text, id, panel)
         if (!window.angel) {
             window.angel = {};
         }
@@ -203,6 +205,7 @@ export default class Tabs {
         this.newBtn.current.click();
     }
     onOpenTabClick = () => {
+        console.log('onOpenTabClick')
         if (window.angel && window.angel.userId && window.angel.tabType === 'nurses') {
             this.createTab('nurses', window.angel.tabName, window.angel.userId);
             window.angel.userId = null;
@@ -291,7 +294,8 @@ export default class Tabs {
             window.angel.tabName = null;
             window.angel.panelName = null;
         } else {
-            this.createTab(this.tabName, this.lg.get('New') + ' ' + this.tabName);
+            console.log('createTabcreateTab',this.tabName)
+            this.createTab(this.tabName, this.lg.get('New') + ' ' + this.lg.get(this.tabName));
         }
     }
     handleTabOptions = (value) => {
