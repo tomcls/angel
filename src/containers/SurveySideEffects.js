@@ -32,6 +32,8 @@ import { MobileDatePicker } from '@mui/lab';
 import Filter from '../utils/filters';
 import { useStore } from '../utils/store';
 import Translation from '../utils/translation';
+import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
+import SkipNextIcon from '@mui/icons-material/SkipNext';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -285,7 +287,7 @@ export default function SurveySideEffects(props) {
       date
     }
   }
-  const fetchData = async () => {
+  const fetchData = async (d) => {
     const stg = JSON.parse(window.appStorage.getItem('user'));
     const u = [];
     let r = null;
@@ -313,9 +315,10 @@ export default function SurveySideEffects(props) {
     } else {
       o.score = null;
     }
-    if (dateCreatedFilter) {
+    if (d) {
+      o.date_created = formatDateCreated(d);
+    } else if(dateCreatedFilter) {
       o.date_created = formatDateCreated(dateCreatedFilter);
-      console.log(o.date_created)
     } else {
       o.date_created = null;
     }
@@ -430,6 +433,20 @@ export default function SurveySideEffects(props) {
     fltr.set('date_created', props, d);
     setDateCreatedFilter(d);
   }
+  const previousDay = () => {
+    let d = new Date(dateCreatedFilter);
+    d.setDate(d.getDate() - 1);
+    setDateCreatedFilter(d);
+    fetchData(d);
+    fltr.set('date_created', props, d);
+  }
+  const nextDay = () => {
+    let d = new Date(dateCreatedFilter);
+    d.setDate(d.getDate() + 1);
+    setDateCreatedFilter(d);
+    fetchData(d);
+    fltr.set('date_created', props, d);
+  }
   return (<>
     <div>
       <Modal
@@ -455,7 +472,7 @@ export default function SurveySideEffects(props) {
             <FormControlLabel control={<Checkbox checked={lastnameFilter} onChange={handleLastnameFilter} />} label="Lastname" />
             <FormControlLabel control={<Checkbox checked={nameFilter} onChange={handleNameFilter} />} label="Name" />
             <FormControlLabel control={<Checkbox checked={scoreFilter} onChange={handleEmailFilter} />} label="Score" />
-            <Button variant="outlined" style={{ width: '100%' }} onClick={onSearch}>Search</Button>
+            <Button variant="outlined" style={{ width: '100%' }} onClick={onSearch}>{lg.get('Search')}</Button>
           </FormGroup>
         </Box>
       </Modal>
@@ -465,7 +482,9 @@ export default function SurveySideEffects(props) {
         <EnhancedTableToolbar lg={lg} searchText={searchFilter} numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
         <Grid container>
           <Grid item pl={2}><Typography>{lg.get('Search for:')}</Typography></Grid>
+          <Grid item pl={2}><Button variant="outlined" size={'small'} onClick={previousDay}><SkipPreviousIcon /></Button></Grid>
           <Grid item pl={2}><Typography>{dateCreatedFilter ? renderDateCreated(dateCreatedFilter) : ''}</Typography></Grid>
+          <Grid item pl={2}><Button variant="outlined" size={'small'} onClick={nextDay} ><SkipNextIcon /></Button></Grid>
         </Grid>
         <TableContainer>
           <Table

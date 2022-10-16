@@ -27,9 +27,9 @@ import { Avatar, Button, Grid } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
-
+import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
+import SkipNextIcon from '@mui/icons-material/SkipNext';
 import Modal from '@mui/material/Modal';
-
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import AngelSurvey from '../api/angel/survey';
@@ -298,7 +298,7 @@ export default function SurveyMoods(props) {
       totalEffect
     }
   }
-  const fetchData = async () => {
+  const fetchData = async (d) => {
     const stg = JSON.parse(window.appStorage.getItem('user'));
     const u = [];
     let r = null;
@@ -326,8 +326,10 @@ export default function SurveyMoods(props) {
     } else {
       o.score = null;
     }
-    if (dateCreatedFilter) {
-      o.date_created = formatDateCreated(dateCreatedFilter);;
+    if (d) {
+      o.date_created = formatDateCreated(d);
+    } else if(dateCreatedFilter) {
+      o.date_created = formatDateCreated(dateCreatedFilter);
     } else {
       o.date_created = null;
     }
@@ -486,6 +488,20 @@ export default function SurveyMoods(props) {
     fltr.set('date_created', props, d);
     setDateCreatedFilter(d);
   }
+  const previousDay = () => {
+    let d = new Date(dateCreatedFilter);
+    d.setDate(d.getDate() - 1);
+    setDateCreatedFilter(d);
+    fetchData(d);
+    fltr.set('date_created', props, d);
+  }
+  const nextDay = () => {
+    let d = new Date(dateCreatedFilter);
+    d.setDate(d.getDate() + 1);
+    setDateCreatedFilter(d);
+    fetchData(d);
+    fltr.set('date_created', props, d);
+  }
   return (<>
     <div>
       <Modal
@@ -512,7 +528,7 @@ export default function SurveyMoods(props) {
             <FormControlLabel control={<Checkbox checked={nameFilter} onChange={handleNameFilter} />} label="Name" />
             <FormControlLabel control={<Checkbox checked={scoreFilter} onChange={handleEmailFilter} />} label="Score" />
           </FormGroup>
-          <Button variant="outlined" style={{ width: '100%' }} onClick={onSearch}>Search</Button>
+          <Button variant="outlined" style={{ width: '100%' }} onClick={onSearch}>{lg.get('Search')}</Button>
         </Box>
       </Modal>
     </div>
@@ -521,14 +537,15 @@ export default function SurveyMoods(props) {
         <EnhancedTableToolbar lg={lg} numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} searchText={searchFilter} />
         <Grid container>
           <Grid item pl={2}><Typography>{lg.get('Search for:')}</Typography></Grid>
+          <Grid item pl={2}><Button variant="outlined" size={'small'} onClick={previousDay}><SkipPreviousIcon /></Button></Grid>
           <Grid item pl={2}><Typography>{dateCreatedFilter ? renderDateCreated(dateCreatedFilter) : ''}</Typography></Grid>
+          <Grid item pl={2}><Button variant="outlined" size={'small'} onClick={nextDay} ><SkipNextIcon /></Button></Grid>
         </Grid>
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
             aria-labelledby='tableTitle'
-            size={dense ? 'small' : 'medium'}
-          >
+            size={dense ? 'small' : 'medium'}>
             <EnhancedTableHead
               lg={lg}
               numSelected={selected.length}

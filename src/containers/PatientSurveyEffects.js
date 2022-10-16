@@ -444,6 +444,19 @@ export default function PatientSurveyEffects(props) {
       </Badge>)
     }
   }
+  const renderDateCreated = (v) => {
+    let d = new Date(v);
+    let month = d.getMonth() + 1;
+    if (month < 10) {
+      month = '0' + month;
+    }
+    let day = d.getDate();
+    if (day < 10) {
+      day = '0' + day;
+    }
+    var datestring = day + "/" + month + "/" + d.getFullYear();
+    return datestring;
+  }
   return (<>
     <div>
       <Modal
@@ -485,6 +498,12 @@ export default function PatientSurveyEffects(props) {
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 0 }}>
         <EnhancedTableToolbar lg={lg} numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
+        <Grid container>
+          <Grid item pl={2}><Typography sx={{fontWeight:'bold'}}>{lg.get('Period')+ ':'}</Typography></Grid>
+          <Grid item pl={2}><Typography >{fromDateFilter ?'  >= ' + renderDateCreated(fromDateFilter) : ''}</Typography></Grid>
+          <Grid item pl={2}><Typography sx={{fontWeight:'bold'}}>{' <= '}</Typography></Grid>
+          <Grid item pl={2}><Typography>{toDateFilter ? renderDateCreated(toDateFilter) : ''}</Typography></Grid>
+        </Grid>
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}

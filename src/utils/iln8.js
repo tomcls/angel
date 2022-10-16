@@ -459,6 +459,11 @@ export const il8n = {
         "fr":"Fabriques",
         "nl":"Factories"
     },
+    "Period": {
+        "en":"Period",
+        "fr":"Période",
+        "nl":"Period"
+    },
     "Settings": {
         "en":"Settings",
         "fr":"Mon profile",
