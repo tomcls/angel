@@ -1,4 +1,5 @@
 import React, { useReducer, createContext, useContext } from 'react';
+import AngelNotifications from '../api/angel/notifications';
 // objet d'état initial
 const initialState = {
     user: localStorage['user'] ? JSON.parse(localStorage['user']) : '',
@@ -8,6 +9,7 @@ const initialState = {
 const StoreContext = createContext(initialState);
 // fonction permettant de reconnaitre la fonction à lancer
 function reducerActions(session, action) {
+    console.log("reducerActions")
     switch (action.type) {
         case 'user'://case 'textType':
             // façon propre (fonction détaché)
@@ -15,6 +17,9 @@ function reducerActions(session, action) {
         case 'filters'://case 'textType':
             // façon propre (fonction détaché)
             return filterFunc(session, action);
+        case 'notifications'://case 'textType':
+            // façon propre (fonction détaché)
+            return notificationFunc(session, action);
         default:
             console.log('helaola');
     }
@@ -22,16 +27,23 @@ function reducerActions(session, action) {
 // fonction permettant un stockage de données en local
 // + Modification du state grâce au reducer
 const userFunc = (session, action) => {
+    console.log("userFunc")
     localStorage['user'] = action.payload;
     return { ...session, user: action.payload };
 };
 // fonction permettant un stockage de données en local
 // + Modification du state grâce au reducer
 const filterFunc = (session, action) => {
+    console.log("filterFunc")
     localStorage['filters'] = action.payload;
     return { ...session, filters: action.payload };
 };
-const isObject = function(a) {
+const notificationFunc = async (session, action) => {
+    console.log("filterFunc")
+   // localStorage['notifications'] = action.payload;
+    return { ...session, notifications: action.payload };
+};
+const isObject = function (a) {
     return (!!a) && (a.constructor === Object);
 };
 // Fournisseur de données de l'app
@@ -48,15 +60,16 @@ export const StoreProvider = ({ children }) => {
 export const useStore = () => {
     // zone encore un peu sombre
     const { session, dispatch } = useContext(StoreContext);
-    if(session && session.user) {
-      if(!isObject(session.user)) {
-        session.user = JSON.parse(session.user);
-      }
-    }
-    if(session && session.filters) {
-        if(!isObject(session.filters)) {
-          session.filters = JSON.parse(session.filters);
+    if (session && session.user) {
+        if (!isObject(session.user)) {
+            session.user = JSON.parse(session.user);
         }
-      }
+    }
+    if (session && session.filters) {
+        if (!isObject(session.filters)) {
+            session.filters = JSON.parse(session.filters);
+        }
+    }
+    console.log("useStore", session )
     return { session, dispatch };
 };

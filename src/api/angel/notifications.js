@@ -11,6 +11,15 @@ export default  function AngelNotifications(config) {
                 throw new error(error);
             }
         },
+        count: async (params) => {
+            try {
+                const res = await axios.post(process.env.REACT_APP_API_URL+'/notifications/count', params, {headers: {'Authorization':accessToken}});
+                return res.data;
+            } catch (error) {
+                console.log(error)
+                throw new error(error);
+            }
+        },
         update: async (params) => {
             try {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/notifications/update', params, {headers: {'Authorization':accessToken}});

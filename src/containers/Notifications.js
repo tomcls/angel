@@ -79,7 +79,7 @@ const styleModal = {
 };
 
 function EnhancedTableHead(props) {
-  const {  onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -248,12 +248,19 @@ export default function Notifications(props) {
   const [rows, setRows] = React.useState([]);
 
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
+  const [openDetailModal, setOpenDetailModal] = React.useState(false);
 
   const [searchFilter, setSearchFilter] = React.useState('');
   const [firstnameFilter, setFirstnameFilter] = React.useState(true);
   const [lastnameFilter, setLastnameFilter] = React.useState(true);
   const [emailFilter, setEmailFilter] = React.useState(true);
   const [phoneFilter, setPhoneFilter] = React.useState(false);
+
+  const [object, setObject] = React.useState(null);
+  const [content, setContent] = React.useState(null);
+  const [fromEmail, setEmailFrom] = React.useState(null);
+  const [date, setDate] = React.useState(null);
+
 
   React.useEffect(() => {
     fetchData();
@@ -263,7 +270,7 @@ export default function Notifications(props) {
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
-  const createData = (id, user_from, user_to, firstname_from, lastname_from, email_from, object, date) => {
+  const createData = (id, user_from, user_to, firstname_from, lastname_from, email_from, object, content, date,readed) => {
     return {
       id,
       user_from,
@@ -272,7 +279,9 @@ export default function Notifications(props) {
       lastname_from,
       email_from,
       object,
-      date
+      content,
+      date,
+      readed
     }
   }
   const fetchData = async () => {
@@ -303,14 +312,16 @@ export default function Notifications(props) {
       for (let i = 0; i < r.users.length; i++) {
         u.push(createData(
           r.users[i].id,
-          r.users[i].user_from, 
-          r.users[i].user_to, 
-          r.users[i].firstname_from, 
-          r.users[i].lastname_from, 
-          r.users[i].email_from, 
-          r.users[i].object, 
-          formatDate(r.users[i].date_created)
-          ));
+          r.users[i].user_from,
+          r.users[i].user_to,
+          r.users[i].firstname_from,
+          r.users[i].lastname_from,
+          r.users[i].email_from,
+          r.users[i].object,
+          r.users[i].content,
+          formatDate(r.users[i].date_created),
+          r.users[i].readed
+        ));
       }
       setRows(u);
       setNotifications(r.users);
@@ -328,6 +339,8 @@ export default function Notifications(props) {
   }
   const handleFiltersModal = () => setOpenFilterModal(true);
   const handleCloseFilterModal = () => setOpenFilterModal(false);
+  const handleDetailModal = () => setOpenDetailModal(true);
+  const handleCloseDetailModal = () => setOpenDetailModal(false);
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
@@ -359,7 +372,7 @@ export default function Notifications(props) {
 
   const onDeleteItems = async () => {
     if (selected.length) {
-      await AngelUser().delete({ ids: selected.join(',') });
+      await AngelNotification().delete({ ids: selected.join(',') });
       handleClickVariant('success', 'Notification(s) well deleted');
       fetchData();
     }
@@ -391,9 +404,36 @@ export default function Notifications(props) {
   const handleSearchText = (txt) => {
     setSearchFilter(txt);
   };
+  const onOpenDetailModal = async (record) => {
+    console.log(record);
+    await AngelNotification().update({ id: record.id, readed: 1 });
+    setContent(record.content);
+    setDate(record.date);
+    setObject(record.object);
+    setEmailFrom(record.firstname_from + ' ' + record.lastname_from + ' <' + record.email_from + '>');
+    handleDetailModal();
+  }
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <div>
+        <Modal
+          open={openDetailModal}
+          onClose={handleCloseDetailModal}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description">
+          <Box sx={styleModal}>
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              {object}
+            </Typography>
+            <div><b>From:</b> {fromEmail}</div>
+            <div><b>when:</b> {date}</div>
+            <p>
+              {content}
+            </p>
+          </Box>
+        </Modal>
+      </div>
       <div>
         <Modal
           open={openFilterModal}
@@ -465,6 +505,7 @@ export default function Notifications(props) {
                           scope='row'
                           style={{ textAlign: 'center', cursor: 'pointer' }}
                           padding='none'
+                          onClick={() => onOpenDetailModal(row)}
                         >
                           <b> {row.firstname_from}</b>
                         </TableCell>
@@ -472,7 +513,7 @@ export default function Notifications(props) {
                           component='th'
                           id={labelId}
                           scope='row'
-                          style={{ textAlign: 'center' }}
+                          style={{ textAlign: 'center', fontWeight: row.readed ? 'normal' : 'bold' }}
                           padding='none'
                         >
                           {row.lastname_from}
@@ -480,7 +521,7 @@ export default function Notifications(props) {
                         <TableCell
                           component='th'
                           id={labelId}
-                          style={{ textAlign: 'center' }}
+                          style={{ textAlign: 'center', fontWeight: row.readed ? 'normal' : 'bold' }}
                           scope='row'
                           padding='none'>
                           {row.email_from}
@@ -488,7 +529,7 @@ export default function Notifications(props) {
                         <TableCell
                           component='th'
                           id={labelId}
-                          style={{ textAlign: 'center' }}
+                          style={{ textAlign: 'center', fontWeight: row.readed ? 'normal' : 'bold' }}
                           scope='row'
                           padding='none'>
                           {row.object}
@@ -498,7 +539,7 @@ export default function Notifications(props) {
                           component='th'
                           id={labelId}
                           scope='row'
-                          style={{ textAlign: 'center' }}
+                          style={{ textAlign: 'center', fontWeight: row.readed ? 'normal' : 'bold' }}
                           padding='none' >
                           {row.date}
                         </TableCell>

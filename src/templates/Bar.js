@@ -36,12 +36,13 @@ import Collapse from '@mui/material/Collapse';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
+import { Badge, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import LocalPoliceIcon from '@mui/icons-material/LocalPolice';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import ScienceIcon from '@mui/icons-material/Science';
 import Translation from "../utils/translation";
 import { useStore } from "../utils/store";
+import AngelNotifications from "../api/angel/notifications";
 
 const drawerWidth = 240;
 
@@ -76,9 +77,9 @@ const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp
 export default function Bar(props) {
   const theme = useTheme();
 
-  const { session, } = useStore();
-  const [userSession, ] = React.useState(session.user ? session.user:null);
-  const lg = new Translation(userSession ? userSession.lang: 'en');
+  const { session,dispatch } = useStore();
+  const [userSession,] = React.useState(session.user ? session.user : null);
+  const lg = new Translation(userSession ? userSession.lang : 'en');
 
   const [open, setOpen] = React.useState(true);
   const [openProfile, setopenProfile] = React.useState(false);
@@ -88,17 +89,28 @@ export default function Bar(props) {
   const [openTreatmentDown, setOpenTreatmentDown] = React.useState(true);
   const [openEffectDown, setOpenEffectDown] = React.useState(true);
   const [openFactoriesDown, setOpenFactoriesDown] = React.useState(false);
-  React.useEffect(() => {
+  const [total, setTotal] = React.useState(0);
+
+  React.useEffect( ()  => {
     if (prevOpen.current === true && openProfile === false) {
       anchorRef.current.focus();
     }
+    getNotifications();
     prevOpen.current = openProfile;
   }, [openProfile]);
 
   const handleToggle = () => {
     setopenProfile((prevOpen) => !prevOpen);
   };
-
+  const getNotifications = async () => {
+    console.log(userSession);
+    if( userSession) {
+      AngelNotifications().count({user_to: userSession.id, readed: "0"}).then((t) => {
+        setTotal(t);
+        dispatch({ type: "notifications", payload: t });
+      });
+    }
+  }
   const handleClose = (event) => {
     if (anchorRef.current && anchorRef.current.contains(event.target)) {
       return;
@@ -239,7 +251,9 @@ export default function Bar(props) {
       >
         <ListItemButton component={NavLink} exact="true" to="/notifications">
           <ListItemIcon>
-            <NotificationsNoneIcon />
+            <Badge badgeContent={total} color="error">
+              <NotificationsNoneIcon />
+            </Badge>
           </ListItemIcon>
           <ListItemText primary={"Notifications"} />
         </ListItemButton>
@@ -265,7 +279,7 @@ export default function Bar(props) {
               <ListItemIcon>
                 <HailIcon />
               </ListItemIcon>
-              <ListItemText primary={lg.get('Doctors')}/>
+              <ListItemText primary={lg.get('Doctors')} />
             </ListItemButton>
             <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/nurses">
               <ListItemIcon>
@@ -315,7 +329,7 @@ export default function Bar(props) {
             <ListItemIcon>
               <FormatListBulletedIcon />
             </ListItemIcon>
-            <ListItemText primary={lg.get('Moods')}/>
+            <ListItemText primary={lg.get('Moods')} />
           </ListItemButton>
           <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/survey-moods">
             <ListItemIcon>

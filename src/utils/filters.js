@@ -23,6 +23,11 @@ export default class Filter {
         let doctorId = props.doctorId && props.doctorId !== 'undefined' ? props.doctorId:'';
         let drugId = props.drugId && props.drugId !== 'undefined' ? props.drugId:'';
        //return window.appStorage.getItem(key+this.view+props.nurseId+props.drugId+props.doctorId);
-       return this.session['filters'][key+this.view+nurseId+drugId+doctorId];
+       if(this.session['filters'] && this.session['filters'][key+this.view+nurseId+drugId+doctorId]) {
+        return this.session['filters'][key+this.view+nurseId+drugId+doctorId];
+       } else {
+        return null;
+       }
+       
     }
 }
