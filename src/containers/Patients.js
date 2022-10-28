@@ -404,7 +404,7 @@ export default function Patients(props) {
   }, [emailFilter, firstnameFilter, lastnameFilter, limit, page, phoneFilter, props.doctorId, props.drugId, props.nurseId, searchFilter, userSession]);
 
   useEffect(() => {
-    if (userSession.nurse_id) {
+    if (userSession && userSession.nurse_id) {
       countTransfers(userSession.nurse_id);
     }
 
