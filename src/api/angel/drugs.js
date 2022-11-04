@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export default  function AngelDrug(config) {
-    const accessToken =  window.appStorage.getItem('token')?JSON.parse(window.appStorage.getItem('token')):null;
+    const accessToken =  localStorage.getItem('token')?JSON.parse(localStorage.getItem('token')):null;
     return {
         list: async (params) => {
             try {
@@ -63,6 +63,14 @@ export default  function AngelDrug(config) {
         updateDescription: async (params) => {
             try {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/drug-descriptions/update', params, {headers: {'Authorization':accessToken}});
+                return res.data;
+            } catch (error) {
+                throw new error(error);
+            }
+        },
+        getDescription: async (params) => {
+            try {
+                const res = await axios.post(process.env.REACT_APP_API_URL+'/drug-descriptions/get', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
                 throw new error(error);

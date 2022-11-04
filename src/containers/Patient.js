@@ -10,8 +10,6 @@ import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import Visibility from '@mui/icons-material/Visibility';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
-//import { DatePicker } from "@material-ui/pickers";
-//import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { Save } from '@mui/icons-material';
@@ -23,28 +21,25 @@ import { useSnackbar } from 'notistack';
 import AngelPatient from '../api/angel/patient';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import Translation from '../utils/translation';
-import { useStore } from '../utils/store';
 import AngelNurse from '../api/angel/nurse';
-
 import FaceIcon from '@mui/icons-material/Face';
 import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
 import EmailIcon from '@mui/icons-material/Email';
-import LanguageIcon from '@mui/icons-material/Language';
 import FmdGoodIcon from '@mui/icons-material/FmdGood';
 import LocationCityIcon from '@mui/icons-material/LocationCity';
-import CelebrationIcon from '@mui/icons-material/Celebration';
 import ComboNurses from '../components/ComboNurses';
 import AngelDoctor from '../api/angel/doctor';
 import ComboDoctors from '../components/ComboDoctors';
+import { useTranslation } from '../hooks/userTranslation';
+import AppContext from '../contexts/AppContext';
 
 export default function PatientContainer(props) {
 
     const { enqueueSnackbar } = useSnackbar();
 
-    const { session, } = useStore();
-    const [userSession,] = React.useState(session.user ? session.user : null);
-    const lg = new Translation(userSession ? userSession.lang : 'en');
+    const appContext = React.useContext(AppContext);
+    const [userSession,] = React.useState(appContext.appState.user);
+    const [lg] = useTranslation(userSession ? userSession.lang : 'en');
 
     const [id, setId] = React.useState(null);
     const [patientId, setPatientId] = React.useState(null);

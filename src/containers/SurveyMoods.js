@@ -20,9 +20,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { useSnackbar } from 'notistack';
 import Badge from '@mui/material/Badge';
-
 import AngelSideEffect from '../api/angel/mood';
-
 import { Avatar, Button, Grid } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
@@ -34,15 +32,14 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import AngelSurvey from '../api/angel/survey';
 import { MobileDatePicker } from '@mui/lab';
-
 import SickIcon from '@mui/icons-material/Sick';
 import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
 import SentimentSatisfiedIcon from '@mui/icons-material/SentimentSatisfied';
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
 import MoodIcon from '@mui/icons-material/Mood';
-import Filter from '../utils/filters';
-import { useStore } from '../utils/store';
-import Translation from '../utils/translation';
+import { useTranslation } from '../hooks/userTranslation';
+import { useFilter } from '../hooks/useFilter';
+import AppContext from '../contexts/AppContext';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -220,10 +217,10 @@ export default function SurveyMoods(props) {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const { session, dispatch } = useStore();
-  const [userSession,] = React.useState(session.user ? session.user : null);
-  const fltr = new Filter('SurveyMoods', dispatch, session);
-  const lg = new Translation(userSession ? userSession.lang : 'en');
+  const appContext = React.useContext(AppContext);
+  const [userSession,] = React.useState(appContext.appState.user);
+  const [lg] = useTranslation(userSession ? userSession.lang : 'en');
+  const [filter] = useFilter('surveyMoods',appContext);
 
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
@@ -239,12 +236,12 @@ export default function SurveyMoods(props) {
 
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
 
-  const [searchFilter, setSearchFilter] = React.useState(fltr.get('search', props));
+  const [searchFilter, setSearchFilter] = React.useState(filter.get('search', props));
   const [firstnameFilter, setFirstnameFilter] = React.useState(true);
   const [lastnameFilter, setLastnameFilter] = React.useState(true);
   const [nameFilter, setNameFilter] = React.useState(true);
   const [scoreFilter,] = React.useState(true);
-  const [dateCreatedFilter, setDateCreatedFilter] = React.useState(fltr.get('date_created', props) ? fltr.get('date_created', props) : new Date());
+  const [dateCreatedFilter, setDateCreatedFilter] = React.useState(filter.get('date_created', props) ? filter.get('date_created', props) : new Date());
 
   React.useEffect(() => {
     fetchData();
@@ -299,7 +296,6 @@ export default function SurveyMoods(props) {
     }
   }
   const fetchData = async (d) => {
-    const stg = JSON.parse(window.appStorage.getItem('user'));
     const u = [];
     let r = null;
     let o = {
@@ -337,11 +333,11 @@ export default function SurveyMoods(props) {
     if (props.moodId) {
       o.id = props.moodId;
     }
-    if (stg.nurse_id) {
-      o.nurse_id = stg.nurse_id;
+    if (userSession.nurse_id) {
+      o.nurse_id = userSession.nurse_id;
     }
-    if (stg.doctor_id) {
-      o.doctor_id = stg.doctor_id;
+    if (userSession.doctor_id) {
+      o.doctor_id = userSession.doctor_id;
     }
     r = await AngelSurvey().concatMoods(o);
     if (r.surveys && r.surveys.length) {
@@ -424,7 +420,7 @@ export default function SurveyMoods(props) {
     //setEmailFilter(event.target.checked);
   };
   const handleSearchText = (txt) => {
-    fltr.set('search', props, txt);
+    filter.set('search', props, txt);
     setSearchFilter(txt);
   };
   const formatDateCreated = (v) => {
@@ -485,7 +481,7 @@ export default function SurveyMoods(props) {
     }
   }
   const onDateCreateChanged = (d) => {
-    fltr.set('date_created', props, d);
+    filter.set('date_created', props, d);
     setDateCreatedFilter(d);
   }
   const previousDay = () => {
@@ -493,14 +489,14 @@ export default function SurveyMoods(props) {
     d.setDate(d.getDate() - 1);
     setDateCreatedFilter(d);
     fetchData(d);
-    fltr.set('date_created', props, d);
+    filter.set('date_created', props, d);
   }
   const nextDay = () => {
     let d = new Date(dateCreatedFilter);
     d.setDate(d.getDate() + 1);
     setDateCreatedFilter(d);
     fetchData(d);
-    fltr.set('date_created', props, d);
+    filter.set('date_created', props, d);
   }
   return (<>
     <div>
@@ -511,7 +507,7 @@ export default function SurveyMoods(props) {
         aria-describedby="modal-modal-description">
         <Box sx={styleModal}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Filters
+            {lg.get('Filters')}
           </Typography>
           <FormGroup>
             <MobileDatePicker

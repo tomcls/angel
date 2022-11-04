@@ -14,9 +14,9 @@ import { Cancel } from "@mui/icons-material";
 import { SnackbarProvider } from 'notistack';
 import { Grid, Typography } from "@mui/material";
 import MainBar from "../templates/MainBar";
-import { useStore } from "../utils/store";
-import Translation from "../utils/translation";
 import Tabs from "../components/Tabs";
+import AppContext from "../contexts/AppContext";
+import { useTranslation } from "../hooks/userTranslation";
 
 const drawerWidth = 240;
 
@@ -41,9 +41,9 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
 
 export default function SideEffectsPage() {
 
-  const { session, } = useStore();
-  const [userSession,] = React.useState(session.user ? session.user : null);
-  const lg = new Translation(userSession ? userSession.lang : 'en');
+  const appContext = React.useContext(AppContext);
+  const [userSession,] = React.useState(appContext.appState.user);
+  const [lg] = useTranslation(userSession ? userSession.lang : 'en');
 
   const [open, setOpen] = React.useState(true);
   const [selectedTab, setSelectedTab] = React.useState("Main");

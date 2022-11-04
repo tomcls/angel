@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export default  function AngelUser(config) {
-    const accessToken =  window.appStorage.getItem('token')?JSON.parse(window.appStorage.getItem('token')):null;
+    const accessToken =  localStorage.getItem('token')?JSON.parse(localStorage.getItem('token')):null;
     let apiKey = process.env.REACT_APP_API_KEY;
     return {
         list: async (params) => {

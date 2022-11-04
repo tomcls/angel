@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export default  function AngelPosology(config) {
-    const accessToken =  window.appStorage.getItem('token')?JSON.parse(window.appStorage.getItem('token')):null;
+    const accessToken =  localStorage.getItem('token')?JSON.parse(localStorage.getItem('token')):null;
     return {
         find: async (params) => {
             try {

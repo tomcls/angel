@@ -14,8 +14,8 @@ import { Grid, Typography } from "@mui/material";
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import Tabs from "../components/Tabs";
 import MainBar from "../templates/MainBar";
-import { useStore } from "../utils/store";
-import Translation from "../utils/translation";
+import AppContext from "../contexts/AppContext";
+import { useTranslation } from "../hooks/userTranslation";
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -39,9 +39,9 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
 
 export default function NursesPage() {
 
-  const { session, } = useStore();
-  const [userSession,] = React.useState(session.user ? session.user : null);
-  const lg = new Translation(userSession ? userSession.lang : 'en');
+  const appContext = React.useContext(AppContext);
+  const [userSession,] = React.useState(appContext.appState.user);
+  const [lg] = useTranslation(userSession ? userSession.lang : 'en');
 
   const [open, setOpen] = React.useState(true);
   const [selectedTab, setSelectedTab] = React.useState("Main");

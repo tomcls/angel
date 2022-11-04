@@ -15,8 +15,8 @@ import Button from '@mui/material/Button';
 import PeopleIcon from '@mui/icons-material/People';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import MainBar from "../templates/MainBar";
-import { useStore } from "../utils/store";
-import Translation from "../utils/translation";
+import AppContext from "../contexts/AppContext";
+import { useTranslation } from "../hooks/userTranslation";
 
 const drawerWidth = 240;
 
@@ -40,9 +40,9 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
 );
 export default function SurveyMoodsPage() {
 
-  const { session, } = useStore();
-  const [userSession,] = React.useState(session.user ? session.user : null);
-  const lg = new Translation(userSession ? userSession.lang : 'en');
+  const appContext = React.useContext(AppContext);
+  const [userSession,] = React.useState(appContext.appState.user);
+  const [lg] = useTranslation(userSession ? userSession.lang : 'en');
 
   const [open, setOpen] = React.useState(true);
   const [selectedTab, setSelectedTab] = React.useState('Main');

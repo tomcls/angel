@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useContext, useRef } from 'react';
 import AngelUser from '../api/angel/user';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -32,15 +32,15 @@ import EmailIcon from '@mui/icons-material/Email';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import FaceIcon from '@mui/icons-material/Face';
 import { MobileDatePicker } from '@mui/lab';
-import { useStore } from '../utils/store';
-import Translation from '../utils/translation';
+import AppContext from '../contexts/AppContext';
+import { useTranslation } from '../hooks/userTranslation';
 export default function DoctorContainer(props) {
 
     const { enqueueSnackbar } = useSnackbar();
 
-    const { session, } = useStore();
-    const [userSession,] = React.useState(session.user ? session.user : null);
-    const lg = new Translation(userSession ? userSession.lang : 'en');
+    const appContext = useContext(AppContext);
+    const [userSession,] = React.useState(appContext.appState.user);
+    const [lg] = useTranslation(userSession ? userSession.lang : 'en');
 
     const [id, setId] = React.useState(null);
     const [doctorId, setDoctorId] = React.useState(null);

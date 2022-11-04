@@ -16,16 +16,16 @@ import { Save } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import AngelMood from '../api/angel/mood';
-import Translation from '../utils/translation';
-import { useStore } from '../utils/store';
+import AppContext from '../contexts/AppContext';
+import { useTranslation } from '../hooks/userTranslation';
 
 export default function MoodContainer(props) {
 
     const { enqueueSnackbar } = useSnackbar();
 
-    const { session, } = useStore();
-    const [userSession,] = React.useState(session.user ? session.user : null);
-    const lg = new Translation(userSession ? userSession.lang : 'en');
+    const appContext = React.useContext(AppContext);
+    const [userSession,] = React.useState(appContext.appState.user);
+    const [lg] = useTranslation(userSession ? userSession.lang : 'en');
 
     const [id, setId] = React.useState(null);
     const [moodDescriptionId, setMoodDescriptionId] = React.useState(null);

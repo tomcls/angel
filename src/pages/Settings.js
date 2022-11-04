@@ -22,16 +22,12 @@ import AngelUser from "../api/angel/user";
 import { useSnackbar } from 'notistack';
 import { MobileDatePicker } from "@mui/lab";
 import MainBar from "../templates/MainBar";
-import { useStore } from "../utils/store";
-import Translation from "../utils/translation";
-
 import FaceIcon from '@mui/icons-material/Face';
 import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
 import EmailIcon from '@mui/icons-material/Email';
-import LanguageIcon from '@mui/icons-material/Language';
 import FmdGoodIcon from '@mui/icons-material/FmdGood';
-import LocationCityIcon from '@mui/icons-material/LocationCity';
-import CelebrationIcon from '@mui/icons-material/Celebration';
+import AppContext from "../contexts/AppContext";
+import { useTranslation } from "../hooks/userTranslation";
 
 
 const drawerWidth = 240;
@@ -57,9 +53,9 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
 
 export default function Settings(props) {
 
-  const { session, } = useStore();
-  const [userSession,] = React.useState(session.user ? session.user : null);
-  const lg = new Translation(userSession ? userSession.lang : 'en');
+  const appContext = React.useContext(AppContext);
+  const [userSession,] = React.useState(appContext.appState.user);
+  const [lg] = useTranslation(userSession ? userSession.lang : 'en');
 
   const { enqueueSnackbar } = useSnackbar();
   const [open, setOpen] = React.useState(true);
@@ -89,9 +85,8 @@ export default function Settings(props) {
   const uploadFileButton = useRef(null);
 
   React.useEffect(() => {
-    const u = JSON.parse(window.appStorage.getItem('user'));
     async function fetchData() {
-      const user = await getUser({ id: u.id });
+      const user = await getUser({ id: userSession.id });
       setId(user.id);
       setFirstname(user.firstname);
       setLastname(user.lastname);
@@ -105,7 +100,7 @@ export default function Settings(props) {
       setCity(user.city);
       setCountry(user.country);
       setDateOfBirth(user.birthday);
-      setAvatar(user.avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + user.avatar : defaultAvatar);
+      setAvatar(user.avatar ? user.avatar : defaultAvatar);
       setActive(user.active);
       if (user.active === 'N') {
         setSwitchState(false);
@@ -143,14 +138,17 @@ export default function Settings(props) {
         city: city,
         country: country,
         birthday: formatDate(dateOfBirth),
-        active: active
+        active: active,
+        avatar: avatar
       };
       if (id) {
         u.id = id;
         try {
           await AngelUser().update(u);
-          const ucooky = JSON.parse(window.appStorage.getItem('user'));
-          ucooky.avatar = avatar;
+          const ucooky = userSession;
+          if(avatar !== defaultAvatar) {
+            ucooky.avatar = avatar;
+          }
           ucooky.firstname = firstname;
           ucooky.lastname = lastname;
           ucooky.email = email;
@@ -163,7 +161,9 @@ export default function Settings(props) {
           ucooky.country = country;
           ucooky.birthday = formatDate(dateOfBirth);
           ucooky.active = active;
-          window.appStorage.setItem('user', JSON.stringify(ucooky), 1200000);
+          console.log('avatar',avatar)
+          localStorage.setItem('user', JSON.stringify(ucooky));
+          appContext.appDispatch({ type: 'loadUser', payload: ucooky });
           handleClickVariant('success', lg.get('User well updated!'));
         } catch (e) {
           handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
@@ -204,10 +204,11 @@ export default function Settings(props) {
     setFile({ file: e.target.files[0] });
     const u = await AngelUser().upload(e.target.files[0], 'avatar', id);
     handleClickVariant('success', lg.get('Image well uploaded'));
-    setAvatar(process.env.REACT_APP_API_URL + '/public/uploads/' + u.filename);
-    const user = JSON.parse(window.appStorage.getItem('user'));
+    setAvatar(u.filename);
+    const user = userSession;
     user.avatar = u.filename;
-    window.appStorage.setItem('user', JSON.stringify(user), 1200000);
+    localStorage.setItem('user', JSON.stringify(user));
+    appContext.appDispatch({ type: 'loadUser', payload: user });
   };
   return (
     <>
@@ -225,7 +226,7 @@ export default function Settings(props) {
             <Grid item xs={12} sm={6} md={4} xl={2} style={{ paddingTop: '42px' }}>
               <Grid item xs={12} style={{ width: '205px', height: '205px', textAlign: "center", border: '3px solid #ddd', borderRadius: '5px', margin: 'auto' }} >
                 <Avatar variant="rounded"
-                  src={avatar}
+                  src={avatar != defaultAvatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + avatar: defaultAvatar}
                   style={{ width: '200px', height: '200px', textAlign: "center", borderColor: 'gray', margin: 'auto' }}
                 />
                 <Grid item xs={12} style={{ width: '100%', textAlign: "center" }}>

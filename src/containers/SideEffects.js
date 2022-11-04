@@ -20,8 +20,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import AngelSideEffect from "../api/angel/sideEffect";
 import { useSnackbar } from 'notistack';
-import { useStore } from '../utils/store';
-import Translation from '../utils/translation';
+import AppContext from '../contexts/AppContext';
+import { useTranslation } from '../hooks/userTranslation';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -188,10 +188,9 @@ EnhancedTableToolbar.propTypes = {
 export default function SideEffects(props) {
 
   const { enqueueSnackbar } = useSnackbar();
-
-  const { session, } = useStore();
-  const [userSession,] = React.useState(session.user ? session.user : null);
-  const lg = new Translation(userSession ? userSession.lang : 'en');
+  const appContext = React.useContext(AppContext);
+  const [userSession,] = React.useState(appContext.appState.user);
+  const [lg] = useTranslation(userSession ? userSession.lang : 'en');
 
   const [, setSideEffects] = React.useState(null);
 

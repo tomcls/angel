@@ -7,14 +7,15 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import PatientSurveyEffects from './PatientSurveyEffects';
 import PatientSurveyMoods from './PatientSurveyMoods';
 import PatientTreatments from './PatientTreatments';
-import { useStore } from '../utils/store';
 import Translation from '../utils/translation';
+import AppContext from '../contexts/AppContext';
+import { useTranslation } from '../hooks/userTranslation';
 
 export default function PatientSurveys(props) {
 
-  const { session, } = useStore();
-  const [userSession,] = React.useState(session.user ? session.user : null);
-  const lg = new Translation(userSession ? userSession.lang : 'en');
+  const appContext = React.useContext(AppContext);
+  const [userSession,] = React.useState(appContext.appState.user);
+  const [lg] = useTranslation(userSession ? userSession.lang : 'en');
 
   const [expanded, setExpanded] = React.useState(null);
 

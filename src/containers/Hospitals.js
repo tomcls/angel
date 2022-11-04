@@ -19,7 +19,6 @@ import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { useSnackbar } from 'notistack';
-
 import { Grid } from '@mui/material';
 import { Button } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -28,13 +27,11 @@ import SearchIcon from '@mui/icons-material/Search';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import Modal from '@mui/material/Modal';
-
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-
 import AngelHospital from '../api/angel/hospital';
-import { useStore } from '../utils/store';
-import Translation from '../utils/translation';
+import { useTranslation } from '../hooks/userTranslation';
+import AppContext from '../contexts/AppContext';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -217,9 +214,9 @@ export default function Hospitals(props) {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const { session, } = useStore();
-  const [userSession,] = React.useState(session.user ? session.user : null);
-  const lg = new Translation(userSession ? userSession.lang : 'en');
+  const appContext = React.useContext(AppContext);
+  const [userSession,] = React.useState(appContext.appState.user);
+  const [lg] = useTranslation(userSession ? userSession.lang : 'en');
 
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);

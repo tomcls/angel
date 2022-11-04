@@ -34,10 +34,9 @@ import Modal from '@mui/material/Modal';
 import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import '../utils/localStorage';
-import { useStore } from '../utils/store';
-import Filter from '../utils/filters';
-import Translation from '../utils/translation';
+import AppContext from '../contexts/AppContext';
+import { useTranslation } from '../hooks/userTranslation';
+import { useFilter } from '../hooks/useFilter';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -80,7 +79,6 @@ const styleModal = {
   p: 4,
 };
 
-const stg = window.appStorage ? JSON.parse(window.appStorage.getItem('user')) : null;
 
 
 function EnhancedTableHead(props) {
@@ -247,10 +245,10 @@ export default function Nurses(props) {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const { session, dispatch } = useStore();
-  const [userSession,] = React.useState(session.user ? session.user : null);
-  const fltr = new Filter('nurses', dispatch, session);
-  const lg = new Translation(userSession ? userSession.lang : 'en');
+  const appContext = React.useContext(AppContext);
+  const [userSession,] = React.useState(appContext.appState.user);
+  const [lg] = useTranslation(userSession ? userSession.lang : 'en');
+  const [filter] = useFilter('nurses',appContext);
 
   const [, setNurses] = React.useState(null);
 
@@ -267,7 +265,7 @@ export default function Nurses(props) {
 
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
 
-  const [searchFilter, setSearchFilter] = React.useState(fltr.get('search', props));
+  const [searchFilter, setSearchFilter] = React.useState(filter.get('search', props));
   const [firstnameFilter, setFirstnameFilter] = React.useState(true);
   const [lastnameFilter, setLastnameFilter] = React.useState(true);
   const [emailFilter, setEmailFilter] = React.useState(true);
@@ -404,7 +402,7 @@ export default function Nurses(props) {
   };
   const handleSearchText = (txt) => {
     setSearchFilter(txt);
-    fltr.set('search', props, txt);
+    filter.set('search', props, txt);
   };
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -536,7 +534,7 @@ export default function Nurses(props) {
                           style={{ textAlign: 'center' }}
                           padding='none' >
                           {
-                            (stg.nurse_id || stg.doctor_id) ?
+                            (userSession.nurse_id || userSession.doctor_id) ?
                               <SickIcon color={'primary'} style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(props.patientId, props.text, 'patient_surveys', 'panel1')} /> :
                               <FamilyRestroomIcon color={'primary'} style={{ cursor: 'pointer' }} onClick={() => props.openPatients(row.nurse_id, row.firstname + ' ' + row.lastname, 'nurse_patients')} />
                           }

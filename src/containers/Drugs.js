@@ -21,21 +21,18 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import AngelDrug from "../api/angel/drugs";
 import AngelTreatment from '../api/angel/treatments';
 import { useSnackbar } from 'notistack';
-
 import { Avatar, Button, Grid } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
 import BiotechIcon from '@mui/icons-material/Biotech';
-
 import Modal from '@mui/material/Modal';
-
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
 import LinkIcon from '@mui/icons-material/Link';
-import { useStore } from '../utils/store';
-import Translation from '../utils/translation';
+import AppContext from '../contexts/AppContext';
+import { useTranslation } from '../hooks/userTranslation';
 const defaultAvatar = 'https://dreamguys.co.in/preadmin/html/school/dark/assets/img/placeholder.jpg';
 
 function descendingComparator(a, b, orderBy) {
@@ -234,9 +231,9 @@ EnhancedTableToolbar.propTypes = {
 };
 export default function Drugs(props) {
 
-  const { session, } = useStore();
-  const [userSession,] = React.useState(session.user ? session.user : null);
-  const lg = new Translation(userSession ? userSession.lang : 'en');
+  const appContext = React.useContext(AppContext);
+  const [userSession,] = React.useState(appContext.appState.user);
+  const [lg] = useTranslation(userSession ? userSession.lang : 'en');
 
   const [, setDrugs] = React.useState(null);
 

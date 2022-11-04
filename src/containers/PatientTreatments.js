@@ -35,8 +35,8 @@ import AlarmAddIcon from '@mui/icons-material/AlarmAdd';
 import AngelDrug from '../api/angel/drugs';
 import PosologyComponent from '../components/Posology';
 import AngelPatient from '../api/angel/patient';
-import { useStore } from '../utils/store';
-import Translation from '../utils/translation';
+import { useTranslation } from '../hooks/userTranslation';
+import AppContext from '../contexts/AppContext';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -238,10 +238,9 @@ const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp
 export default function PatientTreatments(props) {
 
   const { enqueueSnackbar } = useSnackbar();
-
-  const { session, } = useStore();
-  const [userSession,] = React.useState(session.user ? session.user : null);
-  const lg = new Translation(userSession ? userSession.lang : 'en');
+  const appContext = React.useContext(AppContext);
+  const [userSession,] = React.useState(appContext.appState.user);
+  const [lg] = useTranslation(userSession ? userSession.lang : 'en');
 
   const [, setTreatments] = React.useState(null);
   const [total, setTotal] = React.useState(null);
@@ -271,7 +270,6 @@ export default function PatientTreatments(props) {
   const [id, setId] = React.useState(null);
   const [posologyId, setPosologyId] = React.useState(null);
 
-  const stg = JSON.parse(window.appStorage.getItem('user'));
 
   React.useEffect(() => {
     fetchData();
@@ -336,11 +334,11 @@ export default function PatientTreatments(props) {
     if (props.patientId) {
       o.patient_id = props.patientId;
     }
-    if (stg.nurse_id) {
-      o.nurse_id = stg.nurse_id;
+    if (userSession.nurse_id) {
+      o.nurse_id = userSession.nurse_id;
     }
-    if (stg.doctor_id) {
-      o.doctor_id = stg.doctor_id;
+    if (userSession.doctor_id) {
+      o.doctor_id = userSession.doctor_id;
     }
     r = await AngelDrug().getUserDrugs(o);
     if (r.treatments && r.treatments.length) {

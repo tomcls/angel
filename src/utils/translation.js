@@ -9,4 +9,7 @@ export default class Translation {
     get = (key) => {
        return il8n[key][this.lang];
     }
+    setLang(lang) {
+        this.lang = lang;
+    }
 }

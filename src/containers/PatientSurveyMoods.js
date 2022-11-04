@@ -20,25 +20,20 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { useSnackbar } from 'notistack';
 import Badge from '@mui/material/Badge';
-
 import AngelSideEffect from '../api/angel/mood';
-
 import { Button, Grid } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
 import {  Save } from '@mui/icons-material';
-
 import Modal from '@mui/material/Modal';
-
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-
 import AngelSurvey from '../api/angel/survey';
 import { MobileDatePicker } from '@mui/lab';
-import Translation from '../utils/translation';
-import Filter from '../utils/filters';
-import { useStore } from '../utils/store';
+import AppContext from '../contexts/AppContext';
+import { useTranslation } from '../hooks/userTranslation';
+import { useFilter } from '../hooks/useFilter';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -224,10 +219,10 @@ export default function PatientSurveyMoods(props) {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const { session, dispatch } = useStore();
-  const [userSession,] = React.useState(session.user ? session.user : null);
-  const fltr = new Filter('SurveyMoods', dispatch, session);
-  const lg = new Translation(userSession ? userSession.lang : 'en');
+  const appContext = React.useContext(AppContext);
+  const [userSession,] = React.useState(appContext.appState.user);
+  const [lg] = useTranslation(userSession ? userSession.lang : 'en');
+  const [filter] = useFilter('surveyMoods',appContext);
 
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
@@ -249,7 +244,7 @@ export default function PatientSurveyMoods(props) {
   const [nameFilter, setNameFilter] = React.useState(true);
   const [scoreFilter, ] = React.useState(true);
   const [fromDateFilter, setFromDateFilter] = React.useState(null);
-  const [toDateFilter, setToDateFilter] = React.useState(fltr.get('date_created', props)?fltr.get('date_created', props):fltr.get('to_date', props));
+  const [toDateFilter, setToDateFilter] = React.useState(filter.get('date_created', props)?filter.get('date_created', props):filter.get('to_date', props));
 
   React.useEffect(() => {
     fetchDataEffects();
@@ -426,7 +421,7 @@ export default function PatientSurveyMoods(props) {
     return datestring;
   }
   const setFromDate = (newValue) => {
-    fltr.set('from_date', props, newValue);
+    filter.set('from_date', props, newValue);
     setFromDateFilter(newValue);
   };
   const setToDate = (newValue) => {

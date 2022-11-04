@@ -21,7 +21,6 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import AngelUser from '../api/angel/user';
 import { Avatar, Grid } from '@mui/material';
 import { useSnackbar } from 'notistack';
-
 import { Button } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
@@ -29,11 +28,11 @@ import SearchIcon from '@mui/icons-material/Search';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import Modal from '@mui/material/Modal';
-
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import { useStore } from '../utils/store';
 import Translation from '../utils/translation';
+import AppContext from '../contexts/AppContext';
+import { useTranslation } from '../hooks/userTranslation';
 
 
 function descendingComparator(a, b, orderBy) {
@@ -239,9 +238,9 @@ export default function Coordinators(props) {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const { session, } = useStore();
-  const [userSession,] = React.useState(session.user ? session.user : null);
-  const lg = new Translation(userSession ? userSession.lang : 'en');
+  const appContext = React.useContext(AppContext);
+  const [userSession,] = React.useState(appContext.appState.user);
+  const [lg] = useTranslation(userSession ? userSession.lang : 'en');
 
   const [, setCoordinators] = React.useState(null);
 

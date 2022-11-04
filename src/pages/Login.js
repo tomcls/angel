@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -7,9 +7,10 @@ import LoginComponent from '../containers/Login';
 import AngelUser from '../api/angel/user';
 import TeaserComponent from '../templates/Teaser';
 import Header from '../templates/Header';
-import { useStore } from '../utils/store';
+import AppContext from '../contexts/AppContext';
 
 export default function Login() {
+  const appContext = useContext(AppContext);
   const navigate = useNavigate();
   const [ hasLoginError, setHasLoginError ] = useState(false);
   const [username, setUsername] = useState('');
@@ -18,7 +19,8 @@ export default function Login() {
   const [openProfile, ] = React.useState(false);
   const anchorRef = React.useRef(null);
   const prevOpen = React.useRef(openProfile);
-  const {  dispatch } = useStore();
+  
+
   React.useEffect(() => {
     if (prevOpen.current === true && openProfile === false) {
       anchorRef.current.focus();
@@ -30,8 +32,13 @@ export default function Login() {
     e.preventDefault();
     AngelUser().login({ email: username, password: password , active: 'Y'}).then(function (result) {
       if (result && result.user) {
-        window.appStorage.setItem('token', JSON.stringify(result.accessToken), 1200000);
-        dispatch({ type: "user", payload: JSON.stringify(result.user) });
+        localStorage.setItem('token', JSON.stringify(result.accessToken));
+        appContext.appDispatch({ type: 'loadToken', payload: result.accessToken });
+
+        localStorage.setItem('user', JSON.stringify(result.user));
+        appContext.appDispatch({ type: 'loadUser', payload: result.user });
+        appContext.appDispatch({ type: 'setLang', payload: result.user.lang });
+        
         if(result.user && (result.user.nurse_id || result.user.doctor_id)) {
           navigate('/survey-moods', {replace: true});return;
         } else {

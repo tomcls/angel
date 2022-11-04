@@ -89,6 +89,16 @@ export const il8n = {
         "fr":"Le nom et code sont requis",
         "nl":"The name and code are required"
     },
+    "You must save the treatment": {
+        "en":"You must save the treatment first!",
+        "fr":"Vous devez d'abord sauver le traitement",
+        "nl":"You must save the treatment"
+    },
+    "Document well uploaded": {
+        "en":"Document well uploaded",
+        "fr":"Votre document est bien téléversé",
+        "nl":"Document well uploaded"
+    },
     "Image well uploaded": {
         "en":"Image well uploaded",
         "fr":"Votre image est bien téléversée",

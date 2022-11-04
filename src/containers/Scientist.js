@@ -26,15 +26,15 @@ import EmailIcon from '@mui/icons-material/Email';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import FaceIcon from '@mui/icons-material/Face';
 import { MobileDatePicker } from '@mui/lab';
-import Translation from '../utils/translation';
-import { useStore } from '../utils/store';
+import AppContext from '../contexts/AppContext';
+import { useTranslation } from '../hooks/userTranslation';
 export default function ScientistContainer(props) {
 
     const { enqueueSnackbar } = useSnackbar();
 
-    const { session, } = useStore();
-    const [userSession,] = React.useState(session.user ? session.user : null);
-    const lg = new Translation(userSession ? userSession.lang : 'en');
+    const appContext = React.useContext(AppContext);
+    const [userSession,] = React.useState(appContext.appState.user);
+    const [lg] = useTranslation(userSession ? userSession.lang : 'en');
 
     const [id, setId] = React.useState(null);
     const [scientistId, setScientistId] = React.useState(null);

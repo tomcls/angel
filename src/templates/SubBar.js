@@ -34,8 +34,8 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Divider, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
-import { useStore } from "../utils/store";
-import Translation from "../utils/translation";
+import AppContext from "../contexts/AppContext";
+import { useTranslation } from "../hooks/userTranslation";
 
 const drawerWidth = 240;
 
@@ -56,7 +56,6 @@ const AppBar = styled(MuiAppBar, {
   }),
 }));
 
-
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -71,9 +70,8 @@ const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp
 export default function SubBar(props) {
   const theme = useTheme();
 
-  const { session, } = useStore();
-  const [userSession, ] = React.useState(session.user ? session.user:null);
-  const lg = new Translation(userSession ? userSession.lang: 'en');
+  const appContext = React.useContext(AppContext);
+  const [lg] = useTranslation(appContext.appState.lang);
 
   const [open, setOpen] = React.useState(true);
   const [openProfile, setopenProfile] = React.useState(false);

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { styled, useTheme, ThemeProvider } from '@mui/material/styles';
 import { NavLink } from 'react-router-dom';
 import Drawer from '@mui/material/Drawer';
@@ -40,10 +40,9 @@ import { Badge, ListItemButton, ListItemIcon, ListItemText } from "@mui/material
 import LocalPoliceIcon from '@mui/icons-material/LocalPolice';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import ScienceIcon from '@mui/icons-material/Science';
-import Translation from "../utils/translation";
-import { useStore } from "../utils/store";
 import AngelNotifications from "../api/angel/notifications";
-
+import AppContext from '../contexts/AppContext';
+import { useTranslation } from "../hooks/userTranslation";
 const drawerWidth = 240;
 
 const AppBar = styled(MuiAppBar, {
@@ -75,39 +74,34 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp0LF2WgeDkn_sQ1VuMnlnVGjkDvCN4jo2nLMt3b84ry328rg46eohB_JT3WTqOGJovY&usqp=CAU';//process.env.SENDGRID_APIKEY
 
 export default function Bar(props) {
+  const appContext = useContext(AppContext);
   const theme = useTheme();
-
-  const { session,dispatch } = useStore();
-  const [userSession,] = React.useState(session.user ? session.user : null);
-  const lg = new Translation(userSession ? userSession.lang : 'en');
-
+  const [lg] = useTranslation(appContext.appState.lang);
   const [open, setOpen] = React.useState(true);
   const [openProfile, setopenProfile] = React.useState(false);
   const anchorRef = React.useRef(null);
-
   const [openUserDown, setOpenUserDown] = React.useState(true);
   const [openTreatmentDown, setOpenTreatmentDown] = React.useState(true);
   const [openEffectDown, setOpenEffectDown] = React.useState(true);
   const [openFactoriesDown, setOpenFactoriesDown] = React.useState(false);
   const [total, setTotal] = React.useState(0);
 
-  React.useEffect( ()  => {
+  React.useEffect(() => {
     if (prevOpen.current === true && openProfile === false) {
       anchorRef.current.focus();
     }
-    getNotifications();
+ //   getNotifications();
     prevOpen.current = openProfile;
-  }, [openProfile]);
+  }, [appContext, openProfile, total ]);
 
   const handleToggle = () => {
     setopenProfile((prevOpen) => !prevOpen);
   };
   const getNotifications = async () => {
-    console.log(userSession);
-    if( userSession) {
-      AngelNotifications().count({user_to: userSession.id, readed: "0"}).then((t) => {
+    if (appContext.appState.user) {
+      AngelNotifications().count({ user_to: appContext.appState.user.id, readed: "0" }).then((t) => {
         setTotal(t);
-        dispatch({ type: "notifications", payload: t });
+        // dispatch({ type: "notifications", payload: t });
       });
     }
   }
@@ -136,19 +130,15 @@ export default function Bar(props) {
     props.open(false)
   };
   const handleUserClick = () => {
-    console.log(openUserDown)
     setOpenUserDown(!openUserDown);
   };
   const handleTreatmentClick = () => {
-    console.log(openTreatmentDown)
     setOpenTreatmentDown(!openTreatmentDown);
   };
   const handleEffectClick = () => {
-    console.log(openEffectDown)
     setOpenEffectDown(!openEffectDown);
   };
   const handleFactoriesClick = () => {
-    console.log(openFactoriesDown)
     setOpenFactoriesDown(!openFactoriesDown);
   };
   return (<ThemeProvider theme={props.theme}>
@@ -251,7 +241,7 @@ export default function Bar(props) {
       >
         <ListItemButton component={NavLink} exact="true" to="/notifications">
           <ListItemIcon>
-            <Badge badgeContent={total} color="error">
+            <Badge badgeContent={/*session && session.notifications ? session.notifications : 0*/0} color="error">
               <NotificationsNoneIcon />
             </Badge>
           </ListItemIcon>

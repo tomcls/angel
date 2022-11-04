@@ -28,11 +28,10 @@ import SearchIcon from '@mui/icons-material/Search';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import Modal from '@mui/material/Modal';
-
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Translation from '../utils/translation';
-import { useStore } from '../utils/store';
+import AppContext from '../contexts/AppContext';
+import { useTranslation } from '../hooks/userTranslation';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -215,9 +214,9 @@ export default function Moods(props) {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const { session, } = useStore();
-  const [userSession,] = React.useState(session.user ? session.user : null);
-  const lg = new Translation(userSession ? userSession.lang : 'en');
+  const appContext = React.useContext(AppContext);
+  const [userSession,] = React.useState(appContext.appState.user);
+  const [lg] = useTranslation(userSession ? userSession.lang : 'en');
 
   const [, setMoods] = React.useState(null);
 
@@ -238,7 +237,6 @@ export default function Moods(props) {
   const [nameFilter, setNameFilter] = React.useState(true);
 
   React.useEffect(() => {
-    console.log('useEffect Moods list container')
     fetchData();
   }, []);
   const handleRequestSort = (event, property) => {

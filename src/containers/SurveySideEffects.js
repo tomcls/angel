@@ -29,11 +29,11 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import AngelSurvey from '../api/angel/survey';
 import { MobileDatePicker } from '@mui/lab';
-import Filter from '../utils/filters';
-import { useStore } from '../utils/store';
-import Translation from '../utils/translation';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
+import AppContext from '../contexts/AppContext';
+import { useTranslation } from '../hooks/userTranslation';
+import { useFilter } from '../hooks/useFilter';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -210,10 +210,10 @@ export default function SurveySideEffects(props) {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const { session, dispatch } = useStore();
-  const [userSession,] = React.useState(session.user ? session.user : null);
-  const fltr = new Filter('surveySideEffects', dispatch, session);
-  const lg = new Translation(userSession ? userSession.lang : 'en');
+  const appContext = React.useContext(AppContext);
+  const [userSession,] = React.useState(appContext.appState.user);
+  const [lg] = useTranslation(userSession ? userSession.lang : 'en');
+  const [filter] = useFilter('surveySideEffects',appContext);
 
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
@@ -229,13 +229,13 @@ export default function SurveySideEffects(props) {
 
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
 
-  const [searchFilter, setSearchFilter] = React.useState(fltr.get('search', props));
+  const [searchFilter, setSearchFilter] = React.useState(filter.get('search', props));
   const [firstnameFilter, setFirstnameFilter] = React.useState(true);
   const [lastnameFilter, setLastnameFilter] = React.useState(true);
   const [nameFilter, setNameFilter] = React.useState(true);
   const [scoreFilter,] = React.useState(true);
 
-  const [dateCreatedFilter, setDateCreatedFilter] = React.useState(fltr.get('date_created', props) ? fltr.get('date_created', props) : new Date());
+  const [dateCreatedFilter, setDateCreatedFilter] = React.useState(filter.get('date_created', props) ? filter.get('date_created', props) : new Date());
 
   React.useEffect(() => {
     fetchData();
@@ -288,7 +288,7 @@ export default function SurveySideEffects(props) {
     }
   }
   const fetchData = async (d) => {
-    const stg = JSON.parse(window.appStorage.getItem('user'));
+    
     const u = [];
     let r = null;
     let o = {
@@ -326,11 +326,11 @@ export default function SurveySideEffects(props) {
     if (props.sideEffectId) {
       o.id = props.sideEffectId;
     }
-    if (stg.nurse_id) {
-      o.nurse_id = stg.nurse_id;
+    if (appContext.appState.user.nurse_id) {
+      o.nurse_id = appContext.appState.user.nurse_id;
     }
-    if (stg.doctor_id) {
-      o.doctor_id = stg.doctor_id;
+    if (appContext.appState.user.doctor_id) {
+      o.doctor_id = appContext.appState.user.doctor_id;
     }
     r = await AngelSurvey().concatEffects(o);
     if (r.surveys && r.surveys.length) {
@@ -396,7 +396,7 @@ export default function SurveySideEffects(props) {
   };
   const handleSearchText = (txt) => {
     setSearchFilter(txt);
-    fltr.set('search', props, txt);
+    filter.set('search', props, txt);
   };
   const formatDateCreated = (v) => {
     let d = new Date(v);
@@ -430,7 +430,7 @@ export default function SurveySideEffects(props) {
   };
   const onDateCreateChanged = (d) => {
     console.log('onDateCreateChanged', d)
-    fltr.set('date_created', props, d);
+    filter.set('date_created', props, d);
     setDateCreatedFilter(d);
   }
   const previousDay = () => {
@@ -438,14 +438,14 @@ export default function SurveySideEffects(props) {
     d.setDate(d.getDate() - 1);
     setDateCreatedFilter(d);
     fetchData(d);
-    fltr.set('date_created', props, d);
+    filter.set('date_created', props, d);
   }
   const nextDay = () => {
     let d = new Date(dateCreatedFilter);
     d.setDate(d.getDate() + 1);
     setDateCreatedFilter(d);
     fetchData(d);
-    fltr.set('date_created', props, d);
+    filter.set('date_created', props, d);
   }
   return (<>
     <div>

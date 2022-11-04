@@ -6,12 +6,13 @@ import ListItemText from '@mui/material/ListItemText';
 import IconButton from '@mui/material/IconButton';
 import AngelDrug from '../api/angel/drugs';
 import { Delete } from '@mui/icons-material';
-import { useStore } from '../utils/store';
+import AppContext from '../contexts/AppContext';
 
 export default function SideEffects(props) {
     const [sideEffects, setSideEffects] = React.useState([]);
-    const { session, } = useStore();
-    const [userSession,] = React.useState(session.user ? session.user : null);
+    const appContext = React.useContext(AppContext);
+    const [userSession,] = React.useState(appContext.appState.user);
+    
     const fetchData = async () => {
         const tr = await AngelDrug().getEffects({ drug_id: props.drugId,lang_id:userSession ? userSession.lang : 'en' })
         setSideEffects(tr)

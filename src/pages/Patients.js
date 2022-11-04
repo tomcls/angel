@@ -1,4 +1,4 @@
-import React, { useRef, useMemo } from "react";
+import React, { useRef/*, useMemo*/, useContext } from "react";
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -10,13 +10,12 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import { Cancel } from "@mui/icons-material";
 import { SnackbarProvider } from 'notistack';
-import Typography from '@mui/material/Typography';
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import Tabs from '../components/Tabs';
 import MainBar from "../templates/MainBar";
-import Translation from '../utils/translation';
-import { useStore } from "../utils/store";
+import AppContext from "../contexts/AppContext";
+import { useTranslation } from "../hooks/userTranslation";
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -38,27 +37,31 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
   }),
 );
 
-export default function PatientsPage() {
-
-  const { session } = useStore();
-  const [userStg, ] = React.useState(session && session.user ? session.user:null);
-  const lg = new Translation(userStg ? userStg.lang: 'en');
+export default function PatientsPage(props) {
+  const appContext = useContext(AppContext);
+  const [lg] = useTranslation(appContext.appState.lang);
 
   const [open, setOpen] = React.useState(true);
   const [selectedTab, setSelectedTab] = React.useState('Main');
   const [tabs, setTabs] = React.useState([]);
   const [tabIndex, setTabIndex] = React.useState(2);
   const newBtn = useRef(null);
-  const t = useMemo(() => {
+
+  /*const t = useMemo(() => {
     return new Tabs('patient', tabIndex, tabs, setTabs, setSelectedTab, setTabIndex, newBtn, lg)
-  }, [tabIndex, tabs]);
+  }, [tabIndex, tabs]);*/
+  
+  const t = new Tabs('patient', tabIndex, tabs, setTabs, setSelectedTab, setTabIndex, newBtn, lg);
 
   React.useEffect(() => {
+    console.log("PatientsPage.useEffect",appContext.appState.lang)
     let d = document.getElementById('newButton');
     if (d) {
-      d.clk = function (id, text, type, panel) { t.openTab(id, text, type, panel); };
+      d.clk = function (id, text, type) { t.openTab(id, text, type); };
     }
-  }, [t]);
+    console.log('PatientsPage.useEffect',props.lang )
+  }, [props.lang, appContext]);
+
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
@@ -69,7 +72,7 @@ export default function PatientsPage() {
   return (
     <SnackbarProvider maxSnack={3}>
       <Box sx={{ display: 'flex' }}>
-        <MainBar open={setOpen} />
+        <MainBar open={setOpen} lang={props.lang}/>
         <Main open={open}>
           <Grid container mb={'0px'} mt={6} >
             <Grid item xs={6} md={6} xl={6} >

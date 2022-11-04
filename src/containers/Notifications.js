@@ -33,8 +33,8 @@ import Modal from '@mui/material/Modal';
 
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Translation from '../utils/translation';
-import { useStore } from '../utils/store';
+import AppContext from '../contexts/AppContext';
+import { useTranslation } from '../hooks/userTranslation';
 
 
 function descendingComparator(a, b, orderBy) {
@@ -230,9 +230,9 @@ export default function Notifications(props) {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const { session, } = useStore();
-  const [userSession,] = React.useState(session.user ? session.user : null);
-  const lg = new Translation(userSession ? userSession.lang : 'en');
+  const appContext = React.useContext(AppContext);
+  const [userSession,] = React.useState(appContext.appState.user);
+  const [lg] = useTranslation(userSession ? userSession.lang : 'en');
 
   const [, setNotifications] = React.useState(null);
 

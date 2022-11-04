@@ -1,33 +1,31 @@
 export default class Filter {
-    
-    constructor(view, dispatch, session) {
+    view = null;
+    appContext = null;
+    constructor(view, appContext) {
         this.view = view;
-        this.dispatch = dispatch;
-        this.session = session;
+        this.appContext = appContext;
     }
-    set = (key,props, value) => {
-        let nurseId = props.nurseId && props.nurseId !== 'undefined' ? props.nurseId:'';
-        let doctorId = props.doctorId && props.doctorId !== 'undefined' ? props.doctorId:'';
-        let drugId = props.drugId && props.drugId !=='undefined' ? props.drugId:'';
-        console.log('hey',key,value,this.session)
-        let k = key+this.view+nurseId+drugId+doctorId;
+    set = (key, props, value) => {
+        let nurseId = props.nurseId && props.nurseId !== 'undefined' ? props.nurseId : '';
+        let doctorId = props.doctorId && props.doctorId !== 'undefined' ? props.doctorId : '';
+        let drugId = props.drugId && props.drugId !== 'undefined' ? props.drugId : '';
+        let k = key + this.view + nurseId + drugId + doctorId;
         let filters = {}
-        if(this.session.filters){
-            filters = this.session.filters;
-        } 
+        if (this.appContext.appState.filters) {
+            filters = this.appContext.appState.filters;
+        }
         filters[k] = value;
-        this.dispatch({ type: "filters", payload: JSON.stringify(filters) });
+        this.appContext.appDispatch({ type: "setFilters", payload: filters });
     }
-    get = (key,props) => {
-        let nurseId = props.nurseId && props.nurseId !== 'undefined '? props.nurseId:'';
-        let doctorId = props.doctorId && props.doctorId !== 'undefined' ? props.doctorId:'';
-        let drugId = props.drugId && props.drugId !== 'undefined' ? props.drugId:'';
-       //return window.appStorage.getItem(key+this.view+props.nurseId+props.drugId+props.doctorId);
-       if(this.session['filters'] && this.session['filters'][key+this.view+nurseId+drugId+doctorId]) {
-        return this.session['filters'][key+this.view+nurseId+drugId+doctorId];
-       } else {
-        return null;
-       }
-       
+    get = (key, props) => {
+        let nurseId = props.nurseId && props.nurseId !== 'undefined ' ? props.nurseId : '';
+        let doctorId = props.doctorId && props.doctorId !== 'undefined' ? props.doctorId : '';
+        let drugId = props.drugId && props.drugId !== 'undefined' ? props.drugId : '';
+        if ( this.appContext.appState.filters &&  this.appContext.appState.filters[key + this.view + nurseId + drugId + doctorId]) {
+            return this.appContext.appState.filters[key + this.view + nurseId + drugId + doctorId];
+        } else {
+            return null;
+        }
+
     }
 }

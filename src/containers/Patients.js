@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -31,7 +31,6 @@ import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
 import Modal from '@mui/material/Modal';
-
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
@@ -41,10 +40,9 @@ import AngelNurse from '../api/angel/nurse';
 import AngelDrug from '../api/angel/drugs';
 import Transfer from '../components/Transfer';
 import ComboNurses from '../components/ComboNurses';
-import Filter from '../utils/filters';
-import Translation from '../utils/translation';
-import { useStore } from '../utils/store';
-
+import AppContext from '../contexts/AppContext';
+import { useTranslation } from '../hooks/userTranslation';
+import { useFilter } from '../hooks/useFilter';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -305,28 +303,24 @@ EnhancedTableToolbar.propTypes = {
 
 export default function Patients(props) {
   const { enqueueSnackbar } = useSnackbar();
-
-  const { session, dispatch } = useStore();
-  const [userSession,] = React.useState(session.user ? session.user : null);
-  const fltr = new Filter('patients', dispatch, session);
-  const lg = new Translation(userSession ? userSession.lang : 'en');
+  
+  const appContext = useContext(AppContext);
+  const [lg] = useTranslation(appContext.appState.lang);
+  const [filter] = useFilter('patients',appContext);
 
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
   const [limit, setLimit] = React.useState(5);
   const [, setPatients] = React.useState([]);
-
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState(null);
   const [selected, setSelected] = React.useState([]);
   const [dense,] = React.useState(false);
   const [rowsPerPage] = React.useState(5);
   const [rows, setRows] = React.useState([]);
-
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
   const [openTransferModal, setOpenTransferModal] = React.useState(false);
-
-  const [searchFilter, setSearchFilter] = React.useState(fltr.get('search', props));//React.useState(fltr.det('search', props));
+  const [searchFilter, setSearchFilter] = React.useState(filter.get('search', props));//filter.get('search', props)
   const [firstnameFilter, setFirstnameFilter] = React.useState(true);
   const [lastnameFilter, setLastnameFilter] = React.useState(true);
   const [emailFilter, setEmailFilter] = React.useState(true);
@@ -336,7 +330,7 @@ export default function Patients(props) {
 
 
   const fetchData = useCallback(async () => {
-
+    const userSession = appContext.appState.user;
     const u = [];
     let r = null;
     let o = {
@@ -401,15 +395,16 @@ export default function Patients(props) {
       setPatients([]);
       setTotal(0);
     }
-  }, [emailFilter, firstnameFilter, lastnameFilter, limit, page, phoneFilter, props.doctorId, props.drugId, props.nurseId, searchFilter, userSession]);
+  }, [emailFilter, firstnameFilter, lastnameFilter, limit, page, phoneFilter, props.doctorId, props.drugId, props.nurseId, searchFilter]);
 
   useEffect(() => {
-    if (userSession && userSession.nurse_id) {
-      countTransfers(userSession.nurse_id);
+    console.log('PatientsContainer.useEffects')
+    if (appContext.appState.user && appContext.appState.user.nurse_id) {
+      countTransfers(appContext.appState.user.nurse_id);
     }
 
     fetchData();
-  }, [fetchData]);
+  }, [fetchData, appContext]);
 
   const countTransfers = (id) => {
     AngelNurse().countTransfers({ nurse_id: id }).then(function (totalTransfers) {
@@ -508,7 +503,7 @@ export default function Patients(props) {
   };
   const handleSearchText = (txt) => {
     setSearchFilter(txt);
-    fltr.set('search', props, txt);
+    filter.set('search', props, txt);
   };
   const onNurseSelect = (nurseId) => {
     setTransferNurseId(nurseId);
@@ -516,7 +511,7 @@ export default function Patients(props) {
   const transferPatients = async () => {
     let nId = props.nurseId
     if(!nId) {
-      nId = userSession.nurse_id;
+      nId = appContext.appState.user.nurse_id;
     }
     if (selected.length && transferNurseId && nId) {
       let o = {
@@ -530,12 +525,11 @@ export default function Patients(props) {
       setSelected([]);
       setTimeout(function () {
         fetchData();
-        if (userSession.nurse_id) {
-          countTransfers(userSession.nurse_id);
+        if (appContext.appState.user.nurse_id) {
+          countTransfers(appContext.appState.user.nurse_id);
         }
       }, 500);
     } else { //
-      
       handleClickVariant('error', 'Please select some patients');
     }
   }
@@ -543,8 +537,8 @@ export default function Patients(props) {
     handleClickVariant('success', 'Patient well recovered');
     setTimeout(function () {
       fetchData();
-      if (userSession.nurse_id) {
-        countTransfers(userSession.nurse_id);
+      if (appContext.appState.user.nurse_id) {
+        countTransfers(appContext.appState.user.nurse_id);
       }
     }, 500);
   }
@@ -590,8 +584,8 @@ export default function Patients(props) {
           <EnhancedTableToolbar
             lg={lg}
             nurseId={props.nurseId}
-            nurse_id={(userSession && userSession.nurse_id) ? userSession.nurse_id : null}
-            doctor_id={(userSession && userSession.doctor_id) ? userSession.doctor_id : null}
+            nurse_id={(appContext.appState.user && appContext.appState.user.nurse_id) ? appContext.appState.user.nurse_id : null}
+            doctor_id={(appContext.appState.user && appContext.appState.user.doctor_id) ? appContext.appState.user.doctor_id : null}
             numSelected={selected.length} onDeleteItems={onDeleteItems}
             onTransferItems={handleTransferModal}
             onOpenFilterModal={handleFiltersModal}
@@ -613,7 +607,7 @@ export default function Patients(props) {
                 onSelectAllClick={handleSelectAllClick}
                 onRequestSort={handleRequestSort}
                 rowCount={rows.length}
-                user={userSession}
+                user={appContext.appState.user}
                 lg={lg}
               />
               <TableBody>
@@ -692,7 +686,7 @@ export default function Patients(props) {
                           style={{ textAlign: 'center' }}
                           padding='none' >
                           {
-                            (userSession && (userSession.nurse_id || userSession.doctor_id)) ?
+                            (appContext.appState.user && (appContext.appState.user.nurse_id || appContext.appState.user.doctor_id)) ?
                               <SickIcon color={'primary'} style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient_surveys', 'panel1')} /> :
                               <EmojiPeopleIcon color={'primary'} style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient_nurses')} />
                           }
@@ -704,7 +698,7 @@ export default function Patients(props) {
                           style={{ textAlign: 'center' }}
                           padding='none' >
                           {
-                            (userSession && userSession.doctor_id) ?
+                            (appContext.appState.user && appContext.appState.user.doctor_id) ?
                               <EmojiPeopleIcon color={'primary'} style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient_nurses')} /> :
                               <HailIcon color={'primary'} style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname, 'patient_doctors')} />
                           }

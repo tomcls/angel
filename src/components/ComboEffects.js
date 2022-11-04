@@ -7,11 +7,11 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import throttle from 'lodash/throttle';
 import AngelSideEffect from '../api/angel/sideEffect';
-import { useStore } from '../utils/store';
+import AppContext from '../contexts/AppContext';
 
 export default function ComboEffects(props) {
-  const { session, } = useStore();
-  const [userSession,] = React.useState(session.user ? session.user : null);
+  const appContext = React.useContext(AppContext);
+  const [userSession,] = React.useState(appContext.appState.user);
   const [value, setValue] = React.useState(null);
   const [inputValue, setInputValue] = React.useState('');
   const [options, setOptions] = React.useState([]);
