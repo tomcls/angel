@@ -1,4 +1,39 @@
 export const il8n = {
+    "The user already exists for this email address": {
+        "en":"The user already exists for this email address",
+        "fr":"L'utilisateur existe déja pour cette addresse email",
+        "nl":"The user already exists for this email address"
+    },
+    "An error has occurred": {
+        "en":"An error has occurred",
+        "fr":"Une erreur est survenue",
+        "nl":"An error has occurred"
+    },
+    "The nurse and patient are required": {
+        "en":"The nurse and patient are required",
+        "fr":"L'infirmière et patient sont requis",
+        "nl":"The nurse and patient are required"
+    },
+    "An error occurred in the assignment of a nurse": {
+        "en":"An error occurred in the assignment of a nurse",
+        "fr":"Une erreur est survenue lors de l'assignation d'une infirmiere",
+        "nl":"An error occurred in the assignment of a nurse"
+    },
+    "Doctor and patient are required": {
+        "en":"Doctor and patient are required",
+        "fr":"Le docteur et patient sont requis",
+        "nl":"Doctor and patient are required"
+    },
+    "An error occurred while assigning a patient": {
+        "en":"An error occurred while assigning a patient",
+        "fr":"Une erreur est survenue lors de l'assignation d'un patient",
+        "nl":"An error occurred while assigning a patient"
+    },
+    "Save the patient before upload the image please": {
+        "en":"Save the patient before upload the image please",
+        "fr":"Enregistrer le patient avant de televerser l'image",
+        "nl":"Save the patient before upload the image please"
+    },
     "Add your description or upload a doc with the link here under": {
         "en":"Add your description or upload a doc with the link here under",
         "fr":"Ajouter votre propre description ou televerser un document avec le lien ci-dessous",

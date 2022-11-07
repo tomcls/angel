@@ -43,27 +43,27 @@ export default function PatientContainer(props) {
 
     const [id, setId] = React.useState(null);
     const [patientId, setPatientId] = React.useState(null);
-    const [firstname, setFirstname] = React.useState('');
-    const [lastname, setLastname] = React.useState('');
-    const [email, setEmail] = React.useState('');
-    const [sex, setSex] = React.useState('');
-    const [lang, setLang] = React.useState('');
-    const [closeMonitoring, setCloseMonitoring] = React.useState('');
-    const [dateOfBirth, setDateOfBirth] = React.useState('');
-    const [emergencyContactName, setEmergencyContactName] = React.useState('');
-    const [emergencyContactRelationship, setEmergencyContactRelationship] = React.useState('');
-    const [phone, setPhone] = React.useState('');
-    const [emergencyContactPhone, setEmergencyContactPhone] = React.useState('');
+    const [firstname, setFirstname] = React.useState();
+    const [lastname, setLastname] = React.useState();
+    const [email, setEmail] = React.useState();
+    const [sex, setSex] = React.useState();
+    const [lang, setLang] = React.useState();
+    const [closeMonitoring, setCloseMonitoring] = React.useState();
+    const [dateOfBirth, setDateOfBirth] = React.useState();
+    const [emergencyContactName, setEmergencyContactName] = React.useState();
+    const [emergencyContactRelationship, setEmergencyContactRelationship] = React.useState();
+    const [phone, setPhone] = React.useState();
+    const [emergencyContactPhone, setEmergencyContactPhone] = React.useState();
     const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp0LF2WgeDkn_sQ1VuMnlnVGjkDvCN4jo2nLMt3b84ry328rg46eohB_JT3WTqOGJovY&usqp=CAU';//process.env.SENDGRID_APIKEY
     const [avatar, setAvatar] = React.useState(defaultAvatar);
 
-    const [address, setAddress] = React.useState('');
-    const [streetNumber, setStreetNumber] = React.useState('');
+    const [address, setAddress] = React.useState();
+    const [streetNumber, setStreetNumber] = React.useState();
     const [city, setCity] = React.useState('');
-    const [zip, setZip] = React.useState('');
-    const [country, setCountry] = React.useState('');
+    const [zip, setZip] = React.useState();
+    const [country, setCountry] = React.useState();
 
-    const [password, setPassword] = React.useState('');
+    const [password, setPassword] = React.useState();
     const [showPassword, setShowPassword] = React.useState(false);
     const [active, setActive] = React.useState('N');
     const [switchState, setSwitchState] = React.useState(false);
@@ -151,9 +151,17 @@ export default function PatientContainer(props) {
             } else {
                 try {
                     const user = await AngelUser().add(u);
-                    setId(user.inserted_id)
-                    await setPatient(user.inserted_id);
-                    handleClickVariant('success', lg.get('User well added!'));
+                    if(user.inserted_id){
+                        setId(user.inserted_id)
+                        await setPatient(user.inserted_id);
+                        handleClickVariant('success', lg.get('User well added!'));
+                    } else {
+                        if(user.error && user.error === "user_exists") {
+                            handleClickVariant('error', lg.get("The user already exists for this email address"));
+                        } else {
+                            handleClickVariant('error', lg.get("An error has occurred"));
+                        }
+                    }
                 } catch (e) {
                     handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
                 }
@@ -228,10 +236,14 @@ export default function PatientContainer(props) {
         }
     };
     const onFileChange = async (e) => {
-        setFile({ file: e.target.files[0] });
-        const u = await AngelUser().upload(e.target.files[0], 'avatar', id);
-        setAvatar(process.env.REACT_APP_API_URL + '/public/uploads/' + u.filename);
-        handleClickVariant('success', lg.get('Image well uploaded'));
+        if(id) {
+            setFile({ file: e.target.files[0] });
+            const u = await AngelUser().upload(e.target.files[0], 'avatar', id);
+            setAvatar(process.env.REACT_APP_API_URL + '/public/uploads/' + u.filename);
+            handleClickVariant('success', lg.get('Image well uploaded'));
+        } else {
+            handleClickVariant('error', lg.get('Save the patient before upload the image please'));
+        }
     };
     const handleAssignNurseModal = () => setOpenAssignNurseModal(true);
     const handleCloseAssignNurseModal = () => setOpenAssignNurseModal(false);
@@ -254,10 +266,10 @@ export default function PatientContainer(props) {
                 await AngelDoctor().addPatient(u);
                 handleClickVariant('success', lg.get('Patient well assigned!'));
             } catch (e) {
-                handleClickVariant('error', "Une erreur est survenue lors de l'assignation d'un patient ");
+                handleClickVariant('error', lg.get("Une erreur est survenue lors de l'assignation d'un patient "));
             }
         } else {
-            handleClickVariant('error', "Le docteur et patient sont requis");
+            handleClickVariant('error', lg.get("Le docteur et patient sont requis"));
         }
     }
     const onAssignNurse = async () => {
@@ -270,10 +282,10 @@ export default function PatientContainer(props) {
                 await AngelNurse().addPatient(u);
                 handleClickVariant('success', lg.get('Patient well assigned!'));
             } catch (e) {
-                handleClickVariant('error', "Une erreur est survenue lors de l'assignation d'une infirmiere ");
+                handleClickVariant('error', lg.get("An error occurred in the assignment of a nurse "));
             }
         } else {
-            handleClickVariant('error', "L'infirmatiere et patient sont requis");
+            handleClickVariant('error', lg.get("The nurse and patient are required"));
         }
     }
     const styleModal = {

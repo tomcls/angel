@@ -29,14 +29,14 @@ export default function LaboratoryContainer(props) {
 
     const [id, setId] = React.useState(null);
     const [, setLaboratoryId] = React.useState(null);
-    const [name, setName] = React.useState('');
-    const [email, setEmail] = React.useState('');
-    const [phone, setPhone] = React.useState('');
-    const [address, setAddress] = React.useState('');
-    const [streetNumber, setStreetNumber] = React.useState('');
-    const [city, setCity] = React.useState('');
-    const [zip, setZip] = React.useState('');
-    const [country, setCountry] = React.useState('');
+    const [name, setName] = React.useState();
+    const [email, setEmail] = React.useState();
+    const [phone, setPhone] = React.useState();
+    const [address, setAddress] = React.useState();
+    const [streetNumber, setStreetNumber] = React.useState();
+    const [city, setCity] = React.useState();
+    const [zip, setZip] = React.useState();
+    const [country, setCountry] = React.useState();
 
 
     React.useEffect(() => {

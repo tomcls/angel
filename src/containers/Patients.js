@@ -310,7 +310,7 @@ export default function Patients(props) {
 
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
-  const [limit, setLimit] = React.useState(5);
+  const [limit, setLimit] = React.useState(25);
   const [, setPatients] = React.useState([]);
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState(null);
@@ -404,7 +404,7 @@ export default function Patients(props) {
     }
 
     fetchData();
-  }, [fetchData, appContext]);
+  }, [fetchData, appContext, page, limit]);
 
   const countTransfers = (id) => {
     AngelNurse().countTransfers({ nurse_id: id }).then(function (totalTransfers) {
@@ -481,10 +481,6 @@ export default function Patients(props) {
   };
   const isSelected = (id) => selected.indexOf(id) !== -1;
 
-  // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
-
   const search = (variant, text) => {
     // variant could be success, error, warning, info, or default
     fetchData();
@@ -541,6 +537,9 @@ export default function Patients(props) {
         countTransfers(appContext.appState.user.nurse_id);
       }
     }, 500);
+  }
+  const onPageChange = (event, newPage) => {
+    setPage(newPage);
   }
   return (
     <>
@@ -612,7 +611,6 @@ export default function Patients(props) {
               />
               <TableBody>
                 {stableSort(rows, getComparator(order, orderBy))
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => {
                     const isItemSelected = isSelected(row.patient_id);
                     const labelId = `enhanced-table-checkbox-${row.patient_id}`;
@@ -714,26 +712,17 @@ export default function Patients(props) {
                       </TableRow>
                     );
                   })}
-                {emptyRows > 0 && (
-                  <TableRow
-                    style={{
-                      height: (dense ? 33 : 53) * emptyRows,
-                    }}
-                  >
-                    <TableCell colSpan={6} />
-                  </TableRow>
-                )}
               </TableBody>
             </Table>
           </TableContainer>
           <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
+            rowsPerPageOptions={[2,5, 10, 25]}
             component='div'
             count={total ? total : 0}
             rowsPerPage={limit}
             page={page}
-            onPageChange={setPage}
-            onRowsPerPageChange={(e) => { setLimit(e.target.value) }}
+            onPageChange={onPageChange}
+            onRowsPerPageChange={(e) => { setLimit(e.target.value); setPage(0); }}
           />
         </Paper>
       </Box>

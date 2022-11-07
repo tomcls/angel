@@ -52,6 +52,7 @@ function getComparator(order, orderBy) {
 // This method is created for cross-browser compatibility, if you don't
 // need to support IE11, you can use Array.prototype.sort() directly
 function stableSort(array, comparator) {
+  console.log('stableSort', array)
   const stabilizedThis = array.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -235,11 +236,10 @@ export default function Drugs(props) {
   const [userSession,] = React.useState(appContext.appState.user);
   const [lg] = useTranslation(userSession ? userSession.lang : 'en');
 
-  const [, setDrugs] = React.useState(null);
 
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
-  const [limit, setLimit] = React.useState(5);
+  const [limit, setLimit] = React.useState(25);
 
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('id');
@@ -257,7 +257,7 @@ export default function Drugs(props) {
 
   React.useEffect(() => {
     fetchData();
-  }, []);
+  }, [page, limit]);
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -274,10 +274,10 @@ export default function Drugs(props) {
       notice
     }
   }
-  const fetchData = async () => {
+  const fetchData = async (newPage) => {
     const u = [];
     let r = null; //
-    let o = { limit: limit, page: page, lang_id: 'en' };
+    let o = { limit: limit, page: newPage?newPage:page, lang_id: 'en' };
 
     if (codeFilter) {
       o.code = searchFilter;
@@ -295,8 +295,8 @@ export default function Drugs(props) {
     } else {
       r = await AngelDrug().list(o);
     }
-
-    if (r.drugs && r.drugs.length) {
+    
+    if (r.drugs && r.drugs.length > 0) {
       for (let i = 0; i < r.drugs.length; i++) {
         u.push(createData(
           r.drugs[i].drug_id,
@@ -307,12 +307,12 @@ export default function Drugs(props) {
           r.drugs[i].notice ? process.env.REACT_APP_API_URL + '/public/drugs/documents/' + r.drugs[i].notice : null)
         );
       }
+      console.log("setRows",u.length);
       setRows(u);
-      setDrugs(r.drugs);
       setTotal(r.total);
+    
     } else {
       setRows([]);
-      setDrugs([]);
       setTotal(0);
     }
   }
@@ -379,10 +379,10 @@ export default function Drugs(props) {
     // variant could be success, error, warning, info, or default
     enqueueSnackbar(text, { variant });
   };
-  // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
-
+  
+  const onPageChange = (event, newPage) => {
+    setPage(newPage);
+  }
   return (
     <>
       <div>
@@ -421,9 +421,10 @@ export default function Drugs(props) {
                 rowCount={rows.length}
               />
               <TableBody>
-                {stableSort(rows, getComparator(order, orderBy))
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row, index) => {
+                {
+                stableSort(rows, getComparator(order, orderBy))
+               //.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+               .map((row, index) => {
                     const isItemSelected = isSelected(row.id);
                     const labelId = `enhanced-table-checkbox-${row.id}`;
                     return (
@@ -507,15 +508,6 @@ export default function Drugs(props) {
                       </TableRow>
                     );
                   })}
-                {emptyRows > 0 && (
-                  <TableRow
-                    style={{
-                      height: (dense ? 33 : 53) * emptyRows,
-                    }}
-                  >
-                    <TableCell colSpan={6} />
-                  </TableRow>
-                )}
               </TableBody>
             </Table>
           </TableContainer>
@@ -525,8 +517,8 @@ export default function Drugs(props) {
             count={total ? total : 0}
             rowsPerPage={limit}
             page={page}
-            onPageChange={setPage}
-            onRowsPerPageChange={(e) => { setLimit(e.target.value) }}
+            onPageChange={onPageChange}
+            onRowsPerPageChange={(e) => { setLimit(e.target.value); setPage(0); }}
           />
         </Paper>
       </Box>
