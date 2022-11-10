@@ -226,14 +226,13 @@ export default function PatientSurveyMoods(props) {
 
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
-  const [limit, setLimit] = React.useState(30);
+  const [limit, setLimit] = React.useState(25);
   const [, setMoods] = React.useState([]);
 
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('');
   const [selected, setSelected] = React.useState([]);
   const [dense, ] = React.useState(false);
-  const [rowsPerPage, ] = React.useState(30);
   const [rows, setRows] = React.useState([]);
 
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
@@ -249,7 +248,7 @@ export default function PatientSurveyMoods(props) {
   React.useEffect(() => {
     fetchDataEffects();
     // eslint-disable-next-line
-  }, [props.moods]);
+  }, [props.moods, page, limit]);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -386,10 +385,6 @@ export default function PatientSurveyMoods(props) {
     enqueueSnackbar(text, { variant });
   };
 
-  // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
-
   const search = (variant, text) => {
     // variant could be success, error, warning, info, or default
     fetchDataEffects();
@@ -457,6 +452,9 @@ export default function PatientSurveyMoods(props) {
     }
     var datestring = day + "/" + month + "/" + d.getFullYear();
     return datestring;
+  }
+  const onPageChange = (event, newPage) => {
+    setPage(newPage);
   }
   return (<>
     <div>
@@ -528,7 +526,6 @@ export default function PatientSurveyMoods(props) {
             />
             <TableBody>
               {stableSort(rows, getComparator(order, orderBy))
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   const isItemSelected = isSelected(row.id);
                   const labelId = `enhanced-table-checkbox-${index}`;
@@ -583,15 +580,6 @@ export default function PatientSurveyMoods(props) {
                     </TableRow>
                   );
                 })}
-              {emptyRows > 0 && (
-                <TableRow
-                  style={{
-                    height: (dense ? 33 : 53) * emptyRows,
-                  }}
-                >
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
             </TableBody>
           </Table>
         </TableContainer>
@@ -601,8 +589,8 @@ export default function PatientSurveyMoods(props) {
           count={total ? total : 0}
           rowsPerPage={limit}
           page={page}
-          onPageChange={setPage}
-          onRowsPerPageChange={(e) => { setLimit(e.target.value) }}
+          onPageChange={onPageChange}
+          onRowsPerPageChange={(e) => { setLimit(e.target.value); setPage(0); }}
         />
       </Paper>
     </Box>

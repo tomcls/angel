@@ -316,7 +316,6 @@ export default function Patients(props) {
   const [orderBy, setOrderBy] = React.useState(null);
   const [selected, setSelected] = React.useState([]);
   const [dense,] = React.useState(false);
-  const [rowsPerPage] = React.useState(5);
   const [rows, setRows] = React.useState([]);
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
   const [openTransferModal, setOpenTransferModal] = React.useState(false);
