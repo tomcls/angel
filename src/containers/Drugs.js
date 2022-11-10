@@ -26,6 +26,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
 import BiotechIcon from '@mui/icons-material/Biotech';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import Modal from '@mui/material/Modal';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -194,12 +195,17 @@ const EnhancedTableToolbar = (props) => {
         </Typography>
       ) : (<></>
       )}
-      {numSelected > 0 ? (
+      {numSelected > 0 ? (<>
         <Tooltip title='Delete'>
           <IconButton onClick={props.onDeleteItems}>
             <DeleteIcon />
           </IconButton>
         </Tooltip>
+        <Tooltip title='Duplicate'>
+          <IconButton onClick={props.onDuplicate}>
+            <ContentCopyIcon />
+          </IconButton>
+        </Tooltip></>
       ) : (<Grid container >
         <Grid item md={12}>
           <TextField
@@ -222,10 +228,10 @@ const EnhancedTableToolbar = (props) => {
     </Toolbar>
   );
 };
-
 EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
   onDeleteItems: PropTypes.func,
+  onDuplicate: PropTypes.func,
   onSearch: PropTypes.func,
   onOpenFilterModal: PropTypes.func,
   setSearch: PropTypes.func,
@@ -257,7 +263,7 @@ export default function Drugs(props) {
 
   React.useEffect(() => {
     fetchData();
-  }, [page, limit]);
+  }, [page, limit,selected]);
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -358,7 +364,14 @@ export default function Drugs(props) {
     if (selected.length) {
       await AngelDrug().delete({ ids: selected.join(',') });
       handleClickVariant('success', 'Treatment(s) well deleted');
-      fetchData();
+      setSelected([]);
+    }
+  }
+  const onDuplicate = async () => {
+    if (selected.length) {
+      await AngelDrug().duplicate({ ids: selected });
+      handleClickVariant('success', 'Treatment(s) well duplicated');
+      setSelected([]);
     }
   }
 
@@ -404,7 +417,7 @@ export default function Drugs(props) {
       </div>
       <Box sx={{ width: '100%' }}>
         <Paper sx={{ width: '100%', mb: 0 }}>
-          <EnhancedTableToolbar lg={lg} numSelected={selected.length} onDeleteItems={onDeleteItems} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
+          <EnhancedTableToolbar lg={lg} numSelected={selected.length} onDeleteItems={onDeleteItems} onDuplicate={onDuplicate} onOpenFilterModal={handleFiltersModal} onSearch={search} setSearch={handleSearchText} />
           <TableContainer>
             <Table
               sx={{ minWidth: 750 }}

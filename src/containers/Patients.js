@@ -470,8 +470,14 @@ export default function Patients(props) {
   };
   const onDeleteItems = async () => {
     if (selected.length) {
-      await AngelUser().delete({ ids: selected.join(',') });
-      handleClickVariant('success', 'Doctor(s) well deleted');
+      if (appContext.appState.user && appContext.appState.user.nurse_id) {
+       await  AngelPatient().delete({ ids: selected.join(',') })
+      } else if (appContext.appState.user && appContext.appState.user.doctor_id) {
+        AngelPatient().delete({ ids: selected.join(',') })
+      } else {
+        await AngelUser().delete({ ids: selected.join(',') });
+      }
+      handleClickVariant('success', 'Patient(s) well deleted');
       await fetchData();
     }
   }
