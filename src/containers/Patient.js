@@ -32,6 +32,8 @@ import AngelDoctor from '../api/angel/doctor';
 import ComboDoctors from '../components/ComboDoctors';
 import { useTranslation } from '../hooks/userTranslation';
 import AppContext from '../contexts/AppContext';
+import AngelDrug from '../api/angel/drugs';
+import PosologyComponent from '../components/Posology';
 
 export default function PatientContainer(props) {
 
@@ -43,6 +45,7 @@ export default function PatientContainer(props) {
 
     const [id, setId] = React.useState(null);
     const [patientId, setPatientId] = React.useState(null);
+    const [patient, setPatient] = React.useState(null);
     const [firstname, setFirstname] = React.useState();
     const [lastname, setLastname] = React.useState();
     const [email, setEmail] = React.useState();
@@ -73,6 +76,14 @@ export default function PatientContainer(props) {
     const [assignNurseId, setAssignNurseId] = React.useState(null);
     const [assignDoctorId, setAssignDoctorId] = React.useState(null);
     const [openAssignDoctorModal, setOpenAssignDoctorModal] = React.useState(null);
+    const [openAssignPatientModal, setOpenAssignPatientModal] = React.useState(false);
+
+    const [drugId, setDrugId] = React.useState(null);
+    const [drug, setDrug] = React.useState(null);
+    const [repetition,] = React.useState(props.repetition);
+    const [note,] = React.useState(props.note);
+    const [days,] = React.useState(props.days);
+    const [hours,] = React.useState([12]);
 
     React.useEffect(() => {
         if (props.userId) {
@@ -103,6 +114,7 @@ export default function PatientContainer(props) {
                 } else {
                     setSwitchState(true);
                 }
+                setPatient({ id: user.patient_id, patient_id: user.patient_id, firstname: user.firstname,  lastname: user.lastname});
             }
             fetchData();
         }
@@ -143,7 +155,7 @@ export default function PatientContainer(props) {
                 u.id = id;
                 try {
                     await AngelUser().update(u);
-                    await setPatient();
+                    await savePatient();
                     handleClickVariant('success', lg.get('User well updated!'));
                 } catch (e) {
                     handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
@@ -151,12 +163,12 @@ export default function PatientContainer(props) {
             } else {
                 try {
                     const user = await AngelUser().add(u);
-                    if(user.inserted_id){
+                    if (user.inserted_id) {
                         setId(user.inserted_id)
-                        await setPatient(user.inserted_id);
+                        await savePatient(user.inserted_id);
                         handleClickVariant('success', lg.get('User well added!'));
                     } else {
-                        if(user.error && user.error === "user_exists") {
+                        if (user.error && user.error === "user_exists") {
                             handleClickVariant('error', lg.get("The user already exists for this email address"));
                         } else {
                             handleClickVariant('error', lg.get("An error has occurred"));
@@ -168,7 +180,7 @@ export default function PatientContainer(props) {
             }
         }
     };
-    const setPatient = async (userId) => {
+    const savePatient = async (userId) => {
 
         const p = {
             user_id: userId ? userId : id,
@@ -236,7 +248,7 @@ export default function PatientContainer(props) {
         }
     };
     const onFileChange = async (e) => {
-        if(id) {
+        if (id) {
             setFile({ file: e.target.files[0] });
             const u = await AngelUser().upload(e.target.files[0], 'avatar', id);
             setAvatar(process.env.REACT_APP_API_URL + '/public/uploads/' + u.filename);
@@ -288,6 +300,38 @@ export default function PatientContainer(props) {
             handleClickVariant('error', lg.get("The nurse and patient are required"));
         }
     }
+    const handleAssignPatientModal = async () => {
+        setOpenAssignPatientModal(true);
+    }
+    const handleCloseAssignPatientModal = () => setOpenAssignPatientModal(false);
+    const onAssignTreatment = async e => {
+        if (!e.patient_id || !e.drug_id || !e.startDate || !e.hours || !e.days) {
+            try {
+                const u = {
+                    patient_id: e.patient_id,
+                    drug_id: e.drug_id,
+                    start_date: formatDate(e.start_date),
+                    end_date: e.end_date ? formatDate(e.end_date) : null,
+                    days: JSON.stringify(e.days),
+                    hours: JSON.stringify(e.hours),
+                    repetition: e.repetition,
+                    type: e.type ? e.type : null,
+                    note: e.note ? e.note : null
+                };
+                const a = await AngelDrug().addPatient(u);
+                if (a && a.code) {
+                    handleClickVariant('error', a.code);
+                } else {
+                    handleClickVariant('success', lg.get('Patient well assigned!'));
+                    handleCloseAssignPatientModal();
+                }
+            } catch (e) {
+                handleClickVariant('error', JSON.stringify(e));
+            }
+        } else {
+            handleClickVariant('error', lg.get('Patient, hours and frequency are required'));
+        }
+    }
     const styleModal = {
         position: 'absolute',
         top: '50%',
@@ -302,6 +346,23 @@ export default function PatientContainer(props) {
     return (
         <>
             <div>
+                <Modal
+                    open={openAssignPatientModal}
+                    onClose={handleCloseAssignPatientModal}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description">
+                    <PosologyComponent
+                        onSave={onAssignTreatment}
+                        days={days}
+                        repetition={repetition}
+                        hours={hours}
+                        note={note}
+                        patientId={patientId}
+                        drugId={drugId}
+                        drug={drug}
+                        patient={patient}
+                        lg={lg} />
+                </Modal>
                 <Modal
                     open={openAssignDoctorModal}
                     onClose={handleCloseAssignDoctorModal}
@@ -345,6 +406,7 @@ export default function PatientContainer(props) {
                 </Typography>
                 <Button onClick={handleAssignNurseModal} variant="outlined" style={{ marginRight: '5px' }}>{lg.get('Assign a nurse')}</Button>
                 <Button onClick={handleAssignDoctorModal} variant="outlined" style={{ marginRight: '5px' }}>{lg.get('Assign a doctor')}</Button>
+                <Button variant="outlined" style={{ marginRight: '5px' }} onClick={handleAssignPatientModal}>{lg.get('Assign a treatment')}</Button>
                 <Grid container spacing={2}>
                     <Grid item xs={12} sm={6} md={4} xl={2} style={{ paddingTop: '40px' }}>
                         <Grid item xs={12} style={{ width: '205px', height: '205px', textAlign: "center", border: '3px solid #ddd', borderRadius: '5px', margin: 'auto' }} >

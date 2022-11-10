@@ -245,7 +245,7 @@ export default function PatientTreatments(props) {
   const [, setTreatments] = React.useState(null);
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
-  const [limit, setLimit] = React.useState(5);
+  const [limit, setLimit] = React.useState(25);
   const [order, setOrder] = React.useState(null);
   const [orderBy, setOrderBy] = React.useState(null);
   const [selected, setSelected] = React.useState([]);
@@ -273,7 +273,7 @@ export default function PatientTreatments(props) {
 
   React.useEffect(() => {
     fetchData();
-  }, []);
+  }, [ limit, page]);
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -436,7 +436,6 @@ export default function PatientTreatments(props) {
     // variant could be success, error, warning, info, or default
     enqueueSnackbar(text, { variant });
   };
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
   const handleAssignPatientModal = async (row) => {
     setId(row.id)
     setPosologyId(row.posology)
@@ -488,6 +487,9 @@ export default function PatientTreatments(props) {
     }
   }
 
+  const onPageChange = (event, newPage) => {
+    setPage(newPage);
+  }
   const formatDate = (v) => {
     let d = new Date(v);
     var datestring = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":00";
@@ -550,7 +552,6 @@ export default function PatientTreatments(props) {
               />
               <TableBody>
                 {stableSort(rows, getComparator(order, orderBy))
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row, index) => {
                     const isItemSelected = isSelected(row.id);
                     const labelId = `enhanced-table-checkbox-${index}`;
@@ -640,15 +641,6 @@ export default function PatientTreatments(props) {
                       </TableRow>
                     );
                   })}
-                {emptyRows > 0 && (
-                  <TableRow
-                    style={{
-                      height: (dense ? 33 : 53) * emptyRows,
-                    }}
-                  >
-                    <TableCell colSpan={6} />
-                  </TableRow>
-                )}
               </TableBody>
             </Table>
           </TableContainer>
@@ -658,8 +650,8 @@ export default function PatientTreatments(props) {
             count={total ? total : 0}
             rowsPerPage={limit}
             page={page}
-            onPageChange={setPage}
-            onRowsPerPageChange={(e) => { setLimit(e.target.value) }}
+            onPageChange={onPageChange}
+            onRowsPerPageChange={(e) => { setLimit(e.target.value); setPage(0); }}
           />
         </Paper>
       </Box>
