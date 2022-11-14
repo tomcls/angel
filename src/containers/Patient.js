@@ -80,13 +80,12 @@ export default function PatientContainer(props) {
 
     const [drugId, ] = React.useState(null);
     const [drug, ] = React.useState(null);
-    const [repetition,] = React.useState(props.repetition);
-    const [note,] = React.useState(props.note);
-    const [days,] = React.useState(props.days);
+    const [repetition,] = React.useState(null);
+    const [note,] = React.useState(null);
+    const [days,] = React.useState(null);
     const [hours,] = React.useState([12]);
 
     React.useEffect(() => {
-        console.log("React.useEffect.patient",props.userId)
         if (props.userId) {
             fetchData();
         }
@@ -448,7 +447,7 @@ export default function PatientContainer(props) {
                         <Box >
                             <MobileDatePicker
                                 key="birthday"
-                                id={lg.get('Birthday')}
+                                id="birthday"
                                 label={lg.get('Birthday')}
                                 inputFormat="MM/dd/yyyy"
                                 value={dateOfBirth ? dateOfBirth : null}

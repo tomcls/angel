@@ -257,18 +257,19 @@ export default function PatientTreatments(props) {
   const [codeFilter, setCodeFilter] = React.useState(true);
   const [nameFilter, setNameFilter] = React.useState(true);
   const [openAssignPatientModal, setOpenAssignPatientModal] = React.useState(false);
+
   const [repetition, setRepetition] = React.useState(props.repetition);
   const [note, setNote] = React.useState(props.note);
   const [days, setWeek] = React.useState(props.days);
   const [hours, setHours] = React.useState([12]);
-  const [startDate, setStartDate] = React.useState(props.startDate);
-  const [endDate, setEndDate] = React.useState(props.endDate);
-  const [patientId, setPatientId] = React.useState(props.patientId);
-  const [patient, setPatient] = React.useState(null);
-  const [drug, setDrug] = React.useState(null);
-  const [drugId, setDrugId] = React.useState(props.drugId);
+  const [startDate, setStartDate] = React.useState();
+  const [endDate, setEndDate] = React.useState();
+  const [patientId, setPatientId] = React.useState();
+  const [patient, setPatient] = React.useState();
+  const [drug, setDrug] = React.useState();
+  const [drugId, setDrugId] = React.useState();
   const [id, setId] = React.useState(null);
-  const [posologyId, setPosologyId] = React.useState(null);
+  const [posologyId, setPosologyId] = React.useState();
 
 
   React.useEffect(() => {
@@ -294,7 +295,9 @@ export default function PatientTreatments(props) {
     days,
     hours,
     note,
-    repetition
+    repetition,
+    startdate,
+    enddate
   ) => {
 
     return {
@@ -313,7 +316,9 @@ export default function PatientTreatments(props) {
       days,
       hours,
       note,
-      repetition
+      repetition,
+      startdate,
+      enddate
     }
   }
   const fetchData = async () => {
@@ -350,8 +355,8 @@ export default function PatientTreatments(props) {
           r.treatments[i].code,
           displayDate(r.treatments[i].date_created),
           r.treatments[i].posology_id,
-          displayDate(r.treatments[i].start_date),
-          displayDate(r.treatments[i].end_date),
+          r.treatments[i].start_date?displayDate(r.treatments[i].start_date):null,
+          r.treatments[i].end_date?displayDate(r.treatments[i].end_date):null,
           r.treatments[i].firstname,
           r.treatments[i].lastname,
           r.treatments[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.treatments[i].avatar : defaultAvatar,
@@ -360,7 +365,9 @@ export default function PatientTreatments(props) {
           r.treatments[i].days,
           r.treatments[i].hours,
           r.treatments[i].note,
-          r.treatments[i].repetition
+          r.treatments[i].repetition,
+          r.treatments[i].start_date,
+          r.treatments[i].enddate
         ));
       }
       setRows(u);
@@ -443,8 +450,8 @@ export default function PatientTreatments(props) {
     setWeek(JSON.parse(row.days));
     setDrugId(row.drug_id);
     setPatientId(row.patient_id);
-    setStartDate(row.start_date);
-    setEndDate(row.end_date);
+    setStartDate(row.startdate);
+    setEndDate(row.enddate);
     setRepetition(row.repetition);
     setNote(row.note);
     const p = await AngelPatient().find({ patient_id: row.patient_id })

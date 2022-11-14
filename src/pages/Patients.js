@@ -50,22 +50,16 @@ export default function PatientsPage(props) {
   const t = useMemo(() => {
     return new Tabs('patient', tabIndex, tabs, setTabs, setSelectedTab, setTabIndex, newBtn, lg)
   });
-  
   //const t = new Tabs('patient', tabIndex, tabs, setTabs, setSelectedTab, setTabIndex, newBtn, lg);
-
   React.useEffect(() => {
-    console.log("PatientsPage.useEffect",appContext.appState.lang)
     let d = document.getElementById('newButton');
     if (d) {
       d.clk = function (id, text, type) { t.openTab(id, text, type); };
     }
-    console.log('PatientsPage.useEffect',props.lang )
   }, [props.lang, appContext]);
-
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
-
   const openPatientTab = (userId, text) => {
     t.createTab('patient', text, userId)
   }
