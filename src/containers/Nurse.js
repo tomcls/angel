@@ -41,33 +41,33 @@ export default function NurseContainer(props) {
     const [userSession,] = React.useState(appContext.appState.user);
     const [lg] = useTranslation(userSession ? userSession.lang : 'en');
 
-    const [id, setId] = React.useState(null);
-    const [nurseId, setNurseId] = React.useState(null);
-    const [firstname, setFirstname] = React.useState('');
-    const [lastname, setLastname] = React.useState('');
-    const [email, setEmail] = React.useState('');
-    const [sex, setSex] = React.useState('');
-    const [lang, setLang] = React.useState('');
-    const [dateOfBirth, setDateOfBirth] = React.useState('');
-    const [phone, setPhone] = React.useState('');
+    const [id, setId] = React.useState();
+    const [nurseId, setNurseId] = React.useState();
+    const [firstname, setFirstname] = React.useState();
+    const [lastname, setLastname] = React.useState();
+    const [email, setEmail] = React.useState();
+    const [sex, setSex] = React.useState();
+    const [lang, setLang] = React.useState();
+    const [dateOfBirth, setDateOfBirth] = React.useState();
+    const [phone, setPhone] = React.useState();
     const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp0LF2WgeDkn_sQ1VuMnlnVGjkDvCN4jo2nLMt3b84ry328rg46eohB_JT3WTqOGJovY&usqp=CAU';//process.env.SENDGRID_APIKEY
     const [avatar, setAvatar] = React.useState(defaultAvatar);
-    const [address, setAddress] = React.useState('');
-    const [streetNumber, setStreetNumber] = React.useState('');
-    const [city, setCity] = React.useState('');
-    const [zip, setZip] = React.useState('');
-    const [country, setCountry] = React.useState('');
-    const [password, setPassword] = React.useState('');
+    const [address, setAddress] = React.useState();
+    const [streetNumber, setStreetNumber] = React.useState();
+    const [city, setCity] = React.useState();
+    const [zip, setZip] = React.useState();
+    const [country, setCountry] = React.useState();
+    const [password, setPassword] = React.useState();
     const [showPassword, setShowPassword] = React.useState(false);
     const [week, setWeek] = React.useState(() => []);
-    const [hospitalId, setHospitalId] = React.useState(() => '');
-    const [hospitalName, setHospitalName] = React.useState(() => '');
+    const [hospitalId, setHospitalId] = React.useState();
+    const [hospitalName, setHospitalName] = React.useState();
     const [openAssignPatientModal, setOpenAssignModal] = React.useState(false);
-    const [assignPatientId, setAssignPatientId] = React.useState(null);
+    const [assignPatientId, setAssignPatientId] = React.useState();
     const [active, setActive] = React.useState('N');
     const [switchState, setSwitchState] = React.useState(false);
-    const [, setFile] = React.useState(null);
-    const uploadFileButton = useRef(null);
+    const [, setFile] = React.useState();
+    const uploadFileButton = useRef();
 
 
     React.useEffect(() => {
@@ -181,7 +181,6 @@ export default function NurseContainer(props) {
         return datestring;
     }
     const handleDateOfBirthChange = (newValue) => {
-        console.log(newValue)
         setDateOfBirth(newValue);
     };
     const handleClickShowPassword = () => {
@@ -310,12 +309,12 @@ export default function NurseContainer(props) {
                             }}
                         />
                         <Box >
-                            <MobileDatePicker
+                        <MobileDatePicker
                                 key="birthday"
-                                id="birthday"
-                                label={lg.get("Birthday")}
+                                id={lg.get('Birthday')}
+                                label={lg.get('Birthday')}
                                 inputFormat="MM/dd/yyyy"
-                                value={dateOfBirth ? dateOfBirth : ''}
+                                value={dateOfBirth ? dateOfBirth : null}
                                 onChange={handleDateOfBirthChange}
                                 renderInput={(params) => <TextField {...params} />}
                             />

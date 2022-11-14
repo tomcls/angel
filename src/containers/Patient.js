@@ -78,47 +78,52 @@ export default function PatientContainer(props) {
     const [openAssignDoctorModal, setOpenAssignDoctorModal] = React.useState(null);
     const [openAssignPatientModal, setOpenAssignPatientModal] = React.useState(false);
 
-    const [drugId, setDrugId] = React.useState(null);
-    const [drug, setDrug] = React.useState(null);
+    const [drugId, ] = React.useState(null);
+    const [drug, ] = React.useState(null);
     const [repetition,] = React.useState(props.repetition);
     const [note,] = React.useState(props.note);
     const [days,] = React.useState(props.days);
     const [hours,] = React.useState([12]);
 
     React.useEffect(() => {
+        console.log("React.useEffect.patient",props.userId)
         if (props.userId) {
-            async function fetchData() {
-                const user = await AngelPatient().find({ user_id: props.userId });
-                setId(user.user_id);
-                setPatientId(user.patient_id);
-                setFirstname(user.firstname);
-                setLastname(user.lastname);
-                setLang(user.lang);
-                setEmail(user.email);
-                setPhone(user.phone);
-                setSex(user.sex);
-                setAddress(user.address);
-                setStreetNumber(user.street_number);
-                setZip(user.zip);
-                setCity(user.city);
-                setCountry(user.country);
-                setDateOfBirth(user.birthday);
-                setCloseMonitoring(user.close_monitoring);
-                setEmergencyContactName(user.emergency_contact_name);
-                setEmergencyContactPhone(user.emergency_contact_phone);
-                setEmergencyContactRelationship(user.emergency_contact_relationship);
-                setAvatar(user.avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + user.avatar : defaultAvatar);
-                setActive(user.active);
-                if (user.active === 'N') {
-                    setSwitchState(false);
-                } else {
-                    setSwitchState(true);
-                }
-                setPatient({ id: user.patient_id, patient_id: user.patient_id, firstname: user.firstname,  lastname: user.lastname});
-            }
             fetchData();
         }
-    }, []);
+    },[props.userId]);
+
+    const fetchData = async () => {
+        if (props.userId) {
+            const user = await AngelPatient().find({ user_id: props.userId });
+            setId(user.user_id);
+            setPatientId(user.patient_id);
+            setFirstname(user.firstname);
+            setLastname(user.lastname);
+            setLang(user.lang);
+            setEmail(user.email);
+            setPhone(user.phone);
+            setSex(user.sex);
+            setAddress(user.address);
+            setStreetNumber(user.street_number);
+            setZip(user.zip);
+            setCity(user.city);
+            setCountry(user.country);
+            setDateOfBirth(user.birthday);
+            setCloseMonitoring(user.close_monitoring);
+            setEmergencyContactName(user.emergency_contact_name);
+            setEmergencyContactPhone(user.emergency_contact_phone);
+            setEmergencyContactRelationship(user.emergency_contact_relationship);
+            setAvatar(user.avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + user.avatar : defaultAvatar);
+            setActive(user.active);
+            if (user.active === 'N') {
+                setSwitchState(false);
+            } else {
+                setSwitchState(true);
+            }
+            setPatient({ id: user.patient_id, patient_id: user.patient_id, firstname: user.firstname, lastname: user.lastname });
+        }
+    }
+
 
     const onInputChange = setter => e => {
         setter(e.target.value);
@@ -223,7 +228,6 @@ export default function PatientContainer(props) {
         return datestring;
     }
     const handleDateOfBirthChange = (newValue) => {
-        console.log(newValue)
         setDateOfBirth(newValue);
     };
 

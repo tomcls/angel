@@ -10,20 +10,25 @@ export default function ComboLaboratories(props) {
   const [value, setValue] = React.useState('');
 
   const loading = open && options.length === 0;
-  
+
   React.useEffect(() => {
-      
+
     let active = true;
-    if(props.laboratory) {
-        setValue(props.laboratory);
+    if (props.laboratory) {
+      const h = props.laboratory;
+      if (!h.id) {
+        h.id = '';
+        h.name = 'Select a laboratory';
+      }
+      setValue(h);
     }
     if (!loading) {
       return undefined;
     }
     (async () => {
       if (active) {
-       AngelLaboratory().list().then((results) => {
-            setOptions(results.laboratories)
+        AngelLaboratory().list().then((results) => {
+          setOptions(results.laboratories)
         });
       }
     })();
@@ -31,7 +36,7 @@ export default function ComboLaboratories(props) {
     return () => {
       active = false;
     };
-  }, [loading,props.laboratory]);
+  }, [loading, props.laboratory]);
 
   React.useEffect(() => {
 
@@ -54,18 +59,18 @@ export default function ComboLaboratories(props) {
       onChange={(event, newValue) => {
         setOptions(newValue ? [newValue, ...options] : options);
         setValue(newValue);
-        if(newValue && newValue.id) {
-            props.onSelect({id:newValue.id, name:newValue.laboratory_name});
+        if (newValue && newValue.id) {
+          props.onSelect({ id: newValue.id, name: newValue.laboratory_name });
         }
       }}
       value={value}
       isOptionEqualToValue={(option, value) => option.laboratory_name === value.name}
-      getOptionLabel={(option) => option.id+' '+option.name}
+      getOptionLabel={(option) => option.id + ' ' + option.name}
       options={options}
       loading={loading}
       renderInput={(params) => (
         <TextField
-          sx={{width: '100%'}}
+          sx={{ width: '100%' }}
           fullWidth
           {...params}
           label={props.lg.get('Laboratories')}
