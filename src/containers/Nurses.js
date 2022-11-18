@@ -270,6 +270,7 @@ export default function Nurses(props) {
   const [lastnameFilter, setLastnameFilter] = React.useState(true);
   const [emailFilter, setEmailFilter] = React.useState(true);
   const [phoneFilter, setPhoneFilter] = React.useState(false);
+  const [hospitalNameFilter, setHospitalNameFilter] = React.useState(false);
 
   React.useEffect(() => {
     fetchData(props.userId);
@@ -302,6 +303,11 @@ export default function Nurses(props) {
       o.phone = searchFilter;
     } else {
       o.phone = null;
+    }
+    if (hospitalNameFilter) {
+      o.hospital_name = searchFilter;
+    } else {
+      o.hospital_name = null;
     }
     if (props.patientId) {
       o.patient_id = props.patientId;
@@ -396,6 +402,9 @@ export default function Nurses(props) {
   const handleEmailFilter = (event) => {
     setEmailFilter(event.target.checked);
   };
+  const handleHospialFilter = (event) => {
+    setHospitalNameFilter(event.target.checked);
+  };
   const handlePhoneFilter = (event) => {
     setPhoneFilter(event.target.checked);
   };
@@ -423,6 +432,7 @@ export default function Nurses(props) {
               <FormControlLabel control={<Checkbox checked={lastnameFilter} onChange={handleLastnameFilter} />} label="Lastname" />
               <FormControlLabel control={<Checkbox checked={emailFilter} onChange={handleEmailFilter} />} label="Email" />
               <FormControlLabel control={<Checkbox checked={phoneFilter} onChange={handlePhoneFilter} />} label="Phone" />
+              <FormControlLabel control={<Checkbox checked={hospitalNameFilter} onChange={handleHospialFilter} />} label="Hospital" />
             </FormGroup>
           </Box>
         </Modal>
