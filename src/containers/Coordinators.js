@@ -355,7 +355,7 @@ export default function Coordinators(props) {
   const onDeleteItems = async () => {
     if (selected.length) {
       await AngelUser().delete({ ids: selected.join(',') });
-      handleClickVariant('success', 'Coordinator(s) well deleted');
+      handleClickVariant('success', lg.get('Coordinator(s) well deleted'));
       fetchData();
     }
   }

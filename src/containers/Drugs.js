@@ -196,12 +196,12 @@ const EnhancedTableToolbar = (props) => {
       ) : (<></>
       )}
       {numSelected > 0 ? (<>
-        <Tooltip title='Delete'>
+        <Tooltip title={props.lg.get('Delete')}>
           <IconButton onClick={props.onDeleteItems}>
             <DeleteIcon />
           </IconButton>
         </Tooltip>
-        <Tooltip title='Duplicate'>
+        <Tooltip title={props.lg.get('Duplicate')}>
           <IconButton onClick={props.onDuplicate}>
             <ContentCopyIcon />
           </IconButton>
@@ -251,7 +251,6 @@ export default function Drugs(props) {
   const [orderBy, setOrderBy] = React.useState('id');
   const [selected, setSelected] = React.useState([]);
   const [dense,] = React.useState(false);
-  const [rowsPerPage,] = React.useState(5);
   const [rows, setRows] = React.useState([]);
   const { enqueueSnackbar } = useSnackbar();
 
@@ -313,7 +312,6 @@ export default function Drugs(props) {
           r.drugs[i].notice ? process.env.REACT_APP_API_URL + '/public/drugs/documents/' + r.drugs[i].notice : null)
         );
       }
-      console.log("setRows",u.length);
       setRows(u);
       setTotal(r.total);
     
@@ -363,14 +361,14 @@ export default function Drugs(props) {
   const onDeleteItems = async () => {
     if (selected.length) {
       await AngelDrug().delete({ ids: selected.join(',') });
-      handleClickVariant('success', 'Treatment(s) well deleted');
+      handleClickVariant('success', lg.get('Treatment(s) well deleted'));
       setSelected([]);
     }
   }
   const onDuplicate = async () => {
     if (selected.length) {
       await AngelDrug().duplicate({ ids: selected });
-      handleClickVariant('success', 'Treatment(s) well duplicated');
+      handleClickVariant('success', lg.get('Treatment(s) well duplicated'));
       setSelected([]);
     }
   }

@@ -362,7 +362,7 @@ export default function Doctors(props) {
   const onDeleteItems = async () => {
     if (selected.length) {
       await AngelUser().delete({ ids: selected.join(',') });
-      handleClickVariant('success', 'Doctor(s) well deleted');
+      handleClickVariant('success', lg.get('Doctor(s) well deleted'));
       fetchData();
     }
   }

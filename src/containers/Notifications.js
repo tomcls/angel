@@ -18,9 +18,8 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
-import AngelUser from '../api/angel/user';
 import AngelNotification from "../api/angel/notifications";
-import { Avatar, Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import { useSnackbar } from 'notistack';
 
 import { Button } from '@mui/material';
@@ -64,7 +63,6 @@ function stableSort(array, comparator) {
   });
   return stabilizedThis.map((el) => el[0]);
 }
-const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp0LF2WgeDkn_sQ1VuMnlnVGjkDvCN4jo2nLMt3b84ry328rg46eohB_JT3WTqOGJovY&usqp=CAU';//process.env.SENDGRID_APIKEY
 
 const styleModal = {
   position: 'absolute',
@@ -129,7 +127,7 @@ function EnhancedTableHead(props) {
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
-            inputProps={{ 'aria-label': 'select all Notifications' }}
+            inputProps={{ 'aria-label': props.lg.get('select all Notifications') }}
           />
         </TableCell>
         {headCells.map((headCell) => (
@@ -191,7 +189,7 @@ const EnhancedTableToolbar = (props) => {
       ) : (<></>
       )}
       {numSelected > 0 ? (
-        <Tooltip title='Delete'>
+        <Tooltip title={props.lg.get('Delete')}>
           <IconButton onClick={props.onDeleteItems}>
             <DeleteIcon />
           </IconButton>
@@ -263,13 +261,13 @@ export default function Notifications(props) {
 
   React.useEffect(() => {
     fetchData();
-  }, [page,limit]);
+  }, [page, limit]);
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
-  const createData = (id, user_from, user_to, firstname_from, lastname_from, email_from, object, content, date,readed) => {
+  const createData = (id, user_from, user_to, firstname_from, lastname_from, email_from, object, content, date, readed) => {
     return {
       id,
       user_from,
@@ -372,7 +370,7 @@ export default function Notifications(props) {
   const onDeleteItems = async () => {
     if (selected.length) {
       await AngelNotification().delete({ ids: selected.join(',') });
-      handleClickVariant('success', 'Notification(s) well deleted');
+      handleClickVariant('success', lg.get('Notification(s) well deleted'));
       fetchData();
     }
   }
@@ -426,8 +424,8 @@ export default function Notifications(props) {
             <Typography id="modal-modal-title" variant="h6" component="h2">
               {object}
             </Typography>
-            <div><b>From:</b> {fromEmail}</div>
-            <div><b>when:</b> {date}</div>
+            <div><b>{lg.get('From')}:</b> {fromEmail}</div>
+            <div><b>{lg.get('When')}:</b> {date}</div>
             <p>
               {content}
             </p>
@@ -555,7 +553,7 @@ export default function Notifications(props) {
             rowsPerPage={limit}
             page={page}
             onPageChange={onPageChange}
-            onRowsPerPageChange={(e) => { setLimit(e.target.value); setPage(0);  }}
+            onRowsPerPageChange={(e) => { setLimit(e.target.value); setPage(0); }}
           />
         </Paper>
       </Box>

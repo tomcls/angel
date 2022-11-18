@@ -235,7 +235,6 @@ export default function Laboratories(props) {
   const [phoneFilter, setPhoneFilter] = React.useState(false);
 
   React.useEffect(() => {
-    console.log('useEffect Laboratories list', props.laboratories)
     fetchData();
   }, [props.laboratories, page, limit]);
 
@@ -330,7 +329,7 @@ export default function Laboratories(props) {
   const onDeleteItems = async () => {
     if (selected.length) {
       await AngelLaboratory().delete({ ids: selected.join(',') });
-      handleClickVariant('success', 'Lab(s) well deleted');
+      handleClickVariant('success', lg.get('Lab(s) well deleted'));
       fetchData();
     }
   }

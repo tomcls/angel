@@ -174,7 +174,7 @@ const EnhancedTableToolbar = (props) => {
       ) : (<></>
       )}
       {numSelected > 0 ? (
-        <Tooltip title='Delete'>
+        <Tooltip title={props.lg.get('Delete')}>
           <IconButton onClick={props.onDeleteItems}>
             <DeleteIcon />
           </IconButton>
@@ -328,7 +328,7 @@ export default function Hospitals(props) {
   const onDeleteItems = async () => {
     if (selected.length) {
       await AngelHospital().delete({ ids: selected.join(',') });
-      handleClickVariant('success', 'Doctor(s) well deleted');
+      handleClickVariant('success', lg.get('Hospital(s) well deleted'));
       fetchData();
     }
   }
