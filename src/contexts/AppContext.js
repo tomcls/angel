@@ -1,11 +1,11 @@
 import { createContext } from 'react';
 
 const u = localStorage.getItem('user');
-
+const t = localStorage.getItem('token');
 export const initialAppState = {
     user: u ? JSON.parse(u) : {},
     filters: {},
-    token: {},
+    token: t ? JSON.parse(t): null,
     lang: u ? JSON.parse(u).lang:'en'
 };
 export const appReducer = (state, action) => {

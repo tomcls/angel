@@ -310,6 +310,10 @@ export default function Doctors(props) {
       setRows(u);
       setDoctors(r.users);
       setTotal(r.total);
+    } else {
+      setRows([]);
+      setDoctors([]);
+      setTotal(0);
     }
   }
   const createData = (user_id, id, firstname, lastname, email, phone, hospital_name, role, active, avatar) => {

@@ -9,7 +9,7 @@ export default  function AngelUser(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/users/list', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw new error(error);
+                throw error;
             }
         },
         coordinators: async (params) => {
@@ -17,7 +17,7 @@ export default  function AngelUser(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/users/coordinators', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw new error(error);
+                throw error;
             }
         },
         update: async (params) => {
@@ -26,7 +26,7 @@ export default  function AngelUser(config) {
                 return res.data;
             } catch (error) {
                 console.log(error)
-                throw new error(error);
+                throw error;
             }
         },
         delete: async (params) => {
@@ -35,7 +35,7 @@ export default  function AngelUser(config) {
                 return res.data;
             } catch (error) {
                 console.log(error)
-                throw new error(error);
+                throw error;
             }
         },
         find: async (params) => {
@@ -43,7 +43,7 @@ export default  function AngelUser(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/users/get', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw new error(error);
+                throw error;
             }
         },
         add: async (params) => {
@@ -51,7 +51,7 @@ export default  function AngelUser(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/users/add', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
-                throw new error(error);
+                throw error;
             }
         },
         register: async (params) => {
@@ -59,7 +59,7 @@ export default  function AngelUser(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/users/add', params, {headers: {'apiKey':apiKey}});
                 return res.data;
             } catch (error) {
-                throw new error(error);
+                throw error;
             }
         },
         login: async (params) => {
@@ -67,7 +67,7 @@ export default  function AngelUser(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/users/login', params, {headers: {'apiKey':apiKey}});
                 return res.data;
             } catch (error) {
-                throw new error(error);
+                throw error;
             }
         },
         requestPwd: async (params) => {
@@ -75,7 +75,7 @@ export default  function AngelUser(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/users/request-password', params, {headers: {'apiKey':apiKey}});
                 return res.data;
             } catch (error) {
-                throw new error(error);
+                throw error;
             }
         },
         resetPwd: async (params) => {
@@ -83,15 +83,16 @@ export default  function AngelUser(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/users/reset-password', params, {headers: {'apiKey':apiKey}});
                 return res.data;
             } catch (error) {
-                throw new error(error);
+                throw error;
             }
         },
         checkAuth: async (hash) => {
             try {
                 const res = await axios.get(process.env.REACT_APP_API_URL+'/users/check-auth', { headers: { 'Authorization': hash }});
-                return res.data;
+                console.log("zzzzz",res)
+                return res;
             } catch (error) {
-                throw new error(error);
+                throw error;
             }
         },
         upload: async (file,name,userId) => {
@@ -103,7 +104,7 @@ export default  function AngelUser(config) {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/users/upload',formData, {headers: {'Authorization':accessToken,'content-type': 'multipart/form-data'}});
                 return res.data;
             } catch (error) {
-                throw new error(error);
+                throw error;
             }
         }
     }
