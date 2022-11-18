@@ -1,8 +1,8 @@
 export const il8n = {
-    "when": {
-        "en":"Quand",
-        "fr":"when",
-        "nl":"when",
+    "When": {
+        "en":"When",
+        "fr":"Quand",
+        "nl":"When",
     },
     "From": {
         "en":"From",

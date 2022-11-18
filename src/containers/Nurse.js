@@ -288,16 +288,16 @@ export default function NurseContainer(props) {
                         sx={{ borderBottom: '1px solid #cecece' }}
                         title={nurseId ? ((firstname ? firstname : '') + ' ' + (lastname ? lastname : '')) : lg.get('Add nurse')}
                         subheader={
-                            <Grid container spacing={1} >
-                                <Grid item xs={12} sm={6} md={4} xl={2} mt={1} style={{ display: 'flex', flexDirection: 'row' }}>
+                            <Grid container spacing={0} >
+                                <Grid item xs={12} sm={7} md={4} xl={3} mt={1} style={{ display: 'flex', flexDirection: 'row' }}>
                                     <EmailIcon fontSize={'small'} style={{ marginRight: '5px', display: email && nurseId ? 'block' : 'none' }} />
                                     <Typography style={{ display: email && nurseId ? 'block' : 'none' }}>{nurseId ? email : ''}</Typography>
                                 </Grid>
-                                <Grid item xs={12} sm={6} md={4} xl={2} mt={1} style={{ display: 'flex', flexDirection: 'row' }}>
+                                <Grid item xs={12} sm={5} md={3} xl={2} mt={1} style={{ display: 'flex', flexDirection: 'row' }}>
                                     <LocalPhoneIcon fontSize={'small'} style={{ marginRight: '5px', display: phone && nurseId ? 'block' : 'none' }} />
                                     <Typography style={{ display: phone && nurseId ? 'block' : 'none' }}>{ phone && nurseId ? phone : ''}</Typography>
                                 </Grid>
-                                <Grid item xs={12} sm={6} md={4} xl={6} mt={1} style={{ display: 'flex', flexDirection: 'row' }}>
+                                <Grid item xs={12} sm={12} md={12} xl={7} mt={1} style={{ display: 'flex', flexDirection: 'row' }}>
                                     <LocalHospitalIcon fontSize={'small'} style={{ marginRight: '5px', display: hospitalId ? 'block' : 'none' }} />
                                     <Typography >{hospitalName ? hospitalName : ''}</Typography>
                                     <Typography ml={1}>{hospitalAddress ? hospitalAddress : ''}</Typography>
