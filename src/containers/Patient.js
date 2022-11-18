@@ -78,8 +78,8 @@ export default function PatientContainer(props) {
     const [openAssignDoctorModal, setOpenAssignDoctorModal] = React.useState(null);
     const [openAssignPatientModal, setOpenAssignPatientModal] = React.useState(false);
 
-    const [drugId, ] = React.useState(null);
-    const [drug, ] = React.useState(null);
+    const [drugId,] = React.useState(null);
+    const [drug,] = React.useState(null);
     const [repetition,] = React.useState(null);
     const [note,] = React.useState(null);
     const [days,] = React.useState(null);
@@ -89,7 +89,7 @@ export default function PatientContainer(props) {
         if (props.userId) {
             fetchData();
         }
-    },[props.userId]);
+    }, [props.userId]);
 
     const fetchData = async () => {
         if (props.userId) {
@@ -407,9 +407,9 @@ export default function PatientContainer(props) {
                 <Typography variant="h6" gutterBottom component="div">
                     {lg.get('Personal informations')}
                 </Typography>
-                <Button onClick={handleAssignNurseModal} variant="outlined" style={{ marginRight: '5px' }}>{lg.get('Assign a nurse')}</Button>
-                <Button onClick={handleAssignDoctorModal} variant="outlined" style={{ marginRight: '5px' }}>{lg.get('Assign a doctor')}</Button>
-                <Button variant="outlined" style={{ marginRight: '5px' }} onClick={handleAssignPatientModal}>{lg.get('Assign a treatment')}</Button>
+                <Button onClick={handleAssignNurseModal} variant="outlined" style={{ marginRight: '5px', }} disabled={!patientId?true:false} >{lg.get('Assign a nurse') + 'aaa'}</Button>
+                <Button onClick={handleAssignDoctorModal} variant="outlined" style={{ marginRight: '5px' }} disabled={!patientId?true:false} >{lg.get('Assign a doctor')}</Button>
+                <Button variant="outlined" style={{ marginRight: '5px' }} onClick={handleAssignPatientModal} disabled={!patientId?true:false} >{lg.get('Assign a treatment')}</Button>
                 <Grid container spacing={2}>
                     <Grid item xs={12} sm={6} md={4} xl={2} style={{ paddingTop: '40px' }}>
                         <Grid item xs={12} style={{ width: '205px', height: '205px', textAlign: "center", border: '3px solid #ddd', borderRadius: '5px', margin: 'auto' }} >

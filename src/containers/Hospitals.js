@@ -120,8 +120,8 @@ function EnhancedTableHead(props) {
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? 'left' : 'center'}
-            padding={headCell.disablePadding ? 'none' : 'normal'}
+            align={headCell.numeric ? 'left' : 'left'}
+            padding={headCell.disablePadding ? 'none' : 'none'}
             sortDirection={orderBy === headCell.id ? order : false}>
             <TableSortLabel
               active={orderBy === headCell.id}
@@ -422,7 +422,7 @@ export default function Hospitals(props) {
                         component='th'
                         id={labelId}
                         scope='row'
-                        style={{ textAlign: 'center', cursor: 'pointer' }}
+                        style={{ textAlign: 'left', cursor: 'pointer' }}
                         padding='none'
                         onClick={() => document.getElementById("newButton").clk(row.hospital_id, row.name, 'hospital')}
                       >
@@ -431,7 +431,7 @@ export default function Hospitals(props) {
                       <TableCell
                         component='th'
                         id={labelId}
-                        style={{ textAlign: 'center' }}
+                        style={{ textAlign: 'left' }}
                         scope='row'
                         padding='none'>
                         {row.email}
@@ -439,7 +439,7 @@ export default function Hospitals(props) {
                       <TableCell
                         component='th'
                         id={labelId}
-                        style={{ textAlign: 'center' }}
+                        style={{ textAlign: 'left' }}
                         scope='row'
                         padding='none'>
                         {row.phone}
