@@ -176,7 +176,7 @@ export default function HospitalContainer(props) {
                         title={address ? address + ' ' + streetNumber : lg.get('Address')}
                         subheader={zip + ', ' + city}
                         action={<>
-                            <IconButton aria-label={lg.get("assign patient")}>
+                            <IconButton aria-label={lg.get("Assign patient")}>
                                
                             </IconButton></>
                         }

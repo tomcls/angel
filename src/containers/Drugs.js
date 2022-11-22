@@ -140,8 +140,8 @@ function EnhancedTableHead(props) {
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? 'left' : 'center'}
-            padding={headCell.disablePadding ? 'none' : 'normal'}
+            align={headCell.numeric ? 'left' : 'left'}
+            padding={headCell.disablePadding ? 'none' : 'none'}
             sortDirection={orderBy === headCell.id ? order : false}
           >
             <TableSortLabel
@@ -469,7 +469,7 @@ export default function Drugs(props) {
                           component='th'
                           id={labelId}
                           scope='row'
-                          style={{ textAlign: 'center' }}
+                          style={{ textAlign: 'left' }}
                           padding='none'
                           onClick={() => document.getElementById("newButton").clk(row.id, row.code + ' ' + row.name, 'drug')}
                         >
@@ -479,7 +479,7 @@ export default function Drugs(props) {
                           component='th'
                           id={labelId}
                           scope='row'
-                          style={{ textAlign: 'center' }}
+                          style={{ textAlign: 'left' }}
                           padding='none'
                         >
                           {row.code}
@@ -487,7 +487,7 @@ export default function Drugs(props) {
                         <TableCell
                           component='th'
                           id={labelId}
-                          style={{ textAlign: 'center' }}
+                          style={{ textAlign: 'left' }}
                           scope='row'
                           padding='none'>
                           {row.created}
@@ -495,7 +495,7 @@ export default function Drugs(props) {
                         <TableCell
                           component='th'
                           id={labelId}
-                          style={{ textAlign: 'center' }}
+                          style={{ textAlign: 'left' }}
                           scope='row'
                           padding='none'>
                           <FamilyRestroomIcon color={'primary'} style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.id, row.code + ' ' + row.name, 'drug_patients')} />
@@ -503,7 +503,7 @@ export default function Drugs(props) {
                         <TableCell
                           component='th'
                           id={labelId}
-                          style={{ textAlign: 'center' }}
+                          style={{ textAlign: 'left' }}
                           scope='row'
                           padding='none'>
                           <BiotechIcon color={'primary'} style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.id, row.code + ' ' + row.name, 'drug_laboratories')} />
@@ -511,7 +511,7 @@ export default function Drugs(props) {
                         <TableCell
                           component='th'
                           id={labelId}
-                          style={{ textAlign: 'center' }}
+                          style={{ textAlign: 'left' }}
                           scope='row'
                           padding='none'>
                           {row.notice ? <a href={row.notice} target="blank"> <LinkIcon color={'primary'}  style={{ cursor: 'pointer' }} /></a> : ' - '}

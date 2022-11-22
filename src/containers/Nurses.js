@@ -502,7 +502,7 @@ export default function Nurses(props) {
                           component='th'
                           id={labelId}
                           scope='row'
-                          style={{ textAlign: 'center', cursor: 'pointer' }}
+                          style={{ textAlign: 'left', cursor: 'pointer' }}
                           padding='none'
                         >
                           <b>{row.firstname}</b>

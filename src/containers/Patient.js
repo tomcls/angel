@@ -407,7 +407,7 @@ export default function PatientContainer(props) {
                 <Typography variant="h6" gutterBottom component="div">
                     {lg.get('Personal informations')}
                 </Typography>
-                <Button onClick={handleAssignNurseModal} variant="outlined" style={{ marginRight: '5px', }} disabled={!patientId?true:false} >{lg.get('Assign a nurse') + 'aaa'}</Button>
+                <Button onClick={handleAssignNurseModal} variant="outlined" style={{ marginRight: '5px', }} disabled={!patientId?true:false} >{lg.get('Assign a nurse') }</Button>
                 <Button onClick={handleAssignDoctorModal} variant="outlined" style={{ marginRight: '5px' }} disabled={!patientId?true:false} >{lg.get('Assign a doctor')}</Button>
                 <Button variant="outlined" style={{ marginRight: '5px' }} onClick={handleAssignPatientModal} disabled={!patientId?true:false} >{lg.get('Assign a treatment')}</Button>
                 <Grid container spacing={2}>

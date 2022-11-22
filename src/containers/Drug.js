@@ -407,10 +407,10 @@ export default function DrugContainer(props) {
                                 title={lg.get('Treatment details')}
                                 subheader={name}
                                 action={<>
-                                    <IconButton aria-label="assign patient">
+                                    <IconButton aria-label={lg.get('Assign a patient')}>
                                         <Button variant="outlined" style={{ marginRight: '5px' }} onClick={handleAssignPatientModal}>{lg.get('Assign a patient')}</Button>
                                     </IconButton>
-                                    <IconButton aria-label="assign patient">
+                                    <IconButton aria-label={lg.get('List of patients')}>
                                         <Button variant="outlined" onClick={() => document.getElementById("newButton").clk(drugId, name, 'drug_patients')}>{lg.get('List of patients')}</Button>
                                     </IconButton></>
                                 }
@@ -522,7 +522,7 @@ export default function DrugContainer(props) {
                                 title={lg.get('Side effects')}
                                 subheader={lg.get('Due to')+' '+name}
                                 action={
-                                    <IconButton aria-label="assign patient">
+                                    <IconButton>
                                         <AddCircleOutlineIcon onClick={handleAssignEffectModal} color={'success'} />
                                     </IconButton>
                                 }

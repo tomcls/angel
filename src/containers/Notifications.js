@@ -133,8 +133,8 @@ function EnhancedTableHead(props) {
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? 'left' : 'center'}
-            padding={headCell.disablePadding ? 'none' : 'normal'}
+            align={headCell.numeric ? 'left' : 'left'}
+            padding={headCell.disablePadding ? 'none' : 'none'}
             sortDirection={orderBy === headCell.id ? order : false}
           >
             <TableSortLabel
@@ -500,7 +500,7 @@ export default function Notifications(props) {
                           component='th'
                           id={labelId}
                           scope='row'
-                          style={{ textAlign: 'center', cursor: 'pointer' }}
+                          style={{ textAlign: 'left', cursor: 'pointer' }}
                           padding='none'
                           onClick={() => onOpenDetailModal(row)}
                         >
@@ -510,7 +510,7 @@ export default function Notifications(props) {
                           component='th'
                           id={labelId}
                           scope='row'
-                          style={{ textAlign: 'center', fontWeight: row.readed ? 'normal' : 'bold' }}
+                          style={{ textAlign: 'left', fontWeight: row.readed ? 'normal' : 'bold' }}
                           padding='none'
                         >
                           {row.lastname_from}
@@ -518,7 +518,7 @@ export default function Notifications(props) {
                         <TableCell
                           component='th'
                           id={labelId}
-                          style={{ textAlign: 'center', fontWeight: row.readed ? 'normal' : 'bold' }}
+                          style={{ textAlign: 'left', fontWeight: row.readed ? 'normal' : 'bold' }}
                           scope='row'
                           padding='none'>
                           {row.email_from}
@@ -526,7 +526,7 @@ export default function Notifications(props) {
                         <TableCell
                           component='th'
                           id={labelId}
-                          style={{ textAlign: 'center', fontWeight: row.readed ? 'normal' : 'bold' }}
+                          style={{ textAlign: 'left', fontWeight: row.readed ? 'normal' : 'bold' }}
                           scope='row'
                           padding='none'>
                           {row.object}
@@ -536,7 +536,7 @@ export default function Notifications(props) {
                           component='th'
                           id={labelId}
                           scope='row'
-                          style={{ textAlign: 'center', fontWeight: row.readed ? 'normal' : 'bold' }}
+                          style={{ textAlign: 'left', fontWeight: row.readed ? 'normal' : 'bold' }}
                           padding='none' >
                           {row.date}
                         </TableCell>

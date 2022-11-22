@@ -308,10 +308,10 @@ export default function NurseContainer(props) {
                                 </Grid>
                             </Grid>}
                         action={<>
-                            <IconButton aria-label="assign patient">
+                            <IconButton aria-label={lg.get('Assign a patient')}>
                                 <Button onClick={handleAssignPatientModal} variant="outlined" style={{ marginRight: '5px' }}>{lg.get('Assign a patient')}</Button>
                             </IconButton>
-                            <IconButton aria-label="assign patient">
+                            <IconButton aria-label={lg.get('List of patients')}>
                                 <Button onClick={() => document.getElementById("newButton").clk(nurseId, firstname + " " + lastname, 'nurse_patients')} variant="outlined" >{lg.get('List of patients')}</Button>
                             </IconButton></>
                         }
