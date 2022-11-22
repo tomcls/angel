@@ -9,7 +9,6 @@ import { AppContextProvider, appReducer, initialAppState } from './contexts/AppC
 import Application from './containers/Application';
 
 function App() {
-  console.log('App')
   const [appState, appDispatch] = useReducer(appReducer, initialAppState);
   const appContextValues = {
     appState,

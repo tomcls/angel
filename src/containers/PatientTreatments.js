@@ -143,8 +143,8 @@ function EnhancedTableHead(props) {
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? 'left' : 'center'}
-            padding={headCell.disablePadding ? 'none' : 'normal'}
+            align={headCell.numeric ? 'left' : 'left'}
+            padding={headCell.disablePadding ? 'none' : 'none'}
             sortDirection={orderBy === headCell.id ? order : false}
           >
             <TableSortLabel
@@ -589,7 +589,7 @@ export default function PatientTreatments(props) {
                           component='th'
                           id={labelId}
                           scope='row'
-                          style={{ textAlign: 'center' }}
+                          style={{ textAlign: 'left' }}
                           padding='none'
                           onClick={() => document.getElementById("newButton").clk(row.drug_id, row.name, 'drug')}
                         >
@@ -599,7 +599,7 @@ export default function PatientTreatments(props) {
                           component='th'
                           id={labelId}
                           scope='row'
-                          style={{ textAlign: 'center' }}
+                          style={{ textAlign: 'left' }}
                           padding='none'
                         >
                           {row.code}
@@ -607,7 +607,7 @@ export default function PatientTreatments(props) {
                         <TableCell
                           component='th'
                           id={labelId}
-                          style={{ textAlign: 'center', cursor: 'pointer' }}
+                          style={{ textAlign: 'left', cursor: 'pointer' }}
                           scope='row'
                           padding='none'
                           onClick={() => handleAssignPatientModal(row)}>
@@ -616,7 +616,7 @@ export default function PatientTreatments(props) {
                         <TableCell
                           component='th'
                           id={labelId}
-                          style={{ textAlign: 'center' }}
+                          style={{ textAlign: 'left' }}
                           scope='row'
                           padding='none'>
                           {row.start_date}
@@ -624,7 +624,7 @@ export default function PatientTreatments(props) {
                         <TableCell
                           component='th'
                           id={labelId}
-                          style={{ textAlign: 'center' }}
+                          style={{ textAlign: 'left' }}
                           scope='row'
                           padding='none'>
                           {row.end_date}
@@ -632,7 +632,7 @@ export default function PatientTreatments(props) {
                         <TableCell
                           component='th'
                           id={labelId}
-                          style={{ textAlign: 'center' }}
+                          style={{ textAlign: 'left' }}
                           scope='row'
                           padding='none'>
                           {row.created}

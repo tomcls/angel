@@ -197,8 +197,8 @@ function EnhancedTableHead(props) {
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? 'left' : 'center'}
-            padding={headCell.disablePadding ? 'none' : 'normal'}
+            align={headCell.numeric ? 'left' : 'left'}
+            padding={headCell.disablePadding ? 'none' : 'none'}
             sortDirection={orderBy === headCell.id ? order : false}>
             <TableSortLabel
               active={orderBy === headCell.id}
@@ -645,7 +645,7 @@ export default function Patients(props) {
                           component='th'
                           id={labelId}
                           scope='row'
-                          style={{ textAlign: 'center', cursor: 'pointer' }}
+                          style={{ textAlign: 'left', cursor: 'pointer' }}
                           padding='none'
                           onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname, 'patient')}
                         >
@@ -655,7 +655,7 @@ export default function Patients(props) {
                           component='th'
                           id={labelId}
                           scope='row'
-                          style={{ textAlign: 'center' }}
+                          style={{ textAlign: 'left' }}
                           padding='none'
                         >
                           {row.lastname}
@@ -663,7 +663,7 @@ export default function Patients(props) {
                         <TableCell
                           component='th'
                           id={labelId}
-                          style={{ textAlign: 'center' }}
+                          style={{ textAlign: 'left' }}
                           scope='row'
                           padding='none'>
                           {row.email}
@@ -671,7 +671,7 @@ export default function Patients(props) {
                         <TableCell
                           component='th'
                           id={labelId}
-                          style={{ textAlign: 'center' }}
+                          style={{ textAlign: 'left' }}
                           scope='row'
                           padding='none'>
                           {row.phone}
@@ -681,7 +681,7 @@ export default function Patients(props) {
                           component='th'
                           id={labelId}
                           scope='row'
-                          style={{ textAlign: 'center' }}
+                          style={{ textAlign: 'left' }}
                           padding='none' >
                           {
                             (appContext.appState.user && (appContext.appState.user.nurse_id || appContext.appState.user.doctor_id)) ?
@@ -693,7 +693,7 @@ export default function Patients(props) {
                           component='th'
                           id={labelId}
                           scope='row'
-                          style={{ textAlign: 'center' }}
+                          style={{ textAlign: 'left' }}
                           padding='none' >
                           {
                             (appContext.appState.user && appContext.appState.user.doctor_id) ?
@@ -705,7 +705,7 @@ export default function Patients(props) {
                           component='th'
                           id={labelId}
                           scope='row'
-                          style={{ textAlign: 'center' }}
+                          style={{ textAlign: 'left' }}
                           padding='none' >
                           <HealingIcon color={'primary'} style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient_treatments')} />
                         </TableCell>
