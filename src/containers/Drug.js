@@ -247,7 +247,7 @@ export default function DrugContainer(props) {
         if(id) {
             setOpenAssignEffectModal(true);
         } else {
-            handleClickVariant('error', 'You must have saved the treatement first!');
+            handleClickVariant('error', lg.get('You must have saved the treatement first!'));
         }
     }
     const handleAssignPatientModal = async () => {
@@ -313,7 +313,7 @@ export default function DrugContainer(props) {
         if(id) {
             const u = await AngelDrug().upload(e.target.files[0], 'drug', id);
             setImage(process.env.REACT_APP_API_URL + '/public/drugs/images/' + u.filename);
-            handleClickVariant('success', 'Image well uploaded');
+            handleClickVariant('success', lg.get('Image well uploaded'));
         } else {
             console.log(e.target.files[0].name)
             setImage(URL.createObjectURL(e.target.files[0]));
@@ -335,10 +335,10 @@ export default function DrugContainer(props) {
             if(id && descriptionId) {
                 const u = await AngelDrug().notice(e.target.files[0], 'drug', descriptionId);
                 setNotice(process.env.REACT_APP_API_URL + '/public/drugs/documents/' + u.filename);
-                handleClickVariant('success', 'Document well uploaded');
+                handleClickVariant('success', lg.get('Document well uploaded'));
             }
         } else {
-            handleClickVariant('error', lg.get('You must save the treatment'));
+            handleClickVariant('error', lg.get('You must have saved the treatement first!'));
         }
     };
     const handleCloseAssignEffectModal = () => setOpenAssignEffectModal(false);
@@ -355,7 +355,7 @@ export default function DrugContainer(props) {
         p: 4,
     };
     const onDeleteSideEffect = (id) => {
-        handleClickVariant('success', 'Side effect well removed');
+        handleClickVariant('success', lg.get('Side effect well removed'));
         setSideEffectUpdated(new Date().getTime())
     }
     return (

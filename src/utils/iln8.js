@@ -1,4 +1,79 @@
 export const il8n = {
+    "When": {
+        "en":"When",
+        "fr":"Quand",
+        "nl":"When",
+    },
+    "From": {
+        "en":"From",
+        "fr":"De",
+        "nl":"From",
+    },
+    "Notification(s) well deleted": {
+        "en":"Notification(s) well deleted",
+        "fr":"Message(s) supprimé",
+        "nl":"Notification(s) well deleted",
+    },
+    "select all Notifications": {
+        "en":"select all Notifications",
+        "fr":"Selectionner tous les messages",
+        "nl":"select all Notifications",
+    },
+    "Lab(s) well deleted": {
+        "en":"Lab(s) well deleted",
+        "fr":"laboratoire(s) supprimé",
+        "nl":"Lab(s) well deleted",
+    },
+    "Hospital(s) well deleted": {
+        "en":"Hospital(s) well deleted",
+        "fr":"Hopital(s) supprimé",
+        "nl":"Hospital(s) well deleted",
+    },
+    "Assign patient": {
+        "en":"Assign patient",
+        "fr":"Assigner un patient",
+        "nl":"Assign patient",
+    },
+    "Treatment(s) well duplicated": {
+        "en":"Treatment(s) well duplicated",
+        "fr":"Traitment(s) bien Dupliqué",
+        "nl":"Treatment(s) well duplicated",
+    },
+    "Treatment(s) well deleted": {
+        "en":"Treatment(s) well deleted",
+        "fr":"Traitment(s) bien supprimé",
+        "nl":"Treatment(s) well deletedlicate",
+    },
+    "Duplicate": {
+        "en":"Duplicate",
+        "fr":"Dupliquer",
+        "nl":"Duplicate",
+    },
+    "Delete": {
+        "en":"Delete",
+        "fr":"Supprimer",
+        "nl":"Delete",
+    },
+    "Side effect well removed": {
+        "en":"Side effect well removed",
+        "fr":"Effet secondaire bien supprimé",
+        "nl":"Side effect well removed",
+    },
+    "You must have saved the treatement first!": {
+        "en":"You must have saved the treatement first!",
+        "fr":"Vous devez d'abord sauver le traitement!",
+        "nl":"You must have saved the treatement first!",
+    },
+    "Doctor(s) well deleted": {
+        "en":"Doctor(s) well deleted",
+        "fr":"Docteur(s) bien supprimé",
+        "nl":"Doctor(s) well deleted",
+    },
+    "Coordinator(s) well deleted": {
+        "en":"Coordinator(s) well deleted",
+        "fr":"Coordinateur bien supprimé",
+        "nl":"Coordinator(s) well deleted",
+    },
     "The user already exists for this email address": {
         "en":"The user already exists for this email address",
         "fr":"L'utilisateur existe déja pour cette addresse email",

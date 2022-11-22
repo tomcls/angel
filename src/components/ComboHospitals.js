@@ -14,8 +14,12 @@ export default function ComboHospitals(props) {
   React.useEffect(() => {
     let active = true;
     if(props.hospital) {
-        console.log(props.hospital, active)
-        setValue(props.hospital);
+        const h = props.hospital;
+        if(!h.id) {
+          h.id = '';
+          h.name = 'Select a hospital';
+        }
+        setValue(h);
     }
     if (!loading) {
       return undefined;

@@ -25,44 +25,53 @@ import SurveySideEffectsPage from '../pages/SurveySideEffects';
 import NotificationsPage from '../pages/Notifications';
 import { SnackbarProvider } from 'notistack';
 import AppContext from "../contexts/AppContext";
+import AngelUser from "../api/angel/user";
 
 export default function Application(props) {
-    
     const appContext = useContext(AppContext);
     const navigate = useNavigate();
-    
     React.useEffect(() => {
-        if (appContext.appState.user && appContext.appState.user.id) {} else {
+        if (appContext.appState.user && appContext.appState.user.id) { } else {
             navigate('/login', { replace: true }); return;
         }
+        checkAuth();
     }, [appContext]);
+    const checkAuth = async () => {
+        try {
+            const token = await AngelUser().checkAuth(appContext.appState.token);
+        } catch (e) {
+            localStorage.removeItem("user");
+            localStorage.removeItem("token");
+            navigate('/login', { replace: true }); return;
+        }
+    }
     return (
         <div className="App" >
             <Routes>
-                <Route path="/" element={<Patients  />} />
-                <Route path="/notifications" element={<NotificationsPage   />} />
-                <Route path="/dashboard" element={<Dashboard  />} />
-                <Route path="/register" element={<Register  />} />
-                <Route path="/thank" element={<Thank  />} />
-                <Route path="/request-password" element={<RequestPassword  />} />
-                <Route path="/reset-password" element={<ResetPassword  />} />
-                <Route path="/contact" element={<ContactUs  />} />
-                <Route path="/privacy" element={<Privacy  />} />
+                <Route path="/" element={<Patients />} />
+                <Route path="/notifications" element={<NotificationsPage />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/thank" element={<Thank />} />
+                <Route path="/request-password" element={<RequestPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/contact" element={<ContactUs />} />
+                <Route path="/privacy" element={<Privacy />} />
                 <Route path="/login" element={<Login />} />
-                <Route path="/patients" element={<Patients   />} />
-                <Route path="/doctors" element={<DoctorsPage  />} />
+                <Route path="/patients" element={<Patients />} />
+                <Route path="/doctors" element={<DoctorsPage />} />
                 <Route path="/nurses" element={<NursesPage />} />
-                <Route path="/scientists" element={<ScientistsPage  />} />
-                <Route path="/coordinators" element={<CoordinatorsPage  />} />
-                <Route path="/drugs" element={<DrugsPage  />} />
-                <Route path="/laboratories" element={<LaboratoriesPage  />} />
-                <Route path="/hospitals" element={<HospitalsPage  />} />
-                <Route path="/treatments" element={<TreatmentsPage  />} />
+                <Route path="/scientists" element={<ScientistsPage />} />
+                <Route path="/coordinators" element={<CoordinatorsPage />} />
+                <Route path="/drugs" element={<DrugsPage />} />
+                <Route path="/laboratories" element={<LaboratoriesPage />} />
+                <Route path="/hospitals" element={<HospitalsPage />} />
+                <Route path="/treatments" element={<TreatmentsPage />} />
                 <Route path="/side-effects" element={<SideEffectsPage />} />
                 <Route path="/moods" element={<MoodsPage />} />
                 <Route path="/survey-moods" element={<SurveysMoodsPage />} />
                 <Route path="/survey-effects" element={<SurveySideEffectsPage />} />
-                <Route path="/settings" element={<SnackbarProvider maxSnack={3}><Settings  /></SnackbarProvider>} />
+                <Route path="/settings" element={<SnackbarProvider maxSnack={3}><Settings /></SnackbarProvider>} />
             </Routes>
         </div>
     )

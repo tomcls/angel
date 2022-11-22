@@ -68,7 +68,7 @@ export default function LaboratoryContainer(props) {
     const onSubmit = async e => {
         e.preventDefault();
         if (!name) {
-            handleClickVariant('error', lg.get('The name are required'));
+            handleClickVariant('error', lg.get('The name is required'));
         } else {
             const u = {
                 name: name,
@@ -111,7 +111,7 @@ export default function LaboratoryContainer(props) {
                         title={name ? name : lg.get('Informations')}
                         subheader={email + ', ' + phone }
                         action={<>
-                            <IconButton aria-label="assign patient">
+                            <IconButton aria-label={lg.get('Assign patient')}>
                                 <Button
                                     size={'small'}
                                     style={{ borderRadius: '10px', marginTop: '20px' }}
@@ -176,7 +176,7 @@ export default function LaboratoryContainer(props) {
                         title={address ? address + ' ' + streetNumber : lg.get('Address')}
                         subheader={zip + ', ' + city}
                         action={<>
-                            <IconButton aria-label="assign patient">
+                            <IconButton >
                                
                             </IconButton></>
                         }

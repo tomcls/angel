@@ -1,4 +1,4 @@
-import React, { useRef/*, useMemo*/, useContext } from "react";
+import React, { useRef/*, useMemo*/, useContext, useMemo } from "react";
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -47,25 +47,19 @@ export default function PatientsPage(props) {
   const [tabIndex, setTabIndex] = React.useState(2);
   const newBtn = useRef(null);
 
-  /*const t = useMemo(() => {
+  const t = useMemo(() => {
     return new Tabs('patient', tabIndex, tabs, setTabs, setSelectedTab, setTabIndex, newBtn, lg)
-  }, [tabIndex, tabs]);*/
-  
-  const t = new Tabs('patient', tabIndex, tabs, setTabs, setSelectedTab, setTabIndex, newBtn, lg);
-
+  });
+  //const t = new Tabs('patient', tabIndex, tabs, setTabs, setSelectedTab, setTabIndex, newBtn, lg);
   React.useEffect(() => {
-    console.log("PatientsPage.useEffect",appContext.appState.lang)
     let d = document.getElementById('newButton');
     if (d) {
       d.clk = function (id, text, type) { t.openTab(id, text, type); };
     }
-    console.log('PatientsPage.useEffect',props.lang )
   }, [props.lang, appContext]);
-
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
-
   const openPatientTab = (userId, text) => {
     t.createTab('patient', text, userId)
   }

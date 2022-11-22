@@ -316,7 +316,6 @@ export default function Patients(props) {
   const [orderBy, setOrderBy] = React.useState(null);
   const [selected, setSelected] = React.useState([]);
   const [dense,] = React.useState(false);
-  const [rowsPerPage] = React.useState(5);
   const [rows, setRows] = React.useState([]);
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
   const [openTransferModal, setOpenTransferModal] = React.useState(false);
@@ -470,8 +469,14 @@ export default function Patients(props) {
   };
   const onDeleteItems = async () => {
     if (selected.length) {
-      await AngelUser().delete({ ids: selected.join(',') });
-      handleClickVariant('success', 'Doctor(s) well deleted');
+      if (appContext.appState.user && appContext.appState.user.nurse_id) {
+       await  AngelPatient().delete({ ids: selected.join(',') })
+      } else if (appContext.appState.user && appContext.appState.user.doctor_id) {
+        AngelPatient().delete({ ids: selected.join(',') })
+      } else {
+        await AngelUser().delete({ ids: selected.join(',') });
+      }
+      handleClickVariant('success', 'Patient(s) well deleted');
       await fetchData();
     }
   }

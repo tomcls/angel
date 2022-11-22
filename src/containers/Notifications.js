@@ -18,9 +18,8 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
-import AngelUser from '../api/angel/user';
 import AngelNotification from "../api/angel/notifications";
-import { Avatar, Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import { useSnackbar } from 'notistack';
 
 import { Button } from '@mui/material';
@@ -64,7 +63,6 @@ function stableSort(array, comparator) {
   });
   return stabilizedThis.map((el) => el[0]);
 }
-const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp0LF2WgeDkn_sQ1VuMnlnVGjkDvCN4jo2nLMt3b84ry328rg46eohB_JT3WTqOGJovY&usqp=CAU';//process.env.SENDGRID_APIKEY
 
 const styleModal = {
   position: 'absolute',
@@ -129,7 +127,7 @@ function EnhancedTableHead(props) {
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
-            inputProps={{ 'aria-label': 'select all Notifications' }}
+            inputProps={{ 'aria-label': props.lg.get('select all Notifications') }}
           />
         </TableCell>
         {headCells.map((headCell) => (
@@ -191,7 +189,7 @@ const EnhancedTableToolbar = (props) => {
       ) : (<></>
       )}
       {numSelected > 0 ? (
-        <Tooltip title='Delete'>
+        <Tooltip title={props.lg.get('Delete')}>
           <IconButton onClick={props.onDeleteItems}>
             <DeleteIcon />
           </IconButton>
@@ -238,13 +236,12 @@ export default function Notifications(props) {
 
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
-  const [limit, setLimit] = React.useState(5);
+  const [limit, setLimit] = React.useState(25);
 
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('id');
   const [selected, setSelected] = React.useState([]);
   const [dense,] = React.useState(false);
-  const [rowsPerPage,] = React.useState(5);
   const [rows, setRows] = React.useState([]);
 
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
@@ -264,13 +261,13 @@ export default function Notifications(props) {
 
   React.useEffect(() => {
     fetchData();
-  }, []);
+  }, [page, limit]);
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
-  const createData = (id, user_from, user_to, firstname_from, lastname_from, email_from, object, content, date,readed) => {
+  const createData = (id, user_from, user_to, firstname_from, lastname_from, email_from, object, content, date, readed) => {
     return {
       id,
       user_from,
@@ -373,7 +370,7 @@ export default function Notifications(props) {
   const onDeleteItems = async () => {
     if (selected.length) {
       await AngelNotification().delete({ ids: selected.join(',') });
-      handleClickVariant('success', 'Notification(s) well deleted');
+      handleClickVariant('success', lg.get('Notification(s) well deleted'));
       fetchData();
     }
   }
@@ -382,8 +379,6 @@ export default function Notifications(props) {
     enqueueSnackbar(text, { variant });
   };
   const isSelected = (id) => selected.indexOf(id) !== -1;
-
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
   const search = (variant, text) => {
     // variant could be success, error, warning, info, or default
@@ -413,6 +408,9 @@ export default function Notifications(props) {
     setEmailFrom(record.firstname_from + ' ' + record.lastname_from + ' <' + record.email_from + '>');
     handleDetailModal();
   }
+  const onPageChange = (event, newPage) => {
+    setPage(newPage);
+  }
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -426,8 +424,8 @@ export default function Notifications(props) {
             <Typography id="modal-modal-title" variant="h6" component="h2">
               {object}
             </Typography>
-            <div><b>From:</b> {fromEmail}</div>
-            <div><b>when:</b> {date}</div>
+            <div><b>{lg.get('From')}:</b> {fromEmail}</div>
+            <div><b>{lg.get('When')}:</b> {date}</div>
             <p>
               {content}
             </p>
@@ -473,7 +471,6 @@ export default function Notifications(props) {
               />
               <TableBody>
                 {stableSort(rows, getComparator(order, orderBy))
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row, index) => {
                     const isItemSelected = isSelected(row.user_id);
                     const labelId = `enhanced-table-checkbox-${index}`;
@@ -546,15 +543,6 @@ export default function Notifications(props) {
                       </TableRow>
                     );
                   })}
-                {emptyRows > 0 && (
-                  <TableRow
-                    style={{
-                      height: (dense ? 33 : 53) * emptyRows,
-                    }}
-                  >
-                    <TableCell colSpan={6} />
-                  </TableRow>
-                )}
               </TableBody>
             </Table>
           </TableContainer>
@@ -564,8 +552,8 @@ export default function Notifications(props) {
             count={total ? total : 0}
             rowsPerPage={limit}
             page={page}
-            onPageChange={setPage}
-            onRowsPerPageChange={(e) => { setLimit(e.target.value) }}
+            onPageChange={onPageChange}
+            onRowsPerPageChange={(e) => { setLimit(e.target.value); setPage(0); }}
           />
         </Paper>
       </Box>

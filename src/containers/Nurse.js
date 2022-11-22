@@ -4,19 +4,11 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Avatar from '@mui/material/Avatar';
-import InputLabel from '@mui/material/InputLabel';
-import InputAdornment from '@mui/material/InputAdornment';
-import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import Visibility from '@mui/icons-material/Visibility';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
 import { Save } from '@mui/icons-material';
-import { Button } from '@mui/material';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import IconButton from '@mui/material/IconButton';
+import { OutlinedInput, InputAdornment, Button, Card, CardContent, CardHeader, FormControl, IconButton, InputLabel, MenuItem, Modal, Select } from '@mui/material';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import Modal from '@mui/material/Modal';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import ToggleButton from '@mui/material/ToggleButton';
@@ -32,6 +24,8 @@ import FaceIcon from '@mui/icons-material/Face';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { useTranslation } from '../hooks/userTranslation';
 import AppContext from '../contexts/AppContext';
+import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
+import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 
 export default function NurseContainer(props) {
 
@@ -41,34 +35,39 @@ export default function NurseContainer(props) {
     const [userSession,] = React.useState(appContext.appState.user);
     const [lg] = useTranslation(userSession ? userSession.lang : 'en');
 
-    const [id, setId] = React.useState(null);
-    const [nurseId, setNurseId] = React.useState(null);
-    const [firstname, setFirstname] = React.useState('');
-    const [lastname, setLastname] = React.useState('');
-    const [email, setEmail] = React.useState('');
-    const [sex, setSex] = React.useState('');
-    const [lang, setLang] = React.useState('');
-    const [dateOfBirth, setDateOfBirth] = React.useState('');
-    const [phone, setPhone] = React.useState('');
+    const [id, setId] = React.useState();
+    const [nurseId, setNurseId] = React.useState();
+    const [firstname, setFirstname] = React.useState();
+    const [lastname, setLastname] = React.useState();
+    const [email, setEmail] = React.useState();
+    const [sex, setSex] = React.useState();
+    const [lang, setLang] = React.useState();
+    const [dateOfBirth, setDateOfBirth] = React.useState();
+    const [phone, setPhone] = React.useState();
     const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp0LF2WgeDkn_sQ1VuMnlnVGjkDvCN4jo2nLMt3b84ry328rg46eohB_JT3WTqOGJovY&usqp=CAU';//process.env.SENDGRID_APIKEY
     const [avatar, setAvatar] = React.useState(defaultAvatar);
-    const [address, setAddress] = React.useState('');
-    const [streetNumber, setStreetNumber] = React.useState('');
-    const [city, setCity] = React.useState('');
-    const [zip, setZip] = React.useState('');
-    const [country, setCountry] = React.useState('');
-    const [password, setPassword] = React.useState('');
+    const [address, setAddress] = React.useState();
+    const [streetNumber, setStreetNumber] = React.useState();
+    const [city, setCity] = React.useState();
+    const [zip, setZip] = React.useState();
+    const [country, setCountry] = React.useState();
+    const [password, setPassword] = React.useState();
     const [showPassword, setShowPassword] = React.useState(false);
     const [week, setWeek] = React.useState(() => []);
-    const [hospitalId, setHospitalId] = React.useState(() => '');
-    const [hospitalName, setHospitalName] = React.useState(() => '');
+    const [hospitalId, setHospitalId] = React.useState();
+    const [hospitalName, setHospitalName] = React.useState();
     const [openAssignPatientModal, setOpenAssignModal] = React.useState(false);
-    const [assignPatientId, setAssignPatientId] = React.useState(null);
+    const [assignPatientId, setAssignPatientId] = React.useState();
     const [active, setActive] = React.useState('N');
     const [switchState, setSwitchState] = React.useState(false);
-    const [, setFile] = React.useState(null);
-    const uploadFileButton = useRef(null);
+    const [, setFile] = React.useState();
+    const uploadFileButton = useRef();
 
+    const [hospitalAddress, setHospitalAddress] = React.useState();
+    const [hospitalStreetNumber, setHospitalStreetNumber] = React.useState();
+    const [hospitalZip, setHospitalZip] = React.useState();
+    const [hospitalCity, setHospitalCity] = React.useState();
+    const [hospitalCountry, setHospitalCountry] = React.useState();
 
     React.useEffect(() => {
         if (props.userId) {
@@ -77,6 +76,7 @@ export default function NurseContainer(props) {
     }, []);
     const fetchData = async () => {
         const user = await AngelNurse().find({ user_id: props.userId });
+        console.log(user)
         setId(user.user_id);
         setNurseId(user.nurse_id);
         setFirstname(user.firstname);
@@ -94,6 +94,11 @@ export default function NurseContainer(props) {
         setAvatar(user.avatar);
         setHospitalId(user.hospital_id);
         setHospitalName(user.hospital_name);
+        setHospitalAddress(user.hospital_address);
+        setHospitalStreetNumber(user.hospital_street_number);
+        setHospitalZip(user.hospital_zip);
+        setHospitalCountry(user.hospital_country);
+        setHospitalCity(user.hospital_city);
         setAvatar(user.avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + user.avatar : defaultAvatar);
         if (user.daysin) {
             setWeek(JSON.parse(user.daysin));
@@ -181,7 +186,6 @@ export default function NurseContainer(props) {
         return datestring;
     }
     const handleDateOfBirthChange = (newValue) => {
-        console.log(newValue)
         setDateOfBirth(newValue);
     };
     const handleClickShowPassword = () => {
@@ -273,276 +277,315 @@ export default function NurseContainer(props) {
                     </Box>
                 </Modal>
             </div>
-            <Button onClick={handleAssignPatientModal} variant="outlined" style={{ marginRight: '5px' }}>{lg.get('Assign a patient')}</Button>
-            <Button onClick={() => document.getElementById("newButton").clk(nurseId, firstname + " " + lastname, 'nurse_patients')} variant="outlined" >{lg.get('List of patients')}</Button>
-            <Box sx={{ width: '100%' }} mt={2}>
-                <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6} md={4} xl={2} style={{ paddingTop: '15px' }}>
-                        <Grid item xs={12} style={{ width: '205px', height: '205px', textAlign: "center", border: '3px solid #ddd', borderRadius: '5px', margin: 'auto' }} >
 
-                            <Avatar variant="rounded"
-                                src={avatar}
-                                style={{ width: '200px', height: '200px', textAlign: "center", borderColor: 'gray', margin: 'auto' }}
-                            />
-                            <Grid item xs={12} style={{ width: '100%', textAlign: "center" }}>
-                                <Button id="avatarLabel" onClick={() => uploadFileButton.current.click()}>{lg.get('Upload photo')}</Button>
-                                <input type="file" name="avatar" onChange={onFileChange} ref={uploadFileButton} style={{ display: 'none' }} />
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={4} xl={4} >
-                        <TextField
-                            label={lg.get("Firstname")}
-                            id="firstname"
-                            value={firstname ? firstname : ''}
-                            onChange={onInputChange(setFirstname)}
-                            InputProps={{
-                                startAdornment: <FaceIcon position="start"/>,
-                            }}
-                        />
-                        <TextField
-                            label={lg.get("Lastname")}
-                            id="lastname"
-                            value={lastname ? lastname : ''}
-                            onChange={onInputChange(setLastname)}
-                            InputProps={{
-                                startAdornment: <FaceIcon position="start"/>,
-                            }}
-                        />
-                        <Box >
-                            <MobileDatePicker
-                                key="birthday"
-                                id="birthday"
-                                label={lg.get("Birthday")}
-                                inputFormat="MM/dd/yyyy"
-                                value={dateOfBirth ? dateOfBirth : ''}
-                                onChange={handleDateOfBirthChange}
-                                renderInput={(params) => <TextField {...params} />}
-                            />
-                        </Box>
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={4} xl={4}>
-                        <TextField
-                            label={lg.get("Phone")}
-                            id="phone"
-                            value={phone ? phone : ''}
-                            onChange={onInputChange(setPhone)}
-                            InputProps={{
-                                startAdornment: <LocalPhoneIcon position="start"/>,
-                            }}
-                        />
-                        <TextField
-                            label="Email"
-                            id="outlined-start-adornment"
 
-                            value={email ? email : ''}
-                            onChange={onInputChange(setEmail)}
-                            InputProps={{
-                                startAdornment: <EmailIcon position="start"/>,
-                            }}
-                        />
-                        <Grid container spacing={1}>
-                            <Grid item xs={8}>
-                                <FormControl >
-                                    <InputLabel id="langLabel">{lg.get("Lang")}</InputLabel>
-                                    <Select
-                                        style={{ display: 'flex', width: '100%' }}
-                                        labelId="langLabel"
-                                        id="lang"
-                                        value={lang ? lang : ''}
-                                        onChange={onInputChange(setLang)}
-                                        label="Close monitoring?">
-                                        <MenuItem value={'fr'}>Francais</MenuItem>
-                                        <MenuItem value={'en'}>English</MenuItem>
-                                        <MenuItem value={'de'}>Dutch</MenuItem>
-                                        <MenuItem value={'ar'}>Arabic</MenuItem>
-                                        <MenuItem value={'nl'}>Nederlands</MenuItem>
-                                        <MenuItem value={'es'}>Spanish</MenuItem>
-                                        <MenuItem value={'pl'}>Polsky</MenuItem>
-                                        <MenuItem value={'it'}>Italian</MenuItem>
-                                    </Select>
-                                </FormControl>
-                            </Grid>
-                            <Grid item xs={4}>
-                                <FormControl fullWidth>
-                                    <InputLabel id="sexLabel">{lg.get("Sex")}</InputLabel>
-                                    <Select
-                                        style={{ display: 'flex', width: '100%' }}
-                                        labelId="sexLabel"
-                                        id="sex"
-                                        value={sex ? sex : ''}
-                                        onChange={onInputChange(setSex)}
-                                        label="Sex" >
-                                        <MenuItem value={'M'}>{lg.get("Male")}</MenuItem>
-                                        <MenuItem value={'F'}>{lg.get("Femal")}</MenuItem>
-                                        <MenuItem value={'B'}>{lg.get("Both")}</MenuItem>
-                                    </Select>
-                                </FormControl>
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={4} xl={4}  >
-                        <Typography variant="h6" gutterBottom component="div">
-                            {lg.get("Address")}
-                        </Typography>
+            <Box sx={{ width: '100%' }} mt={0}>
+                <Card >
+                    <CardHeader
+                        avatar={
+                            <EmojiPeopleIcon color={'primary'} />
+                        }
+                        sx={{ borderBottom: '1px solid #cecece' }}
+                        title={nurseId ? ((firstname ? firstname : '') + ' ' + (lastname ? lastname : '')) : lg.get('Add nurse')}
+                        subheader={
+                            <Grid container spacing={0} >
+                                <Grid item xs={12} sm={7} md={4} xl={3} mt={1} style={{ display: 'flex', flexDirection: 'row' }}>
+                                    <EmailIcon fontSize={'small'} style={{ marginRight: '5px', display: email && nurseId ? 'block' : 'none' }} />
+                                    <Typography style={{ display: email && nurseId ? 'block' : 'none' }}>{nurseId ? email : ''}</Typography>
+                                </Grid>
+                                <Grid item xs={12} sm={5} md={3} xl={2} mt={1} style={{ display: 'flex', flexDirection: 'row' }}>
+                                    <LocalPhoneIcon fontSize={'small'} style={{ marginRight: '5px', display: phone && nurseId ? 'block' : 'none' }} />
+                                    <Typography style={{ display: phone && nurseId ? 'block' : 'none' }}>{ phone && nurseId ? phone : ''}</Typography>
+                                </Grid>
+                                <Grid item xs={12} sm={12} md={12} xl={7} mt={1} style={{ display: 'flex', flexDirection: 'row' }}>
+                                    <LocalHospitalIcon fontSize={'small'} style={{ marginRight: '5px', display: hospitalId ? 'block' : 'none' }} />
+                                    <Typography >{hospitalName ? hospitalName : ''}</Typography>
+                                    <Typography ml={1}>{hospitalAddress ? hospitalAddress : ''}</Typography>
+                                    <Typography ml={1}>{hospitalStreetNumber ? hospitalStreetNumber : ''}</Typography>
+                                    <Typography >{hospitalZip ? (', ' + hospitalZip) : ''}</Typography>
+                                    <Typography ml={1}>{hospitalCity ? hospitalCity : ''}</Typography>
+                                    <Typography ml={1}>{hospitalCountry ? hospitalCountry : ''}</Typography>
+                                </Grid>
+                            </Grid>}
+                        action={<>
+                            <IconButton aria-label="assign patient">
+                                <Button onClick={handleAssignPatientModal} variant="outlined" style={{ marginRight: '5px' }}>{lg.get('Assign a patient')}</Button>
+                            </IconButton>
+                            <IconButton aria-label="assign patient">
+                                <Button onClick={() => document.getElementById("newButton").clk(nurseId, firstname + " " + lastname, 'nurse_patients')} variant="outlined" >{lg.get('List of patients')}</Button>
+                            </IconButton></>
+                        }
+                    />
+                    <CardContent>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12} sm={6} md={4} xl={2} style={{ paddingTop: '15px' }}>
+                                <Grid item xs={12} style={{ width: '205px', height: '205px', textAlign: "center", border: '3px solid #ddd', borderRadius: '5px', margin: 'auto' }} >
 
-                        <Grid container spacing={1}>
-                            <Grid item xs={8}>
+                                    <Avatar variant="rounded"
+                                        src={avatar}
+                                        style={{ width: '200px', height: '200px', textAlign: "center", borderColor: 'gray', margin: 'auto' }}
+                                    />
+                                    <Grid item xs={12} style={{ width: '100%', textAlign: "center" }}>
+                                        <Button id="avatarLabel" onClick={() => uploadFileButton.current.click()}>{lg.get('Upload photo')}</Button>
+                                        <input type="file" name="avatar" onChange={onFileChange} ref={uploadFileButton} style={{ display: 'none' }} />
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={4} xl={4} >
                                 <TextField
-                                    label={lg.get("Address")}
-                                    id="address"
-
-                                    value={address ? address : ''}
-                                    onChange={onInputChange(setAddress)}
+                                    label={lg.get("Firstname")}
+                                    id="firstname"
+                                    value={firstname ? firstname : ''}
+                                    onChange={onInputChange(setFirstname)}
                                     InputProps={{
-                                        startAdornment: <PlaceIcon position="start"/>,
+                                        startAdornment: <FaceIcon position="start" />,
                                     }}
                                 />
-                            </Grid>
-                            <Grid item xs={4}>
                                 <TextField
-                                    label={lg.get("Number")}
-                                    id="number"
-
-                                    value={streetNumber ? streetNumber : ''}
-                                    onChange={onInputChange(setStreetNumber)}
-
-                                />
-                            </Grid>
-                        </Grid>
-                        <Grid container spacing={1}>
-                            <Grid item xs={7}>
-                                <TextField
-                                    label={lg.get("City")}
-                                    id="city"
-
-                                    value={city ? city : ''}
-                                    onChange={onInputChange(setCity)}
+                                    label={lg.get("Lastname")}
+                                    id="lastname"
+                                    value={lastname ? lastname : ''}
+                                    onChange={onInputChange(setLastname)}
                                     InputProps={{
-                                        startAdornment: <PlaceIcon position="start"/>,
-                                    }} />
-                            </Grid>
-                            <Grid item xs={5}>
-                                <TextField
-                                    label={lg.get("Zip")}
-                                    id="zip"
-
-                                    value={zip ? zip : ''}
-                                    onChange={onInputChange(setZip)}
+                                        startAdornment: <FaceIcon position="start" />,
+                                    }}
                                 />
-                            </Grid>
-                        </Grid>
-                        <FormControl fullWidth >
-                            <InputLabel id="langLabel">{lg.get("Country")}</InputLabel>
-                            <Select
-                                style={{ display: 'flex', width: '100%' }}
-                                labelId="countryLabel"
-                                id="country"
-                                value={country ? country : ''}
-                                onChange={onInputChange(setCountry)}
-                                label={lg.get("Country")}>
-                                <MenuItem value={'belgium'}>Belgium</MenuItem>
-                                <MenuItem value={'luxembourg'}>Luxembourg</MenuItem>
-                                <MenuItem value={'espagne'}>Espagne</MenuItem>
-                                <MenuItem value={'hollande'}>Hollande</MenuItem>
-                                <MenuItem value={'italie'}>Italie</MenuItem>
-                                <MenuItem value={'france'}>France</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={4} xl={4}>
-                        <Typography variant="h6" gutterBottom component="div">
-                            {lg.get("Hospital")}
-                        </Typography>
-                        <ComboHospitals lg={lg} onSelect={onHospitalSelect} hospital={{ id: hospitalId, name: hospitalName }} />
-                        <Typography variant="h6" mt={'0px'}>
-                            {lg.get("Password and activation")}
-                        </Typography>
-                        <FormControlLabel control={<Switch checked={switchState} onChange={setActif} value={active} />} label="Actif" size="large" />
-                        <Grid container spacing={1}>
-                            <Grid item xs={8}>
-                                <FormControl fullWidth variant="outlined" style={{ marginTop: '12px' }}>
-                                    <InputLabel htmlFor="outlined-adornment-password">{lg.get("Change password")}</InputLabel>
-                                    <OutlinedInput
-                                        id="outlined-adornment-password"
-                                        type={showPassword ? 'text' : 'password'}
-                                        onChange={onInputChange(setPassword)}
-                                        endAdornment={
-                                            <InputAdornment position="end">
-                                                <IconButton
-                                                    aria-label="toggle password visibility"
-                                                    onClick={handleClickShowPassword}
-                                                    onMouseDown={handleMouseDownPassword}
-                                                    edge="end"
-                                                >
-                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                                                </IconButton>
-                                            </InputAdornment>
-                                        }
-                                        label={lg.get("Change password")}
+                                <Box >
+                                    <MobileDatePicker
+                                        key="birthday"
+                                        id={lg.get('Birthday')}
+                                        label={lg.get('Birthday')}
+                                        inputFormat="MM/dd/yyyy"
+                                        value={dateOfBirth ? dateOfBirth : null}
+                                        onChange={handleDateOfBirthChange}
+                                        renderInput={(params) => <TextField {...params} />}
                                     />
+                                </Box>
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={4} xl={4}>
+                                <TextField
+                                    label={lg.get("Phone")}
+                                    id="phone"
+                                    value={phone ? phone : ''}
+                                    onChange={onInputChange(setPhone)}
+                                    InputProps={{
+                                        startAdornment: <LocalPhoneIcon position="start" />,
+                                    }}
+                                />
+                                <TextField
+                                    label="Email"
+                                    id="outlined-start-adornment"
+
+                                    value={email ? email : ''}
+                                    onChange={onInputChange(setEmail)}
+                                    InputProps={{
+                                        startAdornment: <EmailIcon position="start" />,
+                                    }}
+                                />
+                                <Grid container spacing={1}>
+                                    <Grid item xs={8}>
+                                        <FormControl >
+                                            <InputLabel id="langLabel">{lg.get("Lang")}</InputLabel>
+                                            <Select
+                                                style={{ display: 'flex', width: '100%' }}
+                                                labelId="langLabel"
+                                                id="lang"
+                                                value={lang ? lang : ''}
+                                                onChange={onInputChange(setLang)}
+                                                label="Close monitoring?">
+                                                <MenuItem value={'fr'}>Francais</MenuItem>
+                                                <MenuItem value={'en'}>English</MenuItem>
+                                                <MenuItem value={'de'}>Dutch</MenuItem>
+                                                <MenuItem value={'ar'}>Arabic</MenuItem>
+                                                <MenuItem value={'nl'}>Nederlands</MenuItem>
+                                                <MenuItem value={'es'}>Spanish</MenuItem>
+                                                <MenuItem value={'pl'}>Polsky</MenuItem>
+                                                <MenuItem value={'it'}>Italian</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={4}>
+                                        <FormControl fullWidth>
+                                            <InputLabel id="sexLabel">{lg.get("Sex")}</InputLabel>
+                                            <Select
+                                                style={{ display: 'flex', width: '100%' }}
+                                                labelId="sexLabel"
+                                                id="sex"
+                                                value={sex ? sex : ''}
+                                                onChange={onInputChange(setSex)}
+                                                label="Sex" >
+                                                <MenuItem value={'M'}>{lg.get("Male")}</MenuItem>
+                                                <MenuItem value={'F'}>{lg.get("Femal")}</MenuItem>
+                                                <MenuItem value={'B'}>{lg.get("Both")}</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={4} xl={4}  >
+                                <Typography variant="h6" gutterBottom component="div">
+                                    {lg.get("Address")}
+                                </Typography>
+
+                                <Grid container spacing={1}>
+                                    <Grid item xs={8}>
+                                        <TextField
+                                            label={lg.get("Address")}
+                                            id="address"
+
+                                            value={address ? address : ''}
+                                            onChange={onInputChange(setAddress)}
+                                            InputProps={{
+                                                startAdornment: <PlaceIcon position="start" />,
+                                            }}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={4}>
+                                        <TextField
+                                            label={lg.get("Number")}
+                                            id="number"
+
+                                            value={streetNumber ? streetNumber : ''}
+                                            onChange={onInputChange(setStreetNumber)}
+
+                                        />
+                                    </Grid>
+                                </Grid>
+                                <Grid container spacing={1}>
+                                    <Grid item xs={7}>
+                                        <TextField
+                                            label={lg.get("City")}
+                                            id="city"
+
+                                            value={city ? city : ''}
+                                            onChange={onInputChange(setCity)}
+                                            InputProps={{
+                                                startAdornment: <PlaceIcon position="start" />,
+                                            }} />
+                                    </Grid>
+                                    <Grid item xs={5}>
+                                        <TextField
+                                            label={lg.get("Zip")}
+                                            id="zip"
+
+                                            value={zip ? zip : ''}
+                                            onChange={onInputChange(setZip)}
+                                        />
+                                    </Grid>
+                                </Grid>
+                                <FormControl fullWidth >
+                                    <InputLabel id="langLabel">{lg.get("Country")}</InputLabel>
+                                    <Select
+                                        style={{ display: 'flex', width: '100%' }}
+                                        labelId="countryLabel"
+                                        id="country"
+                                        value={country ? country : ''}
+                                        onChange={onInputChange(setCountry)}
+                                        label={lg.get("Country")}>
+                                        <MenuItem value={'belgium'}>Belgium</MenuItem>
+                                        <MenuItem value={'luxembourg'}>Luxembourg</MenuItem>
+                                        <MenuItem value={'espagne'}>Espagne</MenuItem>
+                                        <MenuItem value={'hollande'}>Hollande</MenuItem>
+                                        <MenuItem value={'italie'}>Italie</MenuItem>
+                                        <MenuItem value={'france'}>France</MenuItem>
+                                    </Select>
                                 </FormControl>
                             </Grid>
-                            <Grid item xs={4} mt={'25px'}>
-                                <Button
+                            <Grid item xs={12} sm={6} md={4} xl={4}>
+                                <Typography variant="h6" gutterBottom component="div">
+                                    {lg.get("Hospital")}
+                                </Typography>
+                                <ComboHospitals lg={lg} onSelect={onHospitalSelect} hospital={{ id: hospitalId, name: hospitalName }} />
+                                <Typography variant="h6" mt={'0px'}>
+                                    {lg.get("Password and activation")}
+                                </Typography>
+                                <FormControlLabel control={<Switch checked={switchState} onChange={setActif} value={active} />} label="Actif" size="large" />
+                                <Grid container spacing={1}>
+                                    <Grid item xs={8}>
+                                        <FormControl fullWidth variant="outlined" style={{ marginTop: '12px' }}>
+                                            <InputLabel htmlFor="outlined-adornment-password">{lg.get("Change password")}</InputLabel>
+                                            <OutlinedInput
+                                                id="outlined-adornment-password"
+                                                type={showPassword ? 'text' : 'password'}
+                                                onChange={onInputChange(setPassword)}
+                                                endAdornment={
+                                                    <InputAdornment position="end">
+                                                        <IconButton
+                                                            aria-label="toggle password visibility"
+                                                            onClick={handleClickShowPassword}
+                                                            onMouseDown={handleMouseDownPassword}
+                                                            edge="end"
+                                                        >
+                                                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                        </IconButton>
+                                                    </InputAdornment>
+                                                }
+                                                label={lg.get("Change password")}
+                                            />
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={4} mt={'25px'}>
+                                        <Button
 
-                                    style={{ borderRadius: '10px', marginLeft: '10px' }}
+                                            style={{ borderRadius: '10px', marginLeft: '10px' }}
+                                            variant="outlined" startIcon={<Save />}
+                                            onClick={savePassword}>
+                                            {lg.get("Save")}
+                                        </Button>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+
+                        <Grid container spacing={2}>
+                            <Grid item xs={12} style={{ paddingTop: '40px' }}>
+                                <Typography variant="h6" gutterBottom component="div">
+                                    {lg.get("Days in")}
+                                </Typography>
+                                <ToggleButtonGroup
+                                    value={week}
+                                    onChange={onWeekDayClick}
+                                    aria-label="Days in"
+                                    size="small"
+                                    color="info"
+                                >
+                                    <ToggleButton value="mon" aria-label="mon" color="info">
+                                        {lg.get("Mon")}
+                                    </ToggleButton>
+                                    <ToggleButton value="tue" aria-label="tue">
+                                        {lg.get("Tue")}
+                                    </ToggleButton>
+                                    <ToggleButton value="wed" aria-label="wed">
+                                        {lg.get("Wed")}
+                                    </ToggleButton>
+                                    <ToggleButton value="thu" aria-label="thu" >
+                                        {lg.get("Thu")}
+                                    </ToggleButton>
+                                    <ToggleButton value="fri" aria-label="fri" >
+                                        {lg.get("Fri")}
+                                    </ToggleButton>
+                                    <ToggleButton value="sat" aria-label="sat" >
+                                        {lg.get("Sat")}
+                                    </ToggleButton>
+                                    <ToggleButton value="sun" aria-label="sun" >
+                                        {lg.get("Sun")}
+                                    </ToggleButton>
+                                </ToggleButtonGroup>
+                            </Grid>
+                            <Grid container>
+                                <Typography variant="h6" gutterBottom component="div">
+                                    &nbsp;
+                                </Typography>
+                                <Button
+                                    style={{ borderRadius: '10px', marginTop: '10px' }}
                                     variant="outlined" startIcon={<Save />}
-                                    onClick={savePassword}>
+                                    onClick={onSubmit}>
                                     {lg.get("Save")}
                                 </Button>
                             </Grid>
                         </Grid>
-                    </Grid>
-                </Grid>
-
-                <Grid container spacing={2}>
-                    <Grid item xs={12} style={{ paddingTop: '40px' }}>
-                        <Typography variant="h6" gutterBottom component="div">
-                            {lg.get("Days in")}
-                        </Typography>
-                        <ToggleButtonGroup
-                            value={week}
-                            onChange={onWeekDayClick}
-                            aria-label="Days in"
-                            size="small"
-                            color="info"
-                        >
-                            <ToggleButton value="mon" aria-label="mon" color="info">
-                                {lg.get("Mon")}
-                            </ToggleButton>
-                            <ToggleButton value="tue" aria-label="tue">
-                                {lg.get("Tue")}
-                            </ToggleButton>
-                            <ToggleButton value="wed" aria-label="wed">
-                                {lg.get("Wed")}
-                            </ToggleButton>
-                            <ToggleButton value="thu" aria-label="thu" >
-                                {lg.get("Thu")}
-                            </ToggleButton>
-                            <ToggleButton value="fri" aria-label="fri" >
-                                {lg.get("Fri")}
-                            </ToggleButton>
-                            <ToggleButton value="sat" aria-label="sat" >
-                                {lg.get("Sat")}
-                            </ToggleButton>
-                            <ToggleButton value="sun" aria-label="sun" >
-                                {lg.get("Sun")}
-                            </ToggleButton>
-                        </ToggleButtonGroup>
-                    </Grid>
-                    <Grid container>
-                        <Typography variant="h6" gutterBottom component="div">
-                            &nbsp;
-                        </Typography>
-                        <Button
-                            style={{ borderRadius: '10px', marginTop: '10px' }}
-                            variant="outlined" startIcon={<Save />}
-                            onClick={onSubmit}>
-                            {lg.get("Save")}
-                        </Button>
-                    </Grid>
-                </Grid>
+                    </CardContent>
+                </Card>
             </Box>
         </>
     );

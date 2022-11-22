@@ -29,7 +29,7 @@ export default function PosologyComponent(props) {
     const [startDate, setStartDate] = React.useState(props.startDate ? props.startDate : new Date());
     const [endDate, setEndDate] = React.useState(props.endDate);
     const [arrayUpdated, updateArray] = React.useState(props.refresh);
-
+    console.log(props.startDate)
     const onAddHour = () => {
         setHours([...hours, 12]);
     };
@@ -58,6 +58,13 @@ export default function PosologyComponent(props) {
         });
     }
 
+    const formatDate = (v) => {
+        console.log('formatDate',v)
+        let d = new Date(v);
+        console.log('d',d)
+        var datestring = d.getDate() + "/" + (d.getMonth() + 1) + "-" + d.getFullYear()  + " " + d.getHours() + ":" + d.getMinutes() + ":00";
+        return datestring;
+      }
     const onPatientSelect = (id) => {
         setPatientId(id);
     }
@@ -87,8 +94,7 @@ export default function PosologyComponent(props) {
                     id="datestart"
                     label={props.lg.get('Start date')}
                     inputFormat="dd/MM/yyyy"
-                    defaultValue={new Date()}
-                    value={startDate ? startDate : new Date()}
+                    value={startDate? (startDate) : null}
                     onChange={handleStartDateChange}
                     renderInput={(params) => <TextField size="small" {...params} style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '0px', marginRight: '0px', marginLeft: '0px' }} />}
                 />

@@ -245,7 +245,7 @@ export default function PatientTreatments(props) {
   const [, setTreatments] = React.useState(null);
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
-  const [limit, setLimit] = React.useState(5);
+  const [limit, setLimit] = React.useState(25);
   const [order, setOrder] = React.useState(null);
   const [orderBy, setOrderBy] = React.useState(null);
   const [selected, setSelected] = React.useState([]);
@@ -257,23 +257,24 @@ export default function PatientTreatments(props) {
   const [codeFilter, setCodeFilter] = React.useState(true);
   const [nameFilter, setNameFilter] = React.useState(true);
   const [openAssignPatientModal, setOpenAssignPatientModal] = React.useState(false);
+
   const [repetition, setRepetition] = React.useState(props.repetition);
   const [note, setNote] = React.useState(props.note);
   const [days, setWeek] = React.useState(props.days);
   const [hours, setHours] = React.useState([12]);
-  const [startDate, setStartDate] = React.useState(props.startDate);
-  const [endDate, setEndDate] = React.useState(props.endDate);
-  const [patientId, setPatientId] = React.useState(props.patientId);
-  const [patient, setPatient] = React.useState(null);
-  const [drug, setDrug] = React.useState(null);
-  const [drugId, setDrugId] = React.useState(props.drugId);
+  const [startDate, setStartDate] = React.useState();
+  const [endDate, setEndDate] = React.useState();
+  const [patientId, setPatientId] = React.useState();
+  const [patient, setPatient] = React.useState();
+  const [drug, setDrug] = React.useState();
+  const [drugId, setDrugId] = React.useState();
   const [id, setId] = React.useState(null);
-  const [posologyId, setPosologyId] = React.useState(null);
+  const [posologyId, setPosologyId] = React.useState();
 
 
   React.useEffect(() => {
     fetchData();
-  }, []);
+  }, [ limit, page]);
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -294,7 +295,9 @@ export default function PatientTreatments(props) {
     days,
     hours,
     note,
-    repetition
+    repetition,
+    startdate,
+    enddate
   ) => {
 
     return {
@@ -313,7 +316,9 @@ export default function PatientTreatments(props) {
       days,
       hours,
       note,
-      repetition
+      repetition,
+      startdate,
+      enddate
     }
   }
   const fetchData = async () => {
@@ -350,8 +355,8 @@ export default function PatientTreatments(props) {
           r.treatments[i].code,
           displayDate(r.treatments[i].date_created),
           r.treatments[i].posology_id,
-          displayDate(r.treatments[i].start_date),
-          displayDate(r.treatments[i].end_date),
+          r.treatments[i].start_date?displayDate(r.treatments[i].start_date):null,
+          r.treatments[i].end_date?displayDate(r.treatments[i].end_date):null,
           r.treatments[i].firstname,
           r.treatments[i].lastname,
           r.treatments[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.treatments[i].avatar : defaultAvatar,
@@ -360,7 +365,9 @@ export default function PatientTreatments(props) {
           r.treatments[i].days,
           r.treatments[i].hours,
           r.treatments[i].note,
-          r.treatments[i].repetition
+          r.treatments[i].repetition,
+          r.treatments[i].start_date,
+          r.treatments[i].enddate
         ));
       }
       setRows(u);
@@ -436,7 +443,6 @@ export default function PatientTreatments(props) {
     // variant could be success, error, warning, info, or default
     enqueueSnackbar(text, { variant });
   };
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
   const handleAssignPatientModal = async (row) => {
     setId(row.id)
     setPosologyId(row.posology)
@@ -444,8 +450,8 @@ export default function PatientTreatments(props) {
     setWeek(JSON.parse(row.days));
     setDrugId(row.drug_id);
     setPatientId(row.patient_id);
-    setStartDate(row.start_date);
-    setEndDate(row.end_date);
+    setStartDate(row.startdate);
+    setEndDate(row.enddate);
     setRepetition(row.repetition);
     setNote(row.note);
     const p = await AngelPatient().find({ patient_id: row.patient_id })
@@ -488,6 +494,9 @@ export default function PatientTreatments(props) {
     }
   }
 
+  const onPageChange = (event, newPage) => {
+    setPage(newPage);
+  }
   const formatDate = (v) => {
     let d = new Date(v);
     var datestring = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":00";
@@ -550,7 +559,6 @@ export default function PatientTreatments(props) {
               />
               <TableBody>
                 {stableSort(rows, getComparator(order, orderBy))
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row, index) => {
                     const isItemSelected = isSelected(row.id);
                     const labelId = `enhanced-table-checkbox-${index}`;
@@ -640,15 +648,6 @@ export default function PatientTreatments(props) {
                       </TableRow>
                     );
                   })}
-                {emptyRows > 0 && (
-                  <TableRow
-                    style={{
-                      height: (dense ? 33 : 53) * emptyRows,
-                    }}
-                  >
-                    <TableCell colSpan={6} />
-                  </TableRow>
-                )}
               </TableBody>
             </Table>
           </TableContainer>
@@ -658,8 +657,8 @@ export default function PatientTreatments(props) {
             count={total ? total : 0}
             rowsPerPage={limit}
             page={page}
-            onPageChange={setPage}
-            onRowsPerPageChange={(e) => { setLimit(e.target.value) }}
+            onPageChange={onPageChange}
+            onRowsPerPageChange={(e) => { setLimit(e.target.value); setPage(0); }}
           />
         </Paper>
       </Box>

@@ -248,13 +248,13 @@ export default function Doctors(props) {
 
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
-  const [limit, setLimit] = React.useState(5);
+  const [limit, setLimit] = React.useState(25);
 
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('id');
   const [selected, setSelected] = React.useState([]);
   const [dense,] = React.useState(false);
-  const [rowsPerPage,] = React.useState(5);
+  const [rowsPerPage] = React.useState(25);
   const [rows, setRows] = React.useState([]);
 
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
@@ -267,7 +267,7 @@ export default function Doctors(props) {
 
   React.useEffect(() => {
     fetchData();
-  }, []);
+  }, [page, limit]);
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -310,6 +310,10 @@ export default function Doctors(props) {
       setRows(u);
       setDoctors(r.users);
       setTotal(r.total);
+    } else {
+      setRows([]);
+      setDoctors([]);
+      setTotal(0);
     }
   }
   const createData = (user_id, id, firstname, lastname, email, phone, hospital_name, role, active, avatar) => {
@@ -362,7 +366,7 @@ export default function Doctors(props) {
   const onDeleteItems = async () => {
     if (selected.length) {
       await AngelUser().delete({ ids: selected.join(',') });
-      handleClickVariant('success', 'Doctor(s) well deleted');
+      handleClickVariant('success', lg.get('Doctor(s) well deleted'));
       fetchData();
     }
   }
@@ -371,7 +375,6 @@ export default function Doctors(props) {
     // variant could be success, error, warning, info, or default
     enqueueSnackbar(text, { variant });
   };
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
   const search = (variant, text) => {
     // variant could be success, error, warning, info, or default
@@ -393,6 +396,9 @@ export default function Doctors(props) {
     setSearchFilter(txt);
   };
 
+  const onPageChange = (event, newPage) => {
+    setPage(newPage);
+  }
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <div>
@@ -434,7 +440,6 @@ export default function Doctors(props) {
               />
               <TableBody>
                 {stableSort(rows, getComparator(order, orderBy))
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => {
                     const isItemSelected = isSelected(row.user_id);
                     const labelId = `enhanced-table-checkbox-${row.user_id}`;
@@ -528,15 +533,6 @@ export default function Doctors(props) {
                       </TableRow>
                     );
                   })}
-                {emptyRows > 0 && (
-                  <TableRow
-                    style={{
-                      height: (dense ? 33 : 53) * emptyRows,
-                    }}
-                  >
-                    <TableCell colSpan={6} />
-                  </TableRow>
-                )}
               </TableBody>
             </Table>
           </TableContainer>
@@ -546,8 +542,8 @@ export default function Doctors(props) {
             count={total ? total : 0}
             rowsPerPage={limit}
             page={page}
-            onPageChange={setPage}
-            onRowsPerPageChange={(e) => { setLimit(e.target.value) }}
+            onPageChange={onPageChange}
+            onRowsPerPageChange={(e) => { setLimit(e.target.value); setPage(0); }}
           />
         </Paper>
       </Box>

@@ -36,7 +36,6 @@ export default function MoodContainer(props) {
 
     React.useEffect(() => {
         if (props.moodId) {
-            console.log("setId",props.moodId)
             setId(props.moodId);
             fetchData(props.moodId, langId);
         }

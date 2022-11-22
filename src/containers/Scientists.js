@@ -247,13 +247,12 @@ export default function Scientists(props) {
 
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
-  const [limit, setLimit] = React.useState(5);
+  const [limit, setLimit] = React.useState(25);
 
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('id');
   const [selected, setSelected] = React.useState([]);
   const [dense,] = React.useState(false);
-  const [rowsPerPage,] = React.useState(5);
   const [rows, setRows] = React.useState([]);
 
   const [openFilterModal, setOpenFilterModal] = React.useState(false);
@@ -266,7 +265,7 @@ export default function Scientists(props) {
 
   React.useEffect(() => {
     fetchData();
-  }, []);
+  }, [page, limit]);
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -373,8 +372,6 @@ export default function Scientists(props) {
   };
   const isSelected = (id) => selected.indexOf(id) !== -1;
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
-
   const search = (variant, text) => {
     // variant could be success, error, warning, info, or default
     fetchData();
@@ -394,6 +391,9 @@ export default function Scientists(props) {
   const handleSearchText = (txt) => {
     setSearchFilter(txt);
   };
+  const onPageChange = (event, newPage) => {
+    setPage(newPage);
+  }
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -436,7 +436,6 @@ export default function Scientists(props) {
               />
               <TableBody>
                 {stableSort(rows, getComparator(order, orderBy))
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row, index) => {
                     const isItemSelected = isSelected(row.user_id);
                     const labelId = `enhanced-table-checkbox-${index}`;
@@ -528,15 +527,6 @@ export default function Scientists(props) {
                       </TableRow>
                     );
                   })}
-                {emptyRows > 0 && (
-                  <TableRow
-                    style={{
-                      height: (dense ? 33 : 53) * emptyRows,
-                    }}
-                  >
-                    <TableCell colSpan={6} />
-                  </TableRow>
-                )}
               </TableBody>
             </Table>
           </TableContainer>
@@ -546,8 +536,8 @@ export default function Scientists(props) {
             count={total ? total : 0}
             rowsPerPage={limit}
             page={page}
-            onPageChange={setPage}
-            onRowsPerPageChange={(e) => { setLimit(e.target.value) }}
+            onPageChange={onPageChange}
+            onRowsPerPageChange={(e) => { setLimit(e.target.value); setPage(0);  }}
           />
         </Paper>
       </Box>

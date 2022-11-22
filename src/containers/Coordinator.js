@@ -37,27 +37,27 @@ export default function CoordinatorContainer(props) {
 
     const [id, setId] = React.useState(null);
     const [coordinatorId, setCoordinatorId] = React.useState(null);
-    const [firstname, setFirstname] = React.useState('');
-    const [lastname, setLastname] = React.useState('');
-    const [email, setEmail] = React.useState('');
-    const [sex, setSex] = React.useState('');
-    const [lang, setLang] = React.useState('');
-    const [dateOfBirth, setDateOfBirth] = React.useState('');
-    const [phone, setPhone] = React.useState('');
+    const [firstname, setFirstname] = React.useState();
+    const [lastname, setLastname] = React.useState();
+    const [email, setEmail] = React.useState();
+    const [sex, setSex] = React.useState();
+    const [lang, setLang] = React.useState();
+    const [dateOfBirth, setDateOfBirth] = React.useState();
+    const [phone, setPhone] = React.useState();
     const defaultAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkp0LF2WgeDkn_sQ1VuMnlnVGjkDvCN4jo2nLMt3b84ry328rg46eohB_JT3WTqOGJovY&usqp=CAU';//process.env.SENDGRID_APIKEY
     const [avatar, setAvatar] = React.useState(defaultAvatar);
 
-    const [address, setAddress] = React.useState('');
-    const [streetNumber, setStreetNumber] = React.useState('');
-    const [city, setCity] = React.useState('');
-    const [zip, setZip] = React.useState('');
-    const [country, setCountry] = React.useState('');
+    const [address, setAddress] = React.useState();
+    const [streetNumber, setStreetNumber] = React.useState();
+    const [city, setCity] = React.useState();
+    const [zip, setZip] = React.useState();
+    const [country, setCountry] = React.useState();
 
     const [password, setPassword] = React.useState('');
     const [showPassword, setShowPassword] = React.useState(false);
 
-    const [laboratoryId, setLaboratoryId] = React.useState(() => '');
-    const [, setLaboratoryName] = React.useState(() => '');
+    const [laboratoryId, setLaboratoryId] = React.useState();
+    const [, setLaboratoryName] = React.useState();
 
 
     const [active, setActive] = React.useState('N');
@@ -229,7 +229,6 @@ export default function CoordinatorContainer(props) {
                 <Grid container spacing={2}>
                     <Grid item xs={12} sm={6} md={4} xl={2} style={{ paddingTop: '15px' }}>
                        <Grid item xs={12} style={{  width: '205px', height: '205px', textAlign: "center", border: '3px solid #ddd', borderRadius: '5px', margin: 'auto' }} >
-
                             <Avatar variant="rounded"
                                 src={avatar}
                                 style={{ width: '200px', height: '200px', textAlign: "center", borderColor: 'gray', margin: 'auto' }}
@@ -428,7 +427,7 @@ export default function CoordinatorContainer(props) {
                                                 </IconButton>
                                             </InputAdornment>
                                         }
-                                        label="Change password"
+                                        label={lg.get('Change password')}
                                     />
                                 </FormControl>
                             </Grid>
