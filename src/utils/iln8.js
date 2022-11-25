@@ -1,4 +1,9 @@
 export const il8n = {
+    "Notice well removed": {
+        "en":"Notice well removed",
+        "fr":"Notice bien supprimée",
+        "nl":"Notice well removed",
+    },
     "Add laboratory": {
         "en":"Add Laboratory",
         "fr":"Ajouter un laboratoire",

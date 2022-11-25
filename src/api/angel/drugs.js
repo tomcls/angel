@@ -152,6 +152,15 @@ export default  function AngelDrug(config) {
                 throw new error(error);
             }
         },
+        deleteNotice: async (id) => {
+            console.log('id',id)
+            try {
+                const res = await axios.post(process.env.REACT_APP_API_URL+'/drug-descriptions/delete-notice',{id: id}, {headers: {'Authorization':accessToken}});
+                return res.data;
+            } catch (error) {
+                throw new error(error);
+            }
+        },
         notice: async (file,name,id) => {
             try {
                 const formData = new FormData();

@@ -23,7 +23,7 @@ import QrCodeIcon from '@mui/icons-material/QrCode';
 import MedicationIcon from '@mui/icons-material/Medication';
 import AppContext from '../contexts/AppContext';
 import { useTranslation } from "../hooks/userTranslation";
-
+import DeleteIcon from '@mui/icons-material/Delete';
 export default function DrugContainer(props) {
 
     const { enqueueSnackbar } = useSnackbar();
@@ -55,7 +55,7 @@ export default function DrugContainer(props) {
     const [note,] = React.useState(props.note);
     const [days,] = React.useState(props.days);
     const [hours,] = React.useState([12]);
-    const [sideEffectUpdated,setSideEffectUpdated] = React.useState(null);
+    const [sideEffectUpdated, setSideEffectUpdated] = React.useState(null);
     const [patientId,] = React.useState(props.patientId);
 
     React.useEffect(() => {
@@ -76,38 +76,38 @@ export default function DrugContainer(props) {
         setNotice(drug.notice);
         setDrug({ id: drug.drug_id, drug_id: drug.drug_id, name: drug.name, code: drug.code });
         setMoleculeName(drug.molecule_name);
-        const drugDescriptions = await AngelDrug().getDescription({id :drug.drug_id });
-        if(drugDescriptions && drugDescriptions.length > 0) {
+        const drugDescriptions = await AngelDrug().getDescription({ id: drug.drug_id });
+        if (drugDescriptions && drugDescriptions.length > 0) {
             setDescriptions(drugDescriptions);
         }
     }
     const onDescriptionChanged = (content) => {
-        if(descriptions && descriptions.length > 0) {
+        if (descriptions && descriptions.length > 0) {
             let found = false;
             for (let index = 0; index < descriptions.length; index++) {
                 const el = descriptions[index];
-                if(el && el.lang_id === langId) {
+                if (el && el.lang_id === langId) {
                     found = true;
                     el.description = content;
                     el.lang_id = langId;
-                    if(drugId) {
+                    if (drugId) {
                         el.drug_id = drugId;
                     }
                 }
             }
-            if(!found) {
-                let o = {description: content, lang_id: langId}
-                if(drugId) {
+            if (!found) {
+                let o = { description: content, lang_id: langId }
+                if (drugId) {
                     o.drug_id = drugId;
                 }
                 descriptions.push(o)
                 console.log(o)
             }
         } else {
-            let o = {description: content, lang_id: langId}
-                if(drugId) {
-                    o.drug_id = drugId;
-                }
+            let o = { description: content, lang_id: langId }
+            if (drugId) {
+                o.drug_id = drugId;
+            }
             descriptions.push(o)
         }
         setDescriptions(descriptions);
@@ -118,22 +118,22 @@ export default function DrugContainer(props) {
         /*if (id && id != null) {
             fetchData(event.target.value);
         }*/
-        console.log('handleLangChanged',descriptions,event.target.value);
-       
-        if(descriptions && descriptions.length > 0) {
+        console.log('handleLangChanged', descriptions, event.target.value);
+
+        if (descriptions && descriptions.length > 0) {
             let found = false;
             for (let index = 0; index < descriptions.length; index++) {
                 const el = descriptions[index];
-                if(el && el.lang_id === event.target.value) {
+                if (el && el.lang_id === event.target.value) {
                     setDescription(el.description);
                     setNotice(el.notice);
                     found = true;
                 }
-            } 
-            if(!found) {
+            }
+            if (!found) {
                 setTimeout(() => {
                     setDescription('');
-                    setNotice(null); 
+                    setNotice(null);
                 }, 200);
             }
         }
@@ -169,24 +169,24 @@ export default function DrugContainer(props) {
             } else {
                 try {
                     const drug = await AngelDrug().add(u);
-                    
+
                     const insertedDescriptions = await setDrugDescriptions(drug.inserted_id);
                     console.log('zzzz')
-                    if(drug.inserted_id) {
-                        if( file) {
+                    if (drug.inserted_id) {
+                        if (file) {
                             const u = await AngelDrug().upload(file.file, 'drug', drug.inserted_id);
                             setImage(process.env.REACT_APP_API_URL + '/public/drugs/images/' + u.filename);
                             handleClickVariant('success', lg.get('Image well uploaded'));
                         }
-                        if(document && insertedDescriptions && insertedDescriptions.length> 0 ) {
+                        if (document && insertedDescriptions && insertedDescriptions.length > 0) {
                             let descriptionId = null;
                             for (let index = 0; index < insertedDescriptions.length; index++) {
                                 const el = insertedDescriptions[index];
-                                if(el.notice === name) {
+                                if (el.notice === name) {
                                     descriptionId = el.inserted_id; break;
                                 }
                             }
-                            if(descriptionId) {
+                            if (descriptionId) {
                                 console.log('eee')
                                 const d = await AngelDrug().notice(e.target.files[0], 'drug', descriptionId);
                                 setNotice(process.env.REACT_APP_API_URL + '/public/drugs/documents/' + d.filename);
@@ -206,23 +206,23 @@ export default function DrugContainer(props) {
         console.log("setDrugDescriptions", newId)
         const newDescriptions = [];
         const existingDescriptions = [];
-        if(descriptions && descriptions.length> 0) {
+        if (descriptions && descriptions.length > 0) {
             for (let index = 0; index < descriptions.length; index++) {
                 const el = descriptions[index];
-                if(el.id) {
+                if (el.id) {
                     existingDescriptions.push(el);
-                    
+
                 } else {
-                    if(drugId) {
+                    if (drugId) {
                         el.drug_id = drugId;
-                    } else if(newId) {
+                    } else if (newId) {
                         el.drug_id = newId;
                     }
                     newDescriptions.push(el);
                 }
             }
         }
-        if(newDescriptions && newDescriptions.length> 0) {
+        if (newDescriptions && newDescriptions.length > 0) {
             try {
                 await AngelDrug().addDescription(newDescriptions);
             } catch (e) {
@@ -230,7 +230,7 @@ export default function DrugContainer(props) {
             }
         }
 
-        if(existingDescriptions && existingDescriptions.length> 0) {
+        if (existingDescriptions && existingDescriptions.length > 0) {
             try {
                 await AngelDrug().updateDescription(existingDescriptions);
             } catch (e) {
@@ -244,7 +244,7 @@ export default function DrugContainer(props) {
         setLaboratoryName(o.name);
     }
     const handleAssignEffectModal = async () => {
-        if(id) {
+        if (id) {
             setOpenAssignEffectModal(true);
         } else {
             handleClickVariant('error', lg.get('You must have saved the treatement first!'));
@@ -310,7 +310,7 @@ export default function DrugContainer(props) {
     }
     const onFileChange = async (e) => {
         setFile({ file: e.target.files[0] });
-        if(id) {
+        if (id) {
             const u = await AngelDrug().upload(e.target.files[0], 'drug', id);
             setImage(process.env.REACT_APP_API_URL + '/public/drugs/images/' + u.filename);
             handleClickVariant('success', lg.get('Image well uploaded'));
@@ -320,19 +320,19 @@ export default function DrugContainer(props) {
         }
     };
     const onNoticeChange = async (e) => {
-        if(drugId) {
+        if (drugId) {
 
             setDocument({ file: e.target.files[0] });
             let descriptionId = null;
-            if(descriptions && descriptions.length>0) {
+            if (descriptions && descriptions.length > 0) {
                 for (let index = 0; index < descriptions.length; index++) {
                     const el = descriptions[index];
-                    if(el.lang_id === langId) {
+                    if (el.lang_id === langId) {
                         descriptionId = el.id; break;
                     }
                 }
             }
-            if(id && descriptionId) {
+            if (id && descriptionId) {
                 const u = await AngelDrug().notice(e.target.files[0], 'drug', descriptionId);
                 setNotice(process.env.REACT_APP_API_URL + '/public/drugs/documents/' + u.filename);
                 handleClickVariant('success', lg.get('Document well uploaded'));
@@ -357,6 +357,19 @@ export default function DrugContainer(props) {
     const onDeleteSideEffect = (id) => {
         handleClickVariant('success', lg.get('Side effect well removed'));
         setSideEffectUpdated(new Date().getTime())
+    }
+    const onDeleteNotice = async () => {
+        const descriptionList = descriptions;
+        for (let index = 0; index < descriptionList.length; index++) {
+            const el = descriptionList[index];
+            if (el && el.lang_id === langId) {
+                const u = await AngelDrug().deleteNotice(el.id);
+                el.notice = null;
+                handleClickVariant('success', lg.get('Notice well removed'));
+                fetchData()
+                break;
+            }
+        }
     }
     return (
         <>
@@ -480,7 +493,7 @@ export default function DrugContainer(props) {
                                 <CardHeader
                                     sx={{ borderBottom: '1px solid #cecece' }}
                                     avatar={
-                                        <DescriptionIcon color={'primary'}/>
+                                        <DescriptionIcon color={'primary'} />
                                     }
                                     action={
                                         <FormControl sx={{ mt: '3px' }}>
@@ -507,6 +520,20 @@ export default function DrugContainer(props) {
                                 />
                                 <CardContent>
                                     <ReactQuill theme="snow" value={description} onChange={onDescriptionChanged} />
+                                    <Grid container spacing={2} direction="row" style={{ textalign: 'center' }}>
+                                        {notice && <Grid item style={{ marginTop: '6px' }}>
+                                            <IconButton onClick={onDeleteNotice} color={'error'}>
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </Grid>}
+                                        <Grid item style={{ marginTop: '16px' }} >
+                                            <a href={process.env.REACT_APP_API_URL + '/public/drugs/documents/' + notice} target="_blank" style={{ color: '#0d99ff' }}>{notice}</a>
+                                        </Grid>
+                                        <Grid item style={{ marginTop: '10px' }}>
+                                            <Button id="noticeLabel" onClick={() => uploadNoticeButton.current.click()}>{lg.get('Upload notice')}</Button>
+                                            <input type="file" name="notice" onChange={onNoticeChange} ref={uploadNoticeButton} style={{ display: 'none' }} />
+                                        </Grid>
+                                    </Grid>
                                 </CardContent>
                             </Card>
                         </Grid>
@@ -519,7 +546,7 @@ export default function DrugContainer(props) {
                                 }
                                 sx={{ borderBottom: '1px solid #cecece' }}
                                 title={lg.get('Side effects')}
-                                subheader={lg.get('Due to')+' '+name}
+                                subheader={lg.get('Due to') + ' ' + name}
                                 action={
                                     <IconButton>
                                         <AddCircleOutlineIcon onClick={handleAssignEffectModal} color={'success'} />
@@ -527,18 +554,9 @@ export default function DrugContainer(props) {
                                 }
                             />
                             <CardContent>
-                                <SideEffects drugId={drugId} lg={lg} update={sideEffectUpdated} onDeleted={onDeleteSideEffect}/>
+                                <SideEffects drugId={drugId} lg={lg} update={sideEffectUpdated} onDeleted={onDeleteSideEffect} />
                             </CardContent>
                         </Card>
-                    </Grid>
-                </Grid>
-                <Grid container spacing={2} direction="row" style={{ textalign: 'center' }}>
-                    <Grid item style={{ marginTop: '6px' }} >
-                        <a href={process.env.REACT_APP_API_URL + '/public/drugs/documents/' + notice} target="_blank" style={{ color: '#0d99ff' }}>{notice}</a>
-                    </Grid>
-                    <Grid item  >
-                        <Button id="noticeLabel" onClick={() => uploadNoticeButton.current.click()}>{lg.get('Upload notice')}</Button>
-                        <input type="file" name="notice" onChange={onNoticeChange} ref={uploadNoticeButton} style={{ display: 'none' }} />
                     </Grid>
                 </Grid>
                 <Button
