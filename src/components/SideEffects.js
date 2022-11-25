@@ -12,18 +12,19 @@ export default function SideEffects(props) {
     const [sideEffects, setSideEffects] = React.useState([]);
     const appContext = React.useContext(AppContext);
     const [userSession,] = React.useState(appContext.appState.user);
-    
+
     const fetchData = async () => {
-        const tr = await AngelDrug().getEffects({ drug_id: props.drugId,lang_id:userSession ? userSession.lang : 'en' })
-        setSideEffects(tr)
+        if (props.drugId) {
+            const tr = await AngelDrug().getEffects({ drug_id: props.drugId, lang_id: userSession ? userSession.lang : 'en' })
+            setSideEffects(tr);
+        }
     };
-    
     React.useEffect(() => {
         fetchData();
-    },[props.update,props.drugId]); 
+    }, [props.update, props.drugId]);
 
     const onDelete = async (id) => {
-        await AngelDrug().deleteEffect({ids: id});
+        await AngelDrug().deleteEffect({ ids: id });
         props.onDeleted(id);
     }
     return (
@@ -34,7 +35,7 @@ export default function SideEffects(props) {
                         key={sideEffect.id}
                         secondaryAction={
                             <IconButton edge="end" aria-label="Get Back" onClick={() => onDelete(sideEffect.id)}>
-                                <Delete color={'error'}/>
+                                <Delete color={'error'} />
                             </IconButton>
                         }
                         disablePadding
@@ -49,7 +50,7 @@ export default function SideEffects(props) {
                         </ListItemButton>
                     </ListItem>
                 );
-            }):props.lg.get('No side effect')}
+            }) : props.lg.get('No side effect')}
         </List>
     );
 }
