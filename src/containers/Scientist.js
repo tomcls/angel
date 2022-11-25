@@ -111,8 +111,8 @@ export default function ScientistContainer(props) {
     };
     const onSubmit = async e => {
         e.preventDefault();
-        if (!firstname || !lastname || !email || !phone || !sex) {
-            handleClickVariant('error', lg.get('The firstname, lastname, email, phone and sex are required'));
+        if (!firstname || !lastname || !email || !phone || !sex || !laboratoryId) {
+            handleClickVariant('error', lg.get('The firstname, lastname, email, phone, laboratoy and sex are required'));
         } else {
             const u = {
                 firstname: firstname,

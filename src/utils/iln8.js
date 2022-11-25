@@ -1,4 +1,24 @@
 export const il8n = {
+    "Add laboratory": {
+        "en":"Add Laboratory",
+        "fr":"Ajouter un laboratoire",
+        "nl":"Add Laboratory",
+    },
+    "New contact": {
+        "en":"New contact",
+        "fr":"Nouveau contact",
+        "nl":"New contact",
+    },
+    "No contact yet": {
+        "en":"No contact yet",
+        "fr":"Pas encore de contact",
+        "nl":"No contact yet",
+    },
+    "Contact well deleted": {
+        "en":"Contact well deleted",
+        "fr":"Contact bien supprimé",
+        "nl":"Contact well deleted",
+    },
     "When": {
         "en":"When",
         "fr":"Quand",
@@ -188,6 +208,11 @@ export const il8n = {
         "en":"Patient, hours and frequency are required",
         "fr":"Le patient, les heures de prise et la fréquence sont requis",
         "nl":"Patient, hours and frequency are required"
+    },
+    "The firstname, lastname, email, phone, laboratoy and sex are required": {
+        "en":"The firstname, lastname, email, phone, laboratoy and sex are required",
+        "fr":"Le prénom, le nom, l'email, le téléphone, le laboratoire et sexe sont requis",
+        "nl":"The firstname, lastname, email, phone, laboratoy and sex are required"
     },
     "The firstname, lastname, email, phone and sex are required": {
         "en":"The firstname, lastname, email, phone and sex are required",
@@ -602,7 +627,7 @@ export const il8n = {
     "Period": {
         "en":"Period",
         "fr":"Période",
-        "nl":"Period"
+        "nl":"Periood"
     },
     "Settings": {
         "en":"Settings",
@@ -638,6 +663,11 @@ export const il8n = {
         "en":"Hospitals",
         "fr":"Hôpitaux",
         "nl":"Hospitals"
+    },
+    "laboratory": {
+        "en":"laboratory",
+        "fr":"laboratoire",
+        "nl":"laboratory"
     },
     "Laboratory": {
         "en":"Laboratory",

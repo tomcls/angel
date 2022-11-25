@@ -3,6 +3,7 @@ import Doctors from "../containers/Doctors";
 import DrugContainer from "../containers/Drug";
 import HospitalContainer from "../containers/Hospital";
 import Laboratories from "../containers/Laboratories";
+import LaboratoryContainer from "../containers/Laboratory";
 import MoodContainer from "../containers/Mood";
 import NurseContainer from "../containers/Nurse";
 import Nurses from "../containers/Nurses";
@@ -58,6 +59,8 @@ export default class Tabs {
                 idx: this.tabIndex,
                 child: () => {
                     switch (type) {
+                        case 'laboratory':
+                            return <LaboratoryContainer laboratoryId={id} />
                         case 'nurse':
                             return <NurseContainer userId={id} />
                         case 'patient':
@@ -81,7 +84,7 @@ export default class Tabs {
                         case 'drug':
                             return <DrugContainer drugId={id} />
                         case 'scientist':
-                            return <ScientistContainer scientistId={id} />
+                            return <ScientistContainer userId={id} />
                         case 'patient_surveys':
                             return <PatientSurveys patientId={id} panel={panel} />
                         case 'mood':
@@ -105,6 +108,11 @@ export default class Tabs {
             window.angel = {};
         }
         switch (type) {
+            case 'laboratory':
+                window.angel.laboratoryId = id;
+                window.angel.tabType = 'laboratory';
+                window.angel.tabName = this.lg.get('Laboratory') + ' ' + text;
+                break;
             case 'hospital':
                 window.angel.hospitalId = id;
                 window.angel.tabType = 'hospital';
@@ -113,7 +121,7 @@ export default class Tabs {
             case 'scientist':
                 window.angel.userId = id;
                 window.angel.tabType = 'scientist';
-                window.angel.tabName = this.lg.get('Scientist') + ' ' + text;
+                window.angel.tabName =  ' ' + text;
                 break;
             case 'doctor':
                 window.angel.userId = id;
@@ -204,7 +212,7 @@ export default class Tabs {
         }
         this.newBtn.current.click();
     }
-    onOpenTabClick = () => {
+    onOpenTabClick = (o) => {
         console.log('onOpenTabClick')
         if (window.angel && window.angel.userId && window.angel.tabType === 'nurses') {
             this.createTab('nurses', window.angel.tabName, window.angel.userId);
@@ -236,6 +244,11 @@ export default class Tabs {
             window.angel.doctorId = null;
             window.angel.tabType = null;
             window.angel.tabName = null;
+        } else if (window.angel && window.angel.userId && window.angel.tabType === 'scientist') {
+            this.createTab('scientist', window.angel.tabName, window.angel.userId);
+            window.angel.userId = null;
+            window.angel.tabType = null;
+            window.angel.tabName = null;
         } else if (window.angel && window.angel.userId && window.angel.tabType === 'doctor') {
             this.createTab('doctor', window.angel.tabName, window.angel.userId);
             window.angel.userId = null;
@@ -249,6 +262,11 @@ export default class Tabs {
         } else if (window.angel && window.angel.userId && window.angel.tabType === 'nurse') {
             this.createTab('nurse', window.angel.tabName, window.angel.userId);
             window.angel.userId = null;
+            window.angel.tabType = null;
+            window.angel.tabName = null;
+        } else if (window.angel && window.angel.laboratoryId && window.angel.tabType === 'laboratory') {
+            this.createTab('laboratory', window.angel.tabName, window.angel.laboratoryId);
+            window.angel.laboratoryId = null;
             window.angel.tabType = null;
             window.angel.tabName = null;
         } else if (window.angel && window.angel.moodId && window.angel.tabType === 'mood') {

@@ -395,7 +395,6 @@ export default function DrugContainer(props) {
                 </Box>
             </Modal>
             <Box sx={{ width: '100%' }}>
-                
                 <Grid container spacing={1}>
                     <Grid item xs={12} lg={9} >
                         <Card >

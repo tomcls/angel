@@ -83,7 +83,7 @@ export default function Bar(props) {
   const [openUserDown, setOpenUserDown] = React.useState(true);
   const [openTreatmentDown, setOpenTreatmentDown] = React.useState(true);
   const [openEffectDown, setOpenEffectDown] = React.useState(true);
-  const [openFactoriesDown, setOpenFactoriesDown] = React.useState(false);
+  const [openFactoriesDown, setOpenFactoriesDown] = React.useState(true);
   const [total, setTotal] = React.useState(0);
 
   React.useEffect(() => {
@@ -277,12 +277,6 @@ export default function Bar(props) {
               </ListItemIcon>
               <ListItemText primary={lg.get('Nurses')} />
             </ListItemButton>
-            <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/scientists">
-              <ListItemIcon>
-                <ScienceIcon />
-              </ListItemIcon>
-              <ListItemText primary={lg.get('Scientists')} />
-            </ListItemButton>
           </List>
         </Collapse>
         <ListItemButton onClick={handleTreatmentClick}>
@@ -360,7 +354,6 @@ export default function Bar(props) {
           </ListItemIcon>
           <ListItemText primary={lg.get('Settings')} />
         </ListItemButton>
-
       </List>
     </Drawer>
   </ThemeProvider>

@@ -57,14 +57,6 @@ export default function PosologyComponent(props) {
             end_date: endDate ? endDate : null,
         });
     }
-
-    const formatDate = (v) => {
-        console.log('formatDate',v)
-        let d = new Date(v);
-        console.log('d',d)
-        var datestring = d.getDate() + "/" + (d.getMonth() + 1) + "-" + d.getFullYear()  + " " + d.getHours() + ":" + d.getMinutes() + ":00";
-        return datestring;
-      }
     const onPatientSelect = (id) => {
         setPatientId(id);
     }
@@ -94,7 +86,7 @@ export default function PosologyComponent(props) {
                     id="datestart"
                     label={props.lg.get('Start date')}
                     inputFormat="dd/MM/yyyy"
-                    value={startDate? (startDate) : null}
+                    value={startDate ? (startDate) : null}
                     onChange={handleStartDateChange}
                     renderInput={(params) => <TextField size="small" {...params} style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '0px', marginRight: '0px', marginLeft: '0px' }} />}
                 />

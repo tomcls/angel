@@ -16,15 +16,18 @@ export default function LaboratoryContacts(props) {
     
     const fetchData = async () => {
         const tr = await AngelScientist().list({ laboratory_id: props.laboratoryId,lang_id:userSession ? userSession.lang : 'en' })
-        setLaboratoryContacts(tr)
+        if(tr && tr.users && props.laboratoryId) {
+            setLaboratoryContacts(tr.users)
+        } else {
+            setLaboratoryContacts([]);
+        } 
     };
-    
     React.useEffect(() => {
         fetchData();
     },[props.update,props.drugId]); 
-
     const onDelete = async (id) => {
         await AngelUser().delete({ids: id});
+        await fetchData();
         props.onDeleted(id);
     }
     return (
@@ -32,20 +35,22 @@ export default function LaboratoryContacts(props) {
             {contacts && contacts.length ? contacts.map((contact) => {
                 return (
                     <ListItem
+                        
                         key={contact.id}
                         secondaryAction={
-                            <IconButton edge="end" aria-label="Get Back" onClick={() => onDelete(contact.id)}>
+                            <IconButton edge="end" aria-label="Get Back" onClick={() => onDelete(contact.user_id)}>
                                 <Delete color={'error'}/>
                             </IconButton>
                         }
                         disablePadding
                     >
-                        <ListItemButton role={undefined} dense>
+                        <ListItemButton role={undefined} dense 
+                            onClick={() => document.getElementById("newButton").clk(contact.user_id, contact.firstname.charAt(0) + '. ' + contact.lastname, 'scientist')}>
                             <ListItemText>
                                 <b>{contact.id}#</b>
                             </ListItemText>
                             <ListItemText
-                                primary={'' + contact.firstname + ' ' + contact.firstname}
+                                primary={'' + contact.firstname.charAt(0) + '. ' + contact.lastname+ ' ' + contact.email}
                             />
                         </ListItemButton>
                     </ListItem>

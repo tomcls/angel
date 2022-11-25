@@ -403,8 +403,7 @@ export default function Laboratories(props) {
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleClick(event, row.id)}
-                      onDoubleClick={() => props.openUser(row.laboratory_id, row.name)}
+                      onClick={() => document.getElementById("newButton").clk(row.laboratory_id, row.name, 'laboratory')}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
@@ -426,7 +425,7 @@ export default function Laboratories(props) {
                         scope='row'
                         style={{ textAlign: 'left', cursor: 'pointer' }}
                         padding='none'
-                        onClick={() => props.openUser(row.laboratory_id, row.name)}
+                        onClick={() => document.getElementById("newButton").clk(row.laboratory_id, row.name, 'laboratory')}
                       >
                         <b>{row.name}</b>
                       </TableCell>

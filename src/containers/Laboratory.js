@@ -102,20 +102,21 @@ export default function LaboratoryContainer(props) {
             }
         }
     };
+    const onDelete = () => {
+        handleClickVariant('success', lg.get('Contact well deleted'));
+    }
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <Box >
                 <Grid container spacing={2}>
                     <Grid item md={8} xs={12}  >
                         <Card >
-                            <CardHeader
-                                avatar={
-                                    <BiotechIcon color={'primary'} />
-                                }
+                            <CardHeader 
+                                avatar={ <BiotechIcon color={'primary'} /> }
                                 sx={{ borderBottom: '1px solid #cecece' }}
                                 title={name ? name : lg.get('Informations')}
                                 subheader={email + ', ' + phone}
-                                action={<>
+                                action={
                                     <IconButton aria-label={lg.get('Assign patient')}>
                                         <Button
                                             size={'small'}
@@ -124,7 +125,7 @@ export default function LaboratoryContainer(props) {
                                             onClick={onSubmit}>
                                             {lg.get('Save')}
                                         </Button>
-                                    </IconButton></>
+                                    </IconButton>
                                 }
                             />
                             <CardContent>
@@ -273,12 +274,12 @@ export default function LaboratoryContainer(props) {
                                 title={'Liste des contacts du laboratoire'}
                                 action={
                                     <IconButton>
-                                        <AddCircleOutlineIcon color={'success'} />
+                                        <AddCircleOutlineIcon color={'success'} onClick={() => document.getElementById("newButton").clk(props.laboratoryId, lg.get('New contact'), 'scientist')} />
                                     </IconButton>
                                 }
                             />
                             <CardContent>
-                                <LaboratoryContacts laboratoryId={props.laboratoryId} onDelete={onDelete}/>
+                                <LaboratoryContacts laboratoryId={props.laboratoryId} onDelete={onDelete} lg={lg}/>
                             </CardContent>
                         </Card>
                     </Grid>

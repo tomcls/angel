@@ -20,6 +20,9 @@ import Doctors from "../containers/Doctors";
 import Nurses from "../containers/Nurses";
 import LaboratoryContainer from "../containers/Laboratory";
 import MainBar from "../templates/MainBar";
+import AppContext from "../contexts/AppContext";
+import { useTranslation } from "../hooks/userTranslation";
+import Tabs from "../components/Tabs";
 
 const drawerWidth = 240;
 
@@ -43,209 +46,28 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
 );
 
 export default function LaboratoriesPage() {
+  const appContext = React.useContext(AppContext);
+  const [userSession,] = React.useState(appContext.appState.user);
+  const [lg] = useTranslation(userSession ? userSession.lang : 'en');
 
   const [open, setOpen] = React.useState(true);
   const [selectedTab, setSelectedTab] = React.useState('Main');
   const [tabs, setTabs] = React.useState([]);
   const [tabIndex, setTabIndex] = React.useState(2);
   const newLaboratoryBtn = useRef(null);
-
+  const newBtn = useRef(null);
+  const t = new Tabs('laboratory', tabIndex, tabs, setTabs, setSelectedTab, setTabIndex, newBtn, lg);
   React.useEffect(() => {
-    console.log('useEffect laboratories page');
-  });
+    let d = document.getElementById('newButton');
+    if (d) {
+      d.clk = function (id, text, type, panel) {
+        t.openTab(id, text, type, panel);
+      };
+    }
+  }, []);
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
-  const handleTabOptions = (value) => {
-    setSelectedTab(value)
-    setTabIndex(tabIndex + 1)
-  }
-
-  const onOpenTabClick = () => {
-    console.log('onOpenTabClick')
-    if (window.angel && window.angel.userId && window.angel.tabType === 'nurses') {
-      createTab('nurses', window.angel.tabName, window.angel.userId);
-      window.angel.userId = null;
-      window.angel.tabType = null;
-      window.angel.tabName = null;
-    } else if (window.angel && window.angel.userId && window.angel.tabType === 'doctors') {
-      createTab('doctors', window.angel.tabName, window.angel.userId);
-      window.angel.userId = null;
-      window.angel.tabType = null;
-      window.angel.tabName = null;
-    } else if (window.angel && window.angel.userId && window.angel.tabType === 'treatments') {
-      createTab('treatments', window.angel.tabName, window.angel.userId);
-      window.angel.userId = null;
-      window.angel.tabType = null;
-      window.angel.tabName = null;
-    } else if (window.angel && window.angel.treatmentId && window.angel.tabType === 'treatment') {
-      createTab('treatment', window.angel.tabName, window.angel.treatmentId);
-      window.angel.treatmentId = null;
-      window.angel.tabType = null;
-      window.angel.tabName = null;
-    } else if (window.angel && window.angel.nurseId) {
-      createTab('nurse_patients', window.angel.tabName, window.angel.nurseId);
-      window.angel.nurseId = null;
-      window.angel.tabType = null;
-      window.angel.tabName = null;
-    } else if (window.angel && window.angel.treatmentId && window.angel.tabType === 'treatments') {
-      createTab('treatment_patients', window.angel.tabName, window.angel.treatmentId);
-      window.angel.treatmentId = null;
-      window.angel.tabType = null;
-      window.angel.tabName = null;
-    } else if (window.angel && window.angel.doctorId) {
-      createTab('doc_patients', window.angel.tabName, window.angel.doctorId);
-      window.angel.doctorId = null;
-      window.angel.tabType = null;
-      window.angel.tabName = null;
-    } else if (window.angel && window.angel.userId && window.angel.tabType === 'doctor') {
-      createTab('doctor', window.angel.tabName, window.angel.userId);
-      window.angel.userId = null;
-      window.angel.tabType = null;
-      window.angel.tabName = null;
-    } else if (window.angel && window.angel.userId && window.angel.tabType === 'patient') {
-      createTab('patient', window.angel.tabName, window.angel.userId);
-      window.angel.userId = null;
-      window.angel.tabType = null;
-      window.angel.tabName = null;
-    } else if (window.angel && window.angel.userId && window.angel.tabType === 'nurse') {
-      createTab('nurse', window.angel.tabName, window.angel.userId);
-      window.angel.userId = null;
-      window.angel.tabType = null;
-      window.angel.tabName = null;
-    } else {
-      createTab('laboratory', 'New laboratory');
-    }
-  }
-  const getTab = (v) => {
-    for (let i = 0; i < tabs.length; i++) {
-      if (tabs[i].value === v) {
-        return tabs[i];
-      }
-    }
-    return null;
-  }
-  const handleCloseTab = (event, idx) => {
-    event.stopPropagation();
-    const tabArr = tabs.filter(x => x.idx !== idx)
-    setTabs(tabArr)
-    setSelectedTab('Main');
-  }
-
-  const createTab = (type, text, id) => {
-    console.log('createTab', type, text, id)
-    const value = text;
-    let tab = getTab(value);
-    let newTab = null;
-    if (tab) {
-      setSelectedTab(tab.value);
-    } else {
-      newTab = {
-        label: text,
-        value: value ? value : tabIndex,
-        idx: tabIndex,
-        child: () => {
-          switch (type) {
-            case 'nurse':
-              return <NurseContainer userId={id} />
-            case 'patient':
-              return <Patient userId={id} />
-            case 'treatment_patients':
-              return <Patients treatmentId={id} />
-            case 'nurse_patients':
-              return <Patients nurseId={id} openNurses={() => setSelectedTab('Main')} openDoctors={() => setSelectedTab('Main')} openTreatments={() => setSelectedTab('Main')} />
-            case 'doc_patients':
-              return <Patients doctorId={id} openDoctors={() => setSelectedTab('Main')} openNurses={() => setSelectedTab('Main')} openTreatments={() => setSelectedTab('Main')} />
-            case 'doctors':
-              return <Doctors patientId={id} openPatients={openTab} />
-            case 'nurses':
-              return <Nurses patientId={id} openPatients={openTab} />
-            case 'laboratory':
-              return <LaboratoryContainer drugId={id} />
-            default:
-              return;
-          }
-        }
-      }
-      setTabs([...tabs, newTab])
-      handleTabOptions(value ? value : tabIndex);
-    }
-  }
-  const openTab = (id, text, type) => {
-    console.log('openTab', type, text, id)
-    if (!window.angel) {
-      window.angel = {};
-    }
-    switch (type) {
-      case 'doctor':
-        window.angel.userId = id;
-        window.angel.tabType = 'doctor';
-        window.angel.tabName = 'Doc ' + text;
-        break;
-      case 'patient':
-        window.angel.userId = id;
-        window.angel.tabType = 'patient';
-        window.angel.tabName = 'patient ' + text;
-        break;
-      case 'nurse':
-        window.angel.userId = id;
-        window.angel.tabType = 'nurse';
-        window.angel.tabName = 'Nurse ' + text;
-        break;
-      case 'patient_doctors':
-        window.angel.userId = id;
-        window.angel.tabType = 'doctors';
-        window.angel.tabName = 'Doctors of ' + text;
-        break;
-      case 'patient_nurses':
-        window.angel.userId = id;
-        window.angel.tabType = 'nurses';
-        window.angel.tabName = 'Nurses of ' + text;
-        break;
-      case 'nurse_patients':
-        window.angel.nurseId = id;
-        window.angel.tabName = 'Patients of ' + text;
-        break;
-      case 'doc_patients':
-        window.angel.doctorId = id;
-        window.angel.tabName = 'Patients of Doc ' + text;
-        break;
-      case 'treatment_patients':
-        window.angel.tabType = 'treatments';
-        window.angel.treatmentId = id;
-        window.angel.tabName = 'Patients of ' + text;
-        break;
-      case 'doctors':
-        window.angel.userId = id;
-        window.angel.tabType = 'doctors';
-        window.angel.tabName = 'Doctors of ' + text;
-        break;
-      case 'treatments':
-        window.angel.userId = id;
-        window.angel.tabType = 'treatments';
-        window.angel.tabName = 'Treatments of ' + text;
-        break;
-      case 'treatment':
-        window.angel.treatmentId = id;
-        window.angel.tabType = 'treatment';
-        window.angel.tabName = 'Treatment ' + text;
-        break;
-      default:
-        return;
-    }
-    newLaboratoryBtn.current.click();
-  }
-  const createTabLaboratory = (laboratoryId, text) => {
-    const value = text;
-    const newTab = {
-      label: text ? text : 'New lab',
-      value: value ? value : tabIndex,
-      idx: tabIndex,
-      child: () => <Laboratory laboratoryId={laboratoryId} />
-    }
-    setTabs([...tabs, newTab])
-    handleTabOptions(value ? value : tabIndex);
-  }
 
   return (
     <SnackbarProvider maxSnack={3}>
@@ -255,12 +77,12 @@ export default function LaboratoriesPage() {
           <Grid container mb={'0px'} mt={6} >
             <Grid item xs={12} md={6} xl={6} >
               <Typography variant="h6" component="div" >
-                Laboratories
+              {lg.get("Laboratories")}
               </Typography>
             </Grid>
             <Grid item xs={12} md={6} xl={6} textAlign={'end'}  >
-              <Button variant="outlined" onClick={onOpenTabClick} ref={newLaboratoryBtn} justifyContent="flex-end" id="newButton">
-                <PeopleIcon /> Add Laboratory</Button>
+              <Button variant="outlined" onClick={t.onOpenTabClick} ref={newBtn} justifyContent="flex-end" id="newButton">
+                <PeopleIcon /> {lg.get("Add laboratory")}</Button>
             </Grid>
           </Grid>
           <Box sx={{ width: '100%' }}>
@@ -269,12 +91,12 @@ export default function LaboratoriesPage() {
                 <TabList onChange={handleChange} aria-label="" variant="scrollable" scrollButtons="auto" >
                   <Tab label="Laboratories" value="Main" icon={<FormatListBulletedIcon />} iconPosition="start" />
                   {tabs.map(tab => (
-                    <Tab key={tab.idx} label={tab.label} value={tab.value} icon={<Cancel onClick={(e) => handleCloseTab(e, tab.idx)} />} iconPosition="end" />
+                    <Tab key={tab.idx} label={tab.label} value={tab.value} icon={<Cancel onClick={(e) => t.handleCloseTab(e, tab.idx)} />} iconPosition="end" />
                   ))}
                 </TabList>
               </Box>
               <TabPanel value="Main" style={{ padding: "1px" }}>
-                <Laboratories openUser={createTabLaboratory} />
+                <Laboratories openUser={t.openTab} />
               </TabPanel>
               {tabs.map(panel => (
                 <TabPanel key={panel.idx} label={panel.label} value={panel.value} >
