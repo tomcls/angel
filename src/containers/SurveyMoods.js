@@ -260,7 +260,7 @@ export default function SurveyMoods(props) {
     }
     return 0;
   }
-  const createData = (avatar, moodId, id, name, firstname, lastname, total_moods, date, score, totalEffect) => {
+  const createData = (avatar, moodId, id, name, firstname, lastname, total_moods, date, score, totalEffect, close_monitoring) => {
     let effects = name.split(',');
     let effectString = '';
     let t = total_moods.split(',');
@@ -291,7 +291,8 @@ export default function SurveyMoods(props) {
       total_moods,
       date,
       effectList,
-      totalEffect
+      totalEffect,
+      close_monitoring
     }
   }
   const fetchData = async (d) => {
@@ -351,7 +352,8 @@ export default function SurveyMoods(props) {
           r.surveys[i].mood_cnt,
           r.surveys[i].date,
           r.surveys[i].score,
-          getTotalEffectByPateintId(r.surveys[i].patient_id, r.effects)));
+          getTotalEffectByPateintId(r.surveys[i].patient_id, r.effects),
+          r.surveys[i].close_monitoring));
       }
       setRows(u);
       setMoods(r.surveys);
@@ -562,6 +564,7 @@ export default function SurveyMoods(props) {
                       tabIndex={-1}
                       key={row.id}
                       selected={isItemSelected}
+                      style={{ backgroundColor: row.close_monitoring === 'Y' ? 'rgba(0,27,138,0.4)' : '#fff' }}
                     >
                       <TableCell padding="checkbox">
                         <Checkbox

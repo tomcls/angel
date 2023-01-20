@@ -255,7 +255,7 @@ export default function SurveySideEffects(props) {
     }
     return 0;
   }
-  const createData = (avatar, sideEffectId, id, name, firstname, lastname, total_effects, date) => {
+  const createData = (avatar, sideEffectId, id, name, firstname, lastname, total_effects, date,close_monitoring) => {
     console.log(total_effects)
     let effects = name.split(',');
     let effectString = '';
@@ -283,7 +283,8 @@ export default function SurveySideEffects(props) {
       firstname,
       lastname,
       total_effects,
-      date
+      date,
+      close_monitoring
     }
   }
   const fetchData = async (d) => {
@@ -334,7 +335,7 @@ export default function SurveySideEffects(props) {
     r = await AngelSurvey().concatEffects(o);
     if (r.surveys && r.surveys.length) {
       for (let i = 0; i < r.surveys.length; i++) {
-        u.push(createData(r.surveys[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.surveys[i].avatar : defaultAvatar, r.surveys[i].survey_side_effect_id, r.surveys[i].patient_id, r.surveys[i].total_effects, r.surveys[i].firstname, r.surveys[i].lastname, r.surveys[i].effect_cnt, r.surveys[i].date));
+        u.push(createData(r.surveys[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.surveys[i].avatar : defaultAvatar, r.surveys[i].survey_side_effect_id, r.surveys[i].patient_id, r.surveys[i].total_effects, r.surveys[i].firstname, r.surveys[i].lastname, r.surveys[i].effect_cnt, r.surveys[i].date,r.surveys[i].close_monitoring));
       }
       setRows(u);
       setSideEffects(r.surveys);
@@ -511,6 +512,7 @@ export default function SurveySideEffects(props) {
                       tabIndex={-1}
                       key={row.id}
                       selected={isItemSelected}
+                      style={{ backgroundColor: row.close_monitoring === 'Y' ? 'rgba(0,27,138,0.4)' : '#fff' }}
                     >
                       <TableCell padding="checkbox">
                         <Checkbox
