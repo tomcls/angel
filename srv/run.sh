@@ -22,7 +22,7 @@ if [ "${env}" == "production" ]
         # Build with dockerfile
         docker rm -f ${serviceName}
         # Build with dockerfile
-        docker build --file=${APP_ROOT}"/srv/Dockerfile" \
+        docker build --file=${APP_ROOT}"/srv/Dockerfile" --output type=docker  \
         --build-arg environment="${env}" \
         -t alpine/angel .
         echo ".............................Build done, execute cmd docker run ${serviceName}"
@@ -34,7 +34,7 @@ if [ "${env}" == "production" ]
         cd $APP_ROOT || exit
         docker rm -f ${serviceName}
         # Build with dockerfile
-        docker build --file=$APP_ROOT"/srv/Dockerfile" \
+        docker build --file=$APP_ROOT"/srv/Dockerfile" --output type=docker  \
         --build-arg environment="${env}" \
         -t alpine/angel .
 
