@@ -61,13 +61,11 @@ export default function DrugContainer(props) {
     const [updateNotice, setUpdateNotice] = React.useState();
 
     React.useEffect(() => {
-        console.log('useEffect')
         if (props.drugId) {
             fetchData();
         }
     }, []);
     React.useEffect(() => {
-        console.log('useEffect.descriptions');
         if (descriptions && descriptions.length > 0) {
             for (let index = 0; index < descriptions.length; index++) {
                 const el = descriptions[index];
@@ -99,26 +97,22 @@ export default function DrugContainer(props) {
                 descriptions[element.lang_id] = element;
             }
             setDescriptions(descriptions);
-            console.log("fetch data => descriptions", descriptions,drugDescriptions);
         }
 
         
     }
     const onDescriptionChanged = (content) => {
-        console.log('on description changed')
         if(!descriptions[langId]) descriptions[langId] = {};
         descriptions[langId].description = content;
         descriptions[langId].lang_id = langId;
         setDescriptions(descriptions);
         setDescription(content);
-        console.log("onDescriptionChanged", descriptions);
     }
 
     const onNoticeChange = async (e) => {
         notices[langId] = e.target.files[0];
         
         if(!descriptions[langId]) {
-            console.log("ssssss");
             descriptions[langId] = {};
         }
 
@@ -127,8 +121,6 @@ export default function DrugContainer(props) {
         if(drugId) {
             descriptions[langId].drug_id= drugId;
         }
-        console.log(descriptions,notices)
-        console.log(e.target.files[0].name);
          setNotices(notices);
          setDescriptions(descriptions);
          setNotice(process.env.REACT_APP_API_URL + '/public/drugs/documents/' + e.target.files[0].name);
@@ -224,11 +216,9 @@ export default function DrugContainer(props) {
             const drugDescriptions = await AngelDrug().getDescription({ drug_id: idToUse });
            
             if (drugDescriptions && drugDescriptions.length > 0 && notices) {
-                console.log("notice to upload",drugDescriptions,notices)
                 for (let index = 0; index < drugDescriptions.length; index++) {
                     const element = drugDescriptions[index];
                     descriptions[element.lang_id].id = element.id;
-                    console.log("loop notice to upload",element.lang_id,notices[element.lang_id])
                     if(notices[element.lang_id]) {
                         const u = await AngelDrug().notice(notices[element.lang_id], 'drug', element.id);
                         handleClickVariant('success', 'Document well uploaded');
