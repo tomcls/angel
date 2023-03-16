@@ -47,7 +47,6 @@ export default function DrugContainer(props) {
     const [notice, setNotice] = React.useState('');
     const [notices, setNotices] = React.useState({});
     const [file, setFile] = React.useState(null);
-    const [, setDocument] = React.useState(null);
     const [effectId, setEffectId] = React.useState(null);
     const uploadFileButton = useRef(null);
     const uploadNoticeButton = useRef(null);
@@ -98,11 +97,9 @@ export default function DrugContainer(props) {
             }
             setDescriptions(descriptions);
         }
-
-        
     }
     const onDescriptionChanged = (content) => {
-        if(!descriptions[langId]) descriptions[langId] = {};
+        if (!descriptions[langId]) descriptions[langId] = {};
         descriptions[langId].description = content;
         descriptions[langId].lang_id = langId;
         setDescriptions(descriptions);
@@ -111,33 +108,33 @@ export default function DrugContainer(props) {
 
     const onNoticeChange = async (e) => {
         notices[langId] = e.target.files[0];
-        
-        if(!descriptions[langId]) {
+
+        if (!descriptions[langId]) {
             descriptions[langId] = {};
         }
 
-        descriptions[langId].notice= e.target.files[0].name;
-        descriptions[langId].lang_id= langId;
-        if(drugId) {
-            descriptions[langId].drug_id= drugId;
+        descriptions[langId].notice = e.target.files[0].name;
+        descriptions[langId].lang_id = langId;
+        if (drugId) {
+            descriptions[langId].drug_id = drugId;
         }
-         setNotices(notices);
-         setDescriptions(descriptions);
-         setNotice(process.env.REACT_APP_API_URL + '/public/drugs/documents/' + e.target.files[0].name);
-         
+        setNotices(notices);
+        setDescriptions(descriptions);
+        setNotice(process.env.REACT_APP_API_URL + '/public/drugs/documents/' + e.target.files[0].name);
+
     }
     const handleLangChange = (event) => {
         setLangId(event.target.value);
-        if(descriptions[event.target.value] && descriptions[event.target.value].description) {
+        if (descriptions[event.target.value] && descriptions[event.target.value].description) {
             setDescription(descriptions[event.target.value].description);
         } else {
             setTimeout(() => {
                 setDescription('');
             }, 200);;
         }
-        if(descriptions[event.target.value] && descriptions[event.target.value].notice) {
+        if (descriptions[event.target.value] && descriptions[event.target.value].notice) {
             setNotice(descriptions[event.target.value].notice);
-        } else if(notices[event.target.value] && notices[event.target.value].name) {
+        } else if (notices[event.target.value] && notices[event.target.value].name) {
             setNotice(notices[event.target.value].name);
         } else {
             setTimeout(() => {
@@ -179,7 +176,7 @@ export default function DrugContainer(props) {
 
                     const insertedDescriptions = await setDrugDescriptions(drug.inserted_id);
                     if (drug.inserted_id) {
-                        newId= drug.inserted_id;
+                        newId = drug.inserted_id;
                         if (file) {
                             const u = await AngelDrug().upload(file.file, 'drug', drug.inserted_id);
                             setImage(process.env.REACT_APP_API_URL + '/public/drugs/images/' + u.filename);
@@ -207,19 +204,19 @@ export default function DrugContainer(props) {
                 }
             }
             let idToUse = null;
-            if(!drugId && newId) {
+            if (!drugId && newId) {
                 idToUse = newId;
             } else {
                 idToUse = drugId;
             }
             // notice to upload
             const drugDescriptions = await AngelDrug().getDescription({ drug_id: idToUse });
-           
+
             if (drugDescriptions && drugDescriptions.length > 0 && notices) {
                 for (let index = 0; index < drugDescriptions.length; index++) {
                     const element = drugDescriptions[index];
                     descriptions[element.lang_id].id = element.id;
-                    if(notices[element.lang_id]) {
+                    if (notices[element.lang_id]) {
                         const u = await AngelDrug().notice(notices[element.lang_id], 'drug', element.id);
                         handleClickVariant('success', 'Document well uploaded');
                     }
@@ -231,10 +228,10 @@ export default function DrugContainer(props) {
     const setDrugDescriptions = async (newId) => {
         const newDescriptions = [];
         const existingDescriptions = [];
-        ['fr','en','nl'].forEach(element => {
-            if(descriptions[element] && descriptions[element].id) {
+        ['fr', 'en', 'nl'].forEach(element => {
+            if (descriptions[element] && descriptions[element].id) {
                 existingDescriptions.push(descriptions[element]);
-            } else if(descriptions[element] && !descriptions[element].id) {
+            } else if (descriptions[element] && !descriptions[element].id) {
                 const el = descriptions[element];
                 if (drugId) {
                     el.drug_id = drugId;
@@ -258,7 +255,7 @@ export default function DrugContainer(props) {
                 handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
             }
         }
-     }
+    }
 
     const onLaboratorySelect = (o) => {
         setLaboratoryId(o.id);
