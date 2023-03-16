@@ -37,7 +37,7 @@ export default function DrugContainer(props) {
     const [name, setName] = React.useState('');
     const [code, setCode] = React.useState('');
     const [description, setDescription] = React.useState('');
-    const [descriptions, setDescriptions] = React.useState([]);
+    const [descriptions, setDescriptions] = React.useState({});
     const [laboratoryId, setLaboratoryId] = React.useState(() => '');
     const [laboratoryName, setLaboratoryName] = React.useState(() => '');
     const [openAssignEffectModal, setOpenAssignEffectModal] = React.useState(false);
@@ -45,6 +45,7 @@ export default function DrugContainer(props) {
     const defaultAvatar = 'https://dreamguys.co.in/preadmin/html/school/dark/assets/img/placeholder.jpg';//process.env.SENDGRID_APIKEY
     const [image, setImage] = React.useState(defaultAvatar);
     const [notice, setNotice] = React.useState('');
+    const [notices, setNotices] = React.useState({});
     const [file, setFile] = React.useState(null);
     const [, setDocument] = React.useState(null);
     const [effectId, setEffectId] = React.useState(null);
@@ -57,7 +58,7 @@ export default function DrugContainer(props) {
     const [hours,] = React.useState([12]);
     const [sideEffectUpdated, setSideEffectUpdated] = React.useState(null);
     const [patientId,] = React.useState(props.patientId);
-    const [updateNotice,setUpdateNotice] = React.useState();
+    const [updateNotice, setUpdateNotice] = React.useState();
 
     React.useEffect(() => {
         console.log('useEffect')
@@ -91,63 +92,65 @@ export default function DrugContainer(props) {
         setDrug({ id: drug.drug_id, drug_id: drug.drug_id, name: drug.name, code: drug.code });
         setMoleculeName(drug.molecule_name);
         const drugDescriptions = await AngelDrug().getDescription({ drug_id: drug.drug_id });
+
         if (drugDescriptions && drugDescriptions.length > 0) {
-            setDescriptions(drugDescriptions);
+            for (let index = 0; index < drugDescriptions.length; index++) {
+                const element = drugDescriptions[index];
+                descriptions[element.lang_id] = element;
+            }
+            setDescriptions(descriptions);
+            console.log("fetch data => descriptions", descriptions,drugDescriptions);
         }
+
+        
     }
     const onDescriptionChanged = (content) => {
-        if (descriptions && descriptions.length > 0) {
-            let found = false;
-            for (let index = 0; index < descriptions.length; index++) {
-                const el = descriptions[index];
-                if (el && el.lang_id === langId) {
-                    found = true;
-                    el.description = content;
-                    el.lang_id = langId;
-                    if (drugId) {
-                        el.drug_id = drugId;
-                    }
-                }
-            }
-            if (!found) {
-                let o = { description: content, lang_id: langId }
-                if (drugId) {
-                    o.drug_id = drugId;
-                }
-                descriptions.push(o)
-            }
-        } else {
-            let o = { description: content, lang_id: langId }
-            if (drugId) {
-                o.drug_id = drugId;
-            }
-            descriptions.push(o)
-        }
+        console.log('on description changed')
+        if(!descriptions[langId]) descriptions[langId] = {};
+        descriptions[langId].description = content;
+        descriptions[langId].lang_id = langId;
         setDescriptions(descriptions);
         setDescription(content);
+        console.log("onDescriptionChanged", descriptions);
+    }
+
+    const onNoticeChange = async (e) => {
+        notices[langId] = e.target.files[0];
+        
+        if(!descriptions[langId]) {
+            console.log("ssssss");
+            descriptions[langId] = {};
+        }
+
+        descriptions[langId].notice= e.target.files[0].name;
+        descriptions[langId].lang_id= langId;
+        if(drugId) {
+            descriptions[langId].drug_id= drugId;
+        }
+        console.log(descriptions,notices)
+        console.log(e.target.files[0].name);
+         setNotices(notices);
+         setDescriptions(descriptions);
+         setNotice(process.env.REACT_APP_API_URL + '/public/drugs/documents/' + e.target.files[0].name);
+         
     }
     const handleLangChange = (event) => {
         setLangId(event.target.value);
-        /*if (id && id != null) {
-            fetchData(event.target.value);
-        }*/
-
-        if (descriptions && descriptions.length > 0) {
-            let found = false;
-            for (let index = 0; index < descriptions.length; index++) {
-                const el = descriptions[index];
-                if (el && el.lang_id === event.target.value) {
-                    setDescription(el.description);
-                    setNotice(el.notice);
-                    found = true;
-                }
-            }
-            if (!found) {
-                setTimeout(() => {
-                    setDescription('');
-                    setNotice(null);
-                }, 200);
-            }
+        if(descriptions[event.target.value] && descriptions[event.target.value].description) {
+            setDescription(descriptions[event.target.value].description);
+        } else {
+            setTimeout(() => {
+                setDescription('');
+            }, 200);;
+        }
+        if(descriptions[event.target.value] && descriptions[event.target.value].notice) {
+            setNotice(descriptions[event.target.value].notice);
+        } else if(notices[event.target.value] && notices[event.target.value].name) {
+            setNotice(notices[event.target.value].name);
+        } else {
+            setTimeout(() => {
+                setNotice(null);
+            }, 200);
         }
     };
     const onInputChange = setter => e => {
@@ -158,6 +161,7 @@ export default function DrugContainer(props) {
         enqueueSnackbar(text, { variant });
     };
     const onSubmit = async e => {
+        let newId = null;
         e.preventDefault();
         if (!name || !code) {
             handleClickVariant('error', lg.get('The name and code are required'));
@@ -183,6 +187,7 @@ export default function DrugContainer(props) {
 
                     const insertedDescriptions = await setDrugDescriptions(drug.inserted_id);
                     if (drug.inserted_id) {
+                        newId= drug.inserted_id;
                         if (file) {
                             const u = await AngelDrug().upload(file.file, 'drug', drug.inserted_id);
                             setImage(process.env.REACT_APP_API_URL + '/public/drugs/images/' + u.filename);
@@ -196,40 +201,59 @@ export default function DrugContainer(props) {
                                     descriptionId = el.inserted_id; break;
                                 }
                             }
-                            if (descriptionId) {
+                            /*if (descriptionId) {
                                 const d = await AngelDrug().notice(e.target.files[0], 'drug', descriptionId);
                                 setNotice(process.env.REACT_APP_API_URL + '/public/drugs/documents/' + d.filename);
                                 handleClickVariant('success', lg.get('Document well uploaded'));
-                            }
+                            }*/
                         }
+                        setId(drug.inserted_id)
                     }
-                    setId(drug.inserted_id)
                     handleClickVariant('success', lg.get('Drug well added!'));
                 } catch (e) {
                     handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
                 }
+            }
+            let idToUse = null;
+            if(!drugId && newId) {
+                idToUse = newId;
+            } else {
+                idToUse = drugId;
+            }
+            // notice to upload
+            const drugDescriptions = await AngelDrug().getDescription({ drug_id: idToUse });
+           
+            if (drugDescriptions && drugDescriptions.length > 0 && notices) {
+                console.log("notice to upload",drugDescriptions,notices)
+                for (let index = 0; index < drugDescriptions.length; index++) {
+                    const element = drugDescriptions[index];
+                    descriptions[element.lang_id].id = element.id;
+                    console.log("loop notice to upload",element.lang_id,notices[element.lang_id])
+                    if(notices[element.lang_id]) {
+                        const u = await AngelDrug().notice(notices[element.lang_id], 'drug', element.id);
+                        handleClickVariant('success', 'Document well uploaded');
+                    }
+                }
+                setDescriptions(descriptions);
             }
         }
     };
     const setDrugDescriptions = async (newId) => {
         const newDescriptions = [];
         const existingDescriptions = [];
-        if (descriptions && descriptions.length > 0) {
-            for (let index = 0; index < descriptions.length; index++) {
-                const el = descriptions[index];
-                if (el.id) {
-                    existingDescriptions.push(el);
-
-                } else {
-                    if (drugId) {
-                        el.drug_id = drugId;
-                    } else if (newId) {
-                        el.drug_id = newId;
-                    }
-                    newDescriptions.push(el);
+        ['fr','en','nl'].forEach(element => {
+            if(descriptions[element] && descriptions[element].id) {
+                existingDescriptions.push(descriptions[element]);
+            } else if(descriptions[element] && !descriptions[element].id) {
+                const el = descriptions[element];
+                if (drugId) {
+                    el.drug_id = drugId;
+                } else if (newId) {
+                    el.drug_id = newId;
                 }
+                newDescriptions.push(el);
             }
-        }
+        });
         if (newDescriptions && newDescriptions.length > 0) {
             try {
                 await AngelDrug().addDescription(newDescriptions);
@@ -237,7 +261,6 @@ export default function DrugContainer(props) {
                 handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
             }
         }
-
         if (existingDescriptions && existingDescriptions.length > 0) {
             try {
                 await AngelDrug().updateDescription(existingDescriptions);
@@ -245,7 +268,7 @@ export default function DrugContainer(props) {
                 handleClickVariant('error', e.error.statusText + ' ' + e.error.message);
             }
         }
-    }
+     }
 
     const onLaboratorySelect = (o) => {
         setLaboratoryId(o.id);
@@ -324,43 +347,6 @@ export default function DrugContainer(props) {
             handleClickVariant('success', lg.get('Image well uploaded'));
         } else {
             setImage(URL.createObjectURL(e.target.files[0]));
-        }
-    };
-    const onNoticeChange = async (e) => {
-        console.log("file change")
-        if (drugId) {
-            const descriptionList = descriptions;
-            setDocument({ file: e.target.files[0] });
-            let descriptionId = null;
-            if (descriptionList && descriptionList.length > 0) {
-                for (let index = 0; index < descriptionList.length; index++) {
-                    const el = descriptionList[index];
-                    if (el.lang_id === langId) {
-                        descriptionId = el.id;
-                         break;
-                    }
-                }
-            }
-            if (id && descriptionId) {
-                const u = await AngelDrug().notice(e.target.files[0], 'drug', descriptionId);
-                if(u && u.filename) {
-                    for (let index = 0; index < descriptionList.length; index++) {
-                        const el = descriptionList[index];
-                        if (el.lang_id === langId) {
-                            descriptionId = el.id;
-                            el.notice = u.filename;
-                            setDescriptions(descriptionList);
-                            setUpdateNotice(new Date().getTime());
-                             break;
-                        }
-                    }
-                    handleClickVariant('success', lg.get('Document well uploaded'));
-                } else {
-                    handleClickVariant('error', lg.get('Document well uploaded'));
-                }
-            }
-        } else {
-            handleClickVariant('error', lg.get('You must have saved the treatement first!'));
         }
     };
     const handleCloseAssignEffectModal = () => setOpenAssignEffectModal(false);
