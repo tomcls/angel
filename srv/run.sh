@@ -24,23 +24,23 @@ if [ "${env}" == "production" ]
         # Build with dockerfile
         docker build --file=${APP_ROOT}"/srv/Dockerfile" \
         --build-arg environment="${env}" \
-        -t alpine/nginx .
+        -t alpine/angel .
         echo ".............................Build done, execute cmd docker run ${serviceName}"
         docker run  --name ${serviceName}  \
         -p ${portOut}:${portIn} \
         -v /data/www/${serviceName}/.env.prod:/usr/share/nginx/html/.env \
-        -it -d --restart always alpine/nginx
+        -it -d --restart always alpine/angel
     else
         cd $APP_ROOT || exit
         docker rm -f ${serviceName}
         # Build with dockerfile
         docker build --file=$APP_ROOT"/srv/Dockerfile" \
         --build-arg environment="${env}" \
-        -t alpine/nginx .
+        -t alpine/angel .
 
         docker run  --name ${serviceName}  \
         -p ${portOut}:${portIn} \
-        -it -d  alpine/nginx
+        -it -d  alpine/angel
        # Docker exec ${serviceName} /start.sh ${env} &
 fi
 
