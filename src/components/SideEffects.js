@@ -41,9 +41,9 @@ export default function SideEffects(props) {
                         disablePadding
                     >
                         <ListItemButton role={undefined} dense>
-                            <ListItemText>
+                            {/* <ListItemText>
                                 <b>{sideEffect.id}#</b>
-                            </ListItemText>
+                            </ListItemText> */}
                             <ListItemText
                                 primary={'' + sideEffect.name}
                             />
