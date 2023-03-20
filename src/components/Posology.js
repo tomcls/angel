@@ -4,6 +4,8 @@ import { Box, Button, Fab, FormControl, Grid, InputLabel, MenuItem, Select, Text
 import React from 'react';
 import ComboUsers from './ComboUsers';
 import ComboDrugs from '../components/ComboDrugs';
+import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import dayjs from 'dayjs';
 const style = {
@@ -29,9 +31,11 @@ export default function PosologyComponent(props) {
     const [startDate, setStartDate] = React.useState(props.startDate ? props.startDate : new Date());
     const [endDate, setEndDate] = React.useState(props.endDate);
     const [arrayUpdated, updateArray] = React.useState(props.refresh);
-    console.log(props.startDate)
+
     const onAddHour = () => {
-        setHours([...hours, 12]);
+        hours.push(12);
+        setHours(hours);
+        updateArray(new Date().getMilliseconds());
     };
     const onSetHour = (value, key) => {
         let h = hours;
@@ -40,7 +44,6 @@ export default function PosologyComponent(props) {
         updateArray(new Date().getMilliseconds());
     }
     const onWeekDayClick = (event, newFormats) => {
-        console.log('newFormats', newFormats)
         setWeek(newFormats);
     }
     const onAssignPatient = () => {
@@ -69,6 +72,11 @@ export default function PosologyComponent(props) {
     };
     const onDrugSelect = (drugId) => {
         setDrugId(drugId);
+    }
+    const removeHour = (key) => {
+        delete hours[key];
+        setHours(hours);
+        updateArray(new Date().getMilliseconds());
     }
     return (
         <Box sx={style} data={arrayUpdated} style={{ paddingTop: '5px' }} >
@@ -145,11 +153,12 @@ export default function PosologyComponent(props) {
                     <Typography variant="caption"  >{props.lg.get('Hours of taking medication')}</Typography>
                 </Grid>
                 <Grid item xs={12} style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '0px', marginRight: '0px', marginLeft: '0px' }}>
-                    <Grid container style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '0px', marginRight: '0px', marginLeft: '0px' }}>
+                    <Grid container style={{ position: 'relative', paddingTop: '0px', marginTop: '0px', marginBottom: '0px', marginRight: '0px', marginLeft: '0px', alignItems: 'center' }}>
                         {
                             hours.map((v, key) => (
-                                <Grid item xs={4} style={{ paddingTop: '0px', marginTop: '0px', textAlign: 'center', marginBottom: '2px', marginRight: '0px' }}>
+                                <Grid item xs={5} style={{ display: 'flex', paddingTop: '0px', marginTop: '0px', textAlign: 'center', marginBottom: '2px', marginRight: '0px' }}>
                                     <TimePicker
+                                        style={{ borderWidth: '0px', borderColor: "white" }}
                                         key={key}
                                         ampm={false}
                                         openTo="hours"
@@ -161,8 +170,12 @@ export default function PosologyComponent(props) {
                                         onChange={(newValue) => {
                                             onSetHour(new Date(newValue).getHours(), key);
                                         }}
+                                        border="0"
                                         renderInput={(params) => <TextField key={key} {...params} sx={{ mt: '0px', mb: '0px', pr: '2px' }} size="small" />}
                                     />
+                                    <IconButton onClick={() => removeHour(key)} aria-label="delete" size="medium" color="error" style={{ position: 'relative', right: '65px', margin: 0, padding: 0, marginBottom: '18px' }} >
+                                        <DeleteIcon fontSize="inherit" />
+                                    </IconButton>
                                 </Grid>
                             ))
                         }
