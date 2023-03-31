@@ -322,7 +322,7 @@ export default function SurveySideEffects(props) {
     } else {
       o.date_created = null;
     }
-    o.lang_id = 'en';
+    o.lang_id = userSession.lang;
     if (props.sideEffectId) {
       o.id = props.sideEffectId;
     }
@@ -424,7 +424,6 @@ export default function SurveySideEffects(props) {
     search();
   };
   const onDateCreateChanged = (d) => {
-    console.log('onDateCreateChanged', d)
     filter.set('date_created', props, d);
     setDateCreatedFilter(d);
   }

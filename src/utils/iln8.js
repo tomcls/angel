@@ -1,4 +1,9 @@
 export const il8n = {
+    "All": {
+        "en":"All",
+        "fr":"Tous",
+        "nl":"Alles",
+    },
     "Notice well removed": {
         "en":"Notice well removed",
         "fr":"Notice bien supprimée",

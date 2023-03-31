@@ -329,7 +329,7 @@ export default function SurveyMoods(props) {
     } else {
       o.date_created = null;
     }
-    o.lang_id = 'en';
+    o.lang_id = userSession.lang;
     if (props.moodId) {
       o.id = props.moodId;
     }

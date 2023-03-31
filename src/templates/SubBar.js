@@ -134,7 +134,6 @@ export default function SubBar(props) {
           sx={{ mr: 2, ...(open && { display: 'none' }) }}>
           <MenuIcon />
         </IconButton>
-
       </Toolbar>
       <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
         <div>
@@ -259,39 +258,13 @@ export default function SubBar(props) {
           </ListItemButton>
           </List>
         </Collapse>
-
-        <ListItemButton onClick={handleEffectClick}>
-          <ListItemText primary={lg.get("Manage list of")} />
-          {openEffectDown ? <ExpandLess /> : <ExpandMore />}
-        </ListItemButton>
-        <Collapse in={openEffectDown} timeout="auto" unmountOnExit>
-          <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/side-effects">
-            <ListItemIcon>
-              <FormatListBulletedIcon />
-            </ListItemIcon>
-            <ListItemText primary={lg.get('Side effects')} />
-          </ListItemButton>
-          <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/moods">
-            <ListItemIcon>
-              <FormatListBulletedIcon />
-            </ListItemIcon>
-            <ListItemText primary={lg.get('Moods')} />
-          </ListItemButton>
-          <ListItemButton sx={{ pl: 3 }} component={NavLink} exact="true" to="/drugs">
-            <ListItemIcon>
-              <VaccinesIcon />
-            </ListItemIcon>
-            <ListItemText primary={lg.get('Treatments')} />
-          </ListItemButton>
-        </Collapse>
-
+       
         <ListItemButton component={NavLink} exact="true" to="/settings">
           <ListItemIcon>
             <SettingsIcon />
           </ListItemIcon>
           <ListItemText primary={lg.get('Settings')} />
         </ListItemButton>
-
       </List>
     </Drawer>
   </ThemeProvider>

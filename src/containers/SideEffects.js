@@ -63,7 +63,7 @@ function EnhancedTableHead(props) {
       id: 'id',
       numeric: true,
       disablePadding: true,
-      label: 'Id',
+      label: props.lg.get('All'),
     },
     {
       id: 'name',
@@ -76,12 +76,6 @@ function EnhancedTableHead(props) {
       numeric: false,
       disablePadding: false,
       label: props.lg.get('Lang'),
-    },
-    {
-      id: 'created',
-      numeric: false,
-      disablePadding: false,
-      label: props.lg.get('Created'),
     }
   ];
   return (
@@ -326,7 +320,7 @@ export default function SideEffects(props) {
                         />
                       </TableCell>
                       <TableCell component="th" id={labelId} scope="row" padding="none" align='left'>
-                        {row.id}
+                        
                       </TableCell>
                       <TableCell
                         component='th'
@@ -346,14 +340,6 @@ export default function SideEffects(props) {
                         padding='none'
                       >
                         {row.lang_id}
-                      </TableCell>
-                      <TableCell
-                        component='th'
-                        id={labelId}
-                        style={{ textAlign: 'left' }}
-                        scope='row'
-                        padding='none'>
-                        {row.created}
                       </TableCell>
                     </TableRow>
                   );

@@ -90,7 +90,7 @@ function EnhancedTableHead(props) {
       id: 'id',
       numeric: true,
       disablePadding: true,
-      label: 'Id',
+      label: props.lg.get('All'),
     },
     {
       id: 'name',
@@ -536,7 +536,7 @@ export default function PatientTreatments(props) {
           </Typography>
           <FormGroup>
             <FormControlLabel control={<Checkbox checked={codeFilter} onChange={handleCodeFilter} />} label="Code" />
-            <FormControlLabel control={<Checkbox checked={nameFilter} onChange={handleNameFilter} />} label="Name" />
+            <FormControlLabel control={<Checkbox checked={nameFilter} onChange={handleNameFilter} />} label={lg.get('Name')} />
           </FormGroup>
         </Box>
       </Modal>
@@ -580,10 +580,10 @@ export default function PatientTreatments(props) {
                           />
                         </TableCell>
                         <TableCell component="th" id={labelId} scope="row" padding="none" align='left'>
-                          {props.patientId ? row.id :
+                          {props.patientId ? '' :
                             <Grid container spacing={2}>
                               <Grid item xs={1} textAlign={'start'} style={{ marginTop: '10px', fontWeight: 'bold' }}>
-                                {row.id}
+                                
                               </Grid>
                               <Grid item xs={1} style={{ cursor: 'pointer' }}>
                                 <Avatar src={row.avatar} textAlign={'start'} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient_surveys', 'panel3')} />

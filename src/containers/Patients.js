@@ -303,10 +303,10 @@ EnhancedTableToolbar.propTypes = {
 
 export default function Patients(props) {
   const { enqueueSnackbar } = useSnackbar();
-  
+
   const appContext = useContext(AppContext);
   const [lg] = useTranslation(appContext.appState.lang);
-  const [filter] = useFilter('patients',appContext);
+  const [filter] = useFilter('patients', appContext);
 
   const [total, setTotal] = React.useState(null);
   const [page, setPage] = React.useState(0);
@@ -470,9 +470,9 @@ export default function Patients(props) {
   const onDeleteItems = async () => {
     if (selected.length) {
       if (appContext.appState.user && appContext.appState.user.nurse_id) {
-       await  AngelPatient().delete({ ids: selected.join(',') })
+        await AngelPatient().delete({ ids: selected.join(','), nurse_id: appContext.appState.user.nurse_id })
       } else if (appContext.appState.user && appContext.appState.user.doctor_id) {
-        AngelPatient().delete({ ids: selected.join(',') })
+        AngelPatient().delete({ ids: selected.join(','), doctor_id: appContext.appState.user.doctor_id })
       } else {
         await AngelUser().delete({ ids: selected.join(',') });
       }
@@ -511,7 +511,7 @@ export default function Patients(props) {
   }
   const transferPatients = async () => {
     let nId = props.nurseId
-    if(!nId) {
+    if (!nId) {
       nId = appContext.appState.user.nurse_id;
     }
     if (selected.length && transferNurseId && nId) {
@@ -721,7 +721,7 @@ export default function Patients(props) {
             </Table>
           </TableContainer>
           <TablePagination
-            rowsPerPageOptions={[2,5, 10, 25]}
+            rowsPerPageOptions={[2, 5, 10, 25]}
             component='div'
             count={total ? total : 0}
             rowsPerPage={limit}

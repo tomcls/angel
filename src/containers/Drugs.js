@@ -282,7 +282,7 @@ export default function Drugs(props) {
   const fetchData = async (newPage) => {
     const u = [];
     let r = null; //
-    let o = { limit: limit, page: newPage?newPage:page, lang_id: 'en' };
+    let o = { limit: limit, page: newPage?newPage:page, lang_id: userSession.lang };
 
     if (codeFilter) {
       o.code = searchFilter;

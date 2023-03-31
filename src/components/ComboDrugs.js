@@ -58,7 +58,7 @@ export default function ComboDrugs(props) {
       id="users-combo"
       sx={{ width: '100%' }}
       getOptionLabel={(option) => {
-        return typeof option === 'string' ? option : option.drug_id + " " + option.name + " " + option.code
+        return typeof option === 'string' ? option : option.name 
       }
       }
       filterOptions={(x) => x}

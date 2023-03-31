@@ -76,38 +76,40 @@ const styleModal = {
   p: 4,
 };
 
-const headCells = [
-  {
-    id: 'id',
-    numeric: true,
-    disablePadding: true,
-    label: 'Id',
-  },
-  {
-    id: 'name',
-    numeric: false,
-    disablePadding: false,
-    label: 'Name',
-  },
-  {
-    id: 'score',
-    numeric: false,
-    disablePadding: false,
-    label: 'Score',
-  },
-  {
-    id: 'date',
-    numeric: false,
-    disablePadding: false,
-    label: 'Date',
-  }
-];
+
 
 function EnhancedTableHead(props) {
   const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
+
+  const headCells = [
+    {
+      id: 'id',
+      numeric: true,
+      disablePadding: true,
+      label: props.lg.get('All'),
+    },
+    {
+      id: 'name',
+      numeric: false,
+      disablePadding: false,
+      label: 'Name',
+    },
+    {
+      id: 'score',
+      numeric: false,
+      disablePadding: false,
+      label: 'Score',
+    },
+    {
+      id: 'date',
+      numeric: false,
+      disablePadding: false,
+      label: 'Date',
+    }
+  ];
 
   return (
     <TableHead>
@@ -304,7 +306,7 @@ export default function PatientSurveyMoods(props) {
     } else {
       o.to_date = null;
     }
-    o.lang_id = 'en';
+    o.lang_id = userSession.lang;
     if (props.moodId) {
       o.id = props.moodId;
     }
@@ -336,7 +338,7 @@ export default function PatientSurveyMoods(props) {
 
   const displayDate = (v) => {
     let d = new Date(v);
-    var datestring = d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+    var datestring = d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear() ;//+ " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds()
     return datestring;
   }
   const handleFiltersModal = () => setOpenFilterModal(true);
@@ -471,8 +473,8 @@ export default function PatientSurveyMoods(props) {
           <MobileDatePicker
               key="fromdate"
               id="fromdate"
-              label="From date"
-              inputFormat="MM/dd/yyyy"
+              label={lg.get('Start date')}
+              inputFormat="dd/MM/yyyy"
               value={fromDateFilter ? fromDateFilter : null}
               onChange={(newValue) => {setFromDate(newValue);}}
               renderInput={(params) => <TextField {...params} size={'small'} style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '0px', marginRight: '0px', marginLeft: '0px' }}/>}
@@ -480,15 +482,15 @@ export default function PatientSurveyMoods(props) {
             <MobileDatePicker
               key="todate"
               id="todate"
-              label="To date"
-              inputFormat="MM/dd/yyyy"
+              label={lg.get('End date')}
+              inputFormat="dd/MM/yyyy"
               value={toDateFilter ? toDateFilter : null}
               onChange={(newValue) => {setToDate(newValue);}}
               renderInput={(params) => <TextField {...params} size={'small'} style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '0px', marginRight: '0px', marginLeft: '0px' }}/>}
             />
-            <FormControlLabel control={<Checkbox checked={firstnameFilter} onChange={handleFirstnameFilter} />} label="Firstname" />
-            <FormControlLabel control={<Checkbox checked={lastnameFilter} onChange={handleLastnameFilter} />} label="Lastname" />
-            <FormControlLabel control={<Checkbox checked={nameFilter} onChange={handleNameFilter} />} label="Name" />
+            <FormControlLabel control={<Checkbox checked={firstnameFilter} onChange={handleFirstnameFilter} />} label={lg.get('Firstname')} />
+            <FormControlLabel control={<Checkbox checked={lastnameFilter} onChange={handleLastnameFilter} />} label={lg.get('Lastname')} />
+            <FormControlLabel control={<Checkbox checked={nameFilter} onChange={handleNameFilter} />} label={lg.get('Name')+ ' '+lg.get('Moods').toLowerCase()} />
             <FormControlLabel control={<Checkbox checked={scoreFilter} onChange={handleEmailFilter} />} label="Score" />
           </FormGroup>
             <Button
@@ -549,7 +551,7 @@ export default function PatientSurveyMoods(props) {
                       <TableCell component="th" id={labelId} scope="row" padding="none" align='left'>
                         <Grid item xs={1} style={{ cursor: 'pointer' }}>
                           <Grid container >
-                            <Typography style={{ paddingLeft: '5px', paddingTop: "12px", position: 'relative' }} component={'div'}> {row.id}</Typography>
+                            <Typography style={{ paddingLeft: '5px', paddingTop: "12px", position: 'relative' }} component={'div'}> </Typography>
                           </Grid>
                         </Grid>
                       </TableCell>
