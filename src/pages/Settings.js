@@ -20,7 +20,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import AngelUser from "../api/angel/user";
 import { useSnackbar } from 'notistack';
-import { MobileDatePicker } from "@mui/lab";
+import { MobileDatePicker } from '@mui/x-date-pickers';
+import '@mui/lab';
 import MainBar from "../templates/MainBar";
 import FaceIcon from '@mui/icons-material/Face';
 import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
@@ -256,14 +257,14 @@ export default function Settings(props) {
               />
               <Box>
 
+               
                 <MobileDatePicker
-                  key="birthday"
-                  id="birthday"
-                  label={lg.get('Birthday')}
-                  inputFormat="MM/dd/yyyy"
-                  value={dateOfBirth ? dateOfBirth : null}
-                  onChange={handleDateOfBirthChange}
-                  renderInput={(params) => <TextField {...params} />}
+                    key="birthday"
+                    id={lg.get('Birthday')}
+                    label={lg.get('Birthday')}
+                    value={dateOfBirth ? new Date(dateOfBirth) : null}
+                    onChange={handleDateOfBirthChange}
+                    renderInput={(params) => <TextField {...params} />}
                 />
               </Box>
             </Grid>

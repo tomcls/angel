@@ -25,7 +25,8 @@ import PlaceIcon from '@mui/icons-material/Place';
 import EmailIcon from '@mui/icons-material/Email';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import FaceIcon from '@mui/icons-material/Face';
-import { MobileDatePicker } from '@mui/lab';
+import { MobileDatePicker } from '@mui/x-date-pickers';
+import '@mui/lab';
 import AppContext from '../contexts/AppContext';
 import { useTranslation } from '../hooks/userTranslation';
 export default function ScientistContainer(props) {

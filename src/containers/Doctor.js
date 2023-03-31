@@ -31,7 +31,8 @@ import PlaceIcon from '@mui/icons-material/Place';
 import EmailIcon from '@mui/icons-material/Email';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import FaceIcon from '@mui/icons-material/Face';
-import { MobileDatePicker } from '@mui/lab';
+import { MobileDatePicker } from '@mui/x-date-pickers';
+import '@mui/lab';
 import AppContext from '../contexts/AppContext';
 import { useTranslation } from '../hooks/userTranslation';
 export default function DoctorContainer(props) {
@@ -319,8 +320,7 @@ export default function DoctorContainer(props) {
                                 key="birthday"
                                 id="birthday"
                                 label={lg.get("Birthday")}
-                                inputFormat="MM/dd/yyyy"
-                                value={dateOfBirth ? dateOfBirth : ''}
+                                value={dateOfBirth ? new Date(dateOfBirth) : ''}
                                 onChange={handleDateOfBirthChange}
                                 renderInput={(params) => <TextField {...params} />}
                             />

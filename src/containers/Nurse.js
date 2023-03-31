@@ -355,8 +355,7 @@ export default function NurseContainer(props) {
                                         key="birthday"
                                         id={lg.get('Birthday')}
                                         label={lg.get('Birthday')}
-                                        inputFormat="MM/dd/yyyy"
-                                        value={dateOfBirth ? dateOfBirth : null}
+                                        value={dateOfBirth ? new Date(dateOfBirth) : null}
                                         onChange={handleDateOfBirthChange}
                                         renderInput={(params) => <TextField {...params} />}
                                     />

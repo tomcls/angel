@@ -23,7 +23,8 @@ import PlaceIcon from '@mui/icons-material/Place';
 import EmailIcon from '@mui/icons-material/Email';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import FaceIcon from '@mui/icons-material/Face';
-import { MobileDatePicker } from '@mui/lab';
+import { MobileDatePicker } from '@mui/x-date-pickers';
+import '@mui/lab';
 import { useTranslation } from '../hooks/userTranslation';
 import AppContext from '../contexts/AppContext';
 
