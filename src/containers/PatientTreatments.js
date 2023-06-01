@@ -444,6 +444,7 @@ export default function PatientTreatments(props) {
     enqueueSnackbar(text, { variant });
   };
   const handleAssignPatientModal = async (row) => {
+    console.log('handleAssignPatientModal')
     setId(row.id)
     setPosologyId(row.posology)
     setHours(JSON.parse(row.hours));
@@ -459,10 +460,12 @@ export default function PatientTreatments(props) {
     setDrug(d);
     setPatient(p);
     setOpenAssignPatientModal(true);
+    console.log('handleAssignPatientModalEnd',row.startdate)
   }
   const handleCloseAssignPatientModal = () => setOpenAssignPatientModal(false);
 
   const onAssignPatient = async e => {
+    console.log('onAssignPatient')
     if (!e.id || !e.posology_id || !e.patient_id || !e.drug_id || !e.startDate || !e.hours || !e.days) {
       try {
         const u = {

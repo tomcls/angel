@@ -1,5 +1,6 @@
 import { Add, Save } from '@mui/icons-material';
-import { MobileDatePicker, TimePicker } from '@mui/x-date-pickers';
+import { MobileDatePicker } from '@mui/x-date-pickers';
+import { MobileTimePicker } from '@mui/x-date-pickers/MobileTimePicker';
 import '@mui/lab';
 import { Box, Button, Fab, FormControl, Grid, InputLabel, MenuItem, Select, TextareaAutosize, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import React from 'react';
@@ -7,8 +8,9 @@ import ComboUsers from './ComboUsers';
 import ComboDrugs from '../components/ComboDrugs';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
-
 import dayjs from 'dayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 const style = {
     position: 'absolute',
     top: '50%',
@@ -32,7 +34,9 @@ export default function PosologyComponent(props) {
     const [startDate, setStartDate] = React.useState(props.startDate ? props.startDate : new Date());
     const [endDate, setEndDate] = React.useState(props.endDate);
     const [arrayUpdated, updateArray] = React.useState(props.refresh);
-
+    React.useEffect(() => {
+        console.log('PosologyComponent')
+    }, []);
     const onAddHour = () => {
         hours.push(12);
         setHours(hours);
@@ -48,6 +52,7 @@ export default function PosologyComponent(props) {
         setWeek(newFormats);
     }
     const onAssignPatient = () => {
+        console.log('onAssignPatient')
         props.onSave({
             id: id,
             posology_id: posologyId,
@@ -86,21 +91,21 @@ export default function PosologyComponent(props) {
             </Typography>
             <ComboUsers lg={props.lg} type="patient" onSelect={onPatientSelect} patientId={patientId} patient={props.patient} />
             <ComboDrugs lg={props.lg} onSelect={onDrugSelect} drugId={drugId} drug={props.drug} />
-            <Grid item xs={12} style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '5px', marginRight: '0px', marginLeft: '0px' }}>
+            <Grid item xs={12} style={{ paddingTop: 0, marginTop: 0, marginBottom: 0, marginRight: 0, marginLeft: 0 }}>
                 <Typography variant="caption"  >{props.lg.get('When to start')}?</Typography>
             </Grid>
-            <Grid item xs={12} style={{ paddingTop: '5px', marginBottom: '0px', paddingBottom: '0px' }}>
+            <Grid item xs={12} style={{ paddingTop: '5px', marginBottom: 0, paddingBottom: 0 }}>
                 <MobileDatePicker
+                    sx={{ paddingBottom: 0,paddingTop: 0, marginTop: 0, marginBottom: 0 }}
                     key="datestart"
                     id="datestart"
                     label={props.lg.get('Start date')}
-                    inputFormat="dd/MM/yyyy"
-                    value={startDate ? (startDate) : null}
+                    value={startDate ? new Date(startDate) : null}
                     onChange={handleStartDateChange}
-                    renderInput={(params) => <TextField size="small" {...params} style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '0px', marginRight: '0px', marginLeft: '0px' }} />}
+                    renderInput={(params) => <TextField size="small" {...params} style={{ paddingTop: 0, marginTop: 0, marginBottom: 0, marginRight: 0, marginLeft: 0 }} />}
                 />
             </Grid>
-            <Grid item xs={12} style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '10px', marginRight: '0px', marginLeft: '0px' }}>
+            <Grid item xs={12} style={{ paddingTop: 0, marginTop: 0, marginBottom: '10px', marginRight: 0, marginLeft: 0 }}>
                 <Typography variant="caption"  >{props.lg.get('Frequency')}</Typography>
             </Grid>
             <Grid container spacing={2}>
@@ -154,33 +159,37 @@ export default function PosologyComponent(props) {
                     <Typography variant="caption"  >{props.lg.get('Hours of taking medication')}</Typography>
                 </Grid>
                 <Grid item xs={12} style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '0px', marginRight: '0px', marginLeft: '0px' }}>
-                    <Grid container style={{ position: 'relative', paddingTop: '0px', marginTop: '0px', marginBottom: '0px', marginRight: '0px', marginLeft: '0px', alignItems: 'center' }}>
-                        {
-                            hours.map((v, key) => (
-                                <Grid item xs={5} style={{ display: 'flex', paddingTop: '0px', marginTop: '0px', textAlign: 'center', marginBottom: '2px', marginRight: '0px' }}>
-                                    <TimePicker
-                                        style={{ borderWidth: '0px', borderColor: "white" }}
-                                        key={key}
-                                        ampm={false}
-                                        openTo="hours"
-                                        views={['hours']}
-                                        inputFormat="HH"
-                                        mask="__"
-                                        label={props.lg.get('Hour')}
-                                        value={dayjs().set('hour', v)}
-                                        onChange={(newValue) => {
-                                            onSetHour(new Date(newValue).getHours(), key);
-                                        }}
-                                        border="0"
-                                        renderInput={(params) => <TextField key={key} {...params} sx={{ mt: '0px', mb: '0px', pr: '2px' }} size="small" />}
-                                    />
-                                    <IconButton onClick={() => removeHour(key)} aria-label="delete" size="medium" color="error" style={{ position: 'relative', right: '65px', margin: 0, padding: 0, marginBottom: '18px' }} >
-                                        <DeleteIcon fontSize="inherit" />
-                                    </IconButton>
-                                </Grid>
-                            ))
-                        }
-                    </Grid>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <Grid container style={{ position: 'relative', paddingTop: '0px', marginTop: '0px', marginBottom: '0px', marginRight: '0px', marginLeft: '0px', alignItems: 'center' }}>
+                            {
+                                hours.map(function (v, key) {
+                                    return (
+                                        <Grid item xs={3} style={{ display: 'flex', paddingTop: '0px', marginTop: '0px', textAlign: 'center', marginBottom: '2px', marginRight: '0px' }}>
+                                            <MobileTimePicker
+                                            sx={{ paddingTop: 0, marginTop: 0, marginBottom: 0 }}
+                                                value={dayjs().set('hour', v)}
+                                                label={props.lg.get('Hour')}
+                                                key={key}
+                                                ampm={false}
+                                                openTo="hours"
+                                                views={['hours']}
+                                                inputFormat="HH"
+                                                format="hh"
+                                                mask="__"
+                                                border="0"
+                                                onChange={(newValue) => {
+                                                    onSetHour(new Date(newValue).getHours(), key);
+                                                }}
+                                                renderInput={(params) => <TextField key={key} {...params} sx={{ mt: '0px', mb: '0px', pr: '2px' }} size="small" />} />
+                                            <IconButton onClick={() => removeHour(key)} aria-label="delete" size="medium" color="error" style={{ position: 'relative', right: '23px', margin: 0, padding: 0, marginBottom: '20px' }} >
+                                                <DeleteIcon fontSize="inherit" />
+                                            </IconButton>
+                                        </Grid>
+                                    )
+                                })
+                            }
+                        </Grid>
+                    </LocalizationProvider>
                     <Fab color="primary" aria-label="add" size="small" variant="extended" sx={{ mt: '5px', width: '100%' }} onClick={onAddHour}>
                         <Add sx={{ mr: 1 }} /> {props.lg.get('Add an hour')}
                     </Fab>
@@ -188,10 +197,10 @@ export default function PosologyComponent(props) {
                 <Grid item xs={12} style={{ paddingTop: '0px', marginTop: '15px', marginBottom: '0px', marginRight: '0px', marginLeft: '0px' }}>
                     <Typography variant="caption" gutterBottom >{props.lg.get('Practical informations')}</Typography>
                 </Grid>
-                <Grid item xs={12} style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '2px' }}>
+                <Grid item xs={12} style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '0px' }}>
                     <TextareaAutosize
-                        maxRows={5}
-                        minRows={5}
+                        maxRows={2}
+                        minRows={2}
                         aria-label=""
                         placeholder=""
                         defaultValue={note}
@@ -199,18 +208,18 @@ export default function PosologyComponent(props) {
                         style={{ width: '100%' }}
                     />
                 </Grid>
-                <Grid item xs={12} style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '0px', marginRight: '0px', marginLeft: '0px' }}>
+                <Grid item xs={12} style={{ paddingBottom: 0,paddingTop: 0, marginTop: 0, marginBottom:0, marginRight: '0px', marginLeft: '0px' }}>
                     <Typography variant="caption"  >{props.lg.get('When to end (optional)')}</Typography>
                 </Grid>
-                <Grid item xs={12} style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '0px', marginRight: '0px', marginLeft: '0px' }}>
+                <Grid item xs={12} style={{ paddingBottom: 0, paddingTop: 0, marginTop: 0, marginBottom: 0, marginRight: '0px', marginLeft: '0px' }}>
                     <MobileDatePicker
+                        sx={{ paddingTop: 0, marginTop: 0, marginBottom: 0, marginRight: '0px', marginLeft: '0px' }}
                         key="dateend"
                         id="dateend"
                         label={props.lg.get('End date')}
-                        inputFormat="dd/MM/yyyy"
-                        value={endDate ? endDate : null}
+                        value={endDate ? new Date(endDate) : null}
                         onChange={handleEndDateChange}
-                        renderInput={(params) => <TextField size="small" {...params} style={{ paddingTop: '0px', marginTop: '0px', marginBottom: '0px', marginRight: '0px', marginLeft: '0px' }} />}
+                        renderInput={(params) => <TextField size="small" {...params} style={{ paddingTop: 0, marginTop: 0, marginBottom: 0, marginRight: '0px', marginLeft: '0px' }} />}
                     />
                 </Grid>
             </Grid>

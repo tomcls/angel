@@ -89,7 +89,6 @@ export default  function AngelUser(config) {
         checkAuth: async (hash) => {
             try {
                 const res = await axios.get(process.env.REACT_APP_API_URL+'/users/check-auth', { headers: { 'Authorization': hash }});
-                console.log("zzzzz",res)
                 return res;
             } catch (error) {
                 throw error;
