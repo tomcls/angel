@@ -96,6 +96,7 @@ export default  function AngelUser(config) {
         },
         upload: async (file,name,userId) => {
             try {
+                console.log(file,name,userId)
                 const formData = new FormData();
                 formData.append(name,file);
                 formData.append('userId',userId);
