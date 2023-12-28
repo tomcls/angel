@@ -214,6 +214,11 @@ export const il8n = {
         "fr": "Le nom est requis",
         "nl": "De naam is vereist",
     },
+    "The name & or the question are required": {
+        "en": "The name & or the question are required",
+        "fr": "Le nom et ou la question sont requises",
+        "nl": "De naam en of de aanvrag zijn verplicht",
+    },
     "Patient, hours and frequency are required": {
         "en": "Patient, hours and frequency are required",
         "fr": "Le patient, les heures de prise et la fréquence sont requis",
@@ -1048,5 +1053,10 @@ export const il8n = {
         "en": "New",
         "fr": "Nouveau",
         "nl": "Nieuw"
+    },
+    "Question": {
+        "en": "Question",
+        "fr": "Question",
+        "nl": "Aanvrag"
     }
 }

@@ -30,6 +30,7 @@ export default function MoodContainer(props) {
     const [id, setId] = React.useState(null);
     const [moodDescriptionId, setMoodDescriptionId] = React.useState(null);
     const [name, setName] = React.useState('');
+    const [question, setQuestion] = React.useState('');
     const [description, setDescription] = React.useState('');
     const [langId, setLangId] = React.useState(userSession ? userSession.lang : 'en');
 
@@ -48,6 +49,7 @@ export default function MoodContainer(props) {
         }
         setMoodDescriptionId((mood && mood.mood_description_id) ? mood.mood_description_id : null);
         setName((mood && mood.name) ? mood.name : '');
+        setQuestion((mood && mood.question) ? mood.question : '');
         setDescription((mood && mood.description) ? mood.description : '');
     }
     const onInputChange = setter => e => {
@@ -59,8 +61,8 @@ export default function MoodContainer(props) {
     };
     const onSubmit = async event => {
         event.preventDefault();
-        if (!name) {
-            handleClickVariant('error', lg.get('The name is required'));
+        if (!name || !question) {
+            handleClickVariant('error', lg.get('The name & or the question are required'));
         } else {
             const u = {};
             if (id) {
@@ -90,6 +92,7 @@ export default function MoodContainer(props) {
             id: moodDescriptionId,
             mood_id: moodId ? moodId : id,
             name: name,
+            question: question,
             description: description,
             lang_id: langId
         };
@@ -146,6 +149,19 @@ export default function MoodContainer(props) {
                                 <MenuItem value={'en'}>EN</MenuItem>
                             </Select>
                         </FormControl>
+                    </Grid>
+                    <Grid item xs={11}>
+                        <TextField
+                            style={{ display: 'flex', justifyContent: 'center', width: '100%', borderRadius: '10px' }}
+                            label={lg.get('Question')}
+                            id="question"
+                            sx={{ '& > :not(style)': { mt: 1 } }}
+                            value={question ? question : ''}
+                            onChange={onInputChange(setQuestion)}
+                            InputProps={{
+                                startAdornment: <InputAdornment position="start"><Visibility /></InputAdornment>,
+                            }}
+                        />
                     </Grid>
                 </Grid>
                 <ReactQuill theme="snow" value={description} onChange={setDescription}/>

@@ -248,7 +248,7 @@ export default function Nurses(props) {
   const appContext = React.useContext(AppContext);
   const [userSession,] = React.useState(appContext.appState.user);
   const [lg] = useTranslation(userSession ? userSession.lang : 'en');
-  const [filter] = useFilter('nurses',appContext);
+  const [filter] = useFilter('nurses', appContext);
 
   const [, setNurses] = React.useState(null);
 
@@ -380,8 +380,17 @@ export default function Nurses(props) {
 
   const onDeleteItems = async () => {
     if (selected.length) {
-      await AngelUser().delete({ ids: selected.join(',') });
-      handleClickVariant('success', 'Nurse(s) well deleted');
+      if (props.patientId) {
+        console.log(props.patientId, selected);
+        let o = {}
+        o.ids = selected.join(',')
+        o.patient_id = props.patientId;
+        await AngelNurse().unlinkPatient(o);
+        handleClickVariant('success', 'Nurse(s) well deleted');
+      } else {
+        await AngelNurse().delete({ ids: selected.join(',') });
+        handleClickVariant('success', 'Nurse(s) well deleted');
+      }
       fetchData();
     }
   }
@@ -443,14 +452,14 @@ export default function Nurses(props) {
       </div>
       <Box sx={{ width: '100%' }}>
         <Paper sx={{ width: '100%', mb: 0 }}>
-          <EnhancedTableToolbar 
+          <EnhancedTableToolbar
             lg={lg}
-          numSelected={selected.length} 
-          onDeleteItems={onDeleteItems} 
-          onOpenFilterModal={handleFiltersModal} 
-          onSearch={search} 
-          setSearch={handleSearchText}
-          searchText={searchFilter}  />
+            numSelected={selected.length}
+            onDeleteItems={onDeleteItems}
+            onOpenFilterModal={handleFiltersModal}
+            onSearch={search}
+            setSearch={handleSearchText}
+            searchText={searchFilter} />
           <TableContainer>
             <Table
               sx={{ minWidth: 750 }}
@@ -470,16 +479,16 @@ export default function Nurses(props) {
               <TableBody>
                 {stableSort(rows, getComparator(order, orderBy))
                   .map((row, index) => {
-                    const isItemSelected = isSelected(row.user_id);
+                    const isItemSelected = isSelected(row.nurse_id);
                     const labelId = `enhanced-table-checkbox-${index}`;
                     return (
                       <TableRow
                         hover
-                        onClick={(event) => handleClick(event, row.user_id)}
+                        onClick={(event) => handleClick(event, row.nurse_id)}
                         role="checkbox"
                         aria-checked={isItemSelected}
                         tabIndex={-1}
-                        key={row.id}
+                        key={row.nurse_id}
                         selected={isItemSelected}>
                         <TableCell padding="checkbox">
                           <Checkbox
@@ -490,15 +499,15 @@ export default function Nurses(props) {
                         <TableCell component="th" id={labelId} scope="row" padding="none" align='left'>
                           <Grid container spacing={2}>
                             <Grid item xs={1} textAlign={'start'} style={{ marginTop: '10px', fontWeight: 'bold' }}>
-                              {row.id}
+                              {row.nurse_id}
                             </Grid>
                             <Grid item xs={1} style={{ cursor: 'pointer' }}>
-                              <Avatar src={row.avatar} textAlign={'start'} onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname, 'nurse')} />
+                              <Avatar src={row.avatar} textAlign={'start'} onClick={() => document.getElementById("newButton").clk(row.nurse_id, row.firstname + ' ' + row.lastname, 'nurse')} />
                             </Grid>
                           </Grid>
                         </TableCell>
                         <TableCell
-                          onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname, 'nurse')}
+                          onClick={() => document.getElementById("newButton").clk(row.nurse_id, row.firstname + ' ' + row.lastname, 'nurse')}
                           component='th'
                           id={labelId}
                           scope='row'

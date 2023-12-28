@@ -702,7 +702,7 @@ export default function Patients(props) {
                           padding='none' >
                           {
                             (appContext.appState.user && appContext.appState.user.doctor_id) ?
-                              <EmojiPeopleIcon color={'primary'} style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient_nurses')} /> :
+                              <EmojiPeopleIcon color={'primary'} style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient_doctors')} /> :
                               <HailIcon color={'primary'} style={{ cursor: 'pointer' }} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient_doctors')} />
                           }
                         </TableCell>

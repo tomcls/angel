@@ -43,9 +43,25 @@ export default  function AngelDoctor(config) {
                 throw new error(error);
             }
         },
+        delete: async (params) => {
+            try { //nurses/unlink-patient
+                const res = await axios.post(process.env.REACT_APP_API_URL+'/doctors/delete', params, {headers: {'Authorization':accessToken}});
+                return res.data;
+            } catch (error) {
+                throw new error(error);
+            }
+        },
         addPatient: async (params) => {
             try {
                 const res = await axios.post(process.env.REACT_APP_API_URL+'/doctors/add-patient', params, {headers: {'Authorization':accessToken}});
+                return res.data;
+            } catch (error) {
+                throw new error(error);
+            }
+        },
+        unlinkPatient: async (params) => {
+            try { //nurses/unlink-patient
+                const res = await axios.post(process.env.REACT_APP_API_URL+'/doctors/unlink-patient', params, {headers: {'Authorization':accessToken}});
                 return res.data;
             } catch (error) {
                 throw new error(error);

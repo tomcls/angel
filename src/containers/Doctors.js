@@ -274,6 +274,7 @@ export default function Doctors(props) {
     setOrderBy(property);
   };
   const fetchData = async () => {
+    console.log('zeergrge')
     const u = [];
     let r = null;
     let o = { limit: limit, page: page };
@@ -300,12 +301,14 @@ export default function Doctors(props) {
     if (props.patientId) {
       o.patient_id = props.patientId;
       r = await AngelDoctor().getDoctors(o);
+      console.log(r)
     } else {
       r = await AngelDoctor().list(o);
+      console.log(r)
     }
     if (r.users && r.users.length) {
       for (let i = 0; i < r.users.length; i++) {
-        u.push(createData(r.users[i].user_id, r.users[i].id, r.users[i].firstname, r.users[i].lastname, r.users[i].email, r.users[i].phone, r.users[i].hospital_name, r.users[i].role, r.users[i].active, r.users[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.users[i].avatar : defaultAvatar));
+        u.push(createData(r.users[i].user_id, r.users[i].id, r.users[i].doctor_id, r.users[i].firstname, r.users[i].lastname, r.users[i].email, r.users[i].phone, r.users[i].hospital_name, r.users[i].role, r.users[i].active, r.users[i].avatar ? process.env.REACT_APP_API_URL + '/public/uploads/' + r.users[i].avatar : defaultAvatar));
       }
       setRows(u);
       setDoctors(r.users);
@@ -316,10 +319,11 @@ export default function Doctors(props) {
       setTotal(0);
     }
   }
-  const createData = (user_id, id, firstname, lastname, email, phone, hospital_name, role, active, avatar) => {
+  const createData = (user_id, id,doctor_id, firstname, lastname, email, phone, hospital_name, role, active, avatar) => {
     return {
       user_id,
       id,
+      doctor_id,
       firstname,
       lastname,
       email,
@@ -365,8 +369,17 @@ export default function Doctors(props) {
 
   const onDeleteItems = async () => {
     if (selected.length) {
-      await AngelUser().delete({ ids: selected.join(',') });
-      handleClickVariant('success', lg.get('Doctor(s) well deleted'));
+      if (props.patientId) {
+        console.log(props.patientId, selected);
+        let o = {}
+        o.ids = selected.join(',')
+        o.patient_id = props.patientId;
+        await AngelDoctor().unlinkPatient(o);
+        handleClickVariant('success', 'Doctor(s) well deleted');
+      } else {
+        await AngelDoctor().delete({ ids: selected.join(',') });
+        handleClickVariant('success', 'Doctor(s) well deleted');
+      }
       fetchData();
     }
   }
@@ -441,16 +454,16 @@ export default function Doctors(props) {
               <TableBody>
                 {stableSort(rows, getComparator(order, orderBy))
                   .map((row) => {
-                    const isItemSelected = isSelected(row.user_id);
-                    const labelId = `enhanced-table-checkbox-${row.user_id}`;
+                    const isItemSelected = isSelected(row.doctor_id);
+                    const labelId = `enhanced-table-checkbox-${row.doctor_id}`;
                     return (
                       <TableRow
                         hover
-                        onClick={(event) => handleClick(event, row.user_id)}
+                        onClick={(event) => handleClick(event, row.doctor_id)}
                         role="checkbox"
                         aria-checked={isItemSelected}
                         tabIndex={-1}
-                        key={row.id}
+                        key={row.doctor_id}
                         selected={isItemSelected}
                       >
                         <TableCell padding="checkbox">
@@ -462,10 +475,10 @@ export default function Doctors(props) {
                         <TableCell component="th" id={labelId} scope="row" padding="none" align='left'>
                           <Grid container spacing={2}>
                             <Grid item xs={1} textAlign={'start'} style={{ marginTop: '10px', fontWeight: 'bold' }}>
-                              {row.id}
+                              {row.doctor_id}
                             </Grid>
                             <Grid item xs={1} style={{ cursor: 'pointer' }}>
-                              <Avatar src={row.avatar} textAlign={'start'} onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname, 'doctor')} />
+                              <Avatar src={row.avatar} textAlign={'start'} onClick={() => document.getElementById("newButton").clk(row.doctor_id, row.firstname + ' ' + row.lastname, 'doctor')} />
                             </Grid>
                           </Grid>
                         </TableCell>
@@ -475,7 +488,7 @@ export default function Doctors(props) {
                           scope='row'
                           style={{ textAlign: 'left', cursor: 'pointer' }}
                           padding='none'
-                          onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname, 'doctor')}
+                          onClick={() => document.getElementById("newButton").clk(row.doctor_id, row.firstname + ' ' + row.lastname, 'doctor')}
                         >
                           <b>{row.firstname}</b>
                         </TableCell>
