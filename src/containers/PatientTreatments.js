@@ -367,7 +367,7 @@ export default function PatientTreatments(props) {
           r.treatments[i].note,
           r.treatments[i].repetition,
           r.treatments[i].start_date,
-          r.treatments[i].enddate
+          r.treatments[i].end_date
         ));
       }
       setRows(u);
@@ -382,6 +382,7 @@ export default function PatientTreatments(props) {
   const displayDate = (v) => {
     let d = new Date(v);
     var datestring = d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+    console.log(v,datestring)
     return datestring;
   }
   const handleFiltersModal = () => setOpenFilterModal(true);
@@ -444,10 +445,11 @@ export default function PatientTreatments(props) {
     enqueueSnackbar(text, { variant });
   };
   const handleAssignPatientModal = async (row) => {
+    console.log(row)
     console.log('handleAssignPatientModal')
     setId(row.id)
     setPosologyId(row.posology)
-    setHours(JSON.parse(row.hours));
+    setHours(formatHours(JSON.parse(row.hours)));
     setWeek(JSON.parse(row.days));
     setDrugId(row.drug_id);
     setPatientId(row.patient_id);
@@ -460,7 +462,19 @@ export default function PatientTreatments(props) {
     setDrug(d);
     setPatient(p);
     setOpenAssignPatientModal(true);
-    console.log('handleAssignPatientModalEnd',row.startdate)
+    console.log('handleAssignPatientModalEnd',row)
+  }
+  const formatHours = (hours) => {
+    console.log(hours);
+    let h = []
+    if(hours && hours.length){
+      hours.forEach(element => {
+        if(element) {
+        h.push(element);
+        }
+      });
+    }
+    return h;
   }
   const handleCloseAssignPatientModal = () => setOpenAssignPatientModal(false);
 
@@ -506,7 +520,7 @@ export default function PatientTreatments(props) {
     return datestring;
   }
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
+    <>
       <Modal
         open={openAssignPatientModal}
         onClose={handleCloseAssignPatientModal}
@@ -665,5 +679,5 @@ export default function PatientTreatments(props) {
           />
         </Paper>
       </Box>
-    </LocalizationProvider>);
+    </>);
 }

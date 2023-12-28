@@ -35,7 +35,8 @@ export default function PosologyComponent(props) {
     const [endDate, setEndDate] = React.useState(props.endDate);
     const [arrayUpdated, updateArray] = React.useState(props.refresh);
     React.useEffect(() => {
-        console.log('PosologyComponent')
+        console.log('PosologyComponent',props);
+
     }, []);
     const onAddHour = () => {
         hours.push(12);
@@ -81,7 +82,15 @@ export default function PosologyComponent(props) {
     }
     const removeHour = (key) => {
         delete hours[key];
-        setHours(hours);
+        let h = [];
+        if(hours && hours.length) {
+            hours.forEach(element => {
+                if(element) {
+                    h.push(element)
+                }
+            });
+        }
+        setHours(h);
         updateArray(new Date().getMilliseconds());
     }
     return (
@@ -95,15 +104,15 @@ export default function PosologyComponent(props) {
                 <Typography variant="caption"  >{props.lg.get('When to start')}?</Typography>
             </Grid>
             <Grid item xs={12} style={{ paddingTop: '5px', marginBottom: 0, paddingBottom: 0 }}>
-                <MobileDatePicker
-                    sx={{ paddingBottom: 0,paddingTop: 0, marginTop: 0, marginBottom: 0 }}
-                    key="datestart"
-                    id="datestart"
-                    label={props.lg.get('Start date')}
-                    value={startDate ? new Date(startDate) : null}
-                    onChange={handleStartDateChange}
-                    renderInput={(params) => <TextField size="small" {...params} style={{ paddingTop: 0, marginTop: 0, marginBottom: 0, marginRight: 0, marginLeft: 0 }} />}
-                />
+                
+                 <MobileDatePicker
+                                key="datestart"
+                                id="datestart"
+                                label={props.lg.get('Start date')}
+                                value={startDate ? new Date(startDate) : null}
+                                onChange={handleStartDateChange}
+                                renderInput={(params) => <TextField {...params} />}
+                            />
             </Grid>
             <Grid item xs={12} style={{ paddingTop: 0, marginTop: 0, marginBottom: '10px', marginRight: 0, marginLeft: 0 }}>
                 <Typography variant="caption"  >{props.lg.get('Frequency')}</Typography>
