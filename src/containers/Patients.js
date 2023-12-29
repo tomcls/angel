@@ -474,7 +474,8 @@ export default function Patients(props) {
       } else if (appContext.appState.user && appContext.appState.user.doctor_id) {
         AngelPatient().delete({ ids: selected.join(','), doctor_id: appContext.appState.user.doctor_id })
       } else {
-        await AngelUser().delete({ ids: selected.join(',') });
+       // await AngelUser().delete({ ids: selected.join(',') });
+       AngelPatient().delete({ ids: selected.join(','), doctor_id: appContext.appState.user.doctor_id })
       }
       handleClickVariant('success', 'Patient(s) well deleted');
       await fetchData();
