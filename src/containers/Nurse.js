@@ -70,12 +70,12 @@ export default function NurseContainer(props) {
     const [hospitalCountry, setHospitalCountry] = React.useState();
 
     React.useEffect(() => {
-        if (props.userId) {
+        if (props.nurseId) {
             fetchData();
         }
     }, []);
     const fetchData = async () => {
-        const user = await AngelNurse().find({ user_id: props.userId });
+        const user = await AngelNurse().find({ id: props.nurseId });
         console.log(user)
         setId(user.user_id);
         setNurseId(user.nurse_id);

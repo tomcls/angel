@@ -62,9 +62,9 @@ export default class Tabs {
                         case 'laboratory':
                             return <LaboratoryContainer laboratoryId={id} />
                         case 'nurse':
-                            return <NurseContainer userId={id} />
+                            return <NurseContainer nurseId={id} />
                         case 'patient':
-                            return <PatientContainer userId={id} />
+                            return <PatientContainer patientId={id} />
                         case 'drug_patients':
                             return <Patients drugId={id} />
                         case 'nurse_patients':
@@ -74,7 +74,7 @@ export default class Tabs {
                         case 'doctors':
                             return <Doctors patientId={id} openPatients={this.openTab} />
                         case 'doctor':
-                            return <DoctorContainer userId={id} showDoctorPatients={this.openTab} />
+                            return <DoctorContainer doctorId={id} showDoctorPatients={this.openTab} />
                         case 'nurses':
                             return <Nurses patientId={id} openPatients={this.openTab} text={text} />
                         case 'patient_treatments':
@@ -124,17 +124,17 @@ export default class Tabs {
                 window.angel.tabName =  ' ' + text;
                 break;
             case 'doctor':
-                window.angel.userId = id;
+                window.angel.doctorId = id;
                 window.angel.tabType = 'doctor';
                 window.angel.tabName = 'Doc ' + text;
                 break;
             case 'patient':
-                window.angel.userId = id;
+                window.angel.patientId = id;
                 window.angel.tabType = 'patient';
                 window.angel.tabName = this.lg.get('Patient') + ' ' + text;
                 break;
             case 'nurse':
-                window.angel.userId = id;
+                window.angel.nurseId = id;
                 window.angel.tabType = 'nurse';
                 window.angel.tabName = this.lg.get('Nurse') + ' ' + text;
                 break;
@@ -213,7 +213,7 @@ export default class Tabs {
         this.newBtn.current.click();
     }
     onOpenTabClick = (o) => {
-        console.log('onOpenTabClick')
+        console.log('onOpenTabClick',window.angel)
         if (window.angel && window.angel.userId && window.angel.tabType === 'nurses') {
             this.createTab('nurses', window.angel.tabName, window.angel.userId);
             window.angel.userId = null;
@@ -229,38 +229,28 @@ export default class Tabs {
             window.angel.userId = null;
             window.angel.tabType = null;
             window.angel.tabName = null;
-        } else if (window.angel && window.angel.nurseId) {
-            this.createTab('nurse_patients', window.angel.tabName, window.angel.nurseId);
-            window.angel.nurseId = null;
-            window.angel.tabType = null;
-            window.angel.tabName = null;
-        } else if (window.angel && window.angel.drugId && window.angel.tabType === 'drug_patients') {
+        }  else if (window.angel && window.angel.drugId && window.angel.tabType === 'drug_patients') {
             this.createTab('drug_patients', window.angel.tabName, window.angel.drugId);
             window.angel.drugId = null;
             window.angel.tabType = null;
             window.angel.tabName = null;
-        } else if (window.angel && window.angel.doctorId) {
-            this.createTab('doc_patients', window.angel.tabName, window.angel.doctorId);
+        }  else if (window.angel && window.angel.nurseId && window.angel.tabType === 'nurse') {
+            this.createTab('nurse', window.angel.tabName, window.angel.nurseId);
+            window.angel.nurseId = null;
+            window.angel.tabType = null;
+            window.angel.tabName = null;
+        } else if (window.angel && window.angel.patientId && window.angel.tabType === 'patient') {
+            this.createTab('patient', window.angel.tabName, window.angel.patientId);
+            window.angel.patientId = null;
+            window.angel.tabType = null;
+            window.angel.tabName = null;
+        } else if (window.angel && window.angel.doctorId && window.angel.tabType === 'doctor') {
+            this.createTab('doctor', window.angel.tabName, window.angel.doctorId);
             window.angel.doctorId = null;
             window.angel.tabType = null;
             window.angel.tabName = null;
         } else if (window.angel && window.angel.userId && window.angel.tabType === 'scientist') {
             this.createTab('scientist', window.angel.tabName, window.angel.userId);
-            window.angel.userId = null;
-            window.angel.tabType = null;
-            window.angel.tabName = null;
-        } else if (window.angel && window.angel.userId && window.angel.tabType === 'doctor') {
-            this.createTab('doctor', window.angel.tabName, window.angel.userId);
-            window.angel.userId = null;
-            window.angel.tabType = null;
-            window.angel.tabName = null;
-        } else if (window.angel && window.angel.userId && window.angel.tabType === 'patient') {
-            this.createTab('patient', window.angel.tabName, window.angel.userId);
-            window.angel.userId = null;
-            window.angel.tabType = null;
-            window.angel.tabName = null;
-        } else if (window.angel && window.angel.userId && window.angel.tabType === 'nurse') {
-            this.createTab('nurse', window.angel.tabName, window.angel.userId);
             window.angel.userId = null;
             window.angel.tabType = null;
             window.angel.tabName = null;
@@ -311,6 +301,16 @@ export default class Tabs {
             window.angel.tabType = null;
             window.angel.tabName = null;
             window.angel.panelName = null;
+        } else if (window.angel && window.angel.nurseId) {
+            this.createTab('nurse_patients', window.angel.tabName, window.angel.nurseId);
+            window.angel.nurseId = null;
+            window.angel.tabType = null;
+            window.angel.tabName = null;
+        } else if (window.angel && window.angel.doctorId) {
+            this.createTab('doc_patients', window.angel.tabName, window.angel.doctorId);
+            window.angel.doctorId = null;
+            window.angel.tabType = null;
+            window.angel.tabName = null;
         } else {
             console.log('createTabcreateTab',this.tabName)
             this.createTab(this.tabName, this.lg.get('New') + ' ' + this.lg.get(this.tabName));

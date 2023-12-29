@@ -86,14 +86,16 @@ export default function PatientContainer(props) {
     const [hours,] = React.useState([12]);
 
     React.useEffect(() => {
-        if (props.userId) {
+        console.log('PATIENT', props)
+        if (props.patientId) {
             fetchData();
         }
-    }, [props.userId]);
+    }, [props.patientId]);
 
     const fetchData = async () => {
-        if (props.userId) {
-            const user = await AngelPatient().find({ user_id: props.userId });
+
+        if (props.patientId) {
+            const user = await AngelPatient().find({ id: props.patientId });
             setId(user.user_id);
             setPatientId(user.patient_id);
             setFirstname(user.firstname);

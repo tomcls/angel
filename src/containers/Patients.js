@@ -643,7 +643,7 @@ export default function Patients(props) {
                               {row.patient_id}
                             </Grid>
                             <Grid item xs={1} style={{ cursor: 'pointer' }}>
-                              <Avatar src={row.avatar} textAlign={'start'} onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname, 'patient')} />
+                              <Avatar src={row.avatar} textAlign={'start'} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient')} />
                             </Grid>
                           </Grid>
                         </TableCell>
@@ -653,7 +653,7 @@ export default function Patients(props) {
                           scope='row'
                           style={{ textAlign: 'left', cursor: 'pointer' }}
                           padding='none'
-                          onClick={() => document.getElementById("newButton").clk(row.user_id, row.firstname + ' ' + row.lastname, 'patient')}
+                          onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient')}
                         >
                           <b> {row.firstname}</b>
                         </TableCell>

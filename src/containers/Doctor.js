@@ -79,9 +79,10 @@ export default function DoctorContainer(props) {
     const uploadFileButton = useRef(null);
 
     React.useEffect(() => {
-        if (props.userId) {
+        console.log('DOCTOR VIEW',props)
+        if (props.doctorId) {
             async function fetchData() {
-                const user = await AngelDoctor().find({ user_id: props.userId });
+                const user = await AngelDoctor().find({ id: props.doctorId });
                 setId(user.user_id);
                 setDoctorId(user.doctor_id);
                 setFirstname(user.firstname);
