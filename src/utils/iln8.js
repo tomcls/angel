@@ -1,4 +1,14 @@
 export const il8n = {
+    "Your are not authorized to edit this page": {
+        "en": "Your are not authorized to edit this page",
+        "fr": "Vous n'êtes pas autorisé à modifier cette page",
+        "nl": "U bent niet bevoegd om deze pagina te bewerken",
+    },
+    "Position": {
+        "en": "Position",
+        "fr": "Fonction",
+        "nl": "Positie",
+    },
     "All": {
         "en": "All",
         "fr": "Tous",

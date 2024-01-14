@@ -26,6 +26,7 @@ import { useTranslation } from '../hooks/userTranslation';
 import AppContext from '../contexts/AppContext';
 import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
+import QRCode from "react-qr-code";
 
 export default function NurseContainer(props) {
 
@@ -39,6 +40,7 @@ export default function NurseContainer(props) {
     const [nurseId, setNurseId] = React.useState();
     const [firstname, setFirstname] = React.useState();
     const [lastname, setLastname] = React.useState();
+    const [position, setPosition] = React.useState();
     const [email, setEmail] = React.useState();
     const [sex, setSex] = React.useState();
     const [lang, setLang] = React.useState();
@@ -81,6 +83,7 @@ export default function NurseContainer(props) {
         setNurseId(user.nurse_id);
         setFirstname(user.firstname);
         setLastname(user.lastname);
+        setPosition(user.position);
         setLang(user.lang);
         setEmail(user.email);
         setPhone(user.phone);
@@ -163,6 +166,7 @@ export default function NurseContainer(props) {
             user_id: userId ? userId : id,
             hospital_id: hospitalId ? hospitalId : null,
             daysin: week && week.length ? JSON.stringify(week) : null,
+            position: position??null,
         };
         if (nurseId) {
             u.id = nurseId;
@@ -295,7 +299,7 @@ export default function NurseContainer(props) {
                                 </Grid>
                                 <Grid item xs={12} sm={5} md={3} xl={2} mt={1} style={{ display: 'flex', flexDirection: 'row' }}>
                                     <LocalPhoneIcon fontSize={'small'} style={{ marginRight: '5px', display: phone && nurseId ? 'block' : 'none' }} />
-                                    <Typography style={{ display: phone && nurseId ? 'block' : 'none' }}>{ phone && nurseId ? phone : ''}</Typography>
+                                    <Typography style={{ display: phone && nurseId ? 'block' : 'none' }}>{phone && nurseId ? phone : ''}</Typography>
                                 </Grid>
                                 <Grid item xs={12} sm={12} md={12} xl={7} mt={1} style={{ display: 'flex', flexDirection: 'row' }}>
                                     <LocalHospitalIcon fontSize={'small'} style={{ marginRight: '5px', display: hospitalId ? 'block' : 'none' }} />
@@ -330,6 +334,13 @@ export default function NurseContainer(props) {
                                         <input type="file" name="avatar" onChange={onFileChange} ref={uploadFileButton} style={{ display: 'none' }} />
                                     </Grid>
                                 </Grid>
+                                <Grid item xs={12} style={{ width: '205px', height: '205px', textAlign: "center", border: '3px solid #ddd', borderRadius: '5px', margin: 'auto', marginTop:40}} >
+                                    <Box style={{ width: '200px', height: '200px', textAlign: "center", borderColor: 'gray', margin: 'auto' }} >
+                                        <QRCode
+                                            size={200}
+                                            style={{ height: "auto", maxWidth: "100%", width: "100%" }} value={'email'} />
+                                    </Box>
+                                </Grid>
                             </Grid>
                             <Grid item xs={12} sm={6} md={4} xl={4} >
                                 <TextField
@@ -360,6 +371,12 @@ export default function NurseContainer(props) {
                                         renderInput={(params) => <TextField {...params} />}
                                     />
                                 </Box>
+                                <TextField
+                                    label={lg.get("Position")}
+                                    id="Position"
+                                    value={position ? position : ''}
+                                    onChange={onInputChange(setPosition)}
+                                />
                             </Grid>
                             <Grid item xs={12} sm={6} md={4} xl={4}>
                                 <TextField

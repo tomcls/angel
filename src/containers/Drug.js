@@ -152,7 +152,9 @@ export default function DrugContainer(props) {
     const onSubmit = async e => {
         let newId = null;
         e.preventDefault();
-        if (!name || !code) {
+        if(appContext.appState.user.role != 'A') {
+            handleClickVariant('error', lg.get('Your are not authorized to edit this page'));
+        } else if (!name || !code) {
             handleClickVariant('error', lg.get('The name and code are required'));
         } else {
             const u = {

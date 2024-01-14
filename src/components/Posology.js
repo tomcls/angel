@@ -183,7 +183,7 @@ export default function PosologyComponent(props) {
                                                 openTo="hours"
                                                 views={['hours']}
                                                 inputFormat="HH"
-                                                format="hh"
+                                                format="HH"
                                                 mask="__"
                                                 border="0"
                                                 onChange={(newValue) => {
