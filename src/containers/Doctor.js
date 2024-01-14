@@ -35,6 +35,7 @@ import { MobileDatePicker } from '@mui/x-date-pickers';
 import '@mui/lab';
 import AppContext from '../contexts/AppContext';
 import { useTranslation } from '../hooks/userTranslation';
+import QRCode from "react-qr-code";
 export default function DoctorContainer(props) {
 
     const { enqueueSnackbar } = useSnackbar();
@@ -296,6 +297,14 @@ export default function DoctorContainer(props) {
                                 <input type="file" name="avatar" onChange={onFileChange} ref={uploadFileButton} style={{ display: 'none' }} />
                             </Grid>
                         </Grid>
+
+                        { email && <Grid item xs={12} style={{ width: '205px', height: '205px', textAlign: "center", border: '3px solid #ddd', borderRadius: '5px', margin: 'auto', marginTop:40}} >
+                                    <Box style={{ width: '200px', height: '200px', textAlign: "center", borderColor: 'gray', margin: 'auto' }} >
+                                     <QRCode
+                                            size={200}
+                                            style={{ height: "auto", maxWidth: "100%", width: "100%" }} value={email} />
+                                        </Box>
+                                </Grid>}
                     </Grid>
                     <Grid item xs={12} sm={6} md={4} xl={4} >
                         <TextField

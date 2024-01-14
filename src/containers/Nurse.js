@@ -334,13 +334,13 @@ export default function NurseContainer(props) {
                                         <input type="file" name="avatar" onChange={onFileChange} ref={uploadFileButton} style={{ display: 'none' }} />
                                     </Grid>
                                 </Grid>
-                                <Grid item xs={12} style={{ width: '205px', height: '205px', textAlign: "center", border: '3px solid #ddd', borderRadius: '5px', margin: 'auto', marginTop:40}} >
+                                { email && <Grid item xs={12} style={{ width: '205px', height: '205px', textAlign: "center", border: '3px solid #ddd', borderRadius: '5px', margin: 'auto', marginTop:40}} >
                                     <Box style={{ width: '200px', height: '200px', textAlign: "center", borderColor: 'gray', margin: 'auto' }} >
-                                        <QRCode
+                                     <QRCode
                                             size={200}
-                                            style={{ height: "auto", maxWidth: "100%", width: "100%" }} value={'email'} />
-                                    </Box>
-                                </Grid>
+                                            style={{ height: "auto", maxWidth: "100%", width: "100%" }} value={email} />
+                                        </Box>
+                                </Grid>}
                             </Grid>
                             <Grid item xs={12} sm={6} md={4} xl={4} >
                                 <TextField
