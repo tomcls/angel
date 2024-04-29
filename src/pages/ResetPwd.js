@@ -36,17 +36,20 @@ export default function ResetPassword(props) {
     } else {
       if (hash && !callsuccess) {
         console.log(hash)
-        const user = await AngelUser().checkAuth(hash);
-        console.log(user);
-        if (user && user.id) {
-          const r = await AngelUser().resetPwd({ password: password, email: user.email })
-          if (r && r.result ) {
-            setcallsuccess(true)
+        const r = await AngelUser().checkAuth(hash);
+        console.log(r);
+        if (r && r.data.email) {
+          const reset = await AngelUser().resetPwd({ password: password, email: r.data.email })
+          if (reset && reset.result ) {
+            setcallsuccess(true);
+            setHasLoginError(false);
           } else {
             setHasLoginError(true);
+            setcallsuccess(false);
           }
         } else {
           setHasLoginError(true);
+          setcallsuccess(false);
         }
       }
     }
@@ -54,6 +57,24 @@ export default function ResetPassword(props) {
   const onInputChange = setter => e => {
     setter(e.target.value);
   };
+  const isError = () => {
+      if(hasLoginError) {
+          return (
+          <div className="login-form-error">
+          Failed to reset a password please set the same password in both fields
+        </div>
+        )
+      }
+  }
+  const isSuccess = () => {
+      if(hasLoginError) {
+          return (
+            <div className="login-form-success">
+            You can now connect to the app with your new password
+          </div>
+        )
+      }
+  }
   return (
     <div className="App">
       <Box sx={{ flexGrow: 1 }}>
@@ -122,10 +143,15 @@ export default function ResetPassword(props) {
                     <PersonIcon sx={{ color: 'action.active', mr: 1, my: 0.5 }} />re Password</div>} variant={"filled"} />
                 </Box>
               </Box>
-              <Button text={callsuccess ? "Password reseted !" : "Reset my password "} onClick={resetPassword} disabled={callsuccess ? "true" : "false"} />
+              <Button text={callsuccess ? "Password updated !" : "Reset my password "} onClick={resetPassword} disabled={callsuccess ? "true" : "false"} />
               {hasLoginError && (
                 <div className="login-form-error">
                   Failed to reset a password please set the same password in both fields
+                </div>
+              )}
+              {callsuccess && (
+                <div className="login-form-success">
+                  You can now connect to the app with your new password
                 </div>
               )}
               <div style={{

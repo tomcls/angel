@@ -3,3 +3,8 @@
     font-family: "Roboto","Helvetica","Arial",sans-serif;
     color: red;
 }
+.login-form-success 
+{
+    font-family: "Roboto","Helvetica","Arial",sans-serif;
+    color: green;
+}
