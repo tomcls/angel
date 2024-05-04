@@ -11,6 +11,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import dayjs from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { Close } from '@material-ui/icons';
 const style = {
     position: 'absolute',
     top: '50%',
@@ -35,8 +36,7 @@ export default function PosologyComponent(props) {
     const [endDate, setEndDate] = React.useState(props.endDate);
     const [arrayUpdated, updateArray] = React.useState(props.refresh);
     React.useEffect(() => {
-        console.log('PosologyComponent',props);
-
+        console.log('PosologyComponent', props);
     }, []);
     const onAddHour = () => {
         hours.push(12);
@@ -83,9 +83,9 @@ export default function PosologyComponent(props) {
     const removeHour = (key) => {
         delete hours[key];
         let h = [];
-        if(hours && hours.length) {
+        if (hours && hours.length) {
             hours.forEach(element => {
-                if(element) {
+                if (element) {
                     h.push(element)
                 }
             });
@@ -95,6 +95,9 @@ export default function PosologyComponent(props) {
     }
     return (
         <Box sx={style} data={arrayUpdated} style={{ paddingTop: '5px' }} >
+            <Fab color="error" aria-label="X" size="small" variant="extended" sx={{ position: 'absolute', mt: '-5px', width: '100%', right:'-5px', top:"-5px", width: '35px' }} onClick={props.onClose}>
+                        <Close sx={{ mr: 1 }} />
+            </Fab>
             <Typography id="modal-modal-title" variant="h6" component="h2" style={{ paddingTop: '0px', marginTop: '0px', textAlign: 'center', marginBottom: '15px' }}>
                 {props.lg.get('Assign treatment to a patient')}
             </Typography>
@@ -104,15 +107,15 @@ export default function PosologyComponent(props) {
                 <Typography variant="caption"  >{props.lg.get('When to start')}?</Typography>
             </Grid>
             <Grid item xs={12} style={{ paddingTop: '5px', marginBottom: 0, paddingBottom: 0 }}>
-                
-                 <MobileDatePicker
-                                key="datestart"
-                                id="datestart"
-                                label={props.lg.get('Start date')}
-                                value={startDate ? new Date(startDate) : null}
-                                onChange={handleStartDateChange}
-                                renderInput={(params) => <TextField {...params} />}
-                            />
+
+                <MobileDatePicker
+                    key="datestart"
+                    id="datestart"
+                    label={props.lg.get('Start date')}
+                    value={startDate ? new Date(startDate) : null}
+                    onChange={handleStartDateChange}
+                    renderInput={(params) => <TextField {...params} />}
+                />
             </Grid>
             <Grid item xs={12} style={{ paddingTop: 0, marginTop: 0, marginBottom: '10px', marginRight: 0, marginLeft: 0 }}>
                 <Typography variant="caption"  >{props.lg.get('Frequency')}</Typography>
@@ -175,7 +178,7 @@ export default function PosologyComponent(props) {
                                     return (
                                         <Grid item xs={3} style={{ display: 'flex', paddingTop: '0px', marginTop: '0px', textAlign: 'center', marginBottom: '2px', marginRight: '0px' }}>
                                             <MobileTimePicker
-                                            sx={{ paddingTop: 0, marginTop: 0, marginBottom: 0 }}
+                                                sx={{ paddingTop: 0, marginTop: 0, marginBottom: 0 }}
                                                 value={dayjs().set('hour', v)}
                                                 label={props.lg.get('Hour')}
                                                 key={key}
@@ -217,7 +220,7 @@ export default function PosologyComponent(props) {
                         style={{ width: '100%' }}
                     />
                 </Grid>
-                <Grid item xs={12} style={{ paddingBottom: 0,paddingTop: 0, marginTop: 0, marginBottom:0, marginRight: '0px', marginLeft: '0px' }}>
+                <Grid item xs={12} style={{ paddingBottom: 0, paddingTop: 0, marginTop: 0, marginBottom: 0, marginRight: '0px', marginLeft: '0px' }}>
                     <Typography variant="caption"  >{props.lg.get('When to end (optional)')}</Typography>
                 </Grid>
                 <Grid item xs={12} style={{ paddingBottom: 0, paddingTop: 0, marginTop: 0, marginBottom: 0, marginRight: '0px', marginLeft: '0px' }}>
@@ -233,7 +236,7 @@ export default function PosologyComponent(props) {
                 </Grid>
             </Grid>
             <Button
-                style={{ borderRadius: '10px', marginTop: '20px', width: '100%' }}
+                style={{ borderRadius: '10px', marginTop: '0px', width: '100%' }}
                 variant="outlined" startIcon={<Save />}
                 onClick={onAssignPatient}>
                 {props.lg.get('Assign')}

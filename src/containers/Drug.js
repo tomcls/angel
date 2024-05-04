@@ -54,7 +54,7 @@ export default function DrugContainer(props) {
     const [repetition,] = React.useState(props.repetition);
     const [note,] = React.useState(props.note);
     const [days,] = React.useState(props.days);
-    const [hours,] = React.useState([12]);
+    const [hours,] = React.useState();
     const [sideEffectUpdated, setSideEffectUpdated] = React.useState(null);
     const [patientId,] = React.useState(props.patientId);
     const [updateNotice, setUpdateNotice] = React.useState();
@@ -65,6 +65,7 @@ export default function DrugContainer(props) {
         }
     }, []);
     React.useEffect(() => {
+        
         if (descriptions && descriptions.length > 0) {
             for (let index = 0; index < descriptions.length; index++) {
                 const el = descriptions[index];
@@ -264,10 +265,12 @@ export default function DrugContainer(props) {
         setLaboratoryName(o.name);
     }
     const handleAssignEffectModal = async () => {
-        if (id) {
-            setOpenAssignEffectModal(true);
-        } else {
-            handleClickVariant('error', lg.get('You must have saved the treatement first!'));
+        if(!appContext.appState.user.nurse_id) {
+            if (id) {
+                setOpenAssignEffectModal(true);
+            } else {
+                handleClickVariant('error', lg.get('You must have saved the treatement first!'));
+            }
         }
     }
     const handleAssignPatientModal = async () => {
@@ -417,9 +420,9 @@ export default function DrugContainer(props) {
                                 title={lg.get('Treatment details')}
                                 subheader={name}
                                 action={<>
-                                    <IconButton aria-label={lg.get('Assign a patient')}>
+                                    {!appContext.appState.user.nurse_id && <IconButton aria-label={lg.get('Assign a patient')}>
                                         <Button variant="outlined" style={{ marginRight: '5px' }} onClick={handleAssignPatientModal}>{lg.get('Assign a patient')}</Button>
-                                    </IconButton>
+                                    </IconButton>}
                                     <IconButton aria-label={lg.get('List of patients')}>
                                         <Button variant="outlined" onClick={() => document.getElementById("newButton").clk(drugId, name, 'drug_patients')}>{lg.get('List of patients')}</Button>
                                     </IconButton></>
@@ -557,12 +560,13 @@ export default function DrugContainer(props) {
                         </Card>
                     </Grid>
                 </Grid>
-                <Button
+                {!appContext.appState.user.nurse_id && <Button
                     style={{ borderRadius: '10px', marginTop: '20px' }}
                     variant="outlined" startIcon={<Save />}
                     onClick={onSubmit}>
                     {lg.get('Save')}
-                </Button>
+                </Button>}               
+                
             </Box>
         </>
     );

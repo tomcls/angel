@@ -24,8 +24,11 @@ export default function SideEffects(props) {
     }, [props.update, props.drugId]);
 
     const onDelete = async (id) => {
-        await AngelDrug().deleteEffect({ ids: id });
-        props.onDeleted(id);
+        if(!appContext.appState.user.nurse_id) {
+            await AngelDrug().deleteEffect({ ids: id });
+            props.onDeleted(id);
+        }
+       
     }
     return (
         <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }} update={props.update}>

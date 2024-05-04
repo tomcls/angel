@@ -75,8 +75,8 @@ export default function PatientsPage(props) {
               </Typography>
             </Grid>
             <Grid item xs={6} md={6} xl={6} textAlign={'end'}  >
-              <Button variant="outlined" onClick={t.onOpenTabClick} justifyContent="flex-end" ref={newBtn} id="newButton">
-                <PeopleIcon /> {lg.get('Add patient')}</Button>
+            {!appContext.appState.user.nurse_id &&  <Button variant="outlined" onClick={t.onOpenTabClick} justifyContent="flex-end" ref={newBtn} id="newButton">
+                <PeopleIcon /> {lg.get('Add patient')}</Button>}
             </Grid>
           </Grid>
           <Box sx={{ width: '100%' }}>

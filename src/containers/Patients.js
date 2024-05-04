@@ -95,7 +95,7 @@ function EnhancedTableHead(props) {
       id: 'id',
       numeric: true,
       disablePadding: true,
-      label: 'Id',
+      label: '',
     },
     {
       id: 'firstname',
@@ -639,9 +639,7 @@ export default function Patients(props) {
                         </TableCell>
                         <TableCell component="th" id={labelId} scope="row" padding="none" align='left' >
                           <Grid container spacing={2}>
-                            <Grid item xs={1} textAlign={'start'} style={{ marginTop: '10px', fontWeight: 'bold' }}>
-                              {row.patient_id}
-                            </Grid>
+                            
                             <Grid item xs={1} style={{ cursor: 'pointer' }}>
                               <Avatar src={row.avatar} textAlign={'start'} onClick={() => document.getElementById("newButton").clk(row.patient_id, row.firstname + ' ' + row.lastname, 'patient')} />
                             </Grid>
