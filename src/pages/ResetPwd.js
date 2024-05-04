@@ -164,7 +164,7 @@ export default function ResetPassword(props) {
                 <Typography style={{ marginInline: "10px" }}>or</Typography>
                 <Divider style={{ width: "30%", borderColor: "black" }} />
               </div>
-              <Link to="/">
+              <Link to="/login">
                 <Typography variant="h6" style={{
                   margin: "auto",
                   marginBottom: "40px",

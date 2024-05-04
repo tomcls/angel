@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Thank from '../pages/Thank';
@@ -30,19 +30,37 @@ import AngelUser from "../api/angel/user";
 export default function Application(props) {
     const appContext = useContext(AppContext);
     const navigate = useNavigate();
+    const location = useLocation();
     React.useEffect(() => {
-        if (appContext.appState.user && appContext.appState.user.id) { } else {
+        console.log(location.pathname+ ' == '+'/reset-password');
+
+        if ((appContext.appState.user && appContext.appState.user.id) || location.pathname == '/reset-password' || location.pathname == '/request-password') {
+            console.log('aaaaa')
+            if(!checkAuth() && ( location.pathname != '/reset-password' || location.pathname != '/request-password')) {
+                console.log('bbbbb')
+                navigate('/login', { replace: true }); return; 
+            }
+            console.log('ddddd')
+         } else {
+            console.log('cccc')
             navigate('/login', { replace: true }); return;
         }
-        checkAuth();
+        
     }, [appContext]);
     const checkAuth = async () => {
         try {
             const token = await AngelUser().checkAuth(appContext.appState.token);
+            console.log('token',token);
+            if(!token) {
+                return false;
+            } else {
+                return true
+            }
         } catch (e) {
+            console.log('error',e)
             localStorage.removeItem("user");
             localStorage.removeItem("token");
-            navigate('/login', { replace: true }); return;
+            return false;
         }
     }
     return (

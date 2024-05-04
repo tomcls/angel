@@ -164,7 +164,7 @@ export default function Register() {
                 </div>
               )}
               <XButton text="Register" onClick={(onSubmit)} />
-              <Link to='/'>
+              <Link to='/login'>
                 <Typography
                   variant='h6'
                   style={{
