@@ -52,9 +52,11 @@ export default function PatientsPage(props) {
   });
   //const t = new Tabs('patient', tabIndex, tabs, setTabs, setSelectedTab, setTabIndex, newBtn, lg);
   React.useEffect(() => {
+    console.log('PatiensPage.useEffects')
     let d = document.getElementById('newButton');
     if (d) {
       d.clk = function (id, text, type) { t.openTab(id, text, type); };
+      console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
     }
   }, [props.lang, appContext]);
   const handleChange = (event, newValue) => {
@@ -62,6 +64,13 @@ export default function PatientsPage(props) {
   };
   const openPatientTab = (userId, text) => {
     t.createTab('patient', text, userId)
+  }
+  const newPatient = () => {
+    if(!appContext.appState.user.nurse_id) {
+        return "flex-end"
+    } else {
+      return "none";
+    }
   }
   return (
     <SnackbarProvider maxSnack={3}>
@@ -75,8 +84,8 @@ export default function PatientsPage(props) {
               </Typography>
             </Grid>
             <Grid item xs={6} md={6} xl={6} textAlign={'end'}  >
-            {!appContext.appState.user.nurse_id &&  <Button variant="outlined" onClick={t.onOpenTabClick} justifyContent="flex-end" ref={newBtn} id="newButton">
-                <PeopleIcon /> {lg.get('Add patient')}</Button>}
+             <Button variant="outlined" onClick={t.onOpenTabClick} justifyContent="flex-end" ref={newBtn} id="newButton" style={{display:newPatient()}}>
+                <PeopleIcon /> {lg.get('Add patient')}</Button>
             </Grid>
           </Grid>
           <Box sx={{ width: '100%' }}>
