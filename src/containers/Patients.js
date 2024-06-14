@@ -43,6 +43,7 @@ import ComboNurses from '../components/ComboNurses';
 import AppContext from '../contexts/AppContext';
 import { useTranslation } from '../hooks/userTranslation';
 import { useFilter } from '../hooks/useFilter';
+import AngelTreatment from '../api/angel/treatments';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -356,6 +357,7 @@ export default function Patients(props) {
     } else {
       o.phone = null;
     }
+    console.log(props)
     if (props.drugId && userSession && userSession.doctor_id) {
       o.drug_id = props.drugId;
       o.doctor_id = userSession.doctor_id;
@@ -394,6 +396,7 @@ export default function Patients(props) {
       setPatients([]);
       setTotal(0);
     }
+    console.log('fetchData');
   }, [emailFilter, firstnameFilter, lastnameFilter, limit, page, phoneFilter, props.doctorId, props.drugId, props.nurseId, searchFilter]);
 
   useEffect(() => {
@@ -469,7 +472,10 @@ export default function Patients(props) {
   };
   const onDeleteItems = async () => {
     if (selected.length) {
-      if (appContext.appState.user && appContext.appState.user.nurse_id) {
+      if(props.drugId) {
+        console.log(selected);
+        await AngelTreatment().delete({ drug_id: props.drugId,ids:selected.join(',')});
+      } else if (appContext.appState.user && appContext.appState.user.nurse_id) {
         await AngelPatient().delete({ ids: selected.join(','), nurse_id: appContext.appState.user.nurse_id })
       } else if (appContext.appState.user && appContext.appState.user.doctor_id) {
         AngelPatient().delete({ ids: selected.join(','), doctor_id: appContext.appState.user.doctor_id })
