@@ -55,6 +55,7 @@ export default function DrugsPage() {
     if (d) {
       d.clk = function (id, text, type) { t.openTab(id, text, type); };
     }
+    
   }, []);
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);
@@ -71,8 +72,11 @@ export default function DrugsPage() {
               </Typography>
             </Grid>
             <Grid item xs={12} md={6} xl={6} textAlign={'end'}  >
-              <Button variant="outlined" onClick={t.onOpenTabClick} ref={newBtn} justifyContent="flex-end" id="newButton">
-                <PeopleIcon />{lg.get('Add treatment')}</Button>
+              {!appContext.appState.user.nurse_id && <> 
+                <Button variant="outlined" onClick={t.onOpenTabClick} ref={newBtn} justifyContent="flex-end" id="newButton">
+                  <PeopleIcon />{lg.get('Add treatment')}</Button>
+              </>}
+
             </Grid>
           </Grid>
           <Box sx={{ width: '100%', }} >
@@ -89,7 +93,7 @@ export default function DrugsPage() {
                 <Drugs openDrug={t.openTab} />
               </TabPanel>
               {tabs.map(panel => (
-                <TabPanel key={panel.idx} label={panel.label} value={panel.value} style={{backgroundColor:'#f2f2f2'}} >
+                <TabPanel key={panel.idx} label={panel.label} value={panel.value} style={{ backgroundColor: '#f2f2f2' }} >
                   {panel.child()}
                 </TabPanel>
               ))}

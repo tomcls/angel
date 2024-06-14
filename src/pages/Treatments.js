@@ -72,8 +72,10 @@ export default function TreatmentsPage() {
               </Typography>
             </Grid>
             <Grid item xs={6} md={6} xl={6} textAlign={'end'}  >
-              <Button variant="outlined" onClick={t.onOpenTabClick} ref={newBtn} justifyContent="flex-end" id="newButton">
-                <PeopleIcon /> {lg.get('Add treatment')} </Button>
+            {!appContext.appState.user.nurse_id && <> 
+                <Button variant="outlined" onClick={t.onOpenTabClick} ref={newBtn} justifyContent="flex-end" id="newButton">
+                  <PeopleIcon />{lg.get('Add treatment')}</Button>
+              </>}
             </Grid>
           </Grid>
           <Box sx={{ width: '100%' }}>
