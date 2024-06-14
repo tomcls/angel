@@ -412,7 +412,8 @@ export default function PatientContainer(props) {
                 </Typography>
                {!appContext.appState.user.nurse_id && <> <Button onClick={handleAssignNurseModal} variant="outlined" style={{ marginRight: '5px', }} disabled={!patientId ? true : false} >{lg.get('Assign a nurse')}</Button>
                 <Button onClick={handleAssignDoctorModal} variant="outlined" style={{ marginRight: '5px' }} disabled={!patientId ? true : false} >{lg.get('Assign a doctor')}</Button>
-                <Button variant="outlined" style={{ marginRight: '5px' }} onClick={handleAssignPatientModal} disabled={!patientId ? true : false} >{lg.get('Assign a treatment')}</Button></>}
+                </>}
+                <Button variant="outlined" style={{ marginRight: '5px' }} onClick={handleAssignPatientModal} disabled={!patientId ? true : false} >{lg.get('Assign a treatment')}</Button>
                 <Grid container spacing={2}>
                     <Grid item xs={12} sm={6} md={4} xl={2} style={{ paddingTop: '40px' }}>
                         <Grid item xs={12} style={{ width: '205px', height: '205px', textAlign: "center", border: '3px solid #ddd', borderRadius: '5px', margin: 'auto' }} >
