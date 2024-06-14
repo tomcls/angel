@@ -540,6 +540,7 @@ export default function PatientTreatments(props) {
           startDate={startDate}
           endDate={endDate}
           patient={patient}
+          onClose={handleCloseAssignPatientModal}
           drug={drug} />
       </Modal>
       <Modal

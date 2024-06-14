@@ -388,6 +388,7 @@ export default function DrugContainer(props) {
                     patientId={patientId}
                     drugId={drugId}
                     drug={drug}
+                    onClose={handleCloseAssignPatientModal}
                     lg={lg} />
             </Modal>
             <Modal
