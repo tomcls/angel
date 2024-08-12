@@ -51,6 +51,11 @@ export default function LoginComponent(props) {
               Login Failed: Incorrect Credentials
             </div>
           )}
+          {props.isPatient && (
+            <div className="login-form-error">
+              Please login with the mobile app
+            </div>
+          )}
           <div style={{    display: "flex", justifyContent: "center", alignItems: "center"}}>
               <Divider style={{width:"30%",borderColor:"black"}} />
               <Typography style={{marginInline:"10px"}}>or</Typography>

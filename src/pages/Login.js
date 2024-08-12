@@ -13,6 +13,7 @@ export default function Login() {
   const appContext = useContext(AppContext);
   const navigate = useNavigate();
   const [ hasLoginError, setHasLoginError ] = useState(false);
+  const [ isPatient, setIsPatient ] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const matches = useMediaQuery('(max-width:970px)');
@@ -32,17 +33,23 @@ export default function Login() {
     e.preventDefault();
     AngelUser().login({ email: username, password: password , active: 'Y'}).then(function (result) {
       if (result && result.user) {
-        localStorage.setItem('token', JSON.stringify(result.accessToken));
-        appContext.appDispatch({ type: 'loadToken', payload: result.accessToken });
-
-        localStorage.setItem('user', JSON.stringify(result.user));
-        appContext.appDispatch({ type: 'loadUser', payload: result.user });
-        appContext.appDispatch({ type: 'setLang', payload: result.user.lang });
-        
-        if(result.user && (result.user.nurse_id || result.user.doctor_id)) {
-          navigate('/survey-moods', {replace: true});return;
+        console.log(result.user);
+        if(result.user.patient_id && parseInt(result.user.patient_id,10)) {
+          setIsPatient(true);
         } else {
-          navigate('/patients', {replace: true});return;
+
+          localStorage.setItem('token', JSON.stringify(result.accessToken));
+          appContext.appDispatch({ type: 'loadToken', payload: result.accessToken });
+  
+          localStorage.setItem('user', JSON.stringify(result.user));
+          appContext.appDispatch({ type: 'loadUser', payload: result.user });
+          appContext.appDispatch({ type: 'setLang', payload: result.user.lang });
+          
+          if(result.user && (result.user.nurse_id || result.user.doctor_id)) {
+            navigate('/survey-moods', {replace: true});return;
+          } else {
+            navigate('/patients', {replace: true});return;
+          }
         }
       } else {
         setHasLoginError(true);
@@ -56,7 +63,7 @@ export default function Login() {
           <Header />
           <TeaserComponent />
           <Grid item xs={12} sm={6}>
-            <LoginComponent onSubmit={onSubmit} setUsername={setUsername} setPassword={setPassword} hasLoginError={hasLoginError} onFocus={setHasLoginError} />
+            <LoginComponent onSubmit={onSubmit} setUsername={setUsername} setPassword={setPassword} hasLoginError={hasLoginError} onFocus={setHasLoginError} isPatient={isPatient} />
           </Grid>
         </Grid>
       </Box>
